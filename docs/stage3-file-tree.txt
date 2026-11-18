@@ -8,7 +8,9 @@ CircuitEditor.App/Controls/ArduinoNanoDrawing.cs
 CircuitEditor.App/Controls/ArduinoUnoDrawing.cs
 CircuitEditor.App/Controls/BoardDetailDrawing.cs
 CircuitEditor.App/Controls/BreadboardDrawing.cs
+CircuitEditor.App/Controls/BreadboardDrawingCache.cs
 CircuitEditor.App/Controls/BreadboardSurface.cs
+CircuitEditor.App/Controls/ComponentDrawingCache.cs
 CircuitEditor.App/Controls/Esp32Drawing.cs
 CircuitEditor.App/Controls/Lcd1602Drawing.cs
 CircuitEditor.App/Controls/OledDrawing.cs
@@ -151,9 +153,11 @@ CircuitEditor.Tests/ComponentLibraryTests.cs
 CircuitEditor.Tests/FootprintRepositoryTests.cs
 CircuitEditor.Tests/LayoutAssertions.cs
 CircuitEditor.Tests/MainViewModelTests.cs
+CircuitEditor.Tests/MockupInvalidationTests.cs
 CircuitEditor.Tests/MockupPresentationChecks.cs
 CircuitEditor.Tests/MockupViewModelTests.cs
 CircuitEditor.Tests/ProjectSerializationTests.cs
+CircuitEditor.Tests/RenderingCacheChecks.cs
 CircuitEditor.Tests/ResistanceTests.cs
 CircuitEditor.Tests/ResistorEditorTests.cs
 CircuitEditor.Tests/ResistorPresentationChecks.cs
@@ -168,6 +172,7 @@ CircuitEditor.Tests/ThemeResourceTests.cs
 CircuitEditor.Tests/ThemeServiceTests.cs
 Directory.Build.props
 docs/component-rendering-audit.md
+docs/rendering-performance.md
 docs/stage3-file-tree.txt
 docs/stage3-mockup.md
 docs/stage3.1-batch-a.md

@@ -84,6 +84,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
                 if (panning) { OffsetX = oldOffsetX + input.X - startX; OffsetY = oldOffsetY + input.Y - startY; }
                 else if (dragging is not null && draft is not null)
                     UpdateDraft(new(CursorX - grabX, CursorY - grabY, draft.Rotation, draft.SpanHoles));
+                else return; // Cursor/status changes do not change the circuit picture.
                 break;
             case CanvasAction.Up:
                 if (dragging is not null && draft is not null) TryPlace(dragging, draft);
@@ -197,12 +198,14 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     private void ResetView() { Cancel(); Zoom = 1; OffsetX = 16; OffsetY = 12; OnPropertyChanged(nameof(ZoomPercent)); Revision++; }
     private void Cancel()
     {
+        if (dragging is null && draft is null && Preview is null && !panning) return;
         if (panning) { OffsetX = oldOffsetX; OffsetY = oldOffsetY; }
         dragging = null; draft = null; Preview = null; panning = false; Revision++;
     }
     private void OnProjectChanged(object? sender, PropertyChangedEventArgs args)
     {
-        Revision++;
+        if (args.PropertyName == nameof(Project.Revision)) Revision++;
+        if (args.PropertyName != nameof(Project.SelectedComponent)) return;
         if (selectionId == Project.SelectedComponent?.Model.Id) return;
         selectionId = Project.SelectedComponent?.Model.Id;
         OnPropertyChanged(nameof(SpanOptions)); OnPropertyChanged(nameof(SelectedSpan)); OnPropertyChanged(nameof(CanAdjustSpan));

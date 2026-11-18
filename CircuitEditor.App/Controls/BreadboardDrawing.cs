@@ -1,16 +1,13 @@
 using System.Windows;
 using System.Windows.Media;
-using CircuitEditor.App.ViewModels;
 using CircuitEditor.Core.Breadboards;
 
 namespace CircuitEditor.App.Controls;
 
 internal static class BreadboardDrawing
 {
-    public static void Draw(DrawingContext dc, BreadboardInstance board, BreadboardViewModel scene)
+    public static void DrawBase(DrawingContext dc, BreadboardDefinition data, bool showAvailable)
     {
-        var data = board.Definition;
-        dc.PushTransform(new TranslateTransform(board.X, board.Y));
         dc.DrawRoundedRectangle(new LinearGradientBrush(Colors.WhiteSmoke, Color.FromRgb(220, 225, 231), 0),
             new Pen(PhysicalDrawing.Ink("#9AA5B5"), .2), new Rect(0, 0, data.Width, data.Height), 1.4, 1.4);
         var rows = data.Groups.Where(group => group.Id.Contains("/row/", StringComparison.Ordinal)).ToArray();
@@ -41,18 +38,16 @@ internal static class BreadboardDrawing
                 new Point(x, holes.Max(hole => hole.Position.Y) + 2));
             PhysicalDrawing.Text(dc, positive ? "+" : "−", x - .5, 3.2, 1.7, brush);
         }
-        var occupied = scene.Project.Model.Bindings.Where(binding => binding.BoardId == board.Id)
-            .Select(binding => binding.HoleId).ToHashSet();
-        var preview = scene.Preview?.Bindings.Select(binding => binding.HoleId).ToHashSet() ?? [];
+        var ring = showAvailable ? "#75B68D" : "#A2ABB6";
+        var ringPen = new Pen(PhysicalDrawing.Ink(ring), .17);
+        var surround = PhysicalDrawing.Ink("#CBD0D6");
+        var inside = PhysicalDrawing.Ink("#46515C");
         foreach (var hole in data.Holes)
         {
             var point = new Point(hole.Position.X, hole.Position.Y);
-            var ring = preview.Contains(hole.Id) ? "#00A662" : occupied.Contains(hole.Id) ? "#FF3B5C"
-                : scene.ShowAvailableHoles ? "#75B68D" : "#A2ABB6";
-            dc.DrawEllipse(PhysicalDrawing.Ink("#CBD0D6"), new Pen(PhysicalDrawing.Ink(ring), .17), point, .65, .65);
-            dc.DrawRoundedRectangle(PhysicalDrawing.Ink("#46515C"), null,
+            dc.DrawEllipse(surround, ringPen, point, .65, .65);
+            dc.DrawRoundedRectangle(inside, null,
                 new Rect(point.X - .3, point.Y - .3, .6, .6), .1, .1);
         }
-        dc.Pop();
     }
 }

@@ -8,13 +8,11 @@ namespace CircuitEditor.App.Controls;
 
 internal static class RealComponentDrawing
 {
-    public static void Draw(DrawingContext dc, ComponentViewModel item, ComponentPlacement pose,
-        double pitch, bool invalidPreview)
+    public const double ReferenceFontSizeMm = 1.5;
+    public static void DrawBody(DrawingContext dc, ComponentViewModel item, ComponentPlacement pose, double pitch)
     {
         var footprint = item.Footprint;
         var body = ContactGeometry.Body(footprint, pose, pitch);
-        dc.PushTransform(new TranslateTransform(pose.X, pose.Y));
-        dc.PushTransform(new RotateTransform(pose.Rotation));
         var neutral = new ComponentPlacement(spanHoles: pose.SpanHoles);
         var contacts = footprint.Contacts.Select(contact => ContactGeometry.Local(footprint, contact, neutral, pitch)).ToArray();
         if (footprint.IsFlexible)
@@ -81,12 +79,17 @@ internal static class RealComponentDrawing
         if (footprint.Renderer is "axial-resistor" or "led" or "button" or "placeholder")
             foreach (var contact in contacts)
                 PhysicalDrawing.Contact(dc, new Point(contact.X, contact.Y));
+    }
+
+    public static void DrawSelection(DrawingContext dc, ComponentViewModel item, ComponentPlacement pose,
+        double pitch, bool invalidPreview)
+    {
         if (item.IsSelected || invalidPreview)
         {
+            var body = ContactGeometry.Body(item.Footprint, pose, pitch);
             var outline = PhysicalDrawing.Ink(invalidPreview ? "#FF3B5C" : "#00E5FF");
             dc.DrawRoundedRectangle(null, new Pen(outline, .35), PhysicalDrawing.Rect(body), .7, .7);
-            PhysicalDrawing.Text(dc, item.Reference, body.X, body.Y - 2.5, 1.5, outline);
+            PhysicalDrawing.Text(dc, item.Reference, body.X, body.Y - 2.5, ReferenceFontSizeMm, outline);
         }
-        dc.Pop(); dc.Pop();
     }
 }

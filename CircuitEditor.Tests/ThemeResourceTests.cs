@@ -46,6 +46,7 @@ public sealed class ThemeResourceTests
             VerifyAllSymbolsRender(resources);
             MockupPresentationChecks.Run(resources);
             BatchAPresentationChecks.Run(resources);
+            RenderingCacheChecks.Run(resources);
             ResistorPresentationChecks.Run(resources);
             application.Shutdown();
         });

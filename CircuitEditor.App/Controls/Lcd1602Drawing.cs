@@ -58,12 +58,24 @@ internal static class Lcd1602Drawing
         var startX = screen.Left + (screen.Width - ((Columns - 1) * characterPitchX + characterWidth)) / 2;
         var startY = screen.Top + (screen.Height - ((Rows - 1) * characterPitchY + characterHeight)) / 2;
         var dot = PhysicalDrawing.Ink("#334DAB");
-        for (var row = 0; row < Rows; row++)
-            for (var column = 0; column < Columns; column++)
-                for (var y = 0; y < GlyphRows; y++)
-                    for (var x = 0; x < GlyphColumns; x++)
-                        dc.DrawRectangle(dot, null, new Rect(startX + column * characterPitchX + x * characterWidth / GlyphColumns,
-                            startY + row * characterPitchY + y * characterHeight / GlyphRows,
-                            characterWidth / GlyphColumns * .85, characterHeight / GlyphRows * .85));
+        var matrix = new StreamGeometry { FillRule = FillRule.Nonzero };
+        using (var path = matrix.Open())
+        {
+            for (var row = 0; row < Rows; row++)
+                for (var column = 0; column < Columns; column++)
+                    for (var y = 0; y < GlyphRows; y++)
+                        for (var x = 0; x < GlyphColumns; x++)
+                        {
+                            var rect = new Rect(startX + column * characterPitchX + x * characterWidth / GlyphColumns,
+                                startY + row * characterPitchY + y * characterHeight / GlyphRows,
+                                characterWidth / GlyphColumns * .85, characterHeight / GlyphRows * .85);
+                            path.BeginFigure(rect.TopLeft, true, true);
+                            path.LineTo(rect.TopRight, true, false);
+                            path.LineTo(rect.BottomRight, true, false);
+                            path.LineTo(rect.BottomLeft, true, false);
+                        }
+        }
+        matrix.Freeze();
+        dc.DrawGeometry(dot, null, matrix);
     }
 }
