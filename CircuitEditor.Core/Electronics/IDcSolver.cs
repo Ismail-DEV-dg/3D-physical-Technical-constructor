@@ -1,0 +1,8 @@
+using CircuitEditor.Core.Models;
+namespace CircuitEditor.Core.Electronics;
+/// <summary>Статический DC-расчёт; не симуляция во времени.</summary>
+public interface IDcSolver
+{
+    /// <summary>Возвращает напряжения, токи и диагностику без UI.</summary>
+    DcResult Solve(CircuitProject project,Netlist.Netlist nets);
+}

@@ -10,6 +10,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private readonly INavigationService navigation;
     private readonly IThemeService themes;
     private readonly IWindowService window;
+    private readonly ICalculatorService? calculator;
 
     [ObservableProperty]
     private string statusMessage = "Готово к работе";
@@ -24,8 +25,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     private readonly IReadOnlyList<PaletteItemViewModel> library;
 
-    public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window, ProjectSessionViewModel? session = null, ExportViewModel? exports = null)
+    public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window, ProjectSessionViewModel? session = null, ExportViewModel? exports = null, ProjectAnalysisViewModel? analysis = null, ICalculatorService? calculator = null)
     {
+        this.calculator=calculator;
+        Analysis=analysis;
         Session = session; Exports = exports;
         this.navigation = navigation;
         this.themes = themes;
@@ -43,6 +46,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         themes.PropertyChanged += OnThemeChanged;
     }
 
+    public ProjectAnalysisViewModel? Analysis { get; }
     public ProjectSessionViewModel? Session { get; }
     public ExportViewModel? Exports { get; }
     public IReadOnlyList<WorkspaceViewModel> Workspaces => navigation.Workspaces;
@@ -121,7 +125,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private void About() => StatusMessage = "Circuit Editor • Arduino / ESP32 • Курсовой проект • Этап 4";
+    private void Calculator()=>calculator?.Show();
+    [RelayCommand]
+    private void About() => StatusMessage = "Circuit Editor • Arduino / ESP32 • Курсовой проект • Этап 5";
 
     [RelayCommand]
     private void Minimize() => window.Minimize();

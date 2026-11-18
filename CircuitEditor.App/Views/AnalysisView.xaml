@@ -1,0 +1,20 @@
+<UserControl x:Class="CircuitEditor.App.Views.AnalysisView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <Grid Margin="10"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
+ <WrapPanel><TextBlock Text="ПРОВЕРКА" VerticalAlignment="Center" Margin="0,0,12,0"/>
+ <Button Content="Проверить" Command="{Binding CheckCommand}" Padding="10,5"/>
+ <ComboBox ItemsSource="{Binding Filters}" SelectedItem="{Binding Filter}" Width="160" Margin="10,0"/>
+ <TextBlock Text="{Binding CountSummary}" VerticalAlignment="Center" FontSize="10"/></WrapPanel>
+ <TabControl Grid.Row="1" Margin="0,6,0,0">
+ <TabItem Header="Проверка"><Grid>
+ <ListBox Margin="0,8,0,0" ItemsSource="{Binding FilteredIssues}" SelectedItem="{Binding SelectedIssue}">
+ <ListBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Text}" Foreground="{Binding Color}" TextWrapping="Wrap" FontSize="11"/></DataTemplate></ListBox.ItemTemplate>
+ </ListBox></Grid></TabItem>
+ <TabItem Header="Расчёт DC"><Grid Margin="8"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
+ <WrapPanel><Button Content="Рассчитать цепь" Command="{Binding CalculateCommand}" Padding="10,4"/>
+ <CheckBox Content="Показать напряжения" IsChecked="{Binding Results.ShowVoltages}" Margin="10,0"/>
+ </WrapPanel><TextBlock Grid.Row="1" Text="{Binding Results.Summary}" TextWrapping="Wrap" FontSize="10" Margin="0,5"/>
+ <ListBox Grid.Row="2" ItemsSource="{Binding Results.Rows}" FontSize="10"/>
+ </Grid></TabItem></TabControl>
+ </Grid>
+</UserControl>

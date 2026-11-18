@@ -26,7 +26,7 @@ public static class ProjectDocumentResolver
                 throw new ArgumentException("Параметр корпуса не относится к этому компоненту.");
             if (c.Color is not null && c.DefinitionId != "led") throw new ArgumentException("Цвет не относится к этому компоненту.");
             return new Component(definition, c.Reference, c.Id, c.Value, c.Color ?? definition.DefaultColor, c.I2cAddress,
-                c.CapacitorKind ?? Models.CapacitorKind.Ceramic, c.PotentiometerAngle ?? 0, c.Inputs);
+                c.CapacitorKind ?? Models.CapacitorKind.Ceramic, c.PotentiometerAngle ?? 0, c.Inputs, c.Electrical);
         }).ToArray();
         var ids = components.Select(c => c.Id).ToHashSet();
         if (data.Mockup.Count != ids.Count || data.Schematic.Count != ids.Count || data.Mockup.Keys.Any(id => !ids.Contains(id)) || data.Schematic.Keys.Any(id => !ids.Contains(id)))

@@ -1,0 +1,12 @@
+<UserControl x:Class="CircuitEditor.App.Views.ElectricalPropertiesView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <StackPanel Margin="0,14,0,0"><TextBlock Text="ЭЛЕКТРИЧЕСКАЯ МОДЕЛЬ" Style="{StaticResource MutedText}"/>
+ <TextBlock Text="Пустое поле — автоматически из данных. Укажите единицу для ручного значения." TextWrapping="Wrap" FontSize="10" Margin="0,8"/>
+ <ItemsControl ItemsSource="{Binding Fields}"><ItemsControl.ItemTemplate><DataTemplate><StackPanel Margin="0,6">
+ <TextBlock Text="{Binding Label}" TextWrapping="Wrap" FontSize="10"/>
+ <TextBox Text="{Binding Text,UpdateSourceTrigger=PropertyChanged}"/>
+ </StackPanel></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+ <Button Content="Применить модель" Command="{Binding ApplyCommand}" Margin="0,8"/>
+ <TextBlock Text="{Binding Error}" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap"/>
+ </StackPanel>
+</UserControl>

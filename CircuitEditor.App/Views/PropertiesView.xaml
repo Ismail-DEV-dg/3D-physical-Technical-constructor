@@ -40,6 +40,11 @@
                         <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.ShowsVoltage}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
                     </Style></TextBlock.Style>
                 </TextBlock>
+                <views:ElectricalPropertiesView DataContext="{Binding SelectedComponent.ElectricalEditor}">
+                    <views:ElectricalPropertiesView.Style><Style TargetType="views:ElectricalPropertiesView"><Style.Triggers>
+                        <DataTrigger Binding="{Binding}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger>
+                    </Style.Triggers></Style></views:ElectricalPropertiesView.Style>
+                </views:ElectricalPropertiesView>
                 <views:ComponentInputsView DataContext="{Binding SelectedComponent.InputsEditor}">
                     <views:ComponentInputsView.Style><Style TargetType="views:ComponentInputsView">
                         <Style.Triggers><DataTrigger Binding="{Binding}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>

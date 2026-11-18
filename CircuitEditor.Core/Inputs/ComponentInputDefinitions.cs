@@ -30,6 +30,8 @@ public static class ComponentInputDefinitions
     {
         "dht11" => Dht11, "dht22" => Dht22, "hc-sr04" => Distance, "pir" => Motion,
         "photoresistor" => Light, "thermistor" => Ntc, "rgb-led" => Rgb, "switch" => Switch,
+        "button" => ReadOnly(new InputDefinition(ComponentInput.ButtonPressed,"Кнопка замкнута",0,1,1,0,"",ReadOnly(0d,1d),ReadOnly("Нет","Да"))),
+        "relay" => ReadOnly(new InputDefinition(ComponentInput.RelayEnergized,"Катушка реле включена (статически)",0,1,1,0,"",ReadOnly(0d,1d),ReadOnly("Нет","Да"))),
         "battery" => Battery, _ => Array.Empty<InputDefinition>()
     };
     /// <summary>Создаёт независимые начальные условия экземпляра.</summary>

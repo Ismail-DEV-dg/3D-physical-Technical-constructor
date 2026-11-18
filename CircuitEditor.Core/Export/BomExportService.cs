@@ -15,10 +15,11 @@ public sealed class BomExportService(IExportRepository repository) : IBomExportS
         foreach (var group in project.Circuit.Components.GroupBy(c => (c.Definition.Id, c.Value, Color: c.Definition.Id == "led" ? c.Color : "",
             Kind: c.Definition.Id == "capacitor" ? c.CapacitorKind.ToString() : "", c.I2cAddress,
             Inputs: string.Join(", ", c.Inputs.Values.OrderBy(p => p.Key).Select(p => $"{p.Key}={p.Value.ToString(CultureInfo.InvariantCulture)}")),
+            Electrical: string.Join(", ",c.Electrical.Parameters.OrderBy(p=>p.Key).Select(p=>$"{p.Key}={p.Value.ToString(CultureInfo.InvariantCulture)}")),
             Angle: c.Definition.Id == "potentiometer" ? c.PotentiometerAngle : 0)))
         {
             var c = group.First();
-            var parameters = string.Join(" · ", new[] { c.Value, group.Key.Color, group.Key.Kind, c.I2cAddress, group.Key.Inputs,
+            var parameters = string.Join(" · ", new[] { c.Value, group.Key.Color, group.Key.Kind, c.I2cAddress, group.Key.Inputs, group.Key.Electrical,
                 group.Key.Angle == 0 ? null : group.Key.Angle.ToString(CultureInfo.InvariantCulture) }.Where(s => !string.IsNullOrEmpty(s)));
             rows.Append(++index).Append(';').Append(Quote(string.Join(", ", group.Select(x => x.Reference)))).Append(';')
                 .Append(Quote(c.Definition.Name)).Append(';').Append(Quote(parameters)).Append(';').Append(group.Count()).Append("\r\n");

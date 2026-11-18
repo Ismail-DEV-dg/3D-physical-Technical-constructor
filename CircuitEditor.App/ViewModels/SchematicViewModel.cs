@@ -52,9 +52,12 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
 
 
 
+    public double ViewportWidth { get; private set; }=800;
+    public double ViewportHeight { get; private set; }=600;
     [RelayCommand]
     private void Input(CanvasInput input)
     {
+        if(input.Action==CanvasAction.Resize){ViewportWidth=input.X;ViewportHeight=input.Y;return;}
         if (input.Action is CanvasAction.Rotate) { RotateSelected(); return; }
         if (input.Action is CanvasAction.Delete) { DeleteSelected(); return; }
         if (input.Action is CanvasAction.Cancel) { CancelGesture(); return; }

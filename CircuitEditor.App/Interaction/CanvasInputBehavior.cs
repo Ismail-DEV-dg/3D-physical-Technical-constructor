@@ -17,17 +17,18 @@ public static class CanvasInputBehavior
         if (sender is not FrameworkElement element) return;
         if (args.OldValue is not null)
         {
-            element.MouseDown -= Down; element.MouseMove -= Move; element.MouseUp -= Up;
+            element.SizeChanged -= SizeChanged; element.MouseDown -= Down; element.MouseMove -= Move; element.MouseUp -= Up;
             element.MouseWheel -= Wheel; element.KeyDown -= KeyDown;
             element.Drop -= Drop; element.DragOver -= DragOver; element.LostMouseCapture -= LostCapture;
         }
         if (args.NewValue is null) return;
         element.Focusable = true; element.AllowDrop = true;
-        element.MouseDown += Down; element.MouseMove += Move; element.MouseUp += Up;
+        element.SizeChanged += SizeChanged; element.MouseDown += Down; element.MouseMove += Move; element.MouseUp += Up;
         element.MouseWheel += Wheel; element.KeyDown += KeyDown;
         element.Drop += Drop; element.DragOver += DragOver; element.LostMouseCapture += LostCapture;
     }
 
+    private static void SizeChanged(object sender,SizeChangedEventArgs e)=>Send((FrameworkElement)sender,new(CanvasAction.Resize,e.NewSize.Width,e.NewSize.Height));
     private static void Send(FrameworkElement element, CanvasInput input)
     {
         var command = GetCommand(element);

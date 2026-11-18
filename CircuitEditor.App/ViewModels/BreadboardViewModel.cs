@@ -59,9 +59,12 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     [ObservableProperty] private double cursorY;
     [ObservableProperty] private int revision;
 
+    public double ViewportWidth { get; private set; }=800;
+    public double ViewportHeight { get; private set; }=600;
     [RelayCommand]
     private void Input(CanvasInput input)
     {
+        if(input.Action==CanvasAction.Resize){ViewportWidth=input.X;ViewportHeight=input.Y;return;}
         if (input.Action == CanvasAction.Cancel) { Project.Wiring.Cancel(); Cancel(); return; }
         if (input.Action == CanvasAction.Rotate) { RotateSelected(); return; }
         if (input.Action == CanvasAction.Delete) { if (!Project.Wiring.Handle(input, new(CursorX,CursorY))) { Cancel(); Project.RemoveSelected(); } return; }

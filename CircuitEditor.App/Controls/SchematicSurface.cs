@@ -44,7 +44,10 @@ public sealed class SchematicSurface : FrameworkElement
         if (Scene is not { } scene) { context.Pop(); return; }
         DrawGrid(context, scene);
         context.PushTransform(new MatrixTransform(scene.Zoom, 0, 0, scene.Zoom, scene.OffsetX, scene.OffsetY));
+        SchematicConnectionsDrawing.Draw(context,scene.Project);
         foreach (var item in scene.Components) DrawComponent(context, item);
+        AnalysisDrawing.Draw(context,scene.Project,false);
+        VoltageDrawing.Draw(context,scene.Project,false);
         if (scene.IsSelecting)
         {
             var fill = Brush("AccentBrush").Clone(); fill.Opacity = 0.12;

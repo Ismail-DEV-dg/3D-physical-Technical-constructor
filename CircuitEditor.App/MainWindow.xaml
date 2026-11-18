@@ -93,7 +93,9 @@
                         </MenuItem>
                     </MenuItem>
                     <MenuItem Header="_Схема">
-                        <MenuItem Header="Проверить соединения" Command="{Binding ExplainCommand}" CommandParameter="Проверка схемы"/>
+                        <MenuItem Header="Калькулятор…" Command="{Binding CalculatorCommand}"/>
+                        <MenuItem Header="Рассчитать цепь" Command="{Binding Analysis.CalculateCommand}"/>
+                        <MenuItem Header="Проверить соединения" Command="{Binding Analysis.CheckCommand}"/>
                         <MenuItem Header="Запустить симуляцию" Command="{Binding ExplainCommand}" CommandParameter="Симуляция"/>
                     </MenuItem>
                     <MenuItem Header="_Справка">
@@ -164,6 +166,7 @@
                     </Grid>
                 </Border>
                 <Border Grid.Column="2" Style="{StaticResource Panel}" ClipToBounds="True">
+                    <Grid><Grid.RowDefinitions><RowDefinition/><RowDefinition Height="210"/></Grid.RowDefinitions>
                     <TabControl ItemsSource="{Binding Workspaces}" SelectedItem="{Binding SelectedWorkspace, Mode=TwoWay}" AutomationProperties.Name="Рабочие пространства">
                         <TabControl.ItemContainerStyle><Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
                             <Setter Property="AutomationProperties.Name" Value="{Binding Title}"/>
@@ -175,6 +178,8 @@
                             </StackPanel>
                         </DataTemplate></TabControl.ItemTemplate>
                     </TabControl>
+                    <views:AnalysisView Grid.Row="1" DataContext="{Binding Analysis}"/>
+                    </Grid>
                 </Border>
                 <Border Grid.Column="4" Style="{StaticResource Panel}"><views:PropertiesView DataContext="{Binding Project}"/></Border>
             </Grid>
@@ -185,6 +190,7 @@
                     <TextBlock Text="{Binding StatusMessage}" FontSize="10" Foreground="{DynamicResource MutedBrush}" TextTrimming="CharacterEllipsis" MaxWidth="480" ToolTip="{Binding StatusMessage}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Analysis.CountSummary}" Style="{StaticResource MutedText}" Margin="0,0,10,0"/>
                     <TextBlock Text="{Binding CursorX, StringFormat=X: {0:0.##}}" Style="{StaticResource MutedText}" Margin="0,0,14,0"/>
                     <TextBlock Text="{Binding CursorY, StringFormat=Y: {0:0.##}}" Style="{StaticResource MutedText}" Margin="0,0,6,0"/>
                     <TextBlock Text="{Binding CoordinateUnit}" Style="{StaticResource MutedText}" Margin="0,0,18,0"/>

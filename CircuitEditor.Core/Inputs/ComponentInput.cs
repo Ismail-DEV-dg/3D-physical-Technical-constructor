@@ -18,5 +18,9 @@ public enum ComponentInput
     /// <summary>Положение переключателя: 0 — A, 1 — B.</summary>
     SwitchPosition,
     /// <summary>Выбранное напряжение батареи, вольты.</summary>
-    BatteryVoltage
+    BatteryVoltage,
+    /// <summary>Статическое нажатие кнопки для DC-расчёта.</summary>
+    ButtonPressed,
+    /// <summary>Статическое положение контактов реле.</summary>
+    RelayEnergized
 }

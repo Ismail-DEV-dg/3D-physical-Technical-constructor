@@ -13,6 +13,7 @@ internal static class ProjectDrawing
         if (kind == WorkspaceKind.Schematic)
         {
             var surface = new SchematicSurface();
+            SchematicConnectionsDrawing.Draw(dc,schematic.Project);
             foreach (var c in schematic.Components) surface.DrawComponent(dc,c,false);
         }
         else

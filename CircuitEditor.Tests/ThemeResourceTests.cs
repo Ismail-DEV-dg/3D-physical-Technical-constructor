@@ -51,6 +51,7 @@ public sealed class ThemeResourceTests
             RenderingCacheChecks.Run(resources);
             ResistorPresentationChecks.Run(resources);
             Stage4PresentationChecks.Run(resources);
+            Stage5PresentationChecks.Run(resources);
             application.Shutdown();
         });
     }

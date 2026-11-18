@@ -15,21 +15,27 @@ namespace CircuitEditor.App.ViewModels;
 public sealed partial class ProjectViewModel : ObservableObject, IDisposable
 {
     private readonly IComponentLayoutCalculator layouts;
+    private readonly Core.Electronics.ElectricalCatalog? electricalCatalog;
     public ProjectViewModel(IComponentLibraryRepository libraryRepository, IBreadboardRepository boardRepository,
-        IFootprintRepository footprintRepository, IComponentLayoutCalculator layouts)
+        IFootprintRepository footprintRepository, IComponentLayoutCalculator layouts, Core.Netlist.INetlistBuilder? netlistBuilder = null, IElectricalLibraryRepository? electricalRepository = null)
     {
-        this.layouts = layouts;
+        this.layouts = layouts; electricalCatalog=electricalRepository?.Load().Value;
         Wiring = new WireEditorViewModel(this);
         Wiring.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(WireEditorViewModel.Selected)) OnPropertyChanged(nameof(Wiring)); };
         var library = libraryRepository.Load(); var board = boardRepository.Load(); var footprints = footprintRepository.Load();
         Library = library.Components;
         Model = new CircuitProject(footprints: footprints.Value,
             breadboards: board.Value is null ? [] : [new BreadboardInstance(Guid.NewGuid(), board.Value, PhysicalSettings.DefaultBoardX, PhysicalSettings.DefaultBoardY)]);
+        Connectivity = new ProjectConnectivityViewModel(this,netlistBuilder);
         baseline = new CircuitEditor.Core.History.ProjectSnapshot(Model);
         History.Changed += (_, _) => NotifyHistory();
         StatusMessage = library.Error ?? board.Error ?? footprints.Error ??
             "Макет: перетащите компонент. Зелёные отверстия свободны; красные заняты.";
     }
+    public ProjectAnalysisViewModel? Analysis { get; set; }
+    public void InvalidatePresentation()=>Revision++;
+    public ProjectConnectivityViewModel Connectivity { get; }
+    public event EventHandler? ModelCommitted;
     public WireEditorViewModel Wiring { get; }
     public CircuitProject Model { get; }
     public IReadOnlyList<ComponentDefinition> Library { get; }
@@ -51,7 +57,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
             + 2 * PhysicalSettings.FreeGridMm;
         var own = BeginGesture("Добавление компонента");
         var model = Model.AddComponent(definition);
-        var item = new ComponentViewModel(model, Model, footprint, layouts);
+        var item = new ComponentViewModel(model, Model, footprint, layouts, electricalCatalog);
         foreach (var other in Components) other.IsSelected = false;
         Components.Add(item);
         item.PropertyChanged += OnComponentChanged;
@@ -154,6 +160,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
         if (restoring || inGesture || baseline is null || baseline.Matches(Model)) return;
         var after = new ProjectSnapshot(Model); var before = baseline; baseline = after;
         History.Record(new ProjectEditCommand(name, before, after, RestoreState));
+        Committed();
     }
     public void ReplaceProject(CircuitProject state)
     {
@@ -170,13 +177,16 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
             foreach (var c in Model.Circuit.Components)
             {
                 var footprint = Model.Footprints.Single(f => f.ComponentDefinitionId == c.Definition.Id);
-                var vm = new ComponentViewModel(c, Model, footprint, layouts) { IsSelected = selected.Contains(c.Id) };
+                var vm = new ComponentViewModel(c, Model, footprint, layouts, electricalCatalog) { IsSelected = selected.Contains(c.Id) };
                 vm.PropertyChanged += OnComponentChanged; Components.Add(vm);
             }
             baseline = new ProjectSnapshot(Model); Refresh();
         }
         finally { restoring = false; }
+        Committed();
     }
+    private void Committed()
+    { Connectivity.Rebuild(); ModelCommitted?.Invoke(this,EventArgs.Empty); OnPropertyChanged(nameof(Connectivity)); }
     private void NotifyHistory()
     {
         OnPropertyChanged(nameof(IsDirty)); OnPropertyChanged(nameof(CanUndo)); OnPropertyChanged(nameof(CanRedo));

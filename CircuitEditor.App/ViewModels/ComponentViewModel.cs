@@ -13,11 +13,14 @@ public sealed partial class ComponentViewModel : ObservableObject
 {
     private readonly IComponentLayoutCalculator layoutCalculator;
     private readonly CircuitProject project;
+    private readonly Core.Electronics.ElectricalCatalog? electricalCatalog;
     public ComponentViewModel(Component model, CircuitProject project, FootprintDefinition footprint,
-        IComponentLayoutCalculator layoutCalculator)
+        IComponentLayoutCalculator layoutCalculator, Core.Electronics.ElectricalCatalog? electricalCatalog=null)
     {
+        this.electricalCatalog=electricalCatalog;
         this.layoutCalculator = layoutCalculator; this.project = project;
         Model = model; Footprint = footprint; Layout = layoutCalculator.Calculate(model);
+        CreateElectricalEditor();
         editValue = model.Value; editColor = model.Color ?? ""; editI2cAddress = model.I2cAddress ?? "";
         if (IsResistor) ResistorEditor = new ResistorEditorViewModel(model.Value, ApplyResistance);
         if (model.Definition.Id is "capacitor" or "inductor")
@@ -31,7 +34,14 @@ public sealed partial class ComponentViewModel : ObservableObject
     public ComponentPlacement SchematicPlacement => project.SchematicLayout.Get(Model.Id);
     public ComponentPlacement MockupPlacement => project.MockupLayout.Get(Model.Id);
     public ComponentLayout Layout { get; private set; }
-    public void UpdateLayout() => Layout = layoutCalculator.Calculate(Model);
+    public ElectricalPropertiesViewModel? ElectricalEditor {get;private set;}
+    private void CreateElectricalEditor()
+    {
+        ElectricalEditor=electricalCatalog is not null && Model.Definition.Id is "led" or "rgb-led" or "photoresistor" or "thermistor" ? new(Model,electricalCatalog,NotifyMutation) : null;
+        OnPropertyChanged(nameof(ElectricalEditor));
+    }
+    private void NotifyMutation(){MutationVersion++;OnPropertyChanged(nameof(MutationVersion));}
+    public void UpdateLayout(){Layout = layoutCalculator.Calculate(Model);CreateElectricalEditor();}
     public string Reference => Model.Reference;
     public string Name => Model.Definition.Name;
     public string Description => Model.Definition.Description;

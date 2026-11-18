@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "components": [
+    {"componentId": "buzzer", "model": "unsupported", "links": [], "sources": [], "requiresPower": true},
+    {"componentId": "servo", "model": "unsupported", "links": [], "sources": [], "requiresPower": true},
+    {"componentId": "relay", "model": "unsupported", "links": [{"pins": ["COM", "NC"], "input": "RelayEnergized", "value": 0}, {"pins": ["COM", "NO"], "input": "RelayEnergized", "value": 1}], "sources": [], "requiresPower": true},
+    {"componentId": "arduino-uno", "model": "source", "links": [{"pins": ["GND", "GND2"]}], "sources": [{"pin": "5V", "ground": "GND", "voltage": 5}, {"pin": "3V3", "ground": "GND", "voltage": 3.3}], "requiresPower": false},
+    {"componentId": "arduino-nano", "model": "source", "links": [{"pins": ["GND", "GND2"]}], "sources": [{"pin": "5V", "ground": "GND", "voltage": 5}, {"pin": "3V3", "ground": "GND", "voltage": 3.3}], "requiresPower": false},
+    {"componentId": "esp32-devkit", "model": "source", "links": [{"pins": ["GND", "GND2"]}], "sources": [{"pin": "3V3", "ground": "GND", "voltage": 3.3}, {"pin": "5V", "ground": "GND", "voltage": 5}], "requiresPower": false},
+    {"componentId": "lcd1602", "model": "unsupported", "links": [], "sources": [], "requiresPower": true},
+    {"componentId": "lcd1602-i2c", "model": "unsupported", "links": [], "sources": [], "requiresPower": true, "requiredPins": ["SDA", "SCL"]},
+    {"componentId": "oled-ssd1306", "model": "unsupported", "links": [], "sources": [], "requiresPower": true, "requiredPins": ["SDA", "SCL"]},
+    {"componentId": "seven-segment", "model": "unsupported", "links": [], "sources": [], "requiresPower": false},
+    {"componentId": "resistor", "model": "resistor", "links": [], "sources": [], "requiresPower": false},
+    {"componentId": "capacitor", "model": "unsupported", "links": [], "sources": [], "requiresPower": false},
+    {"componentId": "inductor", "model": "unsupported", "links": [], "sources": [], "requiresPower": false},
+    {"componentId": "potentiometer", "model": "potentiometer", "links": [], "sources": [], "requiresPower": false},
+    {"componentId": "photoresistor", "model": "ldr", "links": [], "sources": [], "requiresPower": false, "lightResistance": 1000, "darkResistance": 1000000},
+    {"componentId": "thermistor", "model": "ntc", "links": [], "sources": [], "requiresPower": false, "r25": 10000, "beta": 3950},
+    {"componentId": "led", "model": "led", "links": [], "sources": [], "requiresPower": false},
+    {"componentId": "rgb-led", "model": "rgb-led", "links": [], "sources": [], "requiresPower": false, "channelProfiles": {"R": "red", "G": "green", "B": "blue"}},
+    {"componentId": "npn", "model": "unsupported", "links": [], "sources": [], "requiresPower": false},
+    {"componentId": "diode", "model": "unsupported", "links": [], "sources": [], "requiresPower": false},
+    {"componentId": "dht11", "model": "unsupported", "links": [], "sources": [], "requiresPower": true},
+    {"componentId": "dht22", "model": "unsupported", "links": [], "sources": [], "requiresPower": true},
+    {"componentId": "hc-sr04", "model": "unsupported", "links": [], "sources": [], "requiresPower": true},
+    {"componentId": "pir", "model": "unsupported", "links": [], "sources": [], "requiresPower": true},
+    {"componentId": "button", "model": "switch", "links": [{"pins": ["1", "2"], "input": "ButtonPressed", "value": 1}], "sources": [], "requiresPower": false},
+    {"componentId": "switch", "model": "switch", "links": [{"pins": ["COM", "A"], "input": "SwitchPosition", "value": 0}, {"pins": ["COM", "B"], "input": "SwitchPosition", "value": 1}], "sources": [], "requiresPower": false},
+    {"componentId": "battery", "model": "source", "links": [], "sources": [{"pin": "+", "ground": "-", "voltage": 9, "fromBatteryProperty": true}], "requiresPower": false}
+  ],
+  "ledProfiles": [
+    {"id": "red", "name": "Красный", "color": "#FF3B5C", "vf": 2, "dynamicResistance": 10, "maximumCurrent": 0.02},
+    {"id": "yellow", "name": "Жёлтый", "color": "#FFD633", "vf": 2.1, "dynamicResistance": 10, "maximumCurrent": 0.02},
+    {"id": "green", "name": "Зелёный", "color": "#39FF88", "vf": 2.2, "dynamicResistance": 10, "maximumCurrent": 0.02},
+    {"id": "blue", "name": "Синий", "color": "#307EFF", "vf": 3, "dynamicResistance": 10, "maximumCurrent": 0.02},
+    {"id": "white", "name": "Белый", "color": "#FFFFFF", "vf": 3, "dynamicResistance": 10, "maximumCurrent": 0.02}
+  ]
+}

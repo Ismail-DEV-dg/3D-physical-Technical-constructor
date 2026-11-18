@@ -16,7 +16,7 @@ public sealed class Component
     /// <summary>Восстанавливает все электрические данные и устойчивый ID из JSON.</summary>
     [JsonConstructor]
     public Component(ComponentDefinition definition, string reference, Guid id, string value, string? color, string? i2cAddress,
-        CapacitorKind capacitorKind = CapacitorKind.Ceramic, double potentiometerAngle = 0, ComponentInputs? inputs = null)
+        CapacitorKind capacitorKind = CapacitorKind.Ceramic, double potentiometerAngle = 0, ComponentInputs? inputs = null, Electronics.ComponentElectricalState? electrical = null)
     {
         ArgumentNullException.ThrowIfNull(definition);
         ArgumentException.ThrowIfNullOrWhiteSpace(reference);
@@ -30,9 +30,17 @@ public sealed class Component
             || definition.Id != "potentiometer" && potentiometerAngle != 0)
             throw new ArgumentException("Некорректное исполнение или положение ручки.");
         CapacitorKind = capacitorKind; PotentiometerAngle = potentiometerAngle;
+        Electrical=electrical ?? new Electronics.ComponentElectricalState();
+        if(!Electrical.IsValid(definition))throw new ArgumentException("Электрические параметры не относятся к компоненту или вне диапазона.");
         Inputs = inputs ?? ComponentInputDefinitions.Defaults(definition.Id);
+        if(definition.Id is "button" or "relay" && Inputs.Values.Count==0) Inputs=ComponentInputDefinitions.Defaults(definition.Id);
         if (!ComponentInputDefinitions.IsValid(definition.Id, Inputs)) throw new ArgumentException("Входные условия вне диапазона или не относятся к компоненту.");
     }
+    /// <summary>Параметры применимой DC-модели и роли выводов.</summary>
+    public Electronics.ComponentElectricalState Electrical {get;private set;}
+    /// <summary>Атомарно задаёт параметры экземпляра.</summary>
+    public bool TrySetElectrical(Electronics.ComponentElectricalState value)
+    { if(!value.IsValid(Definition))return false;Electrical=value;return true; }
     /// <summary>Устойчивый ID.</summary>
     public Guid Id { get; }
     /// <summary>Электрическое описание типа.</summary>
