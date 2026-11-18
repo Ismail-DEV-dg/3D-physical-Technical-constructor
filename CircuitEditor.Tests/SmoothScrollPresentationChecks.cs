@@ -13,9 +13,9 @@ internal static class SmoothScrollPresentationChecks
         var content=new Border{Height=2000,Width=300};
         var viewer=new ScrollViewer{Content=content,VerticalScrollBarVisibility=ScrollBarVisibility.Auto};
         Layout(viewer);Assert.True(SmoothScrollBehavior.GetEnabled(viewer));Assert.False(viewer.CanContentScroll);
-        SmoothScrollBehavior.Scroll(viewer,-120,animate:false);viewer.UpdateLayout();Assert.Equal(32,viewer.VerticalOffset,3);
-        SmoothScrollBehavior.Scroll(viewer,-30,animate:false);viewer.UpdateLayout();Assert.Equal(40,viewer.VerticalOffset,3);
-        SmoothScrollBehavior.Scroll(viewer,120,animate:false);viewer.UpdateLayout();Assert.Equal(8,viewer.VerticalOffset,3);
+        SmoothScrollBehavior.Scroll(viewer,-120,animate:false);viewer.UpdateLayout();Assert.Equal(40,viewer.VerticalOffset,3);
+        SmoothScrollBehavior.Scroll(viewer,-30,animate:false);viewer.UpdateLayout();Assert.Equal(50,viewer.VerticalOffset,3);
+        SmoothScrollBehavior.Scroll(viewer,120,animate:false);viewer.UpdateLayout();Assert.Equal(10,viewer.VerticalOffset,3);
         SmoothScrollBehavior.Scroll(viewer,int.MaxValue,animate:false);viewer.UpdateLayout();Assert.Equal(0,viewer.VerticalOffset);
         var inner=new ScrollViewer{Height=120,Content=new Border{Height=1200,Width=200}};
         var panel=new StackPanel();panel.Children.Add(inner);panel.Children.Add(new Border{Height=1200});
@@ -25,9 +25,9 @@ internal static class SmoothScrollPresentationChecks
         Assert.InRange(inner.VerticalOffset,29,33);Assert.Equal(0,outer.VerticalOffset);
         inner.ScrollToEnd();inner.UpdateLayout();
         var boundaryWheel=new MouseWheelEventArgs(Mouse.PrimaryDevice,0,-120){RoutedEvent=UIElement.PreviewMouseWheelEvent};
-        inner.RaiseEvent(boundaryWheel);Pump();outer.UpdateLayout();Assert.InRange(outer.VerticalOffset,31,33);
+        inner.RaiseEvent(boundaryWheel);Pump();outer.UpdateLayout();Assert.InRange(outer.VerticalOffset,39,41);
         var horizontal=new ScrollViewer{Content=new Border{Width=2000,Height=100},HorizontalScrollBarVisibility=ScrollBarVisibility.Auto};
-        Layout(horizontal);SmoothScrollBehavior.Scroll(horizontal,-120,horizontal:true,animate:false);horizontal.UpdateLayout();Assert.Equal(32,horizontal.HorizontalOffset,3);
+        Layout(horizontal);SmoothScrollBehavior.Scroll(horizontal,-120,horizontal:true,animate:false);horizontal.UpdateLayout();Assert.Equal(40,horizontal.HorizontalOffset,3);
         SmoothScrollBehavior.SetEnabled(horizontal,false);
         var list=new ListBox{Height=200,Resources=resources,Style=(Style)resources[typeof(ListBox)]};list.ApplyTemplate();for(var i=0;i<40;i++)list.Items.Add("Строка "+i);
         Layout(list);var scroll=Find(list);Assert.NotNull(scroll);Assert.True(SmoothScrollBehavior.GetEnabled(scroll!));Assert.False(scroll!.CanContentScroll);

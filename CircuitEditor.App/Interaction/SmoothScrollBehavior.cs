@@ -10,7 +10,7 @@ namespace CircuitEditor.App.Interaction;
 // Presentation-only wheel adapter. Offsets are pixels, never grouped item indexes.
 public static class SmoothScrollBehavior
 {
-    internal const double PixelsPerNotch=32;
+    internal const double PixelsPerNotch=40;
     private const double WheelNotch=120;
     private const double MaximumNotchesPerEvent=3;
     private static readonly TimeSpan Duration=TimeSpan.FromMilliseconds(140);

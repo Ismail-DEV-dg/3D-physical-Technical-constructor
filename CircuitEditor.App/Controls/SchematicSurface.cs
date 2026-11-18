@@ -13,6 +13,9 @@ namespace CircuitEditor.App.Controls;
 // Rendering and presentation-only tooltips; document edits remain in ViewModels.
 public sealed class SchematicSurface : FrameworkElement
 {
+    private readonly PinHoverOverlay hover=new();
+    protected override int VisualChildrenCount=>1;
+    protected override Visual GetVisualChild(int index)=>index==0?hover:throw new ArgumentOutOfRangeException(nameof(index));
     private const double PinRadius = 3;
     private const double PinHitRadius = 8;
     private readonly ToolTip pinTip = new()
@@ -21,10 +24,10 @@ public sealed class SchematicSurface : FrameworkElement
     };
     public static readonly DependencyProperty SceneProperty = DependencyProperty.Register(
         nameof(Scene), typeof(SchematicViewModel), typeof(SchematicSurface),
-        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+        new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender,(o,_)=>((SchematicSurface)o).RefreshHover()));
     public static readonly DependencyProperty RevisionProperty = DependencyProperty.Register(
         nameof(Revision), typeof(int), typeof(SchematicSurface),
-        new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
+        new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender,(o,_)=>((SchematicSurface)o).RefreshHover()));
     public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register(
         nameof(Background), typeof(Brush), typeof(SchematicSurface),
         new FrameworkPropertyMetadata(Brushes.Transparent, FrameworkPropertyMetadataOptions.AffectsRender));
@@ -32,13 +35,14 @@ public sealed class SchematicSurface : FrameworkElement
     public int Revision { get => (int)GetValue(RevisionProperty); set => SetValue(RevisionProperty, value); }
     public Brush Background { get => (Brush)GetValue(BackgroundProperty); set => SetValue(BackgroundProperty, value); }
 
-    public SchematicSurface() => Unloaded += (_, _) => pinTip.IsOpen = false;
+    public SchematicSurface(){AddVisualChild(hover);Unloaded += (_, _) => {hover.Update(null);pinTip.IsOpen=false;};}
 
     protected override void OnRender(DrawingContext context)
     {
         base.OnRender(context);
         if (ActualWidth <= 0 || ActualHeight <= 0) return;
         var viewport = new Rect(RenderSize);
+        hover.Clip=new RectangleGeometry(viewport);
         context.PushClip(new RectangleGeometry(viewport));
         context.DrawRectangle(Background, null, viewport);
         if (Scene is not { } scene) { context.Pop(); return; }
@@ -120,30 +124,42 @@ public sealed class SchematicSurface : FrameworkElement
     protected override void OnMouseMove(MouseEventArgs args)
     {
         base.OnMouseMove(args);
-        UpdatePinTip(args);
+        UpdateHover(args.GetPosition(this));UpdatePinTip(args);
     }
-
-    protected override void OnMouseUp(MouseButtonEventArgs args)
+    private void RefreshHover()
+    {if(IsMouseOver)UpdateHover(Mouse.GetPosition(this));else hover.Update(null);}
+    private void UpdateHover(Point pointer)
     {
-        base.OnMouseUp(args);
-        UpdatePinTip(args);
+        string? key=null;Point location=default;var radius=4d;
+        if(Scene is { } scene && Mouse.LeftButton==MouseButtonState.Released && Mouse.RightButton==MouseButtonState.Released && Mouse.MiddleButton==MouseButtonState.Released)
+        {
+            foreach(var item in scene.Components.Reverse())
+            {
+                var target=item.Layout.Pins.Select(p=>(p.Pin.Id,Point:SchematicConnectionsDrawing.Position(scene.Project,new(item.Model.Id,p.Pin.Id))))
+                    .FirstOrDefault(p=>p.Point is { } q && Math.Pow(q.X*scene.Zoom+scene.OffsetX-pointer.X,2)+Math.Pow(q.Y*scene.Zoom+scene.OffsetY-pointer.Y,2)<=PinHitRadius*PinHitRadius);
+                if(target.Point is { } point){key=$"{item.Model.Id}:{target.Id}";location=new Point(point.X*scene.Zoom+scene.OffsetX,point.Y*scene.Zoom+scene.OffsetY);radius=Math.Max(4,4*scene.Zoom);break;}
+            }
+        }
+        hover.Update(key,location,radius);
     }
+    protected override void OnMouseUp(MouseButtonEventArgs args)
+    {base.OnMouseUp(args);UpdateHover(args.GetPosition(this));UpdatePinTip(args);}
 
     protected override void OnMouseLeave(MouseEventArgs args)
     {
         base.OnMouseLeave(args);
-        pinTip.IsOpen = false;
+        hover.Update(null);pinTip.IsOpen = false;
     }
 
     protected override void OnMouseDown(MouseButtonEventArgs args)
     {
-        pinTip.IsOpen = false;
+        hover.Update(null);pinTip.IsOpen = false;
         base.OnMouseDown(args);
     }
 
     protected override void OnMouseWheel(MouseWheelEventArgs args)
     {
-        pinTip.IsOpen = false;
+        hover.Update(null);pinTip.IsOpen = false;
         base.OnMouseWheel(args);
     }
 

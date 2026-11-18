@@ -10,6 +10,10 @@ namespace CircuitEditor.App.Controls;
 
 public sealed class BreadboardSurface : FrameworkElement
 {
+    private readonly PinHoverOverlay hover=new();
+    protected override int VisualChildrenCount=>1;
+    protected override Visual GetVisualChild(int index)=>index==0?hover:throw new ArgumentOutOfRangeException(nameof(index));
+    internal string? HoveredContact=>hover.ActiveKey;
     private const double MinimumCullingPaddingMm = 6;
     private readonly ComponentDrawingCache components = new();
     private readonly BreadboardDrawingCache breadboard = new();
@@ -18,14 +22,14 @@ public sealed class BreadboardSurface : FrameworkElement
         typeof(BreadboardViewModel), typeof(BreadboardSurface), new FrameworkPropertyMetadata(null,
             FrameworkPropertyMetadataOptions.AffectsRender, (owner, _) => ((BreadboardSurface)owner).ClearDrawings()));
     public static readonly DependencyProperty RevisionProperty = DependencyProperty.Register(nameof(Revision),
-        typeof(int), typeof(BreadboardSurface), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender));
+        typeof(int), typeof(BreadboardSurface), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender,(owner,_)=>((BreadboardSurface)owner).RefreshHover()));
     public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register(nameof(Background),
         typeof(Brush), typeof(BreadboardSurface), new FrameworkPropertyMetadata(Brushes.Transparent, FrameworkPropertyMetadataOptions.AffectsRender));
     public BreadboardViewModel? Scene { get => (BreadboardViewModel?)GetValue(SceneProperty); set => SetValue(SceneProperty, value); }
     public int Revision { get => (int)GetValue(RevisionProperty); set => SetValue(RevisionProperty, value); }
     public Brush Background { get => (Brush)GetValue(BackgroundProperty); set => SetValue(BackgroundProperty, value); }
-    public BreadboardSurface() => Unloaded += (_, _) => { tip.IsOpen = false; ClearDrawings(); };
-    private void ClearDrawings() { components.Clear(); breadboard.Clear(); }
+    public BreadboardSurface() {AddVisualChild(hover);Unloaded += (_, _) => { tip.IsOpen = false; hover.Update(null);ClearDrawings(); };}
+    private void ClearDrawings() { hover.Update(null);components.Clear(); breadboard.Clear(); }
     public string? GetPinToolTip(Point point)
     {
         if (Scene is not { } scene) return null;
@@ -37,6 +41,7 @@ public sealed class BreadboardSurface : FrameworkElement
     {
         base.OnRender(dc);
         if (ActualWidth <= 0 || ActualHeight <= 0 || Scene is not { } scene) return;
+        hover.Clip=new RectangleGeometry(new Rect(RenderSize));
         dc.PushClip(new RectangleGeometry(new Rect(RenderSize)));
         dc.DrawRectangle(Background, null, new Rect(RenderSize));
         var scale = scene.Zoom * PhysicalSettings.PixelsPerMillimeter;
@@ -68,13 +73,27 @@ public sealed class BreadboardSurface : FrameworkElement
         VoltageDrawing.Draw(dc,scene.Project,true);
         dc.Pop(); dc.Pop();
     }
+    private void RefreshHover()
+    {
+        if(IsMouseOver && Mouse.LeftButton==MouseButtonState.Released && Mouse.RightButton==MouseButtonState.Released && Mouse.MiddleButton==MouseButtonState.Released)UpdateContactHover(Mouse.GetPosition(this));
+        else hover.Update(null);
+    }
+    internal void UpdateContactHover(Point point)
+    {
+        if(Scene is not { } scene){hover.Update(null);return;}
+        var world=new Core.Layout.LayoutPoint(PhysicalSettings.ToMillimeters((point.X-scene.OffsetX)/scene.Zoom),PhysicalSettings.ToMillimeters((point.Y-scene.OffsetY)/scene.Zoom));
+        var target=PhysicalContactHover.Find(scene,world);
+        if(target is { } t)hover.Update(t.Key,new Point(PhysicalSettings.ToPixels(t.Position.X)*scene.Zoom+scene.OffsetX,PhysicalSettings.ToPixels(t.Position.Y)*scene.Zoom+scene.OffsetY),Math.Max(3,PhysicalSettings.ToPixels(.7)*scene.Zoom));
+        else hover.Update(null);
+    }
     protected override void OnMouseMove(MouseEventArgs args)
     {
         base.OnMouseMove(args);
         if (Scene is not { } scene || args.LeftButton != MouseButtonState.Released
             || args.RightButton != MouseButtonState.Released || args.MiddleButton != MouseButtonState.Released)
-        { tip.IsOpen = false; return; }
+        { hover.Update(null);tip.IsOpen = false; return; }
         var point = args.GetPosition(this);
+        UpdateContactHover(point);
         var x = PhysicalSettings.ToMillimeters((point.X - scene.OffsetX) / scene.Zoom);
         var y = PhysicalSettings.ToMillimeters((point.Y - scene.OffsetY) / scene.Zoom);
         var item = scene.Project.Components.LastOrDefault(item => scene.Hit(item, x, y));
@@ -98,6 +117,6 @@ public sealed class BreadboardSurface : FrameworkElement
         if (!Equals(tip.Content, text)) tip.Content = text;
         if (!tip.IsOpen) tip.IsOpen = true;
     }
-    protected override void OnMouseLeave(MouseEventArgs args) { tip.IsOpen = false; base.OnMouseLeave(args); }
-    protected override void OnMouseDown(MouseButtonEventArgs args) { tip.IsOpen = false; base.OnMouseDown(args); }
+    protected override void OnMouseLeave(MouseEventArgs args) { hover.Update(null);tip.IsOpen = false; base.OnMouseLeave(args); }
+    protected override void OnMouseDown(MouseButtonEventArgs args) { hover.Update(null);tip.IsOpen = false; base.OnMouseDown(args); }
 }

@@ -53,6 +53,7 @@ public sealed class ThemeResourceTests
             Stage4PresentationChecks.Run(resources);
             Stage5PresentationChecks.Run(resources);
             SmoothScrollPresentationChecks.Run(resources);
+            UnoAndHoverPresentationChecks.Run(resources);
             application.Shutdown();
         });
     }
