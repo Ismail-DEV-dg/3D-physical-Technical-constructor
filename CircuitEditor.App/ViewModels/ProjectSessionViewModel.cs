@@ -53,7 +53,7 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
     public void Autosave()
     {
         if (!project.IsDirty || project.InGesture) return;
-        if (repository.Save(repository.RecoveryPath, Capture()) is { } error) project.StatusMessage = "Автосохранение: " + error;
+        if (repository.Save(repository.RecoveryPath, Capture()) is { } error) ReportError("Автосохранение: " + error);
     }
     public bool RequestClose()
     {
@@ -76,7 +76,7 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
         if (!Guard()) return;
         project.Wiring.Cancel();
         var board = boards.Load();
-        if (board.Value is null) { project.StatusMessage = board.Error!; return; }
+        if (board.Value is null) { ReportError(board.Error ?? "Не удалось загрузить breadboard."); return; }
         project.ReplaceProject(new Core.Models.CircuitProject(footprints: project.Model.Footprints,
             breadboards: [new Core.Breadboards.BreadboardInstance(Guid.NewGuid(),board.Value,Core.Physical.PhysicalSettings.DefaultBoardX,Core.Physical.PhysicalSettings.DefaultBoardY)]));
         mockup.ResetViewCommand.Execute(null); schematic.ResetViewCommand.Execute(null);
@@ -94,7 +94,7 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
     public bool Load(string file)
     {
         var data = repository.Load(file);
-        if (data.Value is null) { project.StatusMessage = data.Error!; return false; }
+        if (data.Value is null) { ReportError(data.Error ?? "Не удалось открыть проект."); return false; }
         try
         {
             var board = boards.Load().Value ?? throw new ArgumentException("Библиотека breadboard недоступна.");
@@ -102,10 +102,12 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
             project.Wiring.Cancel(); mockup.InputCommand.Execute(new Interaction.CanvasInput(Interaction.CanvasAction.Cancel));
             schematic.InputCommand.Execute(new Interaction.CanvasInput(Interaction.CanvasAction.Cancel));
             project.ReplaceProject(state); ApplyView(data.Value.View);
-            project.StatusMessage = "Проект открыт."; return true;
+            project.StatusMessage = "Проект открыт.";
+            if (data.Warning is { } warning) dialogs.ShowWarning(warning);
+            return true;
         }
         catch (Exception e) when (e is ArgumentException or InvalidOperationException or KeyNotFoundException or NullReferenceException)
-        { project.StatusMessage = "Не удалось открыть проект: " + e.Message; return false; }
+        { ReportError("Не удалось открыть проект: " + e.Message); return false; }
     }
     private void ApplyView(ProjectViewState view)
     {
@@ -118,14 +120,16 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
     [RelayCommand] private void SaveAs() => SaveCurrent(true);
     private bool SaveCurrent(bool forceDialog)
     {
-        if (project.InGesture) { project.StatusMessage = "Завершите текущий жест перед сохранением."; return false; }
+        if (project.InGesture) { ReportError("Завершите текущий жест перед сохранением."); return false; }
         var target = forceDialog || path is null ? dialogs.SaveFile("Circuit Editor (*.circ)|*.circ", ".circ", path is null ? null : Path.GetFileName(path)) : path;
         if (target is null) return false;
         var error = repository.Save(target, Capture());
-        if (error is not null) { project.StatusMessage = error; return false; }
+        if (error is not null) { ReportError(error); return false; }
         path = target; project.History.MarkSaved(); Remember(target); repository.ClearRecovery();
         project.StatusMessage = "Проект сохранён."; OnPropertyChanged(nameof(Title)); return true;
     }
+    private void ReportError(string message)
+    { project.StatusMessage = message; dialogs.ShowError(message); }
     private void Remember(string file)
     { recent.Add(file); RecentFiles.Clear(); foreach (var item in recent.Load()) RecentFiles.Add(new RecentProjectViewModel(item,OpenRecentCommand)); }
     private void OnProjectChanged(object? sender, PropertyChangedEventArgs e)

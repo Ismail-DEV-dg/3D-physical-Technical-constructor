@@ -12,7 +12,7 @@ public static class ProjectDocumentResolver
     public static CircuitProject Resolve(ProjectDocument data, IReadOnlyList<ComponentDefinition> library,
         IReadOnlyList<FootprintDefinition> footprints, BreadboardDefinition board, IComponentInsertionService insertion)
     {
-        if (data.SchemaVersion != ProjectDocument.CurrentSchemaVersion) throw new ArgumentException("Неподдерживаемая версия .circ.");
+        if (data.SchemaVersion != ProjectDocument.CurrentSchemaVersion) throw new ArgumentException($"Версия формата файла: {data.SchemaVersion}. Поддерживаемая версия: {ProjectDocument.CurrentSchemaVersion}.");
         if (data.LibraryVersion != ProjectDocument.CurrentLibraryVersion) throw new ArgumentException("Версия библиотеки проекта не поддерживается.");
         if (data.Breadboards.Count != 1) throw new ArgumentException("Проект должен содержать одну breadboard.");
         var boards = data.Breadboards.Select(b => b.DefinitionId == board.Id && b.Id != Guid.Empty && double.IsFinite(b.X) && double.IsFinite(b.Y)

@@ -21,19 +21,26 @@ public sealed class JsonProjectRepository(IEnumerable<IProjectMigration> migrati
         {
             var node = JsonNode.Parse(File.ReadAllText(path))?.AsObject() ?? throw new ArgumentException("Пустой файл проекта.");
             var version = node["schemaVersion"]?.GetValue<int>() ?? throw new ArgumentException("Нет schemaVersion.");
-            if (version > ProjectDocument.CurrentSchemaVersion) throw new ArgumentException($"Версия .circ {version} новее поддерживаемой версии 1.");
+            if (version > ProjectDocument.CurrentSchemaVersion) throw new ArgumentException($"Версия формата файла: {version}. Поддерживаемая версия: {ProjectDocument.CurrentSchemaVersion}. Файл создан более новой версией приложения.");
             var visited = new HashSet<int>();
             while (version != ProjectDocument.CurrentSchemaVersion)
             {
                 if (!visited.Add(version)) throw new ArgumentException("Цикл миграций проекта.");
                 var migration = migrations.SingleOrDefault(m => m.FromVersion == version)
-                    ?? throw new ArgumentException($"Не поддерживается старая версия .circ: {version}.");
+                    ?? throw new ArgumentException($"Версия формата файла: {version}. Поддерживаемая версия: {ProjectDocument.CurrentSchemaVersion}. Миграция старого формата недоступна.");
                 if (migration.ToVersion <= version || migration.ToVersion > ProjectDocument.CurrentSchemaVersion)
                     throw new ArgumentException("Неверная цепочка миграций.");
                 node = migration.Migrate(node.DeepClone().AsObject()); version = migration.ToVersion;
                 node["schemaVersion"] = version;
             }
-            return new(node.Deserialize<ProjectDocument>(Options) ?? throw new ArgumentException("Пустой проект."), null);
+            var missingLibraryVersion = !node.ContainsKey("libraryVersion");
+            if (missingLibraryVersion) node["libraryVersion"] = ProjectDocument.CurrentLibraryVersion;
+            return new(node.Deserialize<ProjectDocument>(Options) ?? throw new ArgumentException("Пустой проект."), null)
+            {
+                Warning = missingLibraryVersion
+                    ? $"В файле отсутствует libraryVersion. Использована текущая версия библиотеки: {ProjectDocument.CurrentLibraryVersion}. Ссылки на компоненты, корпуса и breadboard проверены при открытии."
+                    : null
+            };
         }
         catch (Exception e) when (IsDataError(e)) { return new(null, "Не удалось открыть проект: " + e.Message); }
     }

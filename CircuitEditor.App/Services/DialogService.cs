@@ -5,6 +5,8 @@ using CircuitEditor.App.Views;
 namespace CircuitEditor.App.Services;
 public sealed class DialogService : IDialogService
 {
+    public void ShowError(string message) => Choose("Ошибка", message, "ОК");
+    public void ShowWarning(string message) => Choose("Предупреждение", message, "ОК");
     public string? OpenProject()
     {
         var dialog = new OpenFileDialog { Filter = "Circuit Editor (*.circ)|*.circ", CheckFileExists = true };

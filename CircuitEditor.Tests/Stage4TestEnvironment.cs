@@ -15,6 +15,10 @@ internal sealed class Stage4TestEnvironment : IDialogService, IAutosaveService, 
     public string Folder { get; } = Path.Combine(Path.GetTempPath(),"CircuitEditor-Tests",Guid.NewGuid().ToString("N"));
     public string? Target { get; set; }
     public SaveDecision Decision { get; set; } = SaveDecision.Cancel;
+    public List<string> Errors { get; } = [];
+    public List<string> Warnings { get; } = [];
+    public void ShowError(string message) => Errors.Add(message);
+    public void ShowWarning(string message) => Warnings.Add(message);
     public bool Recover { get; set; }
     public Action? Tick { get; private set; }
     public byte[]? Exported { get; private set; }
