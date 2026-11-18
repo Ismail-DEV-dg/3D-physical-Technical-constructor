@@ -100,7 +100,9 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
             if (alreadySelected)
             {
                 project.BeginGesture("Изгиб перемычки"); original = hit;
-                var nodes = hit.ControlPoints.Append(point).ToArray(); draggingNode = nodes.Length - 1;
+                var nodes = hit.ControlPoints.ToList();
+                draggingNode = WireCurve.FindInsertionIndex(Points(hit), point);
+                nodes.Insert(draggingNode.Value, point);
                 project.Model.Circuit.PutWire(new Wire(hit.Id, hit.Start, hit.End, hit.Color, nodes)); project.Refresh();
             }
             return true;

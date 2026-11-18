@@ -5,6 +5,30 @@ public static class WireCurve
 {
     /// <summary>Число отрезков на один участок.</summary>
     public const int SegmentsPerSpan = 12;
+    /// <summary>Индекс участка кривой под указателем; совпадает с позицией вставки нового управляющего узла.</summary>
+    public static int FindInsertionIndex(IReadOnlyList<LayoutPoint> points, LayoutPoint pointer)
+    {
+        if (points.Count < 2) throw new ArgumentException("Для кривой нужны два конца.", nameof(points));
+        var sampled = Sample(points);
+        var nearestDistance = double.PositiveInfinity;
+        var nearestSegment = 0;
+        for (var i = 0; i < sampled.Count - 1; i++)
+        {
+            var a = sampled[i]; var b = sampled[i + 1];
+            var dx = b.X - a.X; var dy = b.Y - a.Y;
+            var lengthSquared = dx * dx + dy * dy;
+            var t = lengthSquared == 0 ? 0 : Math.Clamp(
+                ((pointer.X - a.X) * dx + (pointer.Y - a.Y) * dy) / lengthSquared, 0, 1);
+            var offsetX = pointer.X - (a.X + t * dx);
+            var offsetY = pointer.Y - (a.Y + t * dy);
+            var distance = offsetX * offsetX + offsetY * offsetY;
+            if (distance >= nearestDistance) continue;
+            nearestDistance = distance;
+            nearestSegment = i;
+        }
+        return nearestSegment / SegmentsPerSpan;
+    }
+
     /// <summary>Катмулл—Ром без изменения концов и электрической связности.</summary>
     public static IReadOnlyList<LayoutPoint> Sample(IReadOnlyList<LayoutPoint> points)
     {
