@@ -4,12 +4,19 @@ CircuitEditor.App/App.xaml
 CircuitEditor.App/App.xaml.cs
 CircuitEditor.App/AssemblyInfo.cs
 CircuitEditor.App/CircuitEditor.App.csproj
+CircuitEditor.App/Controls/ArduinoNanoDrawing.cs
 CircuitEditor.App/Controls/ArduinoUnoDrawing.cs
+CircuitEditor.App/Controls/BoardDetailDrawing.cs
 CircuitEditor.App/Controls/BreadboardDrawing.cs
 CircuitEditor.App/Controls/BreadboardSurface.cs
+CircuitEditor.App/Controls/Esp32Drawing.cs
+CircuitEditor.App/Controls/Lcd1602Drawing.cs
+CircuitEditor.App/Controls/OledDrawing.cs
 CircuitEditor.App/Controls/PhysicalDrawing.cs
+CircuitEditor.App/Controls/PhysicalPinToolTips.cs
 CircuitEditor.App/Controls/RealComponentDrawing.cs
 CircuitEditor.App/Controls/SchematicSurface.cs
+CircuitEditor.App/Controls/SevenSegmentDrawing.cs
 CircuitEditor.App/Controls/SymbolDrawing.cs
 CircuitEditor.App/Interaction/CanvasAction.cs
 CircuitEditor.App/Interaction/CanvasInput.cs
@@ -132,6 +139,8 @@ CircuitEditor.Infrastructure/Repositories/JsonComponentLibraryRepository.cs
 CircuitEditor.Infrastructure/Repositories/JsonFootprintRepository.cs
 CircuitEditor.Simulation/CircuitEditor.Simulation.csproj
 CircuitEditor.sln
+CircuitEditor.Tests/BatchAFootprintTests.cs
+CircuitEditor.Tests/BatchAPresentationChecks.cs
 CircuitEditor.Tests/BreadboardTestData.cs
 CircuitEditor.Tests/BreadboardTopologyTests.cs
 CircuitEditor.Tests/CircuitEditor.Tests.csproj
@@ -161,4 +170,5 @@ Directory.Build.props
 docs/component-rendering-audit.md
 docs/stage3-file-tree.txt
 docs/stage3-mockup.md
+docs/stage3.1-batch-a.md
 global.json

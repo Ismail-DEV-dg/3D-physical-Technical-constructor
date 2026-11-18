@@ -21,6 +21,13 @@ public sealed class BreadboardSurface : FrameworkElement
     public int Revision { get => (int)GetValue(RevisionProperty); set => SetValue(RevisionProperty, value); }
     public Brush Background { get => (Brush)GetValue(BackgroundProperty); set => SetValue(BackgroundProperty, value); }
     public BreadboardSurface() => Unloaded += (_, _) => tip.IsOpen = false;
+    public string? GetPinToolTip(Point point)
+    {
+        if (Scene is not { } scene) return null;
+        var x = PhysicalSettings.ToMillimeters((point.X - scene.OffsetX) / scene.Zoom);
+        var y = PhysicalSettings.ToMillimeters((point.Y - scene.OffsetY) / scene.Zoom);
+        return PhysicalPinToolTips.Find(scene, x, y);
+    }
     protected override void OnRender(DrawingContext dc)
     {
         base.OnRender(dc);
@@ -46,8 +53,8 @@ public sealed class BreadboardSurface : FrameworkElement
         var x = PhysicalSettings.ToMillimeters((point.X - scene.OffsetX) / scene.Zoom);
         var y = PhysicalSettings.ToMillimeters((point.Y - scene.OffsetY) / scene.Zoom);
         var item = scene.Project.Components.LastOrDefault(item => scene.Hit(item, x, y));
-        string? text = item is null ? null : $"{item.Reference} · {item.Name}\n{item.Model.Value}" +
-            (item.Footprint.Renderer == "placeholder" ? "\nВременная заглушка корпуса." : "");
+        string? text = GetPinToolTip(point) ?? (item is null ? null : $"{item.Reference} · {item.Name}\n{item.Model.Value}" +
+            (item.Footprint.Renderer == "placeholder" ? "\nВременная заглушка корпуса." : ""));
         if (text is null && scene.Board is { } board)
         {
             var hole = board.Definition.Holes.FirstOrDefault(hole =>

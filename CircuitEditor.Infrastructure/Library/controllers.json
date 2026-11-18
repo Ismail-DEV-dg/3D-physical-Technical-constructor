@@ -92,7 +92,7 @@
   "prefix": "U",
   "category": "КОНТРОЛЛЕРЫ",
   "symbol": "board",
-  "description": "Классический ESP32-WROOM DevKit: логика 3,3 В. GPIO34–39 — input-only, без внутренних подтяжек. GPIO37/38 не выведены на WROOM; GPIO6–11 заняты flash. Скрытые контакты сохранены в метаданных. SDA21/SCL22 — типичное назначение, GPIO matrix допускает переназначение.",
+  "description": "ESP32 DevKit V1, 30 контактов, 28×51 мм, межрядье 25,4 мм; логика 3,3 В. GPIO0 подключён к BOOT, на разъём не выведен. GPIO34–39 — input-only, без внутренних подтяжек. GPIO37/38 не выведены на WROOM; GPIO6–11 заняты flash. Скрытые контакты сохранены в метаданных. SDA21/SCL22 — типичное назначение, GPIO matrix допускает переназначение.",
   "voltage": 3.3,
   "pins": [
     {"id":"3V3","name":"3V3","type":"Power"},
@@ -100,7 +100,7 @@
     {"id":"GND","name":"GND","type":"Ground"},
     {"id":"GND2","name":"GND2","type":"Ground"},
     {"id":"EN","name":"EN","type":"DigitalIO","isInputOnly":true},
-    {"id":"GPIO0","name":"GPIO0","type":"DigitalIO","isInputOnly":false,"isExposed":true,"capabilities":["DigitalIO","PWM","AnalogIn"]},
+    {"id":"GPIO0","name":"GPIO0","type":"DigitalIO","isInputOnly":false,"isExposed":false,"capabilities":["DigitalIO","PWM","AnalogIn"]},
     {"id":"GPIO1","name":"GPIO1","type":"UART_TX","isInputOnly":false,"isExposed":true,"capabilities":["DigitalIO","PWM"]},
     {"id":"GPIO2","name":"GPIO2","type":"DigitalIO","isInputOnly":false,"isExposed":true,"capabilities":["DigitalIO","PWM","AnalogIn"]},
     {"id":"GPIO3","name":"GPIO3","type":"UART_RX","isInputOnly":false,"isExposed":true,"capabilities":["DigitalIO","PWM"]},

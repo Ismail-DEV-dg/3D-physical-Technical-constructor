@@ -23,7 +23,7 @@ internal static class RealComponentDrawing
                 PhysicalDrawing.Lead(dc,
                     new Point(contact.X, contact.Y), new Point(body.X + body.Width / 2, body.Y + body.Height / 2));
         }
-        else if (footprint.Renderer != "arduino-uno")
+        else if (footprint.Renderer is "led" or "button" or "placeholder")
         {
             foreach (var contact in contacts)
                 PhysicalDrawing.Lead(dc, new Point(contact.X, contact.Y),
@@ -32,6 +32,12 @@ internal static class RealComponentDrawing
         switch (footprint.Renderer)
         {
             case "arduino-uno": ArduinoUnoDrawing.Draw(dc, footprint); break;
+            case "arduino-nano": ArduinoNanoDrawing.Draw(dc, footprint); break;
+            case "esp32-devkit": Esp32Drawing.Draw(dc, footprint); break;
+            case "lcd1602":
+            case "lcd1602-i2c": Lcd1602Drawing.Draw(dc, footprint); break;
+            case "oled-ssd1306": OledDrawing.Draw(dc, footprint); break;
+            case "seven-segment": SevenSegmentDrawing.Draw(dc, footprint); break;
             case "axial-resistor":
                 dc.DrawRoundedRectangle(new LinearGradientBrush(Color.FromRgb(236, 215, 175), Color.FromRgb(189, 156, 106), 90),
                     new Pen(PhysicalDrawing.Ink("#87663F"), .15), PhysicalDrawing.Rect(body), 1, 1);
@@ -72,7 +78,7 @@ internal static class RealComponentDrawing
                 else PhysicalDrawing.Text(dc, "?", body.X + body.Width / 2 - .5, body.Y, 1.7, Brushes.WhiteSmoke);
                 break;
         }
-        if (footprint.Renderer != "arduino-uno")
+        if (footprint.Renderer is "axial-resistor" or "led" or "button" or "placeholder")
             foreach (var contact in contacts)
                 PhysicalDrawing.Contact(dc, new Point(contact.X, contact.Y));
         if (item.IsSelected || invalidPreview)

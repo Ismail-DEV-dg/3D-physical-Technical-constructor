@@ -45,6 +45,7 @@ public sealed class ThemeResourceTests
                 && glyphs.CharacterToGlyphMap.ContainsKey('А'));
             VerifyAllSymbolsRender(resources);
             MockupPresentationChecks.Run(resources);
+            BatchAPresentationChecks.Run(resources);
             ResistorPresentationChecks.Run(resources);
             application.Shutdown();
         });

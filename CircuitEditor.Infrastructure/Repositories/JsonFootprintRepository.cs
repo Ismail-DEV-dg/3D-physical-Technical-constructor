@@ -25,7 +25,8 @@ public sealed class JsonFootprintRepository : IFootprintRepository
                 ArgumentNullException.ThrowIfNull(footprint.Contacts);
                 ArgumentNullException.ThrowIfNull(footprint.AllowedRotations);
                 if (string.IsNullOrWhiteSpace(footprint.Id) || string.IsNullOrWhiteSpace(footprint.ComponentDefinitionId)
-                    || footprint.Renderer is not ("arduino-uno" or "axial-resistor" or "led" or "button" or "placeholder")
+                    || footprint.Renderer is not ("arduino-uno" or "axial-resistor" or "led" or "button" or "placeholder"
+                        or "arduino-nano" or "esp32-devkit" or "lcd1602" or "lcd1602-i2c" or "oled-ssd1306" or "seven-segment")
                     || footprint.Mounting is not ("free" or "breadboard") || !double.IsFinite(footprint.Body.Width)
                     || !double.IsFinite(footprint.Body.Height) || footprint.Body.Width <= 0 || footprint.Body.Height <= 0
                     || footprint.AllowedRotations.Count == 0 || footprint.AllowedRotations.Any(angle => angle is not (0 or 90 or 180 or 270))
