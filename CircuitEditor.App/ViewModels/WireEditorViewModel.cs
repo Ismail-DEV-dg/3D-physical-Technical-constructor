@@ -13,6 +13,12 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
     private Wire? original;
     private bool invalidEnd;
     [ObservableProperty] private bool isWiring;
+    partial void OnIsWiringChanged(bool value)
+    {
+        if(!value){Cancel();selectedId=null;HoveredId=null;Refresh();}
+        project.InvalidatePresentation();
+    }
+    public void Exit(){IsWiring=false;Cancel();selectedId=null;Refresh();}
     [ObservableProperty] private Guid? hoveredId;
     [ObservableProperty] private LayoutPoint pointer;
     public Wire? Selected => project.Model.Circuit.Wires.FirstOrDefault(w => w.Id == selectedId);

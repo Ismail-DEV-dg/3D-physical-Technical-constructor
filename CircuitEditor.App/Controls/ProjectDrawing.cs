@@ -21,7 +21,7 @@ internal static class ProjectDrawing
             dc.PushTransform(new ScaleTransform(PhysicalSettings.PixelsPerMillimeter,PhysicalSettings.PixelsPerMillimeter));
             foreach (var board in mockup.Project.Model.Breadboards)
             {
-                dc.PushTransform(new TranslateTransform(board.X,board.Y)); BreadboardDrawing.DrawBase(dc,board.Definition,false); dc.Pop();
+                dc.PushTransform(new TranslateTransform(board.X,board.Y)); dc.PushTransform(new RotateTransform(board.Rotation)); BreadboardDrawing.DrawBase(dc,board.Definition,false); dc.Pop();dc.Pop();
             }
             var cache = new ComponentDrawingCache();
             foreach (var c in mockup.Project.Components)

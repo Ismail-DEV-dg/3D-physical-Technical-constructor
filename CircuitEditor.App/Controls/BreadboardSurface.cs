@@ -43,8 +43,7 @@ public sealed class BreadboardSurface : FrameworkElement
         dc.PushTransform(new MatrixTransform(scale, 0, 0, scale, scene.OffsetX, scene.OffsetY));
         var viewport = new Rect(RenderSize);
         var pitch = scene.Board?.Definition.HolePitch ?? PhysicalSettings.FreeGridMm;
-        if (scene.Board is { } board && viewport.IntersectsWith(new Rect(board.X * scale + scene.OffsetX,
-            board.Y * scale + scene.OffsetY, board.Definition.Width * scale, board.Definition.Height * scale)))
+        if (scene.Board is { } board)
             breadboard.Draw(dc, board, scene);
         foreach (var item in scene.Project.Components)
         {
@@ -84,8 +83,8 @@ public sealed class BreadboardSurface : FrameworkElement
         if (text is null && scene.Board is { } board)
         {
             var hole = board.Definition.Holes.FirstOrDefault(hole =>
-                Math.Abs(hole.Position.X + board.X - x) <= PhysicalSettings.HoleSnapToleranceMm
-                && Math.Abs(hole.Position.Y + board.Y - y) <= PhysicalSettings.HoleSnapToleranceMm);
+                Math.Abs(Core.Breadboards.BreadboardGeometry.World(board,hole.Position).X - x) <= PhysicalSettings.HoleSnapToleranceMm
+                && Math.Abs(Core.Breadboards.BreadboardGeometry.World(board,hole.Position).Y - y) <= PhysicalSettings.HoleSnapToleranceMm);
             if (hole is not null)
             {
                 var occupied = scene.Project.Model.Bindings.Any(binding => binding.BoardId == board.Id && binding.HoleId == hole.Id);

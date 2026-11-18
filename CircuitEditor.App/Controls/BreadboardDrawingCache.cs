@@ -28,13 +28,15 @@ internal sealed class BreadboardDrawingCache
             drawing.Freeze(); bases.Add(available, drawing);
         }
         dc.PushTransform(new TranslateTransform(board.X, board.Y));
+        dc.PushTransform(new RotateTransform(board.Rotation));
         dc.DrawDrawing(drawing);
+        if(scene.BoardInteraction.Selected)dc.DrawRoundedRectangle(null,new Pen(Brushes.DarkCyan,.5),new Rect(0,0,board.Definition.Width,board.Definition.Height),1.4,1.4);
         foreach (var binding in scene.Project.Model.Bindings)
             if (binding.BoardId == board.Id) DrawRing(dc, binding.HoleId, Occupied);
         if (scene.Preview is { } preview)
             foreach (var binding in preview.Bindings)
                 if (binding.BoardId == board.Id) DrawRing(dc, binding.HoleId, Preview);
-        dc.Pop();
+        dc.Pop(); dc.Pop();
     }
 
     private void DrawRing(DrawingContext dc, string id, Pen pen)

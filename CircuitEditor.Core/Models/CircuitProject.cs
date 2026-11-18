@@ -61,6 +61,23 @@ public sealed class CircuitProject
         Circuit = state.Circuit; MockupLayout = state.MockupLayout; SchematicLayout = state.SchematicLayout;
         Breadboards = state.Breadboards; bindings.Clear(); bindings.AddRange(state.Bindings);
     }
+    /// <summary>Перемещает/поворачивает плату вместе со вставленными экземплярами и внутренними изгибами.</summary>
+    public void TransformBoard(Guid id,double x,double y,int rotation)
+    {
+        if(!double.IsFinite(x)||!double.IsFinite(y)||rotation is not (0 or 90 or 180 or 270))throw new ArgumentException("Некорректное размещение breadboard.");
+        var old=Breadboards.Single(b=>b.Id==id);var next=old with {X=x,Y=y,Rotation=rotation};
+        var mounted=Bindings.Where(b=>b.BoardId==id).Select(b=>b.ComponentId).ToHashSet();
+        Layout.LayoutPoint Transform(Layout.LayoutPoint p)=>BreadboardGeometry.World(next,BreadboardGeometry.Local(old,p));
+        foreach(var component in mounted)
+        {
+            var pose=MockupLayout.Get(component);var p=Transform(new(pose.X,pose.Y));
+            MockupLayout.Set(component,new(p.X,p.Y,(pose.Rotation+rotation-old.Rotation+360)%360,pose.SpanHoles));
+        }
+        bool Attached(Wiring.WireEndpoint e)=>e.Kind==Wiring.WireEndpointKind.BreadboardHole ? e.OwnerId==id : mounted.Contains(e.OwnerId);
+        foreach(var wire in Circuit.Wires.Where(w=>Attached(w.Start)&&Attached(w.End)).ToArray())
+            Circuit.PutWire(new Wire(wire.Id,wire.Start,wire.End,wire.Color,wire.ControlPoints.Select(Transform).ToArray()));
+        Breadboards=Array.AsReadOnly(Breadboards.Select(b=>b.Id==id?next:b).ToArray());
+    }
     internal void CommitInsertion(Guid id, ComponentPlacement placement, IReadOnlyList<ContactBinding> newBindings)
     {
         MockupLayout.Set(id, placement);

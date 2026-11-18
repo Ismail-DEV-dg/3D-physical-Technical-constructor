@@ -15,8 +15,8 @@ public static class ProjectDocumentResolver
         if (data.SchemaVersion != ProjectDocument.CurrentSchemaVersion) throw new ArgumentException($"Версия формата файла: {data.SchemaVersion}. Поддерживаемая версия: {ProjectDocument.CurrentSchemaVersion}.");
         if (data.LibraryVersion != ProjectDocument.CurrentLibraryVersion) throw new ArgumentException("Версия библиотеки проекта не поддерживается.");
         if (data.Breadboards.Count != 1) throw new ArgumentException("Проект должен содержать одну breadboard.");
-        var boards = data.Breadboards.Select(b => b.DefinitionId == board.Id && b.Id != Guid.Empty && double.IsFinite(b.X) && double.IsFinite(b.Y)
-            ? new BreadboardInstance(b.Id, board, b.X, b.Y) : throw new ArgumentException($"Не найдена или повреждена breadboard: {b.DefinitionId}.")).ToArray();
+        var boards = data.Breadboards.Select(b => b.DefinitionId == board.Id && b.Id != Guid.Empty && double.IsFinite(b.X) && double.IsFinite(b.Y) && b.Rotation is 0 or 90 or 180 or 270
+            ? new BreadboardInstance(b.Id, board, b.X, b.Y,b.Rotation) : throw new ArgumentException($"Не найдена или повреждена breadboard: {b.DefinitionId}.")).ToArray();
         var components = data.Components.Select(c =>
         {
             var definition = library.FirstOrDefault(d => d.Id == c.DefinitionId) ?? throw new ArgumentException($"В библиотеке не найден компонент: {c.DefinitionId}.");

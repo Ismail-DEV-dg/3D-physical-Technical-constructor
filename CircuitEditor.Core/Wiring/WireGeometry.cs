@@ -12,7 +12,7 @@ public static class WireGeometry
         {
             var board = project.Breadboards.FirstOrDefault(b => b.Id == endpoint.OwnerId);
             var hole = board?.Definition.Holes.FirstOrDefault(h => h.Id == endpoint.TerminalId);
-            return board is not null && hole is not null ? new LayoutPoint(board.X + hole.Position.X, board.Y + hole.Position.Y) : null;
+            return board is not null && hole is not null ? Breadboards.BreadboardGeometry.World(board,hole.Position) : null;
         }
         var component = project.Circuit.Components.FirstOrDefault(c => c.Id == endpoint.OwnerId);
         var footprint = project.Footprints.FirstOrDefault(f => f.ComponentDefinitionId == component?.Definition.Id);

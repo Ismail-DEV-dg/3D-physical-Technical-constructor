@@ -13,7 +13,7 @@ public sealed class ProjectSnapshot
     public bool Matches(CircuitProject other)
     {
         if (state.Circuit.Components.Count != other.Circuit.Components.Count || state.Circuit.Wires.Count != other.Circuit.Wires.Count) return false;
-        return state.Circuit.Components.Zip(other.Circuit.Components).All(pair => Same(pair.First, pair.Second))
+        return state.Breadboards.Select(b=>(b.Id,b.Definition.Id,b.X,b.Y,b.Rotation)).SequenceEqual(other.Breadboards.Select(b=>(b.Id,b.Definition.Id,b.X,b.Y,b.Rotation))) && state.Circuit.Components.Zip(other.Circuit.Components).All(pair => Same(pair.First, pair.Second))
             && state.Circuit.Counters.OrderBy(p => p.Key).SequenceEqual(other.Circuit.Counters.OrderBy(p => p.Key))
             && state.Bindings.SequenceEqual(other.Bindings)
             && SameLayout(state.MockupLayout, other.MockupLayout) && SameLayout(state.SchematicLayout, other.SchematicLayout)

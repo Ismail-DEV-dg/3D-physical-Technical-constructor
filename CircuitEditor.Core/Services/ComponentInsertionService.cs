@@ -28,8 +28,8 @@ public sealed class ComponentInsertionService : IComponentInsertionService
         var anchor = Nearest(board, first);
         if (anchor is null || Distance(board, anchor, first) > PhysicalSettings.HoleSnapToleranceMm)
             return Fail("Совместите первый контакт с отверстием.");
-        var snapped = new ComponentPlacement(proposed.X + board.X + anchor.Position.X - first.X,
-            proposed.Y + board.Y + anchor.Position.Y - first.Y, proposed.Rotation, footprint.IsFlexible ? span : 0);
+        var snapped = new ComponentPlacement(proposed.X + BreadboardGeometry.World(board,anchor.Position).X - first.X,
+            proposed.Y + BreadboardGeometry.World(board,anchor.Position).Y - first.Y, proposed.Rotation, footprint.IsFlexible ? span : 0);
         var candidates = new List<ContactBinding>();
         foreach (var contact in footprint.Contacts)
         {
@@ -58,6 +58,6 @@ public sealed class ComponentInsertionService : IComponentInsertionService
     private static BreadboardHole? Nearest(BreadboardInstance board, LayoutPoint point) =>
         board.Definition.Holes.MinBy(hole => Distance(board, hole, point));
     private static double Distance(BreadboardInstance board, BreadboardHole hole, LayoutPoint point) =>
-        Math.Sqrt(Math.Pow(hole.Position.X + board.X - point.X, 2) + Math.Pow(hole.Position.Y + board.Y - point.Y, 2));
+        Math.Sqrt(Math.Pow(BreadboardGeometry.World(board,hole.Position).X - point.X, 2) + Math.Pow(BreadboardGeometry.World(board,hole.Position).Y - point.Y, 2));
     private static InsertionResult Fail(string error) => new(false, error, null, Array.Empty<ContactBinding>());
 }

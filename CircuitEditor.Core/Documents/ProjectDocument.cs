@@ -39,7 +39,7 @@ public sealed record ProjectDocument
             c.Definition.Id == "potentiometer" ? c.PotentiometerAngle : null, c.Inputs.Values.Count > 0 ? c.Inputs : null, c.Electrical.Parameters.Count>0 || c.Electrical.PinRoles.Count>0 ? c.Electrical : null)).ToArray(),
         Counters = project.Circuit.Counters.ToDictionary(), Mockup = project.MockupLayout.Placements.ToDictionary(p => p.Key, p => p.Value.Copy()),
         Schematic = project.SchematicLayout.Placements.ToDictionary(p => p.Key, p => p.Value.Copy()),
-        Breadboards = project.Breadboards.Select(b => new BreadboardData(b.Id, b.Definition.Id, b.X, b.Y)).ToArray(),
+        Breadboards = project.Breadboards.Select(b => new BreadboardData(b.Id, b.Definition.Id, b.X, b.Y, b.Rotation)).ToArray(),
         Bindings = project.Bindings.ToArray(), Wires = project.Circuit.Wires.ToArray(), View = view ?? new()
     };
 }

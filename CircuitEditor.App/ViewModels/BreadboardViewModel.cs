@@ -23,9 +23,11 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     public BreadboardViewModel(ProjectViewModel project, IComponentInsertionService insertion)
         : base(WorkspaceKind.Mockup, "Макет", "01", "Физический макет", "Breadboard и компоненты")
     {
+        BoardInteraction=new BoardInteractionViewModel(this);
         Project = project; this.insertion = insertion;
         Project.PropertyChanged += OnProjectChanged;
     }
+    public BoardInteractionViewModel BoardInteraction {get;}
     public ProjectViewModel Project { get; }
     public BreadboardInstance? Board => Project.Model.Breadboards.FirstOrDefault();
     public InsertionResult? Preview { get; private set; }
@@ -65,12 +67,14 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     private void Input(CanvasInput input)
     {
         if(input.Action==CanvasAction.Resize){ViewportWidth=input.X;ViewportHeight=input.Y;return;}
-        if (input.Action == CanvasAction.Cancel) { Project.Wiring.Cancel(); Cancel(); return; }
+        if (input.Action == CanvasAction.Cancel) { BoardInteraction.Handle(input,new(CursorX,CursorY)); Project.Wiring.Exit(); Cancel(); return; }
         if (input.Action == CanvasAction.Rotate) { RotateSelected(); return; }
         if (input.Action == CanvasAction.Delete) { if (!Project.Wiring.Handle(input, new(CursorX,CursorY))) { Cancel(); Project.RemoveSelected(); } return; }
         CursorX = PhysicalSettings.ToMillimeters((input.X - OffsetX) / Zoom);
         CursorY = PhysicalSettings.ToMillimeters((input.Y - OffsetY) / Zoom);
-        if (dragging is null && rotatingKnob is null && !panning && Project.Wiring.Handle(input, new(CursorX, CursorY))) { Revision++; return; }
+        if(BoardInteraction.Handle(input,new(CursorX,CursorY))){Revision++;return;}
+        var componentDrag=input.Action==CanvasAction.Down && !Project.Wiring.IsWiring && !Project.Wiring.HasSelection && Project.Components.Any(c=>Hit(c,CursorX,CursorY));
+        if (dragging is null && rotatingKnob is null && !panning && !componentDrag && Project.Wiring.Handle(input, new(CursorX, CursorY))) { Revision++; return; }
         if (input.Action is CanvasAction.Down or CanvasAction.Drop && !input.Pan) Project.BeginGesture("Макет: размещение / ручка");
         switch (input.Action)
         {
@@ -163,8 +167,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     {
         if (Board is not { } board || item.Footprint.Contacts.Count == 0) return false;
         var point = ContactGeometry.World(item.Footprint, item.Footprint.Contacts[0], pose, board.Definition.HolePitch);
-        return point.X >= board.X && point.X <= board.X + board.Definition.Width
-            && point.Y >= board.Y && point.Y <= board.Y + board.Definition.Height;
+        return BreadboardGeometry.Contains(board,point);
     }
 
     private ComponentPlacement CaptureHole(ComponentViewModel item, ComponentPlacement pose)
@@ -172,8 +175,8 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
         if (Board is not { } board || item.Footprint.Contacts.Count == 0) return pose;
         var first = ContactGeometry.World(item.Footprint, item.Footprint.Contacts[0], pose, board.Definition.HolePitch);
         var hole = board.Definition.Holes.MinBy(hole =>
-            Math.Pow(hole.Position.X + board.X - first.X, 2) + Math.Pow(hole.Position.Y + board.Y - first.Y, 2))!;
-        var dx = hole.Position.X + board.X - first.X; var dy = hole.Position.Y + board.Y - first.Y;
+            Math.Pow(BreadboardGeometry.World(board,hole.Position).X - first.X, 2) + Math.Pow(BreadboardGeometry.World(board,hole.Position).Y - first.Y, 2))!;
+        var dx = BreadboardGeometry.World(board,hole.Position).X - first.X; var dy = BreadboardGeometry.World(board,hole.Position).Y - first.Y;
         return Math.Sqrt(dx * dx + dy * dy) <= PhysicalSettings.HoleCaptureRadiusMm
             ? new ComponentPlacement(pose.X + dx, pose.Y + dy, pose.Rotation, pose.SpanHoles) : pose;
     }
@@ -219,6 +222,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     private void RotateSelected()
     {
         Cancel();
+        if(BoardInteraction.Handle(new(CanvasAction.Rotate),new(CursorX,CursorY)))return;
         if (Project.SelectedComponent is not { } item) return;
         Project.BeginGesture("Поворот компонента");
         var pose = item.MockupPlacement.Copy(); pose.Rotate();
