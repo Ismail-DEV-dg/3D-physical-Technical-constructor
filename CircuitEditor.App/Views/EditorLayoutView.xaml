@@ -1,0 +1,117 @@
+<UserControl x:Class="CircuitEditor.App.Views.EditorLayoutView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:views="clr-namespace:CircuitEditor.App.Views" xmlns:controls="clr-namespace:CircuitEditor.App.Controls"
+ xmlns:input="clr-namespace:CircuitEditor.App.Interaction">
+ <UserControl.Resources>
+  <CollectionViewSource x:Key="GroupedPalette" Source="{Binding Palette}">
+   <CollectionViewSource.GroupDescriptions><PropertyGroupDescription PropertyName="Category"/></CollectionViewSource.GroupDescriptions>
+  </CollectionViewSource>
+ </UserControl.Resources>
+ <Grid x:Name="EditorGrid">
+  <Grid.ColumnDefinitions>
+   <ColumnDefinition x:Name="PaletteColumn">
+    <ColumnDefinition.MaxWidth><MultiBinding Converter="{StaticResource PaneLimit}" ConverterParameter="Left">
+     <Binding ElementName="EditorGrid" Path="ActualWidth"/><Binding Path="Panels.Components.Size"/><Binding Path="Panels.Inspector.Size"/>
+     <Binding Path="Panels.Components.IsExpanded"/><Binding Path="Panels.Inspector.IsExpanded"/>
+     <Binding Path="Panels.Components.IsVisible"/><Binding Path="Panels.Inspector.IsVisible"/>
+    </MultiBinding></ColumnDefinition.MaxWidth>
+    <ColumnDefinition.Style><Style TargetType="ColumnDefinition">
+     <Setter Property="Width" Value="{Binding Panels.Components.Size, Mode=TwoWay, Converter={StaticResource PaneSize}}"/><Setter Property="MinWidth" Value="180"/>
+     <Style.Triggers><DataTrigger Binding="{Binding Panels.Components.IsExpanded}" Value="False"><Setter Property="Width" Value="28"/><Setter Property="MinWidth" Value="0"/></DataTrigger>
+      <DataTrigger Binding="{Binding Panels.Components.IsVisible}" Value="False"><Setter Property="Width" Value="0"/><Setter Property="MinWidth" Value="0"/></DataTrigger>
+     </Style.Triggers></Style></ColumnDefinition.Style>
+   </ColumnDefinition>
+   <ColumnDefinition Width="6"/><ColumnDefinition Width="*" MinWidth="320"/><ColumnDefinition Width="6"/>
+   <ColumnDefinition x:Name="InspectorColumn">
+    <ColumnDefinition.MaxWidth><MultiBinding Converter="{StaticResource PaneLimit}" ConverterParameter="Right">
+     <Binding ElementName="EditorGrid" Path="ActualWidth"/><Binding Path="Panels.Components.Size"/><Binding Path="Panels.Inspector.Size"/>
+     <Binding Path="Panels.Components.IsExpanded"/><Binding Path="Panels.Inspector.IsExpanded"/>
+     <Binding Path="Panels.Components.IsVisible"/><Binding Path="Panels.Inspector.IsVisible"/>
+    </MultiBinding></ColumnDefinition.MaxWidth>
+    <ColumnDefinition.Style><Style TargetType="ColumnDefinition">
+     <Setter Property="Width" Value="{Binding Panels.Inspector.Size, Mode=TwoWay, Converter={StaticResource PaneSize}}"/><Setter Property="MinWidth" Value="240"/>
+     <Style.Triggers><DataTrigger Binding="{Binding Panels.Inspector.IsExpanded}" Value="False"><Setter Property="Width" Value="28"/><Setter Property="MinWidth" Value="0"/></DataTrigger>
+      <DataTrigger Binding="{Binding Panels.Inspector.IsVisible}" Value="False"><Setter Property="Width" Value="0"/><Setter Property="MinWidth" Value="0"/></DataTrigger>
+     </Style.Triggers></Style></ColumnDefinition.Style>
+   </ColumnDefinition>
+  </Grid.ColumnDefinitions>
+  <controls:DockPane x:Name="PalettePane" Pane="{Binding Panels.Components}">
+                    <Grid Margin="14">
+                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                        <TextBlock Text="КОМПОНЕНТЫ" FontWeight="Bold" FontSize="12"/>
+                        <TextBlock Grid.Row="1" Text="{Binding LibraryCount, StringFormat=Библиотека / {0}}" Style="{StaticResource MutedText}" Margin="0,8,0,22"/>
+                        <DockPanel Grid.Row="2">
+<Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+    <TextBox x:Name="PaletteSearch" Text="{Binding PaletteFilter, UpdateSourceTrigger=PropertyChanged}" FontSize="11" ToolTip="Поиск по названию или категории · Ctrl+F" AutomationProperties.Name="Поиск компонентов"/>
+    <TextBlock Text="Поиск…" IsHitTestVisible="False" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" FontSize="11">
+        <TextBlock.Style><Style TargetType="TextBlock">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers><DataTrigger Binding="{Binding Text, ElementName=PaletteSearch}" Value=""><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
+        </Style></TextBlock.Style>
+    </TextBlock>
+</Grid>
+<ListBox input:PaletteDragBehavior.Enabled="True" ItemsSource="{Binding Source={StaticResource GroupedPalette}}" SelectedItem="{Binding SelectedPaletteItem}" AutomationProperties.Name="Палитра компонентов">
+                            <ListBox.GroupStyle><GroupStyle>
+                                <GroupStyle.HeaderTemplate><DataTemplate>
+                                    <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,12,0,7" Margin="0,0,0,6">
+                                        <TextBlock Text="{Binding Name}" Foreground="{DynamicResource AccentBrush}" FontSize="10" TextWrapping="Wrap"/>
+                                    </Border>
+                                </DataTemplate></GroupStyle.HeaderTemplate>
+                            </GroupStyle></ListBox.GroupStyle>
+                            <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                <Setter Property="AutomationProperties.Name" Value="{Binding Name}"/>
+                            </Style></ListBox.ItemContainerStyle>
+                            <ListBox.ItemTemplate><DataTemplate>
+                                <Grid ToolTip="{Binding Description, StringFormat={}{0}&#10;Перетащите на холст · Ctrl+F — поиск · F1 — горячие клавиши}"><Grid.ColumnDefinitions><ColumnDefinition Width="34"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                    <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="4" Width="26" Height="30" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Symbol}" Foreground="{DynamicResource AccentBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Name}" FontSize="11"/>
+                                        <TextBlock Text="{Binding Category}" Foreground="{DynamicResource MutedBrush}" FontSize="8" Margin="0,5,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate></ListBox.ItemTemplate>
+                        </ListBox></DockPanel>
+                        <Border Grid.Row="3" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="0,14,0,2">
+                            <TextBlock Text="Перетащите карточку&#10;на активный холст." Foreground="{DynamicResource MutedBrush}" FontSize="10" LineHeight="18"/>
+                        </Border>
+                    </Grid>
+  </controls:DockPane>
+  <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" IsEnabled="{Binding Panels.Components.IsExpanded}" ToolTip="Изменить ширину компонентов"/>
+  <Grid Grid.Column="2" x:Name="CenterGrid">
+   <Grid.RowDefinitions><RowDefinition Height="*" MinHeight="160"/><RowDefinition Height="6"/>
+    <RowDefinition x:Name="AnalysisRow">
+     <RowDefinition.MaxHeight><MultiBinding Converter="{StaticResource PaneLimit}" ConverterParameter="Bottom"><Binding ElementName="CenterGrid" Path="ActualHeight"/></MultiBinding></RowDefinition.MaxHeight>
+     <RowDefinition.Style><Style TargetType="RowDefinition">
+     <Setter Property="Height" Value="{Binding Panels.Analysis.Size, Mode=TwoWay, Converter={StaticResource PaneSize}}"/><Setter Property="MinHeight" Value="105"/>
+     <Style.Triggers><DataTrigger Binding="{Binding Panels.Analysis.IsExpanded}" Value="False"><Setter Property="Height" Value="28"/><Setter Property="MinHeight" Value="0"/></DataTrigger>
+      <DataTrigger Binding="{Binding Panels.Analysis.IsVisible}" Value="False"><Setter Property="Height" Value="0"/><Setter Property="MinHeight" Value="0"/></DataTrigger>
+     </Style.Triggers></Style></RowDefinition.Style></RowDefinition>
+   </Grid.RowDefinitions>
+   <Border Style="{StaticResource Panel}" ClipToBounds="True">
+                    <TabControl ItemsSource="{Binding Workspaces}" SelectedItem="{Binding SelectedWorkspace, Mode=TwoWay}" AutomationProperties.Name="Рабочие пространства">
+                        <TabControl.ItemContainerStyle><Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+                            <Setter Property="AutomationProperties.Name" Value="{Binding Title}"/>
+                        </Style></TabControl.ItemContainerStyle>
+                        <TabControl.ItemTemplate><DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Index}" FontSize="9" Foreground="{DynamicResource PurpleBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Title}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" FontSize="11"/>
+                            </StackPanel>
+                        </DataTemplate></TabControl.ItemTemplate>
+                    </TabControl>
+   </Border>
+   <GridSplitter Grid.Row="1" Height="6" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" IsEnabled="{Binding Panels.Analysis.IsExpanded}" ToolTip="Изменить высоту проверки"/>
+   <controls:DockPane Grid.Row="2" x:Name="AnalysisPane" Pane="{Binding Panels.Analysis}" IsBottom="True"><views:AnalysisView DataContext="{Binding Analysis}"/></controls:DockPane>
+  </Grid>
+  <GridSplitter Grid.Column="3" Width="6" HorizontalAlignment="Stretch" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" IsEnabled="{Binding Panels.Inspector.IsExpanded}" ToolTip="Изменить ширину свойств и расчёта"/>
+  <controls:DockPane Grid.Column="4" x:Name="InspectorPane" Pane="{Binding Panels.Inspector}">
+   <TabControl SelectedIndex="{Binding Analysis.InspectorTabIndex, Mode=TwoWay}" Margin="4" Style="{StaticResource PaneTabs}">
+    <TabItem Header="Свойства"><views:PropertiesView DataContext="{Binding Project}"/></TabItem>
+    <TabItem Header="Проверка"><views:AnalysisIssuesView DataContext="{Binding Analysis}"/></TabItem>
+    <TabItem Header="Расчёт"><views:CalculationResultsView DataContext="{Binding Analysis.Results}"/></TabItem>
+   </TabControl>
+  </controls:DockPane>
+ </Grid>
+</UserControl>

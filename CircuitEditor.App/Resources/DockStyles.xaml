@@ -1,0 +1,49 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:controls="clr-namespace:CircuitEditor.App.Controls"
+ xmlns:converters="clr-namespace:CircuitEditor.App.Converters">
+ <converters:PaneSizeConverter x:Key="PaneSize"/>
+ <converters:PaneLimitConverter x:Key="PaneLimit"/>
+ <Style TargetType="GridSplitter">
+  <Setter Property="Background" Value="Transparent"/><Setter Property="ShowsPreview" Value="False"/>
+  <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="GridSplitter">
+   <Grid Background="{TemplateBinding Background}"><Border x:Name="Grip" Background="{DynamicResource LineBrush}" CornerRadius="2" Margin="2"/></Grid>
+   <ControlTemplate.Triggers><Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Grip" Property="Background" Value="{DynamicResource AccentBrush}"/></Trigger>
+   <Trigger Property="IsDragging" Value="True"><Setter TargetName="Grip" Property="Background" Value="{DynamicResource AccentBrush}"/></Trigger></ControlTemplate.Triggers>
+  </ControlTemplate></Setter.Value></Setter>
+ </Style>
+ <Style TargetType="controls:DockPane">
+  <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="controls:DockPane">
+   <Border Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="8" ClipToBounds="True">
+    <Grid>
+     <Grid x:Name="Expanded"><Grid.RowDefinitions><RowDefinition Height="30"/><RowDefinition/></Grid.RowDefinitions>
+      <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1" Padding="8,0,4,0">
+       <DockPanel LastChildFill="True">
+        <Button DockPanel.Dock="Right" Command="{Binding Pane.HideCommand, RelativeSource={RelativeSource TemplatedParent}}" Padding="6,2" Margin="2" ToolTip="Скрыть панель. Вернуть: Вид → Панели" AutomationProperties.Name="Скрыть панель">
+         <Path Data="M 0,0 L 7,7 M 0,7 L 7,0" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.3"/>
+        </Button>
+        <Button DockPanel.Dock="Right" Command="{Binding Pane.TogglePinCommand, RelativeSource={RelativeSource TemplatedParent}}" Padding="6,2" Margin="2" ToolTip="Закрепить / автоматически скрывать" AutomationProperties.Name="Закрепить панель">
+         <Path x:Name="Pin" Data="M 1,0 L 7,0 M 2,0 L 2,5 0,7 8,7 6,5 6,0 M 4,7 L 4,11" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.2"/>
+        </Button>
+        <TextBlock Text="{Binding Pane.Title, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Center" FontSize="10" TextTrimming="CharacterEllipsis"/>
+       </DockPanel>
+      </Border>
+      <ContentPresenter Grid.Row="1" ContentSource="Content"/>
+     </Grid>
+     <Button x:Name="Rail" Visibility="Collapsed" Padding="3" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+       Command="{Binding Pane.ToggleOpenCommand, RelativeSource={RelativeSource TemplatedParent}}" ToolTip="Нажмите, чтобы открыть панель">
+      <TextBlock x:Name="RailTitle" Text="{Binding Pane.Title, RelativeSource={RelativeSource TemplatedParent}}" FontSize="10" Foreground="{DynamicResource AccentBrush}">
+       <TextBlock.LayoutTransform><RotateTransform Angle="-90"/></TextBlock.LayoutTransform>
+      </TextBlock>
+     </Button>
+    </Grid>
+   </Border>
+   <ControlTemplate.Triggers>
+    <DataTrigger Binding="{Binding Pane.IsExpanded, RelativeSource={RelativeSource Self}}" Value="False">
+     <Setter TargetName="Expanded" Property="Visibility" Value="Collapsed"/><Setter TargetName="Rail" Property="Visibility" Value="Visible"/>
+    </DataTrigger>
+    <DataTrigger Binding="{Binding Pane.IsPinned, RelativeSource={RelativeSource Self}}" Value="False"><Setter TargetName="Pin" Property="Opacity" Value="0.4"/></DataTrigger>
+    <Trigger Property="IsBottom" Value="True"><Setter TargetName="RailTitle" Property="LayoutTransform"><Setter.Value><RotateTransform Angle="0"/></Setter.Value></Setter></Trigger>
+   </ControlTemplate.Triggers>
+  </ControlTemplate></Setter.Value></Setter>
+ </Style>
+</ResourceDictionary>

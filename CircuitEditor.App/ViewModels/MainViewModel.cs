@@ -31,6 +31,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         this.shortcutGuide=shortcutGuide;
         this.calculator=calculator;
         Analysis=analysis;
+        if (analysis is not null) analysis.InspectRequested += OnInspectRequested;
         Session = session; Exports = exports;
         this.navigation = navigation;
         this.themes = themes;
@@ -49,6 +50,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     }
 
     public ProjectAnalysisViewModel? Analysis { get; }
+    public PanelLayoutViewModel Panels { get; } = new();
+    private void OnInspectRequested(object? sender, EventArgs e) => Panels.Inspector.ShowCommand.Execute(null);
     public ProjectSessionViewModel? Session { get; }
     public ExportViewModel? Exports { get; }
     public IReadOnlyList<WorkspaceViewModel> Workspaces => navigation.Workspaces;
@@ -167,6 +170,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        if (Analysis is not null) Analysis.InspectRequested -= OnInspectRequested;
         navigation.PropertyChanged -= OnNavigationChanged;
         themes.PropertyChanged -= OnThemeChanged;
         Schematic.PropertyChanged -= OnSchematicChanged;

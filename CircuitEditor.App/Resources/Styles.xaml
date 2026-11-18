@@ -2,6 +2,7 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="InputStyles.xaml"/>
+        <ResourceDictionary Source="DockStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <FontFamily x:Key="UiFont">pack://application:,,,/CircuitEditor.App;component/Resources/Fonts/#JetBrains Mono</FontFamily>
@@ -266,4 +267,18 @@
             </ControlTemplate.Triggers>
         </ControlTemplate></Setter.Value></Setter>
     </Style>
-</ResourceDictionary>
+ <Style x:Key="ResultFilterButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+  <Setter Property="Padding" Value="8,5"/><Setter Property="FontSize" Value="10"/><Setter Property="Margin" Value="0,0,6,0"/>
+  <Style.Triggers><DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True"><Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/><Setter Property="FontWeight" Value="Bold"/></DataTrigger></Style.Triggers>
+ </Style>
+ <Style x:Key="PaneTabs" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
+  <Setter Property="ItemContainerStyle"><Setter.Value><Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
+   <Setter Property="Padding" Value="7,7"/><Setter Property="FontSize" Value="10"/>
+  </Style></Setter.Value></Setter>
+  <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TabControl">
+   <Grid KeyboardNavigation.TabNavigation="Local"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
+    <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1"><TabPanel IsItemsHost="True" Margin="4,5,0,0"/></Border>
+    <ContentPresenter x:Name="PART_SelectedContentHost" Grid.Row="1" ContentSource="SelectedContent"/>
+   </Grid>
+  </ControlTemplate></Setter.Value></Setter>
+ </Style></ResourceDictionary>

@@ -19,7 +19,12 @@ public static class ProjectShortcutBehavior
         var canvas=focus is BreadboardSurface or SchematicSurface;
         var binding=ShortcutCatalog.Resolve(e.Key==Key.System?e.SystemKey:e.Key,Keyboard.Modifiers,editing,canvas);if(binding is null)return;
         if(binding.Id=="Search" && vm.Project.InGesture){vm.StatusMessage="Завершите жест или нажмите Esc перед поиском.";e.Handled=true;return;}
-        if(binding.Id=="Search" && window.FindName("PaletteSearch") is TextBox search){search.Focus();search.SelectAll();}
+        if(binding.Id=="Search")
+        {
+            vm.Panels.Components.ShowCommand.Execute(null);window.UpdateLayout();
+            if((window.FindName("EditorLayout") as FrameworkElement)?.FindName("PaletteSearch") is TextBox search)
+            {search.Focus();search.SelectAll();}
+        }
         else ShortcutCommands.Execute(vm,binding.Id);
         e.Handled=true;
     }

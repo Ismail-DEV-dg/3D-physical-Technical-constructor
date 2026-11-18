@@ -13,11 +13,7 @@
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </shell:WindowChrome.WindowChrome>
-    <Window.Resources>
-        <CollectionViewSource x:Key="GroupedPalette" Source="{Binding Palette}">
-            <CollectionViewSource.GroupDescriptions><PropertyGroupDescription PropertyName="Category"/></CollectionViewSource.GroupDescriptions>
-        </CollectionViewSource>
-    </Window.Resources>
+
 
     <Border x:Name="WindowFrame" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" Padding="8"
             Margin="{Binding Padding, RelativeSource={RelativeSource AncestorType=Window}}">
@@ -82,6 +78,12 @@
                         <MenuItem Header="3D  ·  Ctrl+3" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.ThreeD}"/>
                         <MenuItem Header="Код  ·  Ctrl+4" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Code}"/>
                         <Separator/>
+                        <MenuItem Header="Панели">
+                            <MenuItem Header="Компоненты" Command="{Binding Panels.Components.ShowCommand}"/>
+                            <MenuItem Header="Свойства и расчёт" Command="{Binding Panels.Inspector.ShowCommand}"/>
+                            <MenuItem Header="Проверка / Расчёт DC" Command="{Binding Panels.Analysis.ShowCommand}"/>
+                            <Separator/><MenuItem Header="Восстановить расположение панелей" Command="{Binding Panels.ResetCommand}"/>
+                        </MenuItem>
                         <MenuItem Header="Тема">
                             <MenuItem Header="Neon Dark" Command="{Binding SetThemeCommand}" CommandParameter="{x:Static services:ThemeKind.NeonDark}"/>
                             <MenuItem Header="Light Tech" Command="{Binding SetThemeCommand}" CommandParameter="{x:Static services:ThemeKind.LightTech}"/>
@@ -116,69 +118,7 @@
                     </Button>
                 </StackPanel>
             </Grid>
-            <Grid Grid.Row="3" Margin="10,0">
-                <Grid.ColumnDefinitions><ColumnDefinition Width="224"/><ColumnDefinition Width="12"/><ColumnDefinition Width="*"/><ColumnDefinition Width="12"/><ColumnDefinition Width="236"/></Grid.ColumnDefinitions>
-                <Border Style="{StaticResource Panel}">
-                    <Grid Margin="14">
-                        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-                        <TextBlock Text="КОМПОНЕНТЫ" FontWeight="Bold" FontSize="12"/>
-                        <TextBlock Grid.Row="1" Text="{Binding LibraryCount, StringFormat=Библиотека / {0}}" Style="{StaticResource MutedText}" Margin="0,8,0,22"/>
-                        <DockPanel Grid.Row="2">
-<Grid DockPanel.Dock="Top" Margin="0,0,0,10">
-    <TextBox x:Name="PaletteSearch" Text="{Binding PaletteFilter, UpdateSourceTrigger=PropertyChanged}" FontSize="11" ToolTip="Поиск по названию или категории · Ctrl+F" AutomationProperties.Name="Поиск компонентов"/>
-    <TextBlock Text="Поиск…" IsHitTestVisible="False" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" FontSize="11">
-        <TextBlock.Style><Style TargetType="TextBlock">
-            <Setter Property="Visibility" Value="Collapsed"/>
-            <Style.Triggers><DataTrigger Binding="{Binding Text, ElementName=PaletteSearch}" Value=""><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
-        </Style></TextBlock.Style>
-    </TextBlock>
-</Grid>
-<ListBox input:PaletteDragBehavior.Enabled="True" ItemsSource="{Binding Source={StaticResource GroupedPalette}}" SelectedItem="{Binding SelectedPaletteItem}" AutomationProperties.Name="Палитра компонентов">
-                            <ListBox.GroupStyle><GroupStyle>
-                                <GroupStyle.HeaderTemplate><DataTemplate>
-                                    <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,12,0,7" Margin="0,0,0,6">
-                                        <TextBlock Text="{Binding Name}" Foreground="{DynamicResource AccentBrush}" FontSize="10" TextWrapping="Wrap"/>
-                                    </Border>
-                                </DataTemplate></GroupStyle.HeaderTemplate>
-                            </GroupStyle></ListBox.GroupStyle>
-                            <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                                <Setter Property="AutomationProperties.Name" Value="{Binding Name}"/>
-                            </Style></ListBox.ItemContainerStyle>
-                            <ListBox.ItemTemplate><DataTemplate>
-                                <Grid ToolTip="{Binding Description, StringFormat={}{0}&#10;Перетащите на холст · Ctrl+F — поиск · F1 — горячие клавиши}"><Grid.ColumnDefinitions><ColumnDefinition Width="34"/><ColumnDefinition/></Grid.ColumnDefinitions>
-                                    <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="4" Width="26" Height="30" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Symbol}" Foreground="{DynamicResource AccentBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding Name}" FontSize="11"/>
-                                        <TextBlock Text="{Binding Category}" Foreground="{DynamicResource MutedBrush}" FontSize="8" Margin="0,5,0,0"/>
-                                    </StackPanel>
-                                </Grid>
-                            </DataTemplate></ListBox.ItemTemplate>
-                        </ListBox></DockPanel>
-                        <Border Grid.Row="3" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="0,14,0,2">
-                            <TextBlock Text="Перетащите карточку&#10;на активный холст." Foreground="{DynamicResource MutedBrush}" FontSize="10" LineHeight="18"/>
-                        </Border>
-                    </Grid>
-                </Border>
-                <Border Grid.Column="2" Style="{StaticResource Panel}" ClipToBounds="True">
-                    <Grid><Grid.RowDefinitions><RowDefinition/><RowDefinition Height="210"/></Grid.RowDefinitions>
-                    <TabControl ItemsSource="{Binding Workspaces}" SelectedItem="{Binding SelectedWorkspace, Mode=TwoWay}" AutomationProperties.Name="Рабочие пространства">
-                        <TabControl.ItemContainerStyle><Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
-                            <Setter Property="AutomationProperties.Name" Value="{Binding Title}"/>
-                        </Style></TabControl.ItemContainerStyle>
-                        <TabControl.ItemTemplate><DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Index}" FontSize="9" Foreground="{DynamicResource PurpleBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding Title}" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=TabItem}}" FontSize="11"/>
-                            </StackPanel>
-                        </DataTemplate></TabControl.ItemTemplate>
-                    </TabControl>
-                    <views:AnalysisView Grid.Row="1" DataContext="{Binding Analysis}"/>
-                    </Grid>
-                </Border>
-                <Border Grid.Column="4" Style="{StaticResource Panel}"><views:PropertiesView DataContext="{Binding Project}"/></Border>
-            </Grid>
+            <views:EditorLayoutView x:Name="EditorLayout" Grid.Row="3" Margin="10,0"/>
             <Grid Grid.Row="4" Margin="18,8,18,0">
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

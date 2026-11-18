@@ -13,12 +13,14 @@ public sealed partial class ProjectAnalysisViewModel : ObservableObject, IDispos
     private readonly INavigationService navigation;
     private readonly Core.Electronics.IDcSolver? solver;
     public CalculationResultsViewModel Results {get;}
+    public event EventHandler? InspectRequested;
+    [ObservableProperty] private int inspectorTabIndex;
     private IReadOnlyList<ErcIssueViewModel> issues=[];
     public ProjectAnalysisViewModel(ProjectViewModel project,IErcService erc,IDebounceService debounce,INavigationService navigation,Core.Electronics.IDcSolver? solver=null)
     {
         this.solver=solver;Results=new CalculationResultsViewModel(project);
         this.project=project;this.erc=erc;this.debounce=debounce;this.navigation=navigation;
-        project.Analysis=this;project.ModelCommitted+=Changed;Check();
+        project.Analysis=this;project.ModelCommitted+=Changed;Recheck();
     }
     public IReadOnlyList<string> Filters { get; }=["Все","Ошибки","Предупреждения","Информация"];
     [ObservableProperty] private string filter="Все";
@@ -60,19 +62,24 @@ public sealed partial class ProjectAnalysisViewModel : ObservableObject, IDispos
     }
     private void Changed(object? sender,EventArgs e)
     {
-        Results.Invalidate();issues=[];SelectedIssue=null;IsPending=true;Notify();debounce.Schedule(Check);
+        Results.Invalidate();issues=[];SelectedIssue=null;IsPending=true;Notify();debounce.Schedule(Recheck);
     }
     [RelayCommand]
     private void Calculate()
     {
         if(project.InGesture){project.StatusMessage="Завершите жест перед расчётом.";return;}
         if(solver is null)return;
-        Check();Results.Set(solver.Solve(project.Model,project.Connectivity.Netlist));
+        Recheck();Results.Set(solver.Solve(project.Model,project.Connectivity.Netlist));
+        InspectorTabIndex=2;InspectRequested?.Invoke(this,EventArgs.Empty);
     }
     [RelayCommand]
     private void Check()
     {
-        if(project.InGesture){IsPending=true;debounce.Schedule(Check);return;}
+        Recheck();InspectorTabIndex=1;InspectRequested?.Invoke(this,EventArgs.Empty);
+    }
+    private void Recheck()
+    {
+        if(project.InGesture){IsPending=true;debounce.Schedule(Recheck);return;}
         issues=erc.Check(project.Model,project.Connectivity.Netlist).Select(i=>new ErcIssueViewModel(i)).ToArray();IsPending=false;Notify();
     }
     private void Notify()
