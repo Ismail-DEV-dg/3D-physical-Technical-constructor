@@ -1,0 +1,28 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="BackgroundColor">#EDF2F8</Color>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
+    <Color x:Key="PanelColor">#F5FFFFFF</Color>
+    <SolidColorBrush x:Key="PanelBrush" Color="{DynamicResource PanelColor}"/>
+    <Color x:Key="RaisedColor">#E1EAF4</Color>
+    <SolidColorBrush x:Key="RaisedBrush" Color="{DynamicResource RaisedColor}"/>
+    <Color x:Key="HoverColor">#CCE5EF</Color>
+    <SolidColorBrush x:Key="HoverBrush" Color="{DynamicResource HoverColor}"/>
+    <Color x:Key="TextColor">#17283F</Color>
+    <SolidColorBrush x:Key="TextBrush" Color="{DynamicResource TextColor}"/>
+    <Color x:Key="MutedColor">#526580</Color>
+    <SolidColorBrush x:Key="MutedBrush" Color="{DynamicResource MutedColor}"/>
+    <Color x:Key="LineColor">#B7C8DA</Color>
+    <SolidColorBrush x:Key="LineBrush" Color="{DynamicResource LineColor}"/>
+    <Color x:Key="AccentColor">#007E98</Color>
+    <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource AccentColor}"/>
+    <Color x:Key="PurpleColor">#6540CB</Color>
+    <SolidColorBrush x:Key="PurpleBrush" Color="{DynamicResource PurpleColor}"/>
+    <Color x:Key="GreenColor">#087B49</Color>
+    <SolidColorBrush x:Key="GreenBrush" Color="{DynamicResource GreenColor}"/>
+    <Color x:Key="RedColor">#C52648</Color>
+    <SolidColorBrush x:Key="RedBrush" Color="{DynamicResource RedColor}"/>
+    <Color x:Key="GridColor">#D9E3EF</Color>
+    <SolidColorBrush x:Key="GridBrush" Color="{DynamicResource GridColor}"/>
+</ResourceDictionary>
+
