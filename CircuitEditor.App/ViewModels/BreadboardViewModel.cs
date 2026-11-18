@@ -46,11 +46,13 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
             if (!CanAdjustSpan || !SpanOptions.Contains(value) || value == SelectedSpan) return;
             var item = Project.SelectedComponent!;
             var current = item.MockupPlacement;
+            Project.BeginGesture("Шаг ножек");
             TryPlace(item, new(current.X, current.Y, current.Rotation, value));
+            Project.EndGesture();
             OnPropertyChanged();
         }
     }
-    [ObservableProperty] private double zoom = 1;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(ZoomPercent))] private double zoom = 1;
     [ObservableProperty] private double offsetX = 16;
     [ObservableProperty] private double offsetY = 12;
     [ObservableProperty] private double cursorX;
@@ -60,11 +62,13 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     [RelayCommand]
     private void Input(CanvasInput input)
     {
-        if (input.Action == CanvasAction.Cancel) { Cancel(); return; }
+        if (input.Action == CanvasAction.Cancel) { Project.Wiring.Cancel(); Cancel(); return; }
         if (input.Action == CanvasAction.Rotate) { RotateSelected(); return; }
-        if (input.Action == CanvasAction.Delete) { Cancel(); Project.RemoveSelected(); return; }
+        if (input.Action == CanvasAction.Delete) { if (!Project.Wiring.Handle(input, new(CursorX,CursorY))) { Cancel(); Project.RemoveSelected(); } return; }
         CursorX = PhysicalSettings.ToMillimeters((input.X - OffsetX) / Zoom);
         CursorY = PhysicalSettings.ToMillimeters((input.Y - OffsetY) / Zoom);
+        if (dragging is null && rotatingKnob is null && !panning && Project.Wiring.Handle(input, new(CursorX, CursorY))) { Revision++; return; }
+        if (input.Action is CanvasAction.Down or CanvasAction.Drop && !input.Pan) Project.BeginGesture("Макет: размещение / ручка");
         switch (input.Action)
         {
             case CanvasAction.Down:
@@ -113,7 +117,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
                 if (!TryPlace(added, origin))
                 {
                     var error = Project.StatusMessage;
-                    Project.RemoveSelected();
+                    Project.CancelGesture();
                     Project.StatusMessage = error;
                 }
                 break;
@@ -128,9 +132,21 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
                 foreach (var item in Project.Components) item.IsSelected = true;
                 break;
         }
+        if (input.Action is CanvasAction.Up or CanvasAction.Drop) Project.EndGesture();
         Revision++;
     }
 
+    public LayoutPoint? ResolveEndpoint(Core.Wiring.WireEndpoint endpoint)
+    {
+        if (endpoint.Kind == Core.Wiring.WireEndpointKind.ComponentContact)
+        {
+            var item = Project.Components.FirstOrDefault(c => c.Model.Id == endpoint.OwnerId);
+            var contact = item?.Footprint.Contacts.FirstOrDefault(c => c.Id == endpoint.TerminalId);
+            if (item is not null && contact is not null)
+                return ContactGeometry.World(item.Footprint,contact,PlacementOf(item),PhysicalSettings.FreeGridMm);
+        }
+        return Core.Wiring.WireGeometry.Resolve(Project.Model,endpoint);
+    }
     public bool Hit(ComponentViewModel item, double x, double y)
     {
         var pose = PlacementOf(item);
@@ -201,19 +217,20 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     {
         Cancel();
         if (Project.SelectedComponent is not { } item) return;
+        Project.BeginGesture("Поворот компонента");
         var pose = item.MockupPlacement.Copy(); pose.Rotate();
-        TryPlace(item, pose);
+        TryPlace(item, pose); Project.EndGesture();
     }
     [RelayCommand]
-    private void DeleteSelected() { Cancel(); Project.RemoveSelected(); }
+    private void DeleteSelected() { Cancel(); if (!Project.Wiring.Handle(new(CanvasAction.Delete), new(CursorX,CursorY))) Project.RemoveSelected(); }
     [RelayCommand]
     private void ResetView() { Cancel(); Zoom = 1; OffsetX = 16; OffsetY = 12; OnPropertyChanged(nameof(ZoomPercent)); Revision++; }
     private void Cancel()
     {
-        if (dragging is null && rotatingKnob is null && draft is null && Preview is null && !panning) return;
+        if (dragging is null && rotatingKnob is null && draft is null && Preview is null && !panning) { Project.CancelGesture(); return; }
         rotatingKnob?.PotentiometerEditor?.SetAngle(originalKnobAngle);
         if (panning) { OffsetX = oldOffsetX; OffsetY = oldOffsetY; }
-        dragging = null; rotatingKnob = null; draft = null; Preview = null; panning = false; Revision++;
+        dragging = null; rotatingKnob = null; draft = null; Preview = null; panning = false; Project.CancelGesture(); Revision++;
     }
     private static LayoutPoint KnobPoint(ComponentViewModel item, double x, double y)
     {
@@ -231,7 +248,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     }
     private void OnProjectChanged(object? sender, PropertyChangedEventArgs args)
     {
-        if (args.PropertyName == nameof(Project.Revision)) Revision++;
+        if (args.PropertyName == nameof(Project.Revision)) { Revision++; OnPropertyChanged(nameof(SelectedSpan)); }
         if (args.PropertyName != nameof(Project.SelectedComponent)) return;
         if (selectionId == Project.SelectedComponent?.Model.Id) return;
         selectionId = Project.SelectedComponent?.Model.Id;

@@ -29,6 +29,16 @@ public static class Program
         registrations.AddSingleton<IComponentInsertionService, ComponentInsertionService>();
         registrations.AddSingleton<ITextMeasurer, WpfTextMeasurer>();
         registrations.AddSingleton<IComponentLayoutCalculator, ComponentLayoutCalculator>();
+        registrations.AddSingleton<IProjectRepository, JsonProjectRepository>();
+        registrations.AddSingleton<IRecentProjectsRepository, JsonRecentProjectsRepository>();
+        registrations.AddSingleton<IExportRepository, FileExportRepository>();
+        registrations.AddSingleton<IDialogService, DialogService>();
+        registrations.AddSingleton<IAutosaveService, AutosaveService>();
+        registrations.AddSingleton<IImageExportService, ImageExportService>();
+        registrations.AddSingleton<ISvgExportService, SvgExportService>();
+        registrations.AddSingleton<CircuitEditor.Core.Export.IBomExportService, CircuitEditor.Core.Export.BomExportService>();
+        registrations.AddSingleton<ProjectSessionViewModel>();
+        registrations.AddSingleton<ExportViewModel>();
         registrations.AddSingleton<ProjectViewModel>();
         registrations.AddSingleton<BreadboardViewModel>();
         registrations.AddSingleton<SchematicViewModel>();
@@ -53,7 +63,11 @@ public static class Program
             services.GetRequiredService<IErrorLogRepository>().TryAppend(args.Exception.ToString());
             args.Handled = true;
         };
-        app.Run(services.GetRequiredService<MainWindow>());
+        var main = services.GetRequiredService<MainWindow>();
+        var session = services.GetRequiredService<ProjectSessionViewModel>();
+        main.ContentRendered += (_, _) => session.Initialize();
+        main.Closing += (_, args) => args.Cancel = !session.RequestClose();
+        app.Run(main);
     }
 
 }

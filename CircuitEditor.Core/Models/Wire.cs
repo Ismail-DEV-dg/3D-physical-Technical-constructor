@@ -1,26 +1,35 @@
+using CircuitEditor.Core.Layout;
+using CircuitEditor.Core.Wiring;
 using System.Text.Json.Serialization;
-
 namespace CircuitEditor.Core.Models;
-
-/// <summary>Сериализуемая модель соединения; интерактивные перемычки будут на этапе 4.</summary>
+/// <summary>Перемычка: связность задаётся исключительно устойчивыми концами.</summary>
 public sealed class Wire
 {
-    /// <summary>Создаёт соединение с новым ID.</summary>
-    public Wire(PinReference start, PinReference end) : this(Guid.NewGuid(), start, end) { }
-    /// <summary>Восстанавливает соединение с прежним ID.</summary>
+    /// <summary>Создаёт физическую перемычку.</summary>
+    public Wire(WireEndpoint start, WireEndpoint end, string color = "#FF3B5C", IReadOnlyList<LayoutPoint>? controlPoints = null)
+        : this(Guid.NewGuid(), start, end, color, controlPoints) { }
+    /// <summary>Восстанавливает перемычку.</summary>
     [JsonConstructor]
-    public Wire(Guid id, PinReference start, PinReference end)
+    public Wire(Guid id, WireEndpoint start, WireEndpoint end, string color = "#FF3B5C", IReadOnlyList<LayoutPoint>? controlPoints = null)
     {
-        ArgumentNullException.ThrowIfNull(start); ArgumentNullException.ThrowIfNull(end);
-        if (id == Guid.Empty || start.ComponentId == Guid.Empty || end.ComponentId == Guid.Empty
-            || string.IsNullOrWhiteSpace(start.PinId) || string.IsNullOrWhiteSpace(end.PinId) || start == end)
-            throw new ArgumentException("Некорректные концы провода.");
-        Id = id; Start = start; End = end;
+        if (id == Guid.Empty || start is null || end is null || start == end || start.OwnerId == Guid.Empty || end.OwnerId == Guid.Empty
+            || string.IsNullOrWhiteSpace(start.TerminalId) || string.IsNullOrWhiteSpace(end.TerminalId)
+            || !Enum.IsDefined(start.Kind) || !Enum.IsDefined(end.Kind) || !WirePalette.Colors.Contains(color))
+            throw new ArgumentException("Некорректная перемычка или цвет.");
+        var points = controlPoints?.ToArray() ?? [];
+        if (points.Any(p => !double.IsFinite(p.X) || !double.IsFinite(p.Y))) throw new ArgumentException("Некорректный изгиб.");
+        Id = id; Start = start; End = end; Color = color; ControlPoints = Array.AsReadOnly(points);
     }
-    /// <summary>Идентификатор.</summary>
+    /// <summary>Совместимость старых внутренних символьных тестов; файлы используют физические ID.</summary>
+    public Wire(PinReference start, PinReference end) : this(WireEndpoint.Contact(start.ComponentId, start.PinId), WireEndpoint.Contact(end.ComponentId, end.PinId)) { }
+    /// <summary>Устойчивый ID.</summary>
     public Guid Id { get; }
-    /// <summary>Первый вывод.</summary>
-    public PinReference Start { get; }
-    /// <summary>Второй вывод.</summary>
-    public PinReference End { get; }
+    /// <summary>Первый конец.</summary>
+    public WireEndpoint Start { get; }
+    /// <summary>Второй конец.</summary>
+    public WireEndpoint End { get; }
+    /// <summary>Цвет из палитры.</summary>
+    public string Color { get; }
+    /// <summary>Управляющие узлы в мм; на электрическую связность не влияют.</summary>
+    public IReadOnlyList<LayoutPoint> ControlPoints { get; }
 }

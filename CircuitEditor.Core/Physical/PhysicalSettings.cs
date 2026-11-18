@@ -3,6 +3,11 @@ namespace CircuitEditor.Core.Physical;
 /// <summary>Единое преобразование единиц и допуски физического макета.</summary>
 public static class PhysicalSettings
 {
+    /// <summary>Исходное размещение единственной breadboard на столе, мм.</summary>
+    public const double DefaultBoardX = 90;
+    /// <summary>Верхнее поле breadboard, мм.</summary>
+    public const double DefaultBoardY = 5;
+
     /// <summary>Пикселей WPF на мм при масштабе 100%.</summary>
     public const double PixelsPerMillimeter = 6;
     /// <summary>Допуск совмещения контакта и отверстия, мм.</summary>

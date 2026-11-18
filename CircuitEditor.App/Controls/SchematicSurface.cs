@@ -75,15 +75,15 @@ public sealed class SchematicSurface : FrameworkElement
             context.DrawLine(axes, new Point(0, scene.OffsetY), new Point(ActualWidth, scene.OffsetY));
     }
 
-    private void DrawComponent(DrawingContext context, ComponentViewModel item)
+    internal void DrawComponent(DrawingContext context, ComponentViewModel item, bool selection = true)
     {
         var model = item.Model;
         var layout = item.Layout;
         context.PushTransform(new TranslateTransform(item.SchematicPlacement.X, item.SchematicPlacement.Y));
         context.PushTransform(new RotateTransform(item.SchematicPlacement.Rotation, layout.Width / 2, layout.Height / 2));
-        var ink = new SolidColorBrush((Color)ColorConverter.ConvertFromString(model.Color));
+        var ink = new SolidColorBrush((Color)ColorConverter.ConvertFromString(model.Color ?? model.Definition.DefaultColor));
         var body = Rect(layout.Body);
-        if (item.IsSelected)
+        if (selection && item.IsSelected)
         {
             var glow = Brush("AccentBrush").Clone(); glow.Opacity = 0.18;
             context.DrawRoundedRectangle(null, new Pen(glow, 10), body, 7, 7);

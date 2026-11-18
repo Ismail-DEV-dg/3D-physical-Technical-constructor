@@ -27,13 +27,13 @@ public sealed class CircuitProject
         Simulation = simulation ?? new SimulationState();
     }
     /// <summary>Общая электрическая модель.</summary>
-    public Circuit Circuit { get; }
+    public Circuit Circuit { get; private set; }
     /// <summary>Физические размещения в мм.</summary>
-    public ViewLayout MockupLayout { get; }
+    public ViewLayout MockupLayout { get; private set; }
     /// <summary>Символьные размещения в логических пикселях.</summary>
-    public ViewLayout SchematicLayout { get; }
+    public ViewLayout SchematicLayout { get; private set; }
     /// <summary>Платы, видимые только в макете.</summary>
-    public IReadOnlyList<BreadboardInstance> Breadboards { get; }
+    public IReadOnlyList<BreadboardInstance> Breadboards { get; private set; }
     /// <summary>Физические определения, пригодные для сериализации проекта.</summary>
     public IReadOnlyList<FootprintDefinition> Footprints { get; }
     /// <summary>Вставленные физические контакты.</summary>
@@ -55,6 +55,12 @@ public sealed class CircuitProject
     }
     /// <summary>Отсоединяет компонент от отверстий без изменения схемы.</summary>
     public void Detach(Guid id) => bindings.RemoveAll(binding => binding.ComponentId == id);
+    /// <summary>Заменяет проверенное состояние; определения библиотеки остаются общими.</summary>
+    public void Restore(CircuitProject state)
+    {
+        Circuit = state.Circuit; MockupLayout = state.MockupLayout; SchematicLayout = state.SchematicLayout;
+        Breadboards = state.Breadboards; bindings.Clear(); bindings.AddRange(state.Bindings);
+    }
     internal void CommitInsertion(Guid id, ComponentPlacement placement, IReadOnlyList<ContactBinding> newBindings)
     {
         MockupLayout.Set(id, placement);

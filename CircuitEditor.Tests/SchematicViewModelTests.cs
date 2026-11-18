@@ -98,6 +98,6 @@ public sealed class SchematicViewModelTests
         model.ApplyPropertiesCommand.Execute(null);
         Assert.Empty(model.PropertyError);
         Assert.Equal("0x3F", selected.Model.I2cAddress);
-        Assert.Equal("#39FF88", selected.Model.Color);
+        Assert.Null(selected.Model.Color);
     }
 }

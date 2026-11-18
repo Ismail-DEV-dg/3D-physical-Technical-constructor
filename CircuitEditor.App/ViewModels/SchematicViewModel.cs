@@ -42,7 +42,7 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
     public double SelectionWidth => Math.Abs(CursorX - startX);
     public double SelectionHeight => Math.Abs(CursorY - startY);
 
-    [ObservableProperty] private double zoom = 1;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(ZoomPercent))] private double zoom = 1;
     [ObservableProperty] private double offsetX = DefaultOffset;
     [ObservableProperty] private double offsetY = DefaultOffset;
     [ObservableProperty] private double cursorX;
@@ -63,6 +63,7 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
             foreach (var item in Components) item.IsSelected = true;
             Refresh(); return;
         }
+        if (input.Action is CanvasAction.Down or CanvasAction.Drop && !input.Pan) Project.BeginGesture("Схема: размещение");
         CursorX = (input.X - OffsetX) / Zoom;
         CursorY = (input.Y - OffsetY) / Zoom;
         switch (input.Action)
@@ -81,13 +82,16 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
             case CanvasAction.Up: EndGesture(); break;
             case CanvasAction.Wheel: ZoomAt(input); break;
         }
+        if (input.Action is CanvasAction.Up or CanvasAction.Drop) Project.EndGesture();
         Revision++;
     }
 
     public ComponentViewModel AddComponent(ComponentDefinition definition, double x, double y)
     {
+        var own = Project.BeginGesture("Добавление компонента");
         var added = Project.Add(definition) ?? throw new InvalidOperationException(Project.StatusMessage);
         added.SchematicPlacement.MoveTo(DiagramGeometry.Snap(x), DiagramGeometry.Snap(y));
+        if (own) Project.EndGesture();
         Refresh();
         return added;
     }
@@ -170,7 +174,9 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
     [RelayCommand]
     private void RotateSelected()
     {
+        Project.BeginGesture("Поворот символов");
         foreach (var item in Components.Where(item => item.IsSelected)) item.SchematicPlacement.Rotate();
+        Project.EndGesture();
         Refresh();
     }
 
@@ -193,6 +199,7 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
     [RelayCommand]
     private void ShowAllComponents()
     {
+        Project.BeginGesture("Галерея компонентов");
         const int columns = 5;
         var spacing = 3 * DiagramGeometry.GridSize;
         var originX = Components.Count == 0 ? 0 : DiagramGeometry.Snap(Components.Max(item =>
@@ -213,6 +220,7 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
         OffsetX = DefaultOffset - originX * Zoom;
         OffsetY = DefaultOffset;
         OnPropertyChanged(nameof(ZoomPercent));
+        Project.EndGesture();
         StatusMessage = $"Галерея: {gallery.Length} компонентов · колесо — масштаб, ПКМ — панорама.";
         Refresh();
     }
@@ -230,6 +238,7 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
         if (panning) { OffsetX = initialOffsetX; OffsetY = initialOffsetY; }
         moving = panning = IsSelecting = false;
         moveOrigins.Clear();
+        Project.CancelGesture();
         Refresh();
     }
 

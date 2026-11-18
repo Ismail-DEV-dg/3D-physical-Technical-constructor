@@ -18,7 +18,7 @@ internal sealed class ComponentDrawingCache
         var span = footprint.IsFlexible ? pose.SpanHoles == 0 ? footprint.DefaultSpan : pose.SpanHoles : 0;
         var value = footprint.Renderer is "axial-resistor" or "inductor" or "potentiometer" ? item.Model.Value
             : footprint.Renderer == "capacitor" ? $"{item.Model.CapacitorKind}:{item.Model.Value}" : "";
-        var color = footprint.Renderer == "led" ? item.Model.Color : "";
+        var color = footprint.Renderer == "led" ? item.Model.Color ?? "" : "";
         if (footprint.Renderer is "rgb-led" or "switch" or "battery")
         {
             var definition = ComponentInputDefinitions.For(item.Model.Definition.Id)[0];

@@ -56,11 +56,12 @@ public sealed class CircuitModelTests
     [InlineData("220 Ω", "#39FF88", "0x27")]
     public void InvalidPropertiesLeaveComponentUnchanged(string value, string color, string? address)
     {
-        var component = new Component(Definition(), "R1");
+        var component = new Component(new JsonComponentLibraryRepository().Load().Components.Single(d => d.Id == "led"), "LED1");
+        var previous = component.Value; var previousColor = component.Color;
         Assert.False(component.TryUpdateProperties(value, color, address, out var error));
         Assert.NotNull(error);
-        Assert.Equal("220 Ω", component.Value);
-        Assert.Equal("#00E5FF", component.Color);
+        Assert.Equal(previous, component.Value);
+        Assert.Equal(previousColor, component.Color);
     }
 
     [Theory]

@@ -64,6 +64,7 @@ public sealed class BreadboardSurface : FrameworkElement
                 scene.Preview is { Success: false } && item.IsSelected);
             dc.Pop(); dc.Pop();
         }
+        WireDrawing.Draw(dc, scene);
         dc.Pop(); dc.Pop();
     }
     protected override void OnMouseMove(MouseEventArgs args)

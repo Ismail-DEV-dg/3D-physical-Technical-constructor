@@ -66,7 +66,7 @@ internal static class RealComponentDrawing
                 if (bands.Count == 0) PhysicalDrawing.Text(dc, "?", body.X + body.Width / 2, body.Y, 1.8, Brushes.DimGray);
                 break;
             case "led":
-                var color = (Color)ColorConverter.ConvertFromString(item.Model.Color);
+                var color = (Color)ColorConverter.ConvertFromString(item.Model.Color ?? item.Model.Definition.DefaultColor);
                 dc.DrawEllipse(PhysicalDrawing.Ink("#9D2139"), new Pen(PhysicalDrawing.Ink("#68202D"), .2),
                     new Point(body.X + body.Width / 2, body.Y + body.Height / 2 + .6), body.Width / 2 + .35, body.Height / 2);
                 dc.DrawEllipse(new LinearGradientBrush(Colors.MistyRose, color, 45),

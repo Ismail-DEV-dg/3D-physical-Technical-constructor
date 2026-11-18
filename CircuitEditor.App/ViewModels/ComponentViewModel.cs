@@ -18,7 +18,7 @@ public sealed partial class ComponentViewModel : ObservableObject
     {
         this.layoutCalculator = layoutCalculator; this.project = project;
         Model = model; Footprint = footprint; Layout = layoutCalculator.Calculate(model);
-        editValue = model.Value; editColor = model.Color; editI2cAddress = model.I2cAddress ?? "";
+        editValue = model.Value; editColor = model.Color ?? ""; editI2cAddress = model.I2cAddress ?? "";
         if (IsResistor) ResistorEditor = new ResistorEditorViewModel(model.Value, ApplyResistance);
         if (model.Definition.Id is "capacitor" or "inductor")
             NominalEditor = new PassiveNominalEditorViewModel(IsCapacitor ? PassiveQuantity.Capacitance : PassiveQuantity.Inductance,
@@ -37,11 +37,13 @@ public sealed partial class ComponentViewModel : ObservableObject
     public string Description => Model.Definition.Description;
     public double Voltage => Model.Definition.Id == "battery" ? Model.Inputs.Values[ComponentInput.BatteryVoltage] : Model.Definition.Voltage;
     public ComponentInputsViewModel? InputsEditor { get; }
-    public bool ShowsGenericValue => !HasListedNominal && InputsEditor is null;
-    public bool HasImmediateProperties => HasListedNominal || InputsEditor is not null;
+    public bool ShowsGenericValue => Model.Definition.Id is "led" or "potentiometer" or "diode" or "npn" or "relay" or "buzzer";
+    public bool HasImmediateProperties => !ShowsGenericValue && !SupportsI2c && !ShowsColor;
     public bool ShowsFixedNtcValue => Model.Definition.Id == "thermistor";
+    public int MutationVersion { get; private set; }
     private void InputChanged(ComponentInput input)
     {
+        MutationVersion++; OnPropertyChanged(nameof(MutationVersion));
         if (input == ComponentInput.BatteryVoltage) OnPropertyChanged(nameof(Voltage));
         if (input is ComponentInput.BatteryVoltage or ComponentInput.RgbCommon) { EditValue = Model.Value; UpdateLayout(); }
         if (ComponentInputDefinitions.ChangesAppearance(input)) NotifyAppearance();

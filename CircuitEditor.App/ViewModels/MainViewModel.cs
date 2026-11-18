@@ -24,8 +24,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     private readonly IReadOnlyList<PaletteItemViewModel> library;
 
-    public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window)
+    public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window, ProjectSessionViewModel? session = null, ExportViewModel? exports = null)
     {
+        Session = session; Exports = exports;
         this.navigation = navigation;
         this.themes = themes;
         this.window = window;
@@ -42,6 +43,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         themes.PropertyChanged += OnThemeChanged;
     }
 
+    public ProjectSessionViewModel? Session { get; }
+    public ExportViewModel? Exports { get; }
     public IReadOnlyList<WorkspaceViewModel> Workspaces => navigation.Workspaces;
 
     public WorkspaceViewModel SelectedWorkspace
@@ -118,7 +121,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
-    private void About() => StatusMessage = "Circuit Editor • Arduino / ESP32 • Курсовой проект • Этап 3";
+    private void About() => StatusMessage = "Circuit Editor • Arduino / ESP32 • Курсовой проект • Этап 4";
 
     [RelayCommand]
     private void Minimize() => window.Minimize();

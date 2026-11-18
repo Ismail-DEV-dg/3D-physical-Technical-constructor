@@ -59,6 +59,14 @@ public sealed class Circuit
             return false;
         wires.Add(wire); return true;
     }
-    private bool ContainsPin(PinReference reference) => components.Any(component => component.Id == reference.ComponentId
-        && component.Definition.Pins.Any(pin => pin.Id == reference.PinId && pin.IsExposed));
+    /// <summary>Меняет проверенную физическую перемычку, сохраняя порядок.</summary>
+    public void PutWire(Wire wire)
+    {
+        var index = wires.FindIndex(w => w.Id == wire.Id);
+        if (index < 0) wires.Add(wire); else wires[index] = wire;
+    }
+    /// <summary>Удаляет перемычку.</summary>
+    public bool RemoveWire(Guid id) => wires.RemoveAll(w => w.Id == id) > 0;
+    private bool ContainsPin(CircuitEditor.Core.Wiring.WireEndpoint reference) => components.Any(component => component.Id == reference.ComponentId
+        && component.Definition.Pins.Any(pin => pin.Id == reference.TerminalId && pin.IsExposed));
 }

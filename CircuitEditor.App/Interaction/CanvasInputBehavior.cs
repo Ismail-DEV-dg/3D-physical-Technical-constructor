@@ -59,7 +59,9 @@ public static class CanvasInputBehavior
     {
         var element = (FrameworkElement)sender;
         Send(element, Pointer(element, args, CanvasAction.Up));
+        element.LostMouseCapture -= LostCapture;
         element.ReleaseMouseCapture();
+        element.LostMouseCapture += LostCapture;
         args.Handled = true;
     }
 
