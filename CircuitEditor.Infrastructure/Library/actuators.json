@@ -5,13 +5,13 @@
   "prefix": "BZ",
   "category": "ИСПОЛНИТЕЛИ",
   "symbol": "buzzer",
-  "description": "Пассивный пьезозуммер, управление переменным сигналом.",
+  "description": "Активный зуммер 5 В со встроенным генератором; выводы +/−. Ножки сформованы на шаг 7,62 мм для breadboard.",
   "voltage": 5,
   "pins": [
-    {"id":"+","name":"+","type":"Passive"},
+    {"id":"+","name":"+","type":"Power"},
     {"id":"-","name":"-","type":"Ground"}
   ],
-  "defaultValue": "Passive 5V",
+  "defaultValue": "Active 5V",
   "defaultColor": "#00E5FF",
   "defaultI2cAddress": null
 },
@@ -38,7 +38,7 @@
   "prefix": "K",
   "category": "ИСПОЛНИТЕЛИ",
   "symbol": "relay",
-  "description": "Реле с катушкой 5 В: COIL+/COIL− и контакты COM/NO/NC. Для катушки нужен драйвер и защитный диод.",
+  "description": "Синее SPDT-реле 19×15,5 мм, ножки сформованы под сетку breadboard 2,54 мм. Катушка 5 В: COIL+/COIL− и контакты COM/NO/NC. Для катушки нужен драйвер и защитный диод.",
   "voltage": 5,
   "pins": [
     {"id":"COIL+","name":"COIL+","type":"Power"},

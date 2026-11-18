@@ -14,6 +14,8 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
 {
     private readonly IComponentInsertionService insertion;
     private ComponentViewModel? dragging;
+    private ComponentViewModel? rotatingKnob;
+    private double originalKnobAngle;
     private ComponentPlacement? draft;
     private double grabX, grabY, startX, startY, oldOffsetX, oldOffsetY;
     private bool panning;
@@ -75,6 +77,15 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
                 Project.Select(dragging, input.Control);
                 if (dragging is not null && dragging.IsSelected)
                 {
+                    if (dragging.Footprint.RotaryControl is { } knob)
+                    {
+                        var point = KnobPoint(dragging, CursorX, CursorY);
+                        if (point.X * point.X + point.Y * point.Y <= knob.Radius * knob.Radius)
+                        {
+                            rotatingKnob = dragging; originalKnobAngle = dragging.Model.PotentiometerAngle;
+                            dragging = null; TurnKnob(); break;
+                        }
+                    }
                     draft = dragging.MockupPlacement.Copy();
                     grabX = CursorX - draft.X; grabY = CursorY - draft.Y;
                 }
@@ -82,13 +93,14 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
                 break;
             case CanvasAction.Move:
                 if (panning) { OffsetX = oldOffsetX + input.X - startX; OffsetY = oldOffsetY + input.Y - startY; }
+                else if (rotatingKnob is not null) TurnKnob();
                 else if (dragging is not null && draft is not null)
                     UpdateDraft(new(CursorX - grabX, CursorY - grabY, draft.Rotation, draft.SpanHoles));
                 else return; // Cursor/status changes do not change the circuit picture.
                 break;
             case CanvasAction.Up:
                 if (dragging is not null && draft is not null) TryPlace(dragging, draft);
-                dragging = null; draft = null; Preview = null; panning = false;
+                dragging = null; rotatingKnob = null; draft = null; Preview = null; panning = false;
                 break;
             case CanvasAction.Drop:
                 var definition = Project.Library.FirstOrDefault(item => item.Id == input.DefinitionId);
@@ -106,7 +118,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
                 }
                 break;
             case CanvasAction.Wheel:
-                if (dragging is not null || panning) break;
+                if (dragging is not null || rotatingKnob is not null || panning) break;
                 var next = Math.Clamp(Zoom * Math.Pow(1.12, input.Delta / 120d), 0.25, 3);
                 OffsetX = input.X - PhysicalSettings.ToPixels(CursorX) * next;
                 OffsetY = input.Y - PhysicalSettings.ToPixels(CursorY) * next;
@@ -198,9 +210,24 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     private void ResetView() { Cancel(); Zoom = 1; OffsetX = 16; OffsetY = 12; OnPropertyChanged(nameof(ZoomPercent)); Revision++; }
     private void Cancel()
     {
-        if (dragging is null && draft is null && Preview is null && !panning) return;
+        if (dragging is null && rotatingKnob is null && draft is null && Preview is null && !panning) return;
+        rotatingKnob?.PotentiometerEditor?.SetAngle(originalKnobAngle);
         if (panning) { OffsetX = oldOffsetX; OffsetY = oldOffsetY; }
-        dragging = null; draft = null; Preview = null; panning = false; Revision++;
+        dragging = null; rotatingKnob = null; draft = null; Preview = null; panning = false; Revision++;
+    }
+    private static LayoutPoint KnobPoint(ComponentViewModel item, double x, double y)
+    {
+        var pose = item.MockupPlacement; var control = item.Footprint.RotaryControl!;
+        var angle = -pose.Rotation * Math.PI / 180;
+        var dx = x - pose.X; var dy = y - pose.Y;
+        return new(dx * Math.Cos(angle) - dy * Math.Sin(angle) - control.X,
+            dx * Math.Sin(angle) + dy * Math.Cos(angle) - control.Y);
+    }
+    private void TurnKnob()
+    {
+        if (rotatingKnob is not { } item) return;
+        var point = KnobPoint(item, CursorX, CursorY);
+        item.PotentiometerEditor?.SetAngle(PotentiometerPosition.FromPointer(point.X, point.Y, item.Model.PotentiometerAngle));
     }
     private void OnProjectChanged(object? sender, PropertyChangedEventArgs args)
     {

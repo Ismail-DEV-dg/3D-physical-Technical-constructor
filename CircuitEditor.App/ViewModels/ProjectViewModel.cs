@@ -99,10 +99,10 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     private void OnComponentChanged(object? sender, PropertyChangedEventArgs args)
     {
         if (args.PropertyName == nameof(ComponentViewModel.IsSelected)) Refresh();
-        if (args.PropertyName == nameof(ComponentViewModel.ResistanceValue))
+        if (args.PropertyName is nameof(ComponentViewModel.ResistanceValue) or nameof(ComponentViewModel.AppearanceVersion))
         {
             PropertyError = "";
-            StatusMessage = "Номинал и цветные полосы резистора обновлены.";
+            StatusMessage = "Свойства компонента и макет обновлены.";
             Refresh();
         }
     }

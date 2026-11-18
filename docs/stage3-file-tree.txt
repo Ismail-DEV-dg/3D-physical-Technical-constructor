@@ -4,6 +4,7 @@ CircuitEditor.App/App.xaml
 CircuitEditor.App/App.xaml.cs
 CircuitEditor.App/AssemblyInfo.cs
 CircuitEditor.App/CircuitEditor.App.csproj
+CircuitEditor.App/Controls/ActuatorBodyDrawing.cs
 CircuitEditor.App/Controls/ArduinoNanoDrawing.cs
 CircuitEditor.App/Controls/ArduinoUnoDrawing.cs
 CircuitEditor.App/Controls/BoardDetailDrawing.cs
@@ -13,11 +14,15 @@ CircuitEditor.App/Controls/BreadboardSurface.cs
 CircuitEditor.App/Controls/ComponentDrawingCache.cs
 CircuitEditor.App/Controls/Esp32Drawing.cs
 CircuitEditor.App/Controls/Lcd1602Drawing.cs
+CircuitEditor.App/Controls/NpnDrawing.cs
 CircuitEditor.App/Controls/OledDrawing.cs
+CircuitEditor.App/Controls/PassiveBodyDrawing.cs
 CircuitEditor.App/Controls/PhysicalDrawing.cs
 CircuitEditor.App/Controls/PhysicalPinToolTips.cs
+CircuitEditor.App/Controls/PotentiometerDrawing.cs
 CircuitEditor.App/Controls/RealComponentDrawing.cs
 CircuitEditor.App/Controls/SchematicSurface.cs
+CircuitEditor.App/Controls/ServoDrawing.cs
 CircuitEditor.App/Controls/SevenSegmentDrawing.cs
 CircuitEditor.App/Controls/SymbolDrawing.cs
 CircuitEditor.App/Interaction/CanvasAction.cs
@@ -51,6 +56,9 @@ CircuitEditor.App/ViewModels/CodeViewModel.cs
 CircuitEditor.App/ViewModels/ComponentViewModel.cs
 CircuitEditor.App/ViewModels/MainViewModel.cs
 CircuitEditor.App/ViewModels/PaletteItemViewModel.cs
+CircuitEditor.App/ViewModels/PassiveNominalEditorViewModel.cs
+CircuitEditor.App/ViewModels/PassiveNominalOption.cs
+CircuitEditor.App/ViewModels/PotentiometerEditorViewModel.cs
 CircuitEditor.App/ViewModels/ProjectViewModel.cs
 CircuitEditor.App/ViewModels/ResistanceOption.cs
 CircuitEditor.App/ViewModels/ResistorEditorViewModel.cs
@@ -60,6 +68,10 @@ CircuitEditor.App/ViewModels/WorkspaceKind.cs
 CircuitEditor.App/ViewModels/WorkspaceViewModel.cs
 CircuitEditor.App/Views/BreadboardView.xaml
 CircuitEditor.App/Views/BreadboardView.xaml.cs
+CircuitEditor.App/Views/PassiveNominalView.xaml
+CircuitEditor.App/Views/PassiveNominalView.xaml.cs
+CircuitEditor.App/Views/PotentiometerPropertiesView.xaml
+CircuitEditor.App/Views/PotentiometerPropertiesView.xaml.cs
 CircuitEditor.App/Views/PropertiesView.xaml
 CircuitEditor.App/Views/PropertiesView.xaml.cs
 CircuitEditor.App/Views/ResistorPropertiesView.xaml
@@ -86,6 +98,7 @@ CircuitEditor.Core/Layout/LayoutText.cs
 CircuitEditor.Core/Layout/LayoutTransform.cs
 CircuitEditor.Core/Layout/PinLayout.cs
 CircuitEditor.Core/Layout/TextExtent.cs
+CircuitEditor.Core/Models/CapacitorKind.cs
 CircuitEditor.Core/Models/Circuit.cs
 CircuitEditor.Core/Models/CircuitProject.cs
 CircuitEditor.Core/Models/Component.cs
@@ -99,10 +112,14 @@ CircuitEditor.Core/Physical/ContactDefinition.cs
 CircuitEditor.Core/Physical/ContactGeometry.cs
 CircuitEditor.Core/Physical/FootprintDefinition.cs
 CircuitEditor.Core/Physical/PhysicalSettings.cs
+CircuitEditor.Core/Physical/PotentiometerPosition.cs
 CircuitEditor.Core/Physical/ResistorMarking.cs
+CircuitEditor.Core/Physical/RotaryControlDefinition.cs
 CircuitEditor.Core/Placement/ComponentPlacement.cs
 CircuitEditor.Core/Placement/RepresentationKind.cs
 CircuitEditor.Core/Placement/ViewLayout.cs
+CircuitEditor.Core/Quantities/PassiveNominals.cs
+CircuitEditor.Core/Quantities/PassiveQuantity.cs
 CircuitEditor.Core/Repositories/IBreadboardRepository.cs
 CircuitEditor.Core/Repositories/IComponentLibraryRepository.cs
 CircuitEditor.Core/Repositories/IErrorLogRepository.cs
@@ -143,6 +160,9 @@ CircuitEditor.Simulation/CircuitEditor.Simulation.csproj
 CircuitEditor.sln
 CircuitEditor.Tests/BatchAFootprintTests.cs
 CircuitEditor.Tests/BatchAPresentationChecks.cs
+CircuitEditor.Tests/BatchBFootprintTests.cs
+CircuitEditor.Tests/BatchBPresentationChecks.cs
+CircuitEditor.Tests/BatchBPropertiesTests.cs
 CircuitEditor.Tests/BreadboardTestData.cs
 CircuitEditor.Tests/BreadboardTopologyTests.cs
 CircuitEditor.Tests/CircuitEditor.Tests.csproj
@@ -156,6 +176,7 @@ CircuitEditor.Tests/MainViewModelTests.cs
 CircuitEditor.Tests/MockupInvalidationTests.cs
 CircuitEditor.Tests/MockupPresentationChecks.cs
 CircuitEditor.Tests/MockupViewModelTests.cs
+CircuitEditor.Tests/PassiveNominalTests.cs
 CircuitEditor.Tests/ProjectSerializationTests.cs
 CircuitEditor.Tests/RenderingCacheChecks.cs
 CircuitEditor.Tests/ResistanceTests.cs
@@ -176,4 +197,5 @@ docs/rendering-performance.md
 docs/stage3-file-tree.txt
 docs/stage3-mockup.md
 docs/stage3.1-batch-a.md
+docs/stage3.1-batch-b.md
 global.json

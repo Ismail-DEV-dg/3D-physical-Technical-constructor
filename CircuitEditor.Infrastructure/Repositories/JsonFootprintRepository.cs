@@ -26,7 +26,8 @@ public sealed class JsonFootprintRepository : IFootprintRepository
                 ArgumentNullException.ThrowIfNull(footprint.AllowedRotations);
                 if (string.IsNullOrWhiteSpace(footprint.Id) || string.IsNullOrWhiteSpace(footprint.ComponentDefinitionId)
                     || footprint.Renderer is not ("arduino-uno" or "axial-resistor" or "led" or "button" or "placeholder"
-                        or "arduino-nano" or "esp32-devkit" or "lcd1602" or "lcd1602-i2c" or "oled-ssd1306" or "seven-segment")
+                        or "arduino-nano" or "esp32-devkit" or "lcd1602" or "lcd1602-i2c" or "oled-ssd1306" or "seven-segment"
+                        or "buzzer" or "servo" or "relay" or "capacitor" or "inductor" or "potentiometer" or "npn" or "diode")
                     || footprint.Mounting is not ("free" or "breadboard") || !double.IsFinite(footprint.Body.Width)
                     || !double.IsFinite(footprint.Body.Height) || footprint.Body.Width <= 0 || footprint.Body.Height <= 0
                     || footprint.AllowedRotations.Count == 0 || footprint.AllowedRotations.Any(angle => angle is not (0 or 90 or 180 or 270))
@@ -37,6 +38,21 @@ public sealed class JsonFootprintRepository : IFootprintRepository
                 foreach (var contact in footprint.Contacts)
                     if (contact is null || string.IsNullOrWhiteSpace(contact.Id) || string.IsNullOrWhiteSpace(contact.ElectricalPinId)
                         || !double.IsFinite(contact.X) || !double.IsFinite(contact.Y)) throw new ArgumentException("Неверный контакт.");
+                if (footprint.Parts is { } parts && parts.Any(pair => string.IsNullOrWhiteSpace(pair.Key)
+                    || !double.IsFinite(pair.Value.X) || !double.IsFinite(pair.Value.Y)
+                    || !double.IsFinite(pair.Value.Width) || !double.IsFinite(pair.Value.Height)
+                    || pair.Value.Width <= 0 || pair.Value.Height <= 0 || !footprint.Body.Contains(pair.Value)))
+                    throw new ArgumentException("Неверные размеры частей корпуса.");
+                if (footprint.RotaryControl is { } rotary && (!double.IsFinite(rotary.X) || !double.IsFinite(rotary.Y)
+                    || !double.IsFinite(rotary.Radius) || rotary.Radius <= 0
+                    || !footprint.Body.Contains(new CircuitEditor.Core.Layout.LayoutRect(rotary.X - rotary.Radius,
+                        rotary.Y - rotary.Radius, rotary.Radius * 2, rotary.Radius * 2))))
+                    throw new ArgumentException("Неверная геометрия ручки.");
+                string[] required = footprint.Renderer switch
+                { "capacitor" => ["ceramic", "electrolytic"], "servo" => ["case", "left-ear", "right-ear", "shaft", "connector"], _ => [] };
+                if (required.Any(key => footprint.Parts?.ContainsKey(key) != true)
+                    || footprint.Renderer == "potentiometer" && footprint.RotaryControl is null)
+                    throw new ArgumentException("Отсутствует геометрия частей корпуса.");
                 if (footprint.MinSpan.HasValue != footprint.MaxSpan.HasValue
                     || footprint.IsFlexible && (footprint.MinSpan < 1 || footprint.MaxSpan > 100 || footprint.MaxSpan < footprint.MinSpan
                         || footprint.DefaultSpan < footprint.MinSpan || footprint.DefaultSpan > footprint.MaxSpan || footprint.Contacts.Count != 2

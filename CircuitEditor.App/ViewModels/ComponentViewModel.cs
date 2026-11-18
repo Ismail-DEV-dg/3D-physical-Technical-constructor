@@ -3,6 +3,7 @@ using CircuitEditor.Core.Layout;
 using CircuitEditor.Core.Physical;
 using CircuitEditor.Core.Placement;
 using CircuitEditor.Core.Resistance;
+using CircuitEditor.Core.Quantities;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CircuitEditor.App.ViewModels;
@@ -18,6 +19,10 @@ public sealed partial class ComponentViewModel : ObservableObject
         Model = model; Footprint = footprint; Layout = layoutCalculator.Calculate(model);
         editValue = model.Value; editColor = model.Color; editI2cAddress = model.I2cAddress ?? "";
         if (IsResistor) ResistorEditor = new ResistorEditorViewModel(model.Value, ApplyResistance);
+        if (model.Definition.Id is "capacitor" or "inductor")
+            NominalEditor = new PassiveNominalEditorViewModel(IsCapacitor ? PassiveQuantity.Capacitance : PassiveQuantity.Inductance,
+                model.Value, ApplyNominal);
+        if (model.Definition.Id == "potentiometer") PotentiometerEditor = new(model, NotifyAppearance);
     }
     public Component Model { get; }
     public FootprintDefinition Footprint { get; }
@@ -30,6 +35,23 @@ public sealed partial class ComponentViewModel : ObservableObject
     public string Description => Model.Definition.Description;
     public double Voltage => Model.Definition.Voltage;
     public bool IsResistor => Model.Definition.Id == "resistor";
+    public bool IsCapacitor => Model.Definition.Id == "capacitor";
+    public bool HasListedNominal => IsResistor || NominalEditor is not null;
+    public PassiveNominalEditorViewModel? NominalEditor { get; }
+    public PotentiometerEditorViewModel? PotentiometerEditor { get; }
+    public CapacitorKind SelectedCapacitorKind
+    {
+        get => Model.CapacitorKind;
+        set { if (value == Model.CapacitorKind || !Model.TrySetCapacitorKind(value)) return;
+            OnPropertyChanged(); NotifyAppearance(); }
+    }
+    public int AppearanceVersion { get; private set; }
+    private void NotifyAppearance() { AppearanceVersion++; OnPropertyChanged(nameof(AppearanceVersion)); }
+    private void ApplyNominal(string value)
+    {
+        if (!Model.TryUpdateProperties(value, Model.Color, Model.I2cAddress, out _)) return;
+        EditValue = value; UpdateLayout(); NotifyAppearance();
+    }
     public bool ShowsColor => Model.Definition.Id is "led" or "rgb-led";
     public bool ShowsVoltage => Model.Definition.Pins.Any(pin => pin.Type == PinType.Power);
     public ResistorEditorViewModel? ResistorEditor { get; }

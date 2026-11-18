@@ -1,0 +1,12 @@
+<UserControl x:Class="CircuitEditor.App.Views.PotentiometerPropertiesView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <TextBlock Text="{Binding Percent, StringFormat=Положение: {0:0.##} %}" Margin="0,16,0,7"/>
+        <TextBlock Text="{Binding Angle, StringFormat=Угол: {0:0.##}°}" Style="{StaticResource MutedText}"/>
+        <TextBox Text="{Binding PercentText, UpdateSourceTrigger=PropertyChanged}" Margin="0,8,0,0" AutomationProperties.Name="Положение потенциометра в процентах"/>
+        <Button Content="Установить положение" Command="{Binding ApplyPercentCommand}" Margin="0,8,0,0"/>
+        <TextBlock Text="{Binding Error}" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap"/>
+        <TextBlock Text="Поверните ручку мышью на макете. Для переноса тяните за ободок или ножку." Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+    </StackPanel>
+</UserControl>

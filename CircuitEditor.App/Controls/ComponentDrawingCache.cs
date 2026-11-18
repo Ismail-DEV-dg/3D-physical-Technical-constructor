@@ -15,7 +15,8 @@ internal sealed class ComponentDrawingCache
     {
         var footprint = item.Footprint;
         var span = footprint.IsFlexible ? pose.SpanHoles == 0 ? footprint.DefaultSpan : pose.SpanHoles : 0;
-        var value = footprint.Renderer == "axial-resistor" ? item.Model.Value : "";
+        var value = footprint.Renderer is "axial-resistor" or "inductor" or "potentiometer" ? item.Model.Value
+            : footprint.Renderer == "capacitor" ? $"{item.Model.CapacitorKind}:{item.Model.Value}" : "";
         var color = footprint.Renderer == "led" ? item.Model.Color : "";
         var key = (footprint, value, color, span, pitch);
         if (drawings.TryGetValue(key, out var cached)) return cached;

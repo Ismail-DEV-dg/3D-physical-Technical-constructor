@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using CircuitEditor.Core.Physical;
 
 namespace CircuitEditor.Core.Models;
 
@@ -13,7 +14,8 @@ public sealed class Component
             ?? throw new ArgumentNullException(nameof(definition)), definition.DefaultColor, definition.DefaultI2cAddress) { }
     /// <summary>Восстанавливает все электрические данные и устойчивый ID из JSON.</summary>
     [JsonConstructor]
-    public Component(ComponentDefinition definition, string reference, Guid id, string value, string color, string? i2cAddress)
+    public Component(ComponentDefinition definition, string reference, Guid id, string value, string color, string? i2cAddress,
+        CapacitorKind capacitorKind = CapacitorKind.Ceramic, double potentiometerAngle = 0)
     {
         ArgumentNullException.ThrowIfNull(definition);
         ArgumentException.ThrowIfNullOrWhiteSpace(reference);
@@ -21,6 +23,12 @@ public sealed class Component
         Definition = definition; Reference = reference; Id = id;
         Value = definition.DefaultValue; Color = definition.DefaultColor; I2cAddress = definition.DefaultI2cAddress;
         if (!TryUpdateProperties(value, color, i2cAddress, out var error)) throw new ArgumentException(error);
+        if (!Enum.IsDefined(capacitorKind) || !double.IsFinite(potentiometerAngle)
+            || potentiometerAngle < PotentiometerPosition.MinimumAngle || potentiometerAngle > PotentiometerPosition.MaximumAngle
+            || definition.Id != "capacitor" && capacitorKind != CapacitorKind.Ceramic
+            || definition.Id != "potentiometer" && potentiometerAngle != 0)
+            throw new ArgumentException("Некорректное исполнение или положение ручки.");
+        CapacitorKind = capacitorKind; PotentiometerAngle = potentiometerAngle;
     }
     /// <summary>Устойчивый ID.</summary>
     public Guid Id { get; }
@@ -34,6 +42,23 @@ public sealed class Component
     public string Color { get; private set; }
     /// <summary>Адрес шины I2C либо null.</summary>
     public string? I2cAddress { get; private set; }
+    /// <summary>Исполнение конденсатора, сохраняемое в JSON.</summary>
+    public CapacitorKind CapacitorKind { get; private set; }
+    /// <summary>Угол ручки потенциометра в градусах, сохраняемый в JSON.</summary>
+    public double PotentiometerAngle { get; private set; }
+    /// <summary>Проверяет и меняет исполнение только у конденсатора.</summary>
+    public bool TrySetCapacitorKind(CapacitorKind kind)
+    {
+        if (Definition.Id != "capacitor" || !Enum.IsDefined(kind)) return false;
+        CapacitorKind = kind; return true;
+    }
+    /// <summary>Проверяет и меняет угол только у потенциометра.</summary>
+    public bool TrySetPotentiometerAngle(double angle)
+    {
+        if (Definition.Id != "potentiometer" || !double.IsFinite(angle)
+            || angle < PotentiometerPosition.MinimumAngle || angle > PotentiometerPosition.MaximumAngle) return false;
+        PotentiometerAngle = angle; return true;
+    }
     /// <summary>Атомарно применяет проверенные свойства.</summary>
     public bool TryUpdateProperties(string value, string color, string? address, out string? error)
     {

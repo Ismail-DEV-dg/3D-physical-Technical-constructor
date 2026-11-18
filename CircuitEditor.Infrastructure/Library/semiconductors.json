@@ -39,14 +39,14 @@
   "prefix": "Q",
   "category": "ПОЛУПРОВОДНИКИ",
   "symbol": "npn",
-  "description": "Универсальный NPN: B — база, C — коллектор, E — эмиттер. Учебная рабочая точка 5 В.",
+  "description": "NPN в TO-92, выбран вариант PN2222A с порядком E/B/C при виде на плоскую грань; ножки разведены на 2,54 мм. У других TO-92 распиновка может отличаться.",
   "voltage": 5,
   "pins": [
     {"id":"B","name":"B","type":"Passive"},
     {"id":"C","name":"C","type":"Passive"},
     {"id":"E","name":"E","type":"Passive"}
   ],
-  "defaultValue": "2N2222",
+  "defaultValue": "PN2222A",
   "defaultColor": "#00E5FF",
   "defaultI2cAddress": null
 },

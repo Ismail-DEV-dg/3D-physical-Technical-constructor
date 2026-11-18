@@ -36,6 +36,14 @@ internal static class RealComponentDrawing
             case "lcd1602-i2c": Lcd1602Drawing.Draw(dc, footprint); break;
             case "oled-ssd1306": OledDrawing.Draw(dc, footprint); break;
             case "seven-segment": SevenSegmentDrawing.Draw(dc, footprint); break;
+            case "buzzer": ActuatorBodyDrawing.Buzzer(dc, footprint); break;
+            case "relay": ActuatorBodyDrawing.Relay(dc, footprint); break;
+            case "servo": ServoDrawing.Draw(dc, footprint); break;
+            case "capacitor": PassiveBodyDrawing.Capacitor(dc, item); break;
+            case "inductor": PassiveBodyDrawing.Inductor(dc, PhysicalDrawing.Rect(body), item.Model.Value); break;
+            case "diode": PassiveBodyDrawing.Diode(dc, PhysicalDrawing.Rect(body)); break;
+            case "potentiometer": PotentiometerDrawing.DrawBase(dc, item); break;
+            case "npn": NpnDrawing.Draw(dc, footprint); break;
             case "axial-resistor":
                 dc.DrawRoundedRectangle(new LinearGradientBrush(Color.FromRgb(236, 215, 175), Color.FromRgb(189, 156, 106), 90),
                     new Pen(PhysicalDrawing.Ink("#87663F"), .15), PhysicalDrawing.Rect(body), 1, 1);
@@ -76,7 +84,7 @@ internal static class RealComponentDrawing
                 else PhysicalDrawing.Text(dc, "?", body.X + body.Width / 2 - .5, body.Y, 1.7, Brushes.WhiteSmoke);
                 break;
         }
-        if (footprint.Renderer is "axial-resistor" or "led" or "button" or "placeholder")
+        if (footprint.Renderer is "axial-resistor" or "inductor" or "diode" or "led" or "button" or "placeholder")
             foreach (var contact in contacts)
                 PhysicalDrawing.Contact(dc, new Point(contact.X, contact.Y));
     }
@@ -84,6 +92,7 @@ internal static class RealComponentDrawing
     public static void DrawSelection(DrawingContext dc, ComponentViewModel item, ComponentPlacement pose,
         double pitch, bool invalidPreview)
     {
+        if (item.Footprint.Renderer == "potentiometer") PotentiometerDrawing.DrawKnob(dc, item);
         if (item.IsSelected || invalidPreview)
         {
             var body = ContactGeometry.Body(item.Footprint, pose, pitch);

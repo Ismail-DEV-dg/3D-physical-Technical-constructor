@@ -69,6 +69,17 @@ internal static class BoardDetailDrawing
         _ => id.StartsWith("GPIO", StringComparison.Ordinal) ? id[4..] : id
     };
 
+    public static void ExternalPinLabel(DrawingContext dc, string text, double centerX, double y)
+    {
+        const double padding = .14;
+        var formatted = WpfTextMeasurer.Format(text, PinLabelSize, PhysicalDrawing.Ink("#25303C"));
+        var left = centerX - formatted.WidthIncludingTrailingWhitespace / 2;
+        dc.DrawRoundedRectangle(PhysicalDrawing.Ink("#DAE0E6"), new Pen(PhysicalDrawing.Ink("#3C4755"), .08),
+            new Rect(left - padding, y - padding, formatted.WidthIncludingTrailingWhitespace + 2 * padding,
+                formatted.Height + 2 * padding), .2, .2);
+        dc.DrawText(formatted, new Point(left, y));
+    }
+
     public static void RowLabels(DrawingContext dc, FootprintDefinition footprint, bool esp32)
     {
         var right = footprint.Contacts.Max(contact => contact.X);
