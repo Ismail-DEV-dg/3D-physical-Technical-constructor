@@ -7,11 +7,11 @@ public sealed class NavigationService : ObservableObject, INavigationService
 {
     private WorkspaceViewModel current;
 
-    public NavigationService(SchematicViewModel schematic, ChipViewModel chip,
+    public NavigationService(BreadboardViewModel mockup, SchematicViewModel schematic, ChipViewModel chip,
         ThreeDViewModel threeD, CodeViewModel code)
     {
-        Workspaces = Array.AsReadOnly<WorkspaceViewModel>([schematic, chip, threeD, code]);
-        current = schematic;
+        Workspaces = Array.AsReadOnly<WorkspaceViewModel>([mockup, schematic, chip, threeD, code]);
+        current = mockup;
     }
 
     public IReadOnlyList<WorkspaceViewModel> Workspaces { get; }
@@ -27,4 +27,3 @@ public sealed class NavigationService : ObservableObject, INavigationService
         return true;
     }
 }
-

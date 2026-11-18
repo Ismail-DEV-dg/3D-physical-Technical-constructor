@@ -1,0 +1,70 @@
+<UserControl x:Class="CircuitEditor.App.Views.PropertiesView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:views="clr-namespace:CircuitEditor.App.Views">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="14">
+            <TextBlock Text="СВОЙСТВА" FontWeight="Bold"/>
+            <TextBlock Text="{Binding SelectedCount, StringFormat=На холсте выбрано: {0}}" Style="{StaticResource MutedText}" Margin="0,8,0,18"/>
+            <TextBlock Text="Выберите компонент на холсте. При мультивыборе редактируется последний выбранный в порядке схемы."
+                       TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" FontSize="10" LineHeight="18">
+                <TextBlock.Style><Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
+                </Style></TextBlock.Style>
+            </TextBlock>
+            <StackPanel>
+                <StackPanel.Style><Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
+                </Style></StackPanel.Style>
+                <TextBlock Text="{Binding SelectedComponent.Reference}" Foreground="{DynamicResource AccentBrush}" FontSize="20" FontWeight="Bold"/>
+                <TextBlock Text="{Binding SelectedComponent.Name}" Margin="0,6,0,12" TextWrapping="Wrap"/>
+                <TextBlock Text="{Binding SelectedComponent.Voltage, StringFormat=Питание: {0} В}">
+                    <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource MutedText}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.ShowsVoltage}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
+                    </Style></TextBlock.Style>
+                </TextBlock>
+                <views:ResistorPropertiesView DataContext="{Binding SelectedComponent.ResistorEditor}">
+                    <views:ResistorPropertiesView.Style><Style TargetType="views:ResistorPropertiesView">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers><DataTrigger Binding="{Binding}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
+                    </Style></views:ResistorPropertiesView.Style>
+                </views:ResistorPropertiesView>
+                <StackPanel>
+                    <StackPanel.Style><Style TargetType="StackPanel">
+                        <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.IsResistor}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
+                    </Style></StackPanel.Style>
+                    <TextBlock Text="НОМИНАЛ" Style="{StaticResource MutedText}" Margin="0,18,0,7"/>
+                    <TextBox Text="{Binding SelectedComponent.EditValue, UpdateSourceTrigger=PropertyChanged}" FontSize="11" AutomationProperties.Name="Номинал"/>
+                </StackPanel>
+                <StackPanel>
+                    <StackPanel.Style><Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.ShowsColor}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
+                    </Style></StackPanel.Style>
+                    <TextBlock Text="ЦВЕТ · #RRGGBB" Style="{StaticResource MutedText}" Margin="0,14,0,7"/>
+                    <TextBox Text="{Binding SelectedComponent.EditColor, UpdateSourceTrigger=PropertyChanged}" FontSize="11" AutomationProperties.Name="Цвет"/>
+                </StackPanel>
+                <StackPanel>
+                    <StackPanel.Style><Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.SupportsI2c}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
+                    </Style></StackPanel.Style>
+                    <TextBlock Text="I2C-АДРЕС · HEX" Style="{StaticResource MutedText}" Margin="0,14,0,7"/>
+                    <TextBox Text="{Binding SelectedComponent.EditI2cAddress, UpdateSourceTrigger=PropertyChanged}" FontSize="11" AutomationProperties.Name="I2C-адрес"/>
+                </StackPanel>
+                <Button Content="Применить" Command="{Binding ApplyPropertiesCommand}" Margin="0,16,0,6">
+                    <Button.Style><Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                        <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.IsResistor}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
+                    </Style></Button.Style>
+                </Button>
+                <TextBlock Text="{Binding PropertyError}" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap" FontSize="10"/>
+                <TextBlock Text="{Binding SelectedComponent.Description}" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" FontSize="10" LineHeight="18" Margin="0,16,0,16"/>
+                <TextBlock Text="ВЫВОДЫ" Style="{StaticResource MutedText}"/>
+                <TextBlock Text="{Binding SelectedComponent.PinSummary}" FontSize="9" TextWrapping="Wrap" LineHeight="17" Margin="0,8,0,0"/>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

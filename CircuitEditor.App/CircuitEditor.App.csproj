@@ -1,8 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\CircuitEditor.Core\CircuitEditor.Core.csproj" />
     <ProjectReference Include="..\CircuitEditor.Simulation\CircuitEditor.Simulation.csproj" />
+    <ProjectReference Include="..\CircuitEditor.Infrastructure\CircuitEditor.Infrastructure.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

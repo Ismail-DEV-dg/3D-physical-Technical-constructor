@@ -8,4 +8,3 @@ internal sealed class TestWindowService : IWindowService
     public void ToggleMaximize() { }
     public void Close() { }
 }
-

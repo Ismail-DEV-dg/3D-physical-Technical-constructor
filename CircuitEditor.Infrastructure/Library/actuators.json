@@ -1,0 +1,54 @@
+[
+{
+  "id": "buzzer",
+  "name": "Зуммер",
+  "prefix": "BZ",
+  "category": "ИСПОЛНИТЕЛИ",
+  "symbol": "buzzer",
+  "description": "Пассивный пьезозуммер, управление переменным сигналом.",
+  "voltage": 5,
+  "pins": [
+    {"id":"+","name":"+","type":"Passive"},
+    {"id":"-","name":"-","type":"Ground"}
+  ],
+  "defaultValue": "Passive 5V",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "servo",
+  "name": "Сервопривод",
+  "prefix": "M",
+  "category": "ИСПОЛНИТЕЛИ",
+  "symbol": "servo",
+  "description": "Модель SG90: питание 5 В, управляющие импульсы на SIG. Не питать силовую нагрузку от GPIO.",
+  "voltage": 5,
+  "pins": [
+    {"id":"VCC","name":"VCC","type":"Power"},
+    {"id":"GND","name":"GND","type":"Ground"},
+    {"id":"SIG","name":"SIG","type":"PWM","isInputOnly":true}
+  ],
+  "defaultValue": "SG90",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "relay",
+  "name": "Реле",
+  "prefix": "K",
+  "category": "ИСПОЛНИТЕЛИ",
+  "symbol": "relay",
+  "description": "Реле с катушкой 5 В: COIL+/COIL− и контакты COM/NO/NC. Для катушки нужен драйвер и защитный диод.",
+  "voltage": 5,
+  "pins": [
+    {"id":"COIL+","name":"COIL+","type":"Power"},
+    {"id":"COIL-","name":"COIL-","type":"Ground"},
+    {"id":"COM","name":"COM","type":"Passive"},
+    {"id":"NO","name":"NO","type":"Passive"},
+    {"id":"NC","name":"NC","type":"Passive"}
+  ],
+  "defaultValue": "5V SPDT",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+}
+]

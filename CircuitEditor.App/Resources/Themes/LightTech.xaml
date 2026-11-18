@@ -25,4 +25,3 @@
     <Color x:Key="GridColor">#D9E3EF</Color>
     <SolidColorBrush x:Key="GridBrush" Color="{DynamicResource GridColor}"/>
 </ResourceDictionary>
-

@@ -11,4 +11,3 @@ public abstract class WorkspaceViewModel(WorkspaceKind kind, string title, strin
     public string Heading { get; } = heading;
     public string Description { get; } = description;
 }
-

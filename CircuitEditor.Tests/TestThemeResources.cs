@@ -15,4 +15,3 @@ internal sealed class TestThemeResources : IThemeResources
         Applied.Add(theme);
     }
 }
-

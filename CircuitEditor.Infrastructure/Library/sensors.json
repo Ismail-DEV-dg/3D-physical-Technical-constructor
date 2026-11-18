@@ -1,0 +1,73 @@
+[
+{
+  "id": "dht11",
+  "name": "DHT11",
+  "prefix": "S",
+  "category": "ДАТЧИКИ",
+  "symbol": "sensor",
+  "description": "Датчик температуры и влажности DHT11. Контакт NC не подключается; DATA требует подтяжки. Это фирменный однопроводный протокол, не I2C.",
+  "voltage": 5,
+  "pins": [
+    {"id":"VCC","name":"VCC","type":"Power"},
+    {"id":"DATA","name":"DATA","type":"DigitalIO"},
+    {"id":"NC","name":"NC","type":"Passive","isExposed":false},
+    {"id":"GND","name":"GND","type":"Ground"}
+  ],
+  "defaultValue": "DHT11",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "dht22",
+  "name": "DHT22",
+  "prefix": "S",
+  "category": "ДАТЧИКИ",
+  "symbol": "sensor",
+  "description": "Датчик температуры и влажности DHT22. Контакт NC не подключается; DATA требует подтяжки. Это фирменный однопроводный протокол, не I2C.",
+  "voltage": 5,
+  "pins": [
+    {"id":"VCC","name":"VCC","type":"Power"},
+    {"id":"DATA","name":"DATA","type":"DigitalIO"},
+    {"id":"NC","name":"NC","type":"Passive","isExposed":false},
+    {"id":"GND","name":"GND","type":"Ground"}
+  ],
+  "defaultValue": "DHT22",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "hc-sr04",
+  "name": "HC-SR04",
+  "prefix": "S",
+  "category": "ДАТЧИКИ",
+  "symbol": "sensor",
+  "description": "Ультразвуковой дальномер: TRIG — вход, ECHO — выход 5 В. Для входа ESP32 нужен делитель/согласование.",
+  "voltage": 5,
+  "pins": [
+    {"id":"VCC","name":"VCC","type":"Power"},
+    {"id":"TRIG","name":"TRIG","type":"DigitalIO","isInputOnly":true},
+    {"id":"ECHO","name":"ECHO","type":"DigitalIO"},
+    {"id":"GND","name":"GND","type":"Ground"}
+  ],
+  "defaultValue": "2–400 cm",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "pir",
+  "name": "PIR",
+  "prefix": "S",
+  "category": "ДАТЧИКИ",
+  "symbol": "sensor",
+  "description": "Модуль HC-SR501: питание 5 В, цифровой выход обнаружения движения.",
+  "voltage": 5,
+  "pins": [
+    {"id":"VCC","name":"VCC","type":"Power"},
+    {"id":"OUT","name":"OUT","type":"DigitalIO"},
+    {"id":"GND","name":"GND","type":"Ground"}
+  ],
+  "defaultValue": "HC-SR501",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+}
+]

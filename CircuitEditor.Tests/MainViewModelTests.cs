@@ -1,14 +1,22 @@
+using CircuitEditor.Infrastructure.Repositories;
 using CircuitEditor.App.Services;
 using CircuitEditor.App.ViewModels;
+using CircuitEditor.Core.Repositories;
+using CircuitEditor.Core.Layout;
 
 namespace CircuitEditor.Tests;
 
 public sealed class MainViewModelTests
 {
-    private static NavigationService CreateNavigation() => new(
-        new SchematicViewModel(), new ChipViewModel(), new ThreeDViewModel(), new CodeViewModel());
+    private static NavigationService CreateNavigation()
+    {
+        var project = TestProjectFactory.Create();
+        return new NavigationService(TestProjectFactory.Mockup(project), new SchematicViewModel(project),
+            new ChipViewModel(), new ThreeDViewModel(), new CodeViewModel());
+    }
 
     [Theory]
+    [InlineData(WorkspaceKind.Mockup, typeof(BreadboardViewModel))]
     [InlineData(WorkspaceKind.Schematic, typeof(SchematicViewModel))]
     [InlineData(WorkspaceKind.Chip, typeof(ChipViewModel))]
     [InlineData(WorkspaceKind.ThreeD, typeof(ThreeDViewModel))]
@@ -31,15 +39,15 @@ public sealed class MainViewModelTests
         var navigation = CreateNavigation();
         using var model = new MainViewModel(navigation,
             new ThemeService(new TestThemeResources()), new TestWindowService());
-        var schematic = model.SelectedWorkspace;
+        var initial = model.SelectedWorkspace;
         var changes = new List<string?>();
         model.PropertyChanged += (_, args) => changes.Add(args.PropertyName);
 
         model.SelectedWorkspace = model.Workspaces.Single(item => item.Kind == WorkspaceKind.Code);
         Assert.Equal(WorkspaceKind.Code, navigation.Current.Kind);
-        navigation.Navigate(WorkspaceKind.Schematic);
+        navigation.Navigate(WorkspaceKind.Mockup);
 
-        Assert.Same(schematic, model.SelectedWorkspace);
+        Assert.Same(initial, model.SelectedWorkspace);
         Assert.Equal(2, changes.Count(name => name == nameof(model.SelectedWorkspace)));
     }
 
@@ -99,6 +107,22 @@ public sealed class MainViewModelTests
     }
 
     [Fact]
+    public void ResistorIsFirstAndRemainsAvailableAfterClearingSearch()
+    {
+        using var model = new MainViewModel(CreateNavigation(),
+            new ThemeService(new TestThemeResources()), new TestWindowService());
+        Assert.Equal("resistor", model.Palette[0].Definition.Id);
+        Assert.Equal(27, model.Palette.Count);
+        model.PaletteFilter = "Резистор";
+        Assert.Contains(model.Palette, item => item.Definition.Id == "resistor");
+        model.PaletteFilter = "Arduino";
+        Assert.DoesNotContain(model.Palette, item => item.Definition.Id == "resistor");
+        model.PaletteFilter = "";
+        Assert.Equal("resistor", model.Palette[0].Definition.Id);
+        Assert.Equal(27, model.Palette.Count);
+    }
+
+    [Fact]
     public void DisposeUnsubscribesFromServices()
     {
         var navigation = CreateNavigation();
@@ -112,4 +136,3 @@ public sealed class MainViewModelTests
         Assert.Equal(0, notifications);
     }
 }
-

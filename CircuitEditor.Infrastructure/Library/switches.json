@@ -1,0 +1,51 @@
+[
+{
+  "id": "button",
+  "name": "Кнопка",
+  "prefix": "SW",
+  "category": "ПИТАНИЕ / КОММУТАЦИЯ",
+  "symbol": "switch",
+  "description": "Нормально разомкнутая кнопка: два электрических узла.",
+  "voltage": 5,
+  "pins": [
+    {"id":"1","name":"1","type":"Passive"},
+    {"id":"2","name":"2","type":"Passive"}
+  ],
+  "defaultValue": "Momentary NO",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "switch",
+  "name": "Переключатель",
+  "prefix": "SW",
+  "category": "ПИТАНИЕ / КОММУТАЦИЯ",
+  "symbol": "switch",
+  "description": "Переключатель SPDT: общий COM, контакты A/B.",
+  "voltage": 5,
+  "pins": [
+    {"id":"COM","name":"COM","type":"Passive"},
+    {"id":"A","name":"A","type":"Passive"},
+    {"id":"B","name":"B","type":"Passive"}
+  ],
+  "defaultValue": "SPDT",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "battery",
+  "name": "Батарея",
+  "prefix": "BAT",
+  "category": "ПИТАНИЕ / КОММУТАЦИЯ",
+  "symbol": "battery",
+  "description": "Источник постоянного напряжения; соблюдайте полярность.",
+  "voltage": 9,
+  "pins": [
+    {"id":"+","name":"+","type":"Power"},
+    {"id":"-","name":"-","type":"Ground"}
+  ],
+  "defaultValue": "9 V",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+}
+]

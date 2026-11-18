@@ -2,9 +2,9 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:vm="clr-namespace:CircuitEditor.App.ViewModels"
  xmlns:views="clr-namespace:CircuitEditor.App.Views">
-    <DataTemplate DataType="{x:Type vm:SchematicViewModel}"><views:WorkspaceView/></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:BreadboardViewModel}"><views:BreadboardView/></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:SchematicViewModel}"><views:SchematicView/></DataTemplate>
     <DataTemplate DataType="{x:Type vm:ChipViewModel}"><views:WorkspaceView/></DataTemplate>
     <DataTemplate DataType="{x:Type vm:ThreeDViewModel}"><views:WorkspaceView/></DataTemplate>
     <DataTemplate DataType="{x:Type vm:CodeViewModel}"><views:WorkspaceView/></DataTemplate>
 </ResourceDictionary>
-

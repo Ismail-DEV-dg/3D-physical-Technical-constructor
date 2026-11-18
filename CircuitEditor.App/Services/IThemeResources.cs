@@ -4,4 +4,3 @@ public interface IThemeResources
 {
     void Apply(ThemeKind theme);
 }
-

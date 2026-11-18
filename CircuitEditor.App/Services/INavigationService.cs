@@ -9,4 +9,3 @@ public interface INavigationService : INotifyPropertyChanged
     WorkspaceViewModel Current { get; }
     bool Navigate(WorkspaceKind kind);
 }
-

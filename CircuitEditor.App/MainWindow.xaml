@@ -4,6 +4,8 @@
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
  xmlns:vm="clr-namespace:CircuitEditor.App.ViewModels"
  xmlns:services="clr-namespace:CircuitEditor.App.Services"
+ xmlns:views="clr-namespace:CircuitEditor.App.Views"
+ xmlns:input="clr-namespace:CircuitEditor.App.Interaction"
  Title="Circuit Editor — Arduino / ESP32" Width="1440" Height="900" MinWidth="1120" MinHeight="680"
  WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" ResizeMode="CanResize"
  Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextBrush}"
@@ -11,7 +13,13 @@
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </shell:WindowChrome.WindowChrome>
+    <Window.Resources>
+        <CollectionViewSource x:Key="GroupedPalette" Source="{Binding Palette}">
+            <CollectionViewSource.GroupDescriptions><PropertyGroupDescription PropertyName="Category"/></CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+    </Window.Resources>
     <Window.InputBindings>
+        <KeyBinding Modifiers="Control" Key="D0" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Mockup}"/>
         <KeyBinding Modifiers="Control" Key="D1" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Schematic}"/>
         <KeyBinding Modifiers="Control" Key="D2" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Chip}"/>
         <KeyBinding Modifiers="Control" Key="D3" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.ThreeD}"/>
@@ -59,6 +67,7 @@
                         <MenuItem Header="Повторить" Command="{Binding ExplainCommand}" CommandParameter="Повтор"/>
                     </MenuItem>
                     <MenuItem Header="_Вид">
+                        <MenuItem Header="Макет · Ctrl+0" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Mockup}"/>
                         <MenuItem Header="Схема  ·  Ctrl+1" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Schematic}"/>
                         <MenuItem Header="Микросхема  ·  Ctrl+2" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Chip}"/>
                         <MenuItem Header="3D  ·  Ctrl+3" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.ThreeD}"/>
@@ -73,7 +82,10 @@
                         <MenuItem Header="Проверить соединения" Command="{Binding ExplainCommand}" CommandParameter="Проверка схемы"/>
                         <MenuItem Header="Запустить симуляцию" Command="{Binding ExplainCommand}" CommandParameter="Симуляция"/>
                     </MenuItem>
-                    <MenuItem Header="_Справка"><MenuItem Header="О программе" Command="{Binding AboutCommand}"/></MenuItem>
+                    <MenuItem Header="_Справка">
+                        <MenuItem Header="Показать все компоненты" Command="{Binding ShowAllComponentsCommand}"/>
+                        <MenuItem Header="О программе" Command="{Binding AboutCommand}"/>
+                    </MenuItem>
                 </Menu>
             </Border>
             <Grid Grid.Row="2" Margin="14,10">
@@ -98,15 +110,32 @@
                     <Grid Margin="14">
                         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                         <TextBlock Text="КОМПОНЕНТЫ" FontWeight="Bold" FontSize="12"/>
-                        <TextBlock Grid.Row="1" Text="Библиотека / 05" Style="{StaticResource MutedText}" Margin="0,8,0,22"/>
-                        <ListBox Grid.Row="2" ItemsSource="{Binding Palette}" SelectedItem="{Binding SelectedPaletteItem}" AutomationProperties.Name="Палитра компонентов">
+                        <TextBlock Grid.Row="1" Text="{Binding LibraryCount, StringFormat=Библиотека / {0}}" Style="{StaticResource MutedText}" Margin="0,8,0,22"/>
+                        <DockPanel Grid.Row="2">
+<Grid DockPanel.Dock="Top" Margin="0,0,0,10">
+    <TextBox x:Name="PaletteSearch" Text="{Binding PaletteFilter, UpdateSourceTrigger=PropertyChanged}" FontSize="11" ToolTip="Поиск по названию или категории" AutomationProperties.Name="Поиск компонентов"/>
+    <TextBlock Text="Поиск…" IsHitTestVisible="False" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" FontSize="11">
+        <TextBlock.Style><Style TargetType="TextBlock">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers><DataTrigger Binding="{Binding Text, ElementName=PaletteSearch}" Value=""><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
+        </Style></TextBlock.Style>
+    </TextBlock>
+</Grid>
+<ListBox input:PaletteDragBehavior.Enabled="True" ItemsSource="{Binding Source={StaticResource GroupedPalette}}" SelectedItem="{Binding SelectedPaletteItem}" AutomationProperties.Name="Палитра компонентов">
+                            <ListBox.GroupStyle><GroupStyle>
+                                <GroupStyle.HeaderTemplate><DataTemplate>
+                                    <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,12,0,7" Margin="0,0,0,6">
+                                        <TextBlock Text="{Binding Name}" Foreground="{DynamicResource AccentBrush}" FontSize="10" TextWrapping="Wrap"/>
+                                    </Border>
+                                </DataTemplate></GroupStyle.HeaderTemplate>
+                            </GroupStyle></ListBox.GroupStyle>
                             <ListBox.ItemContainerStyle><Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                                 <Setter Property="AutomationProperties.Name" Value="{Binding Name}"/>
                             </Style></ListBox.ItemContainerStyle>
                             <ListBox.ItemTemplate><DataTemplate>
                                 <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="34"/><ColumnDefinition/></Grid.ColumnDefinitions>
                                     <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="4" Width="26" Height="30" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Symbol}" Foreground="{DynamicResource AccentBrush}" FontSize="17" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Symbol}" Foreground="{DynamicResource AccentBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <StackPanel Grid.Column="1">
                                         <TextBlock Text="{Binding Name}" FontSize="11"/>
@@ -114,9 +143,9 @@
                                     </StackPanel>
                                 </Grid>
                             </DataTemplate></ListBox.ItemTemplate>
-                        </ListBox>
+                        </ListBox></DockPanel>
                         <Border Grid.Row="3" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="0,14,0,2">
-                            <TextBlock Text="Выберите карточку, чтобы&#10;посмотреть описание." Foreground="{DynamicResource MutedBrush}" FontSize="10" LineHeight="18"/>
+                            <TextBlock Text="Перетащите карточку&#10;на активный холст." Foreground="{DynamicResource MutedBrush}" FontSize="10" LineHeight="18"/>
                         </Border>
                     </Grid>
                 </Border>
@@ -133,38 +162,7 @@
                         </DataTemplate></TabControl.ItemTemplate>
                     </TabControl>
                 </Border>
-                <Border Grid.Column="4" Style="{StaticResource Panel}">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <StackPanel Margin="16">
-                            <TextBlock Text="СВОЙСТВА" FontWeight="Bold"/>
-                            <TextBlock Text="Инспектор компонента" Style="{StaticResource MutedText}" Margin="0,8,0,24"/>
-                            <Border BorderBrush="{DynamicResource PurpleBrush}" BorderThickness="1" CornerRadius="6" Padding="14">
-                                <TextBlock Text="i" Foreground="{DynamicResource PurpleBrush}" FontSize="22" HorizontalAlignment="Center"/>
-                            </Border>
-                            <StackPanel Margin="0,18,0,0">
-                                <StackPanel.Style><Style TargetType="StackPanel">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                    <Style.Triggers><DataTrigger Binding="{Binding HasPaletteSelection}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
-                                </Style></StackPanel.Style>
-                                <TextBlock Text="Ничего не выбрано" FontSize="12" TextWrapping="Wrap"/>
-                                <TextBlock Text="Выберите компонент в палитре слева. Его описание появится здесь." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,10,0,0" LineHeight="21"/>
-                            </StackPanel>
-                            <StackPanel Margin="0,18,0,0">
-                                <StackPanel.Style><Style TargetType="StackPanel">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Style.Triggers><DataTrigger Binding="{Binding HasPaletteSelection}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
-                                </Style></StackPanel.Style>
-                                <TextBlock Text="НАЗВАНИЕ" Style="{StaticResource MutedText}" Margin="0,0,0,8"/>
-                                <TextBox Text="{Binding SelectedPaletteItem.Name, Mode=OneWay}" IsReadOnly="True" FontSize="11" AutomationProperties.Name="Название компонента"/>
-                                <TextBlock Text="{Binding SelectedPaletteItem.Category}" Foreground="{DynamicResource AccentBrush}" FontSize="9" Margin="0,16,0,10"/>
-                                <TextBlock Text="{Binding SelectedPaletteItem.Description}" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" LineHeight="22"/>
-                            </StackPanel>
-                            <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Margin="0,24,0,0" Padding="0,16,0,0">
-                                <TextBlock Text="Параметры и редактирование&#10;появятся на следующих этапах." Foreground="{DynamicResource MutedBrush}" FontSize="9" TextWrapping="Wrap" LineHeight="18"/>
-                            </Border>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Border>
+                <Border Grid.Column="4" Style="{StaticResource Panel}"><views:PropertiesView DataContext="{Binding Project}"/></Border>
             </Grid>
             <Grid Grid.Row="4" Margin="18,8,18,0">
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
@@ -173,8 +171,9 @@
                     <TextBlock Text="{Binding StatusMessage}" FontSize="10" Foreground="{DynamicResource MutedBrush}" TextTrimming="CharacterEllipsis" MaxWidth="480" ToolTip="{Binding StatusMessage}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding CursorX, StringFormat=X: {0:0}}" Style="{StaticResource MutedText}" Margin="0,0,14,0"/>
-                    <TextBlock Text="{Binding CursorY, StringFormat=Y: {0:0}}" Style="{StaticResource MutedText}" Margin="0,0,22,0"/>
+                    <TextBlock Text="{Binding CursorX, StringFormat=X: {0:0.##}}" Style="{StaticResource MutedText}" Margin="0,0,14,0"/>
+                    <TextBlock Text="{Binding CursorY, StringFormat=Y: {0:0.##}}" Style="{StaticResource MutedText}" Margin="0,0,6,0"/>
+                    <TextBlock Text="{Binding CoordinateUnit}" Style="{StaticResource MutedText}" Margin="0,0,18,0"/>
                     <TextBlock Text="{Binding ZoomPercent, StringFormat={}{0:0}%}" Foreground="{DynamicResource AccentBrush}" FontSize="10" Margin="0,0,22,0"/>
                     <TextBlock Text="{Binding ComponentCount, StringFormat=Компонентов: {0}}" Style="{StaticResource MutedText}"/>
                 </StackPanel>

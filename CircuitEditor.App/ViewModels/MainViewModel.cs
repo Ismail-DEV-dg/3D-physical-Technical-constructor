@@ -18,11 +18,26 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(HasPaletteSelection))]
     private PaletteItemViewModel? selectedPaletteItem;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Palette))]
+    private string paletteFilter = "";
+
+    private readonly IReadOnlyList<PaletteItemViewModel> library;
+
     public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window)
     {
         this.navigation = navigation;
         this.themes = themes;
         this.window = window;
+        Schematic = navigation.Workspaces.OfType<SchematicViewModel>().Single();
+        Mockup = navigation.Workspaces.OfType<BreadboardViewModel>().Single();
+        // Basic parts must remain visible before the palette is scrolled.
+        library = Schematic.Library.OrderByDescending(definition => definition.Category == "ПАССИВНЫЕ")
+            .Select(definition => new PaletteItemViewModel(definition)).ToArray();
+        StatusMessage = Schematic.StatusMessage;
+        Schematic.PropertyChanged += OnSchematicChanged;
+        Mockup.PropertyChanged += OnSchematicChanged;
+        Project.PropertyChanged += OnProjectChanged;
         navigation.PropertyChanged += OnNavigationChanged;
         themes.PropertyChanged += OnThemeChanged;
     }
@@ -49,22 +64,33 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
-    public IReadOnlyList<PaletteItemViewModel> Palette { get; } =
-        Array.AsReadOnly<PaletteItemViewModel>(
-        [
-            new("Arduino Uno", "КОНТРОЛЛЕР", "µ", "Плата Arduino Uno.\nКарточка библиотеки компонентов."),
-            new("ESP32 DevKit", "КОНТРОЛЛЕР", "µ", "Плата ESP32 DevKit.\nКарточка библиотеки компонентов."),
-            new("Резистор", "ПАССИВНЫЙ", "R", "Резистор.\nКарточка библиотеки компонентов."),
-            new("Светодиод", "ОПТОЭЛЕКТРОНИКА", "D", "Светодиод.\nКарточка библиотеки компонентов."),
-            new("Кнопка", "ПЕРЕКЛЮЧАТЕЛЬ", "S", "Тактовая кнопка.\nКарточка библиотеки компонентов.")
-        ]);
+    public IReadOnlyList<PaletteItemViewModel> Palette => string.IsNullOrWhiteSpace(PaletteFilter)
+        ? library : library.Where(item => item.Name.Contains(PaletteFilter, StringComparison.OrdinalIgnoreCase)
+            || item.Category.Contains(PaletteFilter, StringComparison.OrdinalIgnoreCase)).ToArray();
+    public SchematicViewModel Schematic { get; }
+    public BreadboardViewModel Mockup { get; }
+    public ProjectViewModel Project => Schematic.Project;
+    public int LibraryCount => library.Count;
 
     public bool HasPaletteSelection => SelectedPaletteItem is not null;
-    // Until the schematic editor exists these are the initial, empty document values.
-    public double CursorX => 0;
-    public double CursorY => 0;
-    public double ZoomPercent => 100;
-    public int ComponentCount => 0;
+    public double CursorX => SelectedWorkspace.Kind == WorkspaceKind.Mockup ? Mockup.CursorX : Schematic.CursorX;
+    public double CursorY => SelectedWorkspace.Kind == WorkspaceKind.Mockup ? Mockup.CursorY : Schematic.CursorY;
+    public double ZoomPercent => SelectedWorkspace.Kind == WorkspaceKind.Mockup ? Mockup.ZoomPercent : Schematic.ZoomPercent;
+    public int ComponentCount => Schematic.ComponentCount;
+    public string CoordinateUnit => SelectedWorkspace.Kind == WorkspaceKind.Mockup ? "мм" : "px";
+
+    private void OnSchematicChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(Schematic.StatusMessage)) StatusMessage = Schematic.StatusMessage;
+        if (args.PropertyName is nameof(CursorX) or nameof(CursorY) or nameof(ZoomPercent) or nameof(ComponentCount))
+            OnPropertyChanged(args.PropertyName);
+    }
+
+    private void OnProjectChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(Project.StatusMessage)) StatusMessage = Project.StatusMessage;
+        if (args.PropertyName == nameof(Project.ComponentCount)) OnPropertyChanged(nameof(ComponentCount));
+    }
 
     [RelayCommand]
     private void Navigate(WorkspaceKind kind)
@@ -85,7 +111,14 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         StatusMessage = $"{action}: функция появится на следующих этапах.";
 
     [RelayCommand]
-    private void About() => StatusMessage = "Circuit Editor • Arduino / ESP32 • Курсовой проект • Этап 1";
+    private void ShowAllComponents()
+    {
+        navigation.Navigate(WorkspaceKind.Schematic);
+        Schematic.ShowAllComponentsCommand.Execute(null);
+    }
+
+    [RelayCommand]
+    private void About() => StatusMessage = "Circuit Editor • Arduino / ESP32 • Курсовой проект • Этап 3";
 
     [RelayCommand]
     private void Minimize() => window.Minimize();
@@ -99,7 +132,11 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private void OnNavigationChanged(object? sender, PropertyChangedEventArgs args)
     {
         if (args.PropertyName == nameof(INavigationService.Current))
+        {
             OnPropertyChanged(nameof(SelectedWorkspace));
+            OnPropertyChanged(nameof(CursorX)); OnPropertyChanged(nameof(CursorY)); OnPropertyChanged(nameof(ZoomPercent));
+            OnPropertyChanged(nameof(CoordinateUnit));
+        }
     }
 
     private void OnThemeChanged(object? sender, PropertyChangedEventArgs args)
@@ -116,6 +153,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         navigation.PropertyChanged -= OnNavigationChanged;
         themes.PropertyChanged -= OnThemeChanged;
+        Schematic.PropertyChanged -= OnSchematicChanged;
+        Mockup.PropertyChanged -= OnSchematicChanged;
+        Project.PropertyChanged -= OnProjectChanged;
     }
 }
-

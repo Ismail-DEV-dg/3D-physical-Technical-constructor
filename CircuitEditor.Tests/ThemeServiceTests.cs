@@ -61,4 +61,3 @@ public sealed class ThemeServiceTests
         Assert.Null(service.ErrorMessage);
     }
 }
-

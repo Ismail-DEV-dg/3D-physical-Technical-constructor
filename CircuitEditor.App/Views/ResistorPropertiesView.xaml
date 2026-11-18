@@ -1,0 +1,22 @@
+<UserControl x:Class="CircuitEditor.App.Views.ResistorPropertiesView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <TextBlock Text="РЯД НОМИНАЛОВ" Style="{StaticResource MutedText}" Margin="0,18,0,7"/>
+        <ComboBox ItemsSource="{Binding Series}" SelectedItem="{Binding SelectedSeries}" AutomationProperties.Name="Ряд номиналов"/>
+        <TextBlock Text="СОПРОТИВЛЕНИЕ" Style="{StaticResource MutedText}" Margin="0,14,0,7"/>
+        <ComboBox ItemsSource="{Binding Options}" DisplayMemberPath="Text" SelectedItem="{Binding SelectedOption}"
+                  MaxDropDownHeight="300" AutomationProperties.Name="Сопротивление"/>
+        <TextBlock Text="{Binding MarkingNote}" TextWrapping="Wrap" Style="{StaticResource MutedText}" Margin="0,6,0,0"/>
+        <StackPanel>
+            <StackPanel.Style><Style TargetType="StackPanel">
+                <Setter Property="Visibility" Value="Collapsed"/>
+                <Style.Triggers><DataTrigger Binding="{Binding IsCustomEntry}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
+            </Style></StackPanel.Style>
+            <TextBlock Text="Число + единица, например 2,35 kΩ" TextWrapping="Wrap" Style="{StaticResource MutedText}" Margin="0,12,0,7"/>
+            <TextBox Text="{Binding CustomText, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Своё сопротивление"/>
+            <Button Content="Выбрать номинал" Command="{Binding ApplyCustomCommand}" Margin="0,8,0,0"/>
+            <TextBlock Text="{Binding Error}" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

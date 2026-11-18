@@ -8,4 +8,3 @@ public interface IThemeService : INotifyPropertyChanged
     string? ErrorMessage { get; }
     bool SetTheme(ThemeKind theme);
 }
-

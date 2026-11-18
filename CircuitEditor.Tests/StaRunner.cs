@@ -21,4 +21,3 @@ internal static class StaRunner
             ExceptionDispatchInfo.Capture(failure).Throw();
     }
 }
-

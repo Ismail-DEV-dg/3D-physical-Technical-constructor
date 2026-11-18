@@ -1,0 +1,147 @@
+{
+  "schemaVersion": 1,
+  "id": "breadboard-half-400",
+  "units": "mm",
+  "body": {
+    "x": 0,
+    "y": 0,
+    "width": 50.8,
+    "height": 83.82
+  },
+  "terminalBlocks": [
+    {
+      "id": "left",
+      "columns": [
+        {
+          "id": "A",
+          "x": 10.16
+        },
+        {
+          "id": "B",
+          "x": 12.7
+        },
+        {
+          "id": "C",
+          "x": 15.24
+        },
+        {
+          "id": "D",
+          "x": 17.78
+        },
+        {
+          "id": "E",
+          "x": 20.32
+        }
+      ],
+      "rows": {
+        "first": 1,
+        "count": 30,
+        "startY": 5.08,
+        "pitch": 2.54
+      },
+      "connectivity": "perRow"
+    },
+    {
+      "id": "right",
+      "columns": [
+        {
+          "id": "F",
+          "x": 27.94
+        },
+        {
+          "id": "G",
+          "x": 30.48
+        },
+        {
+          "id": "H",
+          "x": 33.02
+        },
+        {
+          "id": "I",
+          "x": 35.56
+        },
+        {
+          "id": "J",
+          "x": 38.1
+        }
+      ],
+      "rows": {
+        "first": 1,
+        "count": 30,
+        "startY": 5.08,
+        "pitch": 2.54
+      },
+      "connectivity": "perRow"
+    }
+  ],
+  "rails": [
+    {
+      "id": "left-positive",
+      "x": 2.54,
+      "holes": {
+        "first": 1,
+        "count": 25,
+        "startY": 10.16,
+        "pitch": 2.54
+      },
+      "segments": [
+        {
+          "id": "continuous",
+          "first": 1,
+          "last": 25
+        }
+      ]
+    },
+    {
+      "id": "left-negative",
+      "x": 5.08,
+      "holes": {
+        "first": 1,
+        "count": 25,
+        "startY": 10.16,
+        "pitch": 2.54
+      },
+      "segments": [
+        {
+          "id": "continuous",
+          "first": 1,
+          "last": 25
+        }
+      ]
+    },
+    {
+      "id": "right-positive",
+      "x": 45.72,
+      "holes": {
+        "first": 1,
+        "count": 25,
+        "startY": 10.16,
+        "pitch": 2.54
+      },
+      "segments": [
+        {
+          "id": "continuous",
+          "first": 1,
+          "last": 25
+        }
+      ]
+    },
+    {
+      "id": "right-negative",
+      "x": 48.26,
+      "holes": {
+        "first": 1,
+        "count": 25,
+        "startY": 10.16,
+        "pitch": 2.54
+      },
+      "segments": [
+        {
+          "id": "continuous",
+          "first": 1,
+          "last": 25
+        }
+      ]
+    }
+  ]
+}

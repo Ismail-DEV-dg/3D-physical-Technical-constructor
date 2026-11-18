@@ -6,4 +6,3 @@ public interface IWindowService
     void ToggleMaximize();
     void Close();
 }
-

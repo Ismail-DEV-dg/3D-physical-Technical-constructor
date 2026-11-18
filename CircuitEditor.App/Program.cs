@@ -1,7 +1,10 @@
-using System.IO;
 using System.Windows;
 using CircuitEditor.App.Services;
 using CircuitEditor.App.ViewModels;
+using CircuitEditor.Core.Repositories;
+using CircuitEditor.Core.Layout;
+using CircuitEditor.Core.Services;
+using CircuitEditor.Infrastructure.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CircuitEditor.App;
@@ -19,6 +22,15 @@ public static class Program
         registrations.AddSingleton<IThemeService, ThemeService>();
         registrations.AddSingleton<INavigationService, NavigationService>();
         registrations.AddSingleton<IWindowService, WindowService>();
+        registrations.AddSingleton<IComponentLibraryRepository, JsonComponentLibraryRepository>();
+        registrations.AddSingleton<IBreadboardRepository, JsonBreadboardRepository>();
+        registrations.AddSingleton<IFootprintRepository, JsonFootprintRepository>();
+        registrations.AddSingleton<IErrorLogRepository, ErrorLogRepository>();
+        registrations.AddSingleton<IComponentInsertionService, ComponentInsertionService>();
+        registrations.AddSingleton<ITextMeasurer, WpfTextMeasurer>();
+        registrations.AddSingleton<IComponentLayoutCalculator, ComponentLayoutCalculator>();
+        registrations.AddSingleton<ProjectViewModel>();
+        registrations.AddSingleton<BreadboardViewModel>();
         registrations.AddSingleton<SchematicViewModel>();
         registrations.AddSingleton<ChipViewModel>();
         registrations.AddSingleton<ThreeDViewModel>();
@@ -38,26 +50,10 @@ public static class Program
 
             services.GetRequiredService<MainViewModel>().StatusMessage =
                 "Операция не выполнена. Подробности записаны в журнал.";
-            WriteError(args.Exception);
+            services.GetRequiredService<IErrorLogRepository>().TryAppend(args.Exception.ToString());
             args.Handled = true;
         };
         app.Run(services.GetRequiredService<MainWindow>());
     }
 
-    private static void WriteError(Exception exception)
-    {
-        try
-        {
-            var directory = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CircuitEditor");
-            Directory.CreateDirectory(directory);
-            File.AppendAllText(Path.Combine(directory, "errors.log"),
-                $"{DateTimeOffset.Now:O} {exception}{Environment.NewLine}");
-        }
-        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
-        {
-            // Logging failures must not cause a second UI exception.
-        }
-    }
 }
-

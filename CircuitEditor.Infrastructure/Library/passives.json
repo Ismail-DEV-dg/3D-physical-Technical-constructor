@@ -1,0 +1,99 @@
+[
+{
+  "id": "resistor",
+  "name": "Резистор",
+  "prefix": "R",
+  "category": "ПАССИВНЫЕ",
+  "symbol": "resistor",
+  "description": "Неполярный резистор. Номинал задаёт сопротивление; цветные полосы показывают его значение и допуск.",
+  "voltage": 5,
+  "pins": [
+    {"id":"1","name":"1","type":"Passive"},
+    {"id":"2","name":"2","type":"Passive"}
+  ],
+  "defaultValue": "220 Ω",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "capacitor",
+  "name": "Конденсатор",
+  "prefix": "C",
+  "category": "ПАССИВНЫЕ",
+  "symbol": "capacitor",
+  "description": "Неполярный конденсатор, фильтрация и накопление заряда. Номинал напряжения выбран 16 В.",
+  "voltage": 16,
+  "pins": [
+    {"id":"1","name":"1","type":"Passive"},
+    {"id":"2","name":"2","type":"Passive"}
+  ],
+  "defaultValue": "100 nF",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "inductor",
+  "name": "Катушка",
+  "prefix": "L",
+  "category": "ПАССИВНЫЕ",
+  "symbol": "inductor",
+  "description": "Неполярная катушка индуктивности. Рабочая точка учебной схемы 5 В.",
+  "voltage": 5,
+  "pins": [
+    {"id":"1","name":"1","type":"Passive"},
+    {"id":"2","name":"2","type":"Passive"}
+  ],
+  "defaultValue": "10 mH",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "potentiometer",
+  "name": "Потенциометр",
+  "prefix": "RV",
+  "category": "ПАССИВНЫЕ",
+  "symbol": "potentiometer",
+  "description": "Переменный резистор: крайние контакты A/B, движок W.",
+  "voltage": 5,
+  "pins": [
+    {"id":"A","name":"A","type":"Passive"},
+    {"id":"W","name":"W","type":"Passive"},
+    {"id":"B","name":"B","type":"Passive"}
+  ],
+  "defaultValue": "10 kΩ",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "photoresistor",
+  "name": "Фоторезистор",
+  "prefix": "LDR",
+  "category": "ПАССИВНЫЕ",
+  "symbol": "resistor",
+  "description": "Сопротивление зависит от освещённости; включается в делитель напряжения.",
+  "voltage": 5,
+  "pins": [
+    {"id":"1","name":"1","type":"Passive"},
+    {"id":"2","name":"2","type":"Passive"}
+  ],
+  "defaultValue": "10 kΩ @ light",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "thermistor",
+  "name": "Термистор",
+  "prefix": "NTC",
+  "category": "ПАССИВНЫЕ",
+  "symbol": "resistor",
+  "description": "NTC-термистор; указан номинал при 25 °C, подключается через делитель.",
+  "voltage": 5,
+  "pins": [
+    {"id":"1","name":"1","type":"Passive"},
+    {"id":"2","name":"2","type":"Passive"}
+  ],
+  "defaultValue": "10 kΩ @ 25°C",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+}
+]

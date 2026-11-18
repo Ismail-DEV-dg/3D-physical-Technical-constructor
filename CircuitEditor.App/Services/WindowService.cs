@@ -19,4 +19,3 @@ public sealed class WindowService : IWindowService
 
     public void Close() => Application.Current.MainWindow?.Close();
 }
-

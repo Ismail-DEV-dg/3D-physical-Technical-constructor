@@ -1,0 +1,26 @@
+<UserControl x:Class="CircuitEditor.App.Views.BreadboardView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:controls="clr-namespace:CircuitEditor.App.Controls"
+ xmlns:input="clr-namespace:CircuitEditor.App.Interaction">
+    <Grid>
+        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+        <WrapPanel Margin="12,8">
+            <Button Content="↻ R" Command="{Binding RotateSelectedCommand}" Padding="10,6" FontSize="10" Margin="0,0,6,0"/>
+            <Button Content="Удалить" Command="{Binding DeleteSelectedCommand}" Padding="10,6" FontSize="10" Margin="0,0,6,0"/>
+            <Button Content="Сброс вида" Command="{Binding ResetViewCommand}" Padding="10,6" FontSize="10" Margin="0,0,10,0"/>
+            <TextBlock Text="Шаг ножек:" FontSize="10" VerticalAlignment="Center" Margin="0,0,6,0"/>
+            <ComboBox ItemsSource="{Binding SpanOptions}" SelectedItem="{Binding SelectedSpan, Mode=TwoWay}"
+                input:SelectionRefreshBehavior.Enabled="True"
+                IsEnabled="{Binding CanAdjustSpan}" Width="65" FontSize="10" AutomationProperties.Name="Шаг ножек"/>
+            <TextBlock Text="отв." FontSize="10" VerticalAlignment="Center" Margin="6,0"/>
+        </WrapPanel>
+        <controls:BreadboardSurface Grid.Row="1" Scene="{Binding}" Revision="{Binding Revision}"
+            Background="{DynamicResource BackgroundBrush}" input:CanvasInputBehavior.Command="{Binding InputCommand}"
+            AutomationProperties.Name="Макет электрической цепи"/>
+        <Border Grid.Row="2" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="12,8">
+            <TextBlock Text="Первый контакт → отверстие · Зелёный: свободно · Красный: занято / ошибка · ПКМ: панорама"
+                Style="{StaticResource MutedText}" TextWrapping="Wrap"/>
+        </Border>
+    </Grid>
+</UserControl>

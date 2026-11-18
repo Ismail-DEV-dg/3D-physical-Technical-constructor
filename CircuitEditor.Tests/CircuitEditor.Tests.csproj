@@ -25,7 +25,7 @@
     <ProjectReference Include="..\CircuitEditor.Core\CircuitEditor.Core.csproj" />
     <ProjectReference Include="..\CircuitEditor.App\CircuitEditor.App.csproj" />
     <ProjectReference Include="..\CircuitEditor.Simulation\CircuitEditor.Simulation.csproj" />
+    <ProjectReference Include="..\CircuitEditor.Infrastructure\CircuitEditor.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
-

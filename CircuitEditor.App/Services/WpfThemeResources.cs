@@ -20,4 +20,3 @@ public sealed class WpfThemeResources(ResourceDictionary applicationResources) :
         applicationResources.MergedDictionaries[0] = replacement;
     }
 }
-

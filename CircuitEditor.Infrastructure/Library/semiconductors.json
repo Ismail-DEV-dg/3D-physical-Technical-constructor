@@ -1,0 +1,69 @@
+[
+{
+  "id": "led",
+  "name": "Светодиод",
+  "prefix": "LED",
+  "category": "ПОЛУПРОВОДНИКИ",
+  "symbol": "led",
+  "description": "Красный светодиод: A — анод, K — катод. Требуется токоограничивающий резистор; 2 В — типичное прямое падение.",
+  "voltage": 2,
+  "pins": [
+    {"id":"A","name":"A","type":"Passive"},
+    {"id":"K","name":"K","type":"Passive"}
+  ],
+  "defaultValue": "Red LED",
+  "defaultColor": "#FF3B5C",
+  "defaultI2cAddress": null
+},
+{
+  "id": "rgb-led",
+  "name": "RGB-светодиод",
+  "prefix": "LED",
+  "category": "ПОЛУПРОВОДНИКИ",
+  "symbol": "led",
+  "description": "RGB с общим катодом COM. На каналы R/G/B нужны отдельные резисторы; падение зависит от цвета.",
+  "voltage": 3.3,
+  "pins": [
+    {"id":"R","name":"R","type":"Passive"},
+    {"id":"G","name":"G","type":"Passive"},
+    {"id":"B","name":"B","type":"Passive"},
+    {"id":"COM","name":"COM","type":"Ground"}
+  ],
+  "defaultValue": "Common cathode",
+  "defaultColor": "#8B5CFF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "npn",
+  "name": "Транзистор NPN",
+  "prefix": "Q",
+  "category": "ПОЛУПРОВОДНИКИ",
+  "symbol": "npn",
+  "description": "Универсальный NPN: B — база, C — коллектор, E — эмиттер. Учебная рабочая точка 5 В.",
+  "voltage": 5,
+  "pins": [
+    {"id":"B","name":"B","type":"Passive"},
+    {"id":"C","name":"C","type":"Passive"},
+    {"id":"E","name":"E","type":"Passive"}
+  ],
+  "defaultValue": "2N2222",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "diode",
+  "name": "Диод",
+  "prefix": "D",
+  "category": "ПОЛУПРОВОДНИКИ",
+  "symbol": "diode",
+  "description": "Выпрямительный диод: A — анод, K — катод. 0,7 В — типичное прямое падение.",
+  "voltage": 0.7,
+  "pins": [
+    {"id":"A","name":"A","type":"Passive"},
+    {"id":"K","name":"K","type":"Passive"}
+  ],
+  "defaultValue": "1N4007",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+}
+]

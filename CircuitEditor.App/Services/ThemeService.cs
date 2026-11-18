@@ -41,4 +41,3 @@ public sealed class ThemeService(IThemeResources resources) : ObservableObject, 
         return false;
     }
 }
-

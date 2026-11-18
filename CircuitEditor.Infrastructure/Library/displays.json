@@ -1,0 +1,91 @@
+[
+{
+  "id": "lcd1602",
+  "name": "LCD 16x2",
+  "prefix": "LCD",
+  "category": "ИНДИКАТОРЫ",
+  "symbol": "display",
+  "description": "HD44780-совместимый LCD 1602, 4/8-битный параллельный интерфейс. VO — контраст; подсветка A/K.",
+  "voltage": 5,
+  "pins": [
+    {"id":"VSS","name":"VSS","type":"Ground"},
+    {"id":"VDD","name":"VDD","type":"Power"},
+    {"id":"VO","name":"VO","type":"AnalogIn","isInputOnly":true},
+    {"id":"RS","name":"RS","type":"DigitalIO"},
+    {"id":"RW","name":"RW","type":"DigitalIO"},
+    {"id":"E","name":"E","type":"DigitalIO"},
+    {"id":"D0","name":"D0","type":"DigitalIO"},
+    {"id":"D1","name":"D1","type":"DigitalIO"},
+    {"id":"D2","name":"D2","type":"DigitalIO"},
+    {"id":"D3","name":"D3","type":"DigitalIO"},
+    {"id":"D4","name":"D4","type":"DigitalIO"},
+    {"id":"D5","name":"D5","type":"DigitalIO"},
+    {"id":"D6","name":"D6","type":"DigitalIO"},
+    {"id":"D7","name":"D7","type":"DigitalIO"},
+    {"id":"A","name":"A","type":"Power"},
+    {"id":"K","name":"K","type":"Ground"}
+  ],
+  "defaultValue": "16 × 2",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+},
+{
+  "id": "lcd1602-i2c",
+  "name": "LCD 16x2 I2C",
+  "prefix": "LCD",
+  "category": "ИНДИКАТОРЫ",
+  "symbol": "display",
+  "description": "LCD 1602 с PCF8574. Адрес 0x27 — пример; зависит от платы и перемычек.",
+  "voltage": 5,
+  "pins": [
+    {"id":"VCC","name":"VCC","type":"Power"},
+    {"id":"GND","name":"GND","type":"Ground"},
+    {"id":"SDA","name":"SDA","type":"I2C_SDA"},
+    {"id":"SCL","name":"SCL","type":"I2C_SCL"}
+  ],
+  "defaultValue": "16 × 2 I2C",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": "0x27"
+},
+{
+  "id": "oled-ssd1306",
+  "name": "OLED SSD1306",
+  "prefix": "OLED",
+  "category": "ИНДИКАТОРЫ",
+  "symbol": "display",
+  "description": "I2C-модуль OLED 128×64, выбран вариант питания 3,3 В. Адрес 0x3C; возможен 0x3D.",
+  "voltage": 3.3,
+  "pins": [
+    {"id":"VCC","name":"VCC","type":"Power"},
+    {"id":"GND","name":"GND","type":"Ground"},
+    {"id":"SDA","name":"SDA","type":"I2C_SDA"},
+    {"id":"SCL","name":"SCL","type":"I2C_SCL"}
+  ],
+  "defaultValue": "128 × 64",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": "0x3C"
+},
+{
+  "id": "seven-segment",
+  "name": "7-сегментный индикатор",
+  "prefix": "SEG",
+  "category": "ИНДИКАТОРЫ",
+  "symbol": "display",
+  "description": "Одноразрядный индикатор с общим катодом COM. Сегменты A–G и DP подключаются через резисторы.",
+  "voltage": 2,
+  "pins": [
+    {"id":"A","name":"A","type":"Passive"},
+    {"id":"B","name":"B","type":"Passive"},
+    {"id":"C","name":"C","type":"Passive"},
+    {"id":"D","name":"D","type":"Passive"},
+    {"id":"E","name":"E","type":"Passive"},
+    {"id":"F","name":"F","type":"Passive"},
+    {"id":"G","name":"G","type":"Passive"},
+    {"id":"DP","name":"DP","type":"Passive"},
+    {"id":"COM","name":"COM","type":"Ground"}
+  ],
+  "defaultValue": "Common cathode",
+  "defaultColor": "#00E5FF",
+  "defaultI2cAddress": null
+}
+]
