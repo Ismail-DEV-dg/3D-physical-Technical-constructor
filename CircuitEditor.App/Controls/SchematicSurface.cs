@@ -151,9 +151,15 @@ public sealed class SchematicSurface : FrameworkElement
     {
         var text = args.LeftButton == MouseButtonState.Released && args.RightButton == MouseButtonState.Released
             && args.MiddleButton == MouseButtonState.Released ? GetPinToolTip(args.GetPosition(this)) : null;
+        if(text is null && Scene is { } scene && args.LeftButton==MouseButtonState.Released && args.RightButton==MouseButtonState.Released && args.MiddleButton==MouseButtonState.Released)
+        {
+            var point=args.GetPosition(this);var x=(point.X-scene.OffsetX)/scene.Zoom;var y=(point.Y-scene.OffsetY)/scene.Zoom;
+            var item=scene.Components.LastOrDefault(c=>DiagramGeometry.Contains(c.SchematicPlacement,x,y,c.Layout.Width,c.Layout.Height));
+            if(item is not null)text=item.Reference+" · "+item.Name;
+        }
         if (text is null) { pinTip.IsOpen = false; return; }
         pinTip.PlacementTarget = this;
-        pinTip.Content = text;
+        pinTip.Content = text+"\nR — поворот · Del — удалить · Ctrl+D — копия · F1 — справка";
         pinTip.IsOpen = true;
     }
 

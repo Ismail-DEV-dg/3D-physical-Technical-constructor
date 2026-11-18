@@ -52,6 +52,7 @@ public static class Program
         registrations.AddSingleton<ProjectSessionViewModel>();
         registrations.AddSingleton<ExportViewModel>();
         registrations.AddSingleton<CircuitEditor.Core.Electronics.IDcSolver, CircuitEditor.Core.Electronics.DcSolver>();
+        registrations.AddSingleton<IShortcutGuideService, ShortcutGuideService>();
         registrations.AddSingleton<ICalculatorService, CalculatorService>();
         registrations.AddSingleton<CalculatorViewModel>();
         registrations.AddSingleton<IDebounceService, DebounceService>();

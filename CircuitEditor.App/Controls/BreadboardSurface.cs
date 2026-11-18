@@ -92,6 +92,8 @@ public sealed class BreadboardSurface : FrameworkElement
             }
         }
         if (text is null) { tip.IsOpen = false; return; }
+        text+=item is not null ? "\nR — поворот · Del — удалить · Ctrl+D — копия\nW — перемычки · V / Esc — перемещение · F1 — справка"
+            : "\nW — перемычки · край платы: перетащить, R — повернуть · F1 — справка";
         tip.PlacementTarget = this;
         if (!Equals(tip.Content, text)) tip.Content = text;
         if (!tip.IsOpen) tip.IsOpen = true;

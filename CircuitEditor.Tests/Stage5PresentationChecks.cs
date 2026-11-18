@@ -24,6 +24,7 @@ internal static class Stage5PresentationChecks
         Render(new SchematicSurface {Scene=e.Environment.Schematic});
         var calculator=new CalculatorWindow {DataContext=new CalculatorViewModel(repo,e.Project)};
         Render((FrameworkElement)calculator.Content);calculator.Close();
+        var guide=new ShortcutGuideWindow {DataContext=new ShortcutGuideViewModel()};Render((FrameworkElement)guide.Content);guide.Close();
         Application.Current.Resources.MergedDictionaries.Remove(resources);
     }
     private static void Render(FrameworkElement element)

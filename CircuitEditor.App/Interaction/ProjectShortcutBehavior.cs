@@ -1,36 +1,26 @@
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using CircuitEditor.App.Controls;
 using CircuitEditor.App.ViewModels;
 namespace CircuitEditor.App.Interaction;
 public static class ProjectShortcutBehavior
 {
-    public static readonly DependencyProperty EnabledProperty = DependencyProperty.RegisterAttached("Enabled",typeof(bool),typeof(ProjectShortcutBehavior),
-        new PropertyMetadata(false,(o,e) => { if (o is Window w) { if ((bool)e.NewValue) w.PreviewKeyDown += KeyDown; else w.PreviewKeyDown -= KeyDown; } }));
-    public static void SetEnabled(DependencyObject o, bool v) => o.SetValue(EnabledProperty,v);
-    public static bool GetEnabled(DependencyObject o) => (bool)o.GetValue(EnabledProperty);
-    private static void KeyDown(object sender, KeyEventArgs e)
+    public static readonly DependencyProperty EnabledProperty=DependencyProperty.RegisterAttached("Enabled",typeof(bool),typeof(ProjectShortcutBehavior),
+        new PropertyMetadata(false,(o,e)=>{if(o is Window w){if((bool)e.NewValue)w.PreviewKeyDown+=KeyDown;else w.PreviewKeyDown-=KeyDown;}}));
+    public static void SetEnabled(DependencyObject o,bool v)=>o.SetValue(EnabledProperty,v);
+    public static bool GetEnabled(DependencyObject o)=>(bool)o.GetValue(EnabledProperty);
+    private static void KeyDown(object sender,KeyEventArgs e)
     {
-        if (((Window)sender).DataContext is not MainViewModel vm || !Keyboard.Modifiers.HasFlag(ModifierKeys.Control)) return;
-        ICommand? command = e.Key switch
-        {
-            Key.S => Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? vm.Session?.SaveAsCommand : vm.Session?.SaveCommand,
-            Key.O => vm.Session?.OpenCommand,
-            Key.N => vm.Session?.NewCommand,
-            _ => null
-        };
-        if (Keyboard.FocusedElement is not TextBoxBase)
-            command ??= e.Key switch
-            {
-                Key.Z => Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) ? vm.Project.RedoCommand : vm.Project.UndoCommand,
-                Key.Y => vm.Project.RedoCommand,
-                Key.C => vm.Project.CopyCommand,
-                Key.V => vm.Project.PasteCommand,
-                _ => null
-            };
-        if (command is null) return;
-        if (command.CanExecute(null)) command.Execute(null);
+        var window=(Window)sender;if(window.DataContext is not MainViewModel vm)return;
+        var focus=Keyboard.FocusedElement;
+        var editing=focus is TextBoxBase or PasswordBox || focus is ComboBox {IsEditable:true};
+        var canvas=focus is BreadboardSurface or SchematicSurface;
+        var binding=ShortcutCatalog.Resolve(e.Key==Key.System?e.SystemKey:e.Key,Keyboard.Modifiers,editing,canvas);if(binding is null)return;
+        if(binding.Id=="Search" && vm.Project.InGesture){vm.StatusMessage="Завершите жест или нажмите Esc перед поиском.";e.Handled=true;return;}
+        if(binding.Id=="Search" && window.FindName("PaletteSearch") is TextBox search){search.Focus();search.SelectAll();}
+        else ShortcutCommands.Execute(vm,binding.Id);
         e.Handled=true;
     }
 }

@@ -18,13 +18,7 @@
             <CollectionViewSource.GroupDescriptions><PropertyGroupDescription PropertyName="Category"/></CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
     </Window.Resources>
-    <Window.InputBindings>
-        <KeyBinding Modifiers="Control" Key="D0" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Mockup}"/>
-        <KeyBinding Modifiers="Control" Key="D1" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Schematic}"/>
-        <KeyBinding Modifiers="Control" Key="D2" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Chip}"/>
-        <KeyBinding Modifiers="Control" Key="D3" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.ThreeD}"/>
-        <KeyBinding Modifiers="Control" Key="D4" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Code}"/>
-    </Window.InputBindings>
+
     <Border x:Name="WindowFrame" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" Padding="8"
             Margin="{Binding Padding, RelativeSource={RelativeSource AncestorType=Window}}">
         <Grid>
@@ -57,10 +51,10 @@
             <Border Grid.Row="1" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1" Margin="10,0">
                 <Menu VerticalAlignment="Center">
                     <MenuItem Header="_Файл">
-                        <MenuItem Header="Новый проект" Command="{Binding Session.NewCommand}"/>
-                        <MenuItem Header="Открыть…" Command="{Binding Session.OpenCommand}"/>
-                        <MenuItem Header="Сохранить" Command="{Binding Session.SaveCommand}"/>
-                        <MenuItem Header="Сохранить как…" Command="{Binding Session.SaveAsCommand}"/>
+                        <MenuItem Header="Новый проект" Command="{Binding Session.NewCommand}" ToolTip="{input:ShortcutHint New}"/>
+                        <MenuItem Header="Открыть…" Command="{Binding Session.OpenCommand}" ToolTip="{input:ShortcutHint Open}"/>
+                        <MenuItem Header="Сохранить" Command="{Binding Session.SaveCommand}" ToolTip="{input:ShortcutHint Save}"/>
+                        <MenuItem Header="Сохранить как…" Command="{Binding Session.SaveAsCommand}" ToolTip="{input:ShortcutHint SaveAs}"/>
                         <MenuItem Header="Последние файлы" ItemsSource="{Binding Session.RecentFiles}">
                             <MenuItem.ItemContainerStyle><Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="{Binding Path}"/><Setter Property="Command" Value="{Binding OpenCommand}"/>
@@ -68,19 +62,20 @@
                             </Style></MenuItem.ItemContainerStyle>
                         </MenuItem>
                         <Separator/>
-                        <MenuItem Header="Экспорт PNG…" Command="{Binding Exports.PngCommand}"/>
-                        <MenuItem Header="Экспорт SVG схемы…" Command="{Binding Exports.SvgCommand}"/>
-                        <MenuItem Header="Ведомость деталей CSV…" Command="{Binding Exports.BomCommand}"/>
+                        <MenuItem Header="Экспорт PNG…" Command="{Binding Exports.PngCommand}" ToolTip="{input:ShortcutHint Png}"/>
+                        <MenuItem Header="Экспорт SVG схемы…" Command="{Binding Exports.SvgCommand}" ToolTip="{input:ShortcutHint Svg}"/>
+                        <MenuItem Header="Ведомость деталей CSV…" Command="{Binding Exports.BomCommand}" ToolTip="{input:ShortcutHint Bom}"/>
                         <Separator/><MenuItem Header="Выход" Command="{Binding CloseCommand}"/>
                     </MenuItem>
                     <MenuItem Header="_Правка">
-                        <MenuItem Header="Отменить" Command="{Binding Project.UndoCommand}"/>
-                        <MenuItem Header="Повторить" Command="{Binding Project.RedoCommand}"/>
+                        <MenuItem Header="Отменить" Command="{Binding Project.UndoCommand}" ToolTip="{input:ShortcutHint Undo}"/>
+                        <MenuItem Header="Повторить" Command="{Binding Project.RedoCommand}" ToolTip="{input:ShortcutHint Redo}"/>
                         <Separator/>
-                        <MenuItem Header="Копировать · Ctrl+C" Command="{Binding Project.CopyCommand}"/>
-                        <MenuItem Header="Вставить · Ctrl+V" Command="{Binding Project.PasteCommand}"/>
+                        <MenuItem Header="Копировать · Ctrl+C" Command="{Binding Project.CopyCommand}" ToolTip="{input:ShortcutHint Copy}"/>
+                        <MenuItem Header="Вставить · Ctrl+V" Command="{Binding Project.PasteCommand}" ToolTip="{input:ShortcutHint Paste}"/>
                     </MenuItem>
                     <MenuItem Header="_Вид">
+                        <MenuItem Header="Вписать проект в холст" InputGestureText="F / Home" Command="{Binding FitViewCommand}" ToolTip="{input:ShortcutHint Fit}"/>
                         <MenuItem Header="Макет · Ctrl+0" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Mockup}"/>
                         <MenuItem Header="Схема  ·  Ctrl+1" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Schematic}"/>
                         <MenuItem Header="Микросхема  ·  Ctrl+2" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Chip}"/>
@@ -93,12 +88,13 @@
                         </MenuItem>
                     </MenuItem>
                     <MenuItem Header="_Схема">
-                        <MenuItem Header="Калькулятор…" Command="{Binding CalculatorCommand}"/>
-                        <MenuItem Header="Рассчитать цепь" Command="{Binding Analysis.CalculateCommand}"/>
-                        <MenuItem Header="Проверить соединения" Command="{Binding Analysis.CheckCommand}"/>
+                        <MenuItem Header="Калькулятор…" Command="{Binding CalculatorCommand}" ToolTip="{input:ShortcutHint Calculator}"/>
+                        <MenuItem Header="Рассчитать цепь" Command="{Binding Analysis.CalculateCommand}" ToolTip="{input:ShortcutHint Calculate}"/>
+                        <MenuItem Header="Проверить соединения" Command="{Binding Analysis.CheckCommand}" ToolTip="{input:ShortcutHint Check}"/>
                         <MenuItem Header="Запустить симуляцию" Command="{Binding ExplainCommand}" CommandParameter="Симуляция"/>
                     </MenuItem>
                     <MenuItem Header="_Справка">
+                        <MenuItem Header="Горячие клавиши…" InputGestureText="F1" Command="{Binding ShortcutHelpCommand}"/>
                         <MenuItem Header="Показать все компоненты" Command="{Binding ShowAllComponentsCommand}"/>
                         <MenuItem Header="О программе" Command="{Binding AboutCommand}"/>
                     </MenuItem>
@@ -129,7 +125,7 @@
                         <TextBlock Grid.Row="1" Text="{Binding LibraryCount, StringFormat=Библиотека / {0}}" Style="{StaticResource MutedText}" Margin="0,8,0,22"/>
                         <DockPanel Grid.Row="2">
 <Grid DockPanel.Dock="Top" Margin="0,0,0,10">
-    <TextBox x:Name="PaletteSearch" Text="{Binding PaletteFilter, UpdateSourceTrigger=PropertyChanged}" FontSize="11" ToolTip="Поиск по названию или категории" AutomationProperties.Name="Поиск компонентов"/>
+    <TextBox x:Name="PaletteSearch" Text="{Binding PaletteFilter, UpdateSourceTrigger=PropertyChanged}" FontSize="11" ToolTip="Поиск по названию или категории · Ctrl+F" AutomationProperties.Name="Поиск компонентов"/>
     <TextBlock Text="Поиск…" IsHitTestVisible="False" Margin="12,0,0,0" VerticalAlignment="Center" Foreground="{DynamicResource MutedBrush}" FontSize="11">
         <TextBlock.Style><Style TargetType="TextBlock">
             <Setter Property="Visibility" Value="Collapsed"/>
@@ -149,7 +145,7 @@
                                 <Setter Property="AutomationProperties.Name" Value="{Binding Name}"/>
                             </Style></ListBox.ItemContainerStyle>
                             <ListBox.ItemTemplate><DataTemplate>
-                                <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="34"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                <Grid ToolTip="{Binding Description, StringFormat={}{0}&#10;Перетащите на холст · Ctrl+F — поиск · F1 — горячие клавиши}"><Grid.ColumnDefinitions><ColumnDefinition Width="34"/><ColumnDefinition/></Grid.ColumnDefinitions>
                                     <Border Background="{DynamicResource BackgroundBrush}" CornerRadius="4" Width="26" Height="30" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding Symbol}" Foreground="{DynamicResource AccentBrush}" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>

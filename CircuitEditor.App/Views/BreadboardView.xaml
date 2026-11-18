@@ -8,13 +8,13 @@
         <WrapPanel Margin="12,8">
             <Button Content="↶" Command="{Binding Project.UndoCommand}" ToolTip="Отменить · Ctrl+Z" Margin="0,0,6,0"/>
             <Button Content="↷" Command="{Binding Project.RedoCommand}" ToolTip="Повторить · Ctrl+Y" Margin="0,0,6,0"/>
-            <CheckBox Content="Перемычка" IsChecked="{Binding Project.Wiring.IsWiring,Mode=TwoWay}" ToolTip="Включить/выключить прокладку. Esc — выйти в режим перемещения." Margin="0,0,10,0" VerticalAlignment="Center"/>
+            <CheckBox Content="Перемычка" IsChecked="{Binding Project.Wiring.IsWiring,Mode=TwoWay}" ToolTip="Перемычки · W — включить/выключить · V / Esc — перемещение" Margin="0,0,10,0" VerticalAlignment="Center"/>
             <ComboBox ItemsSource="{Binding Project.Wiring.Colors}" SelectedItem="{Binding Project.Wiring.Color}" Width="90" Margin="0,0,6,0" ToolTip="Цвет выбранной / новой перемычки">
                 <ComboBox.ItemTemplate><DataTemplate><Border Background="{Binding}" Height="16" Width="50" BorderBrush="Gray" BorderThickness="1"/></DataTemplate></ComboBox.ItemTemplate>
             </ComboBox>
-            <Button Content="↻ R" Command="{Binding RotateSelectedCommand}" Padding="10,6" FontSize="10" Margin="0,0,6,0"/>
-            <Button Content="Удалить" Command="{Binding DeleteSelectedCommand}" Padding="10,6" FontSize="10" Margin="0,0,6,0"/>
-            <Button Content="Сброс вида" Command="{Binding ResetViewCommand}" Padding="10,6" FontSize="10" Margin="0,0,10,0"/>
+            <Button Content="↻ R" Command="{Binding RotateSelectedCommand}" ToolTip="{input:ShortcutHint Rotate}" Padding="10,6" FontSize="10" Margin="0,0,6,0"/>
+            <Button Content="Удалить" Command="{Binding DeleteSelectedCommand}" ToolTip="{input:ShortcutHint Delete}" Padding="10,6" FontSize="10" Margin="0,0,6,0"/>
+            <Button Content="Сброс вида" Command="{Binding ResetViewCommand}" ToolTip="{input:ShortcutHint Reset}" Padding="10,6" FontSize="10" Margin="0,0,10,0"/>
             <TextBlock Text="Шаг ножек:" FontSize="10" VerticalAlignment="Center" Margin="0,0,6,0"/>
             <ComboBox ItemsSource="{Binding SpanOptions}" SelectedItem="{Binding SelectedSpan, Mode=TwoWay}"
                 input:SelectionRefreshBehavior.Enabled="True"
