@@ -4,6 +4,7 @@ using CircuitEditor.Core.Physical;
 using CircuitEditor.Core.Placement;
 using CircuitEditor.Core.Resistance;
 using CircuitEditor.Core.Quantities;
+using CircuitEditor.Core.Inputs;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CircuitEditor.App.ViewModels;
@@ -23,6 +24,7 @@ public sealed partial class ComponentViewModel : ObservableObject
             NominalEditor = new PassiveNominalEditorViewModel(IsCapacitor ? PassiveQuantity.Capacitance : PassiveQuantity.Inductance,
                 model.Value, ApplyNominal);
         if (model.Definition.Id == "potentiometer") PotentiometerEditor = new(model, NotifyAppearance);
+        if (ComponentInputDefinitions.For(model.Definition.Id).Count > 0) InputsEditor = new(model, InputChanged);
     }
     public Component Model { get; }
     public FootprintDefinition Footprint { get; }
@@ -33,7 +35,17 @@ public sealed partial class ComponentViewModel : ObservableObject
     public string Reference => Model.Reference;
     public string Name => Model.Definition.Name;
     public string Description => Model.Definition.Description;
-    public double Voltage => Model.Definition.Voltage;
+    public double Voltage => Model.Definition.Id == "battery" ? Model.Inputs.Values[ComponentInput.BatteryVoltage] : Model.Definition.Voltage;
+    public ComponentInputsViewModel? InputsEditor { get; }
+    public bool ShowsGenericValue => !HasListedNominal && InputsEditor is null;
+    public bool HasImmediateProperties => HasListedNominal || InputsEditor is not null;
+    public bool ShowsFixedNtcValue => Model.Definition.Id == "thermistor";
+    private void InputChanged(ComponentInput input)
+    {
+        if (input == ComponentInput.BatteryVoltage) OnPropertyChanged(nameof(Voltage));
+        if (input is ComponentInput.BatteryVoltage or ComponentInput.RgbCommon) { EditValue = Model.Value; UpdateLayout(); }
+        if (ComponentInputDefinitions.ChangesAppearance(input)) NotifyAppearance();
+    }
     public bool IsResistor => Model.Definition.Id == "resistor";
     public bool IsCapacitor => Model.Definition.Id == "capacitor";
     public bool HasListedNominal => IsResistor || NominalEditor is not null;
@@ -52,7 +64,7 @@ public sealed partial class ComponentViewModel : ObservableObject
         if (!Model.TryUpdateProperties(value, Model.Color, Model.I2cAddress, out _)) return;
         EditValue = value; UpdateLayout(); NotifyAppearance();
     }
-    public bool ShowsColor => Model.Definition.Id is "led" or "rgb-led";
+    public bool ShowsColor => Model.Definition.Id == "led";
     public bool ShowsVoltage => Model.Definition.Pins.Any(pin => pin.Type == PinType.Power);
     public ResistorEditorViewModel? ResistorEditor { get; }
     public string ResistanceValue => Model.Value;
@@ -69,7 +81,7 @@ public sealed partial class ComponentViewModel : ObservableObject
     {
         var alternatives = string.Join(", ", pin.Capabilities.Where(type => type != pin.Type));
         return $"{pin.Name}: {pin.Type}{(alternatives.Length > 0 ? " + " + alternatives : "")}" +
-            (pin.IsInputOnly ? " / IN only" : "") + (!pin.IsExposed ? " / не выведен" : "");
+            (pin.IsInputOnly ? " / IN only" : "") + (pin.IsNoConnect ? " / NC: не подключён" : "") + (!pin.IsExposed ? " / не выведен" : "");
     }
     [ObservableProperty] private bool isSelected;
     [ObservableProperty] private string editValue;

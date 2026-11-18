@@ -21,13 +21,13 @@
   "prefix": "LED",
   "category": "ПОЛУПРОВОДНИКИ",
   "symbol": "led",
-  "description": "RGB с общим катодом COM. На каналы R/G/B нужны отдельные резисторы; падение зависит от цвета.",
+  "description": "RGB-светодиод: общий катод или анод выбирается в свойствах. COM — общий вывод; на каналы R/G/B нужны отдельные резисторы. Ножки сформованы с разной длиной участков, концы на сетке 2,54 мм.",
   "voltage": 3.3,
   "pins": [
     {"id":"R","name":"R","type":"Passive"},
     {"id":"G","name":"G","type":"Passive"},
     {"id":"B","name":"B","type":"Passive"},
-    {"id":"COM","name":"COM","type":"Ground"}
+    {"id":"COM","name":"COM","type":"Passive"}
   ],
   "defaultValue": "Common cathode",
   "defaultColor": "#8B5CFF",

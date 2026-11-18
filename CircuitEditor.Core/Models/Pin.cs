@@ -5,7 +5,7 @@ public sealed class Pin
 {
     /// <summary>Создаёт вывод с уникальным в пределах компонента идентификатором.</summary>
     public Pin(string id, string name, PinType type,
-        bool isInputOnly = false, bool isExposed = true, IReadOnlyList<PinType>? capabilities = null)
+        bool isInputOnly = false, bool isExposed = true, IReadOnlyList<PinType>? capabilities = null, bool isNoConnect = false)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(id);
         ArgumentException.ThrowIfNullOrWhiteSpace(name);
@@ -15,6 +15,7 @@ public sealed class Pin
             throw new ArgumentException("Неизвестная функция вывода.");
         Id = id; Name = name; Type = type;
         IsInputOnly = isInputOnly; IsExposed = isExposed;
+        IsNoConnect = isNoConnect;
         Capabilities = Array.AsReadOnly(functions);
     }
 
@@ -30,4 +31,6 @@ public sealed class Pin
     public bool IsInputOnly { get; }
     /// <summary>Доступен ли контакт на разъёме выбранной платы.</summary>
     public bool IsExposed { get; }
+    /// <summary>Физически присутствующий, но внутренне неподключённый NC-контакт.</summary>
+    public bool IsNoConnect { get; }
 }

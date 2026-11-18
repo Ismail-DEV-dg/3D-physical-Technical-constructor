@@ -47,6 +47,7 @@ public sealed class ThemeResourceTests
             MockupPresentationChecks.Run(resources);
             BatchAPresentationChecks.Run(resources);
             BatchBPresentationChecks.Run(resources);
+            BatchCPresentationChecks.Run(resources);
             RenderingCacheChecks.Run(resources);
             ResistorPresentationChecks.Run(resources);
             application.Shutdown();

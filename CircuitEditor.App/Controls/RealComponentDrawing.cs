@@ -44,6 +44,15 @@ internal static class RealComponentDrawing
             case "diode": PassiveBodyDrawing.Diode(dc, PhysicalDrawing.Rect(body)); break;
             case "potentiometer": PotentiometerDrawing.DrawBase(dc, item); break;
             case "npn": NpnDrawing.Draw(dc, footprint); break;
+            case "dht11":
+            case "dht22": HumiditySensorDrawing.Draw(dc, footprint); break;
+            case "hc-sr04": ProximitySensorDrawing.Ultrasound(dc, footprint); break;
+            case "pir": ProximitySensorDrawing.Pir(dc, footprint); break;
+            case "photoresistor": EnvironmentPassiveDrawing.Draw(dc, PhysicalDrawing.Rect(body), false); break;
+            case "thermistor": EnvironmentPassiveDrawing.Draw(dc, PhysicalDrawing.Rect(body), true); break;
+            case "rgb-led": RgbLedDrawing.Draw(dc, item); break;
+            case "switch": MiscComponentDrawing.Switch(dc, item); break;
+            case "battery": MiscComponentDrawing.Battery(dc, item); break;
             case "axial-resistor":
                 dc.DrawRoundedRectangle(new LinearGradientBrush(Color.FromRgb(236, 215, 175), Color.FromRgb(189, 156, 106), 90),
                     new Pen(PhysicalDrawing.Ink("#87663F"), .15), PhysicalDrawing.Rect(body), 1, 1);
@@ -84,7 +93,7 @@ internal static class RealComponentDrawing
                 else PhysicalDrawing.Text(dc, "?", body.X + body.Width / 2 - .5, body.Y, 1.7, Brushes.WhiteSmoke);
                 break;
         }
-        if (footprint.Renderer is "axial-resistor" or "inductor" or "diode" or "led" or "button" or "placeholder")
+        if (footprint.Renderer is "axial-resistor" or "inductor" or "diode" or "photoresistor" or "thermistor" or "led" or "button" or "placeholder")
             foreach (var contact in contacts)
                 PhysicalDrawing.Contact(dc, new Point(contact.X, contact.Y));
     }

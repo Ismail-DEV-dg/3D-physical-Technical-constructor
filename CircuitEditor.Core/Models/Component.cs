@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using CircuitEditor.Core.Physical;
+using CircuitEditor.Core.Inputs;
 
 namespace CircuitEditor.Core.Models;
 
@@ -15,7 +16,7 @@ public sealed class Component
     /// <summary>Восстанавливает все электрические данные и устойчивый ID из JSON.</summary>
     [JsonConstructor]
     public Component(ComponentDefinition definition, string reference, Guid id, string value, string color, string? i2cAddress,
-        CapacitorKind capacitorKind = CapacitorKind.Ceramic, double potentiometerAngle = 0)
+        CapacitorKind capacitorKind = CapacitorKind.Ceramic, double potentiometerAngle = 0, ComponentInputs? inputs = null)
     {
         ArgumentNullException.ThrowIfNull(definition);
         ArgumentException.ThrowIfNullOrWhiteSpace(reference);
@@ -29,6 +30,8 @@ public sealed class Component
             || definition.Id != "potentiometer" && potentiometerAngle != 0)
             throw new ArgumentException("Некорректное исполнение или положение ручки.");
         CapacitorKind = capacitorKind; PotentiometerAngle = potentiometerAngle;
+        Inputs = inputs ?? ComponentInputDefinitions.Defaults(definition.Id);
+        if (!ComponentInputDefinitions.IsValid(definition.Id, Inputs)) throw new ArgumentException("Входные условия вне диапазона или не относятся к компоненту.");
     }
     /// <summary>Устойчивый ID.</summary>
     public Guid Id { get; }
@@ -46,6 +49,18 @@ public sealed class Component
     public CapacitorKind CapacitorKind { get; private set; }
     /// <summary>Угол ручки потенциометра в градусах, сохраняемый в JSON.</summary>
     public double PotentiometerAngle { get; private set; }
+    /// <summary>Пользовательские условия для будущей симуляции; сейчас без влияния на электрику.</summary>
+    public ComponentInputs Inputs { get; private set; }
+    /// <summary>Атомарно меняет один применимый параметр после проверки.</summary>
+    public bool TrySetInput(ComponentInput input, double value)
+    {
+        var definition = ComponentInputDefinitions.For(Definition.Id).FirstOrDefault(item => item.Input == input);
+        if (definition is null || !definition.IsValid(value)) return false;
+        var values = Inputs.Values.ToDictionary(pair => pair.Key, pair => pair.Value);
+        values[input] = value; Inputs = new ComponentInputs(values);
+        if (input is ComponentInput.BatteryVoltage or ComponentInput.RgbCommon) Value = definition.Format(value);
+        return true;
+    }
     /// <summary>Проверяет и меняет исполнение только у конденсатора.</summary>
     public bool TrySetCapacitorKind(CapacitorKind kind)
     {

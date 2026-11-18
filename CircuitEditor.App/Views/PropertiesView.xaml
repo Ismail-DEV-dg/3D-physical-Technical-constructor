@@ -27,6 +27,17 @@
                         <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.ShowsVoltage}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
                     </Style></TextBlock.Style>
                 </TextBlock>
+                <views:ComponentInputsView DataContext="{Binding SelectedComponent.InputsEditor}">
+                    <views:ComponentInputsView.Style><Style TargetType="views:ComponentInputsView">
+                        <Style.Triggers><DataTrigger Binding="{Binding}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
+                    </Style></views:ComponentInputsView.Style>
+                </views:ComponentInputsView>
+                <TextBlock Text="10 kΩ при 25 °C" Margin="0,14,0,0">
+                    <TextBlock.Style><Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.ShowsFixedNtcValue}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
+                    </Style></TextBlock.Style>
+                </TextBlock>
                 <StackPanel>
                     <StackPanel.Style><Style TargetType="StackPanel">
                         <Setter Property="Visibility" Value="Collapsed"/>
@@ -56,7 +67,7 @@
                 </views:ResistorPropertiesView>
                 <StackPanel>
                     <StackPanel.Style><Style TargetType="StackPanel">
-                        <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.HasListedNominal}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
+                        <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.ShowsGenericValue}" Value="False"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
                     </Style></StackPanel.Style>
                     <TextBlock Text="НОМИНАЛ" Style="{StaticResource MutedText}" Margin="0,18,0,7"/>
                     <TextBox Text="{Binding SelectedComponent.EditValue, UpdateSourceTrigger=PropertyChanged}" FontSize="11" AutomationProperties.Name="Номинал"/>
@@ -79,7 +90,7 @@
                 </StackPanel>
                 <Button Content="Применить" Command="{Binding ApplyPropertiesCommand}" Margin="0,16,0,6">
                     <Button.Style><Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-                        <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.HasListedNominal}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
+                        <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent.HasImmediateProperties}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
                     </Style></Button.Style>
                 </Button>
                 <TextBlock Text="{Binding PropertyError}" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap" FontSize="10"/>

@@ -1,0 +1,29 @@
+<UserControl x:Class="CircuitEditor.App.Views.ComponentInputsView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ItemsControl ItemsSource="{Binding Parameters}">
+        <ItemsControl.ItemTemplate><DataTemplate>
+            <StackPanel Margin="0,14,0,0">
+                <TextBlock Text="{Binding Definition.Label}" Style="{StaticResource MutedText}" Margin="0,0,0,7"/>
+                <ComboBox ItemsSource="{Binding Choices}" DisplayMemberPath="Text" SelectedValuePath="Value"
+                          SelectedValue="{Binding Value, Mode=TwoWay}" AutomationProperties.Name="{Binding Definition.Label}">
+                    <ComboBox.Style><Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers><DataTrigger Binding="{Binding IsChoice}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers>
+                    </Style></ComboBox.Style>
+                </ComboBox>
+                <StackPanel>
+                    <StackPanel.Style><Style TargetType="StackPanel"><Style.Triggers>
+                        <DataTrigger Binding="{Binding IsChoice}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger>
+                    </Style.Triggers></Style></StackPanel.Style>
+                    <TextBlock Text="{Binding DisplayValue}" Foreground="{DynamicResource AccentBrush}"/>
+                    <Slider Minimum="{Binding Definition.Minimum}" Maximum="{Binding Definition.Maximum}" TickFrequency="{Binding Definition.Step}"
+                            SmallChange="{Binding Definition.Step}" LargeChange="{Binding Definition.Step}"
+                            Value="{Binding Value, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsSnapToTickEnabled="True"
+                            IsMoveToPointEnabled="True" AutomationProperties.Name="{Binding Definition.Label}"/>
+                    <TextBlock Text="{Binding Definition.RangeText}" Style="{StaticResource MutedText}"/>
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate></ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

@@ -27,7 +27,8 @@ public sealed class JsonFootprintRepository : IFootprintRepository
                 if (string.IsNullOrWhiteSpace(footprint.Id) || string.IsNullOrWhiteSpace(footprint.ComponentDefinitionId)
                     || footprint.Renderer is not ("arduino-uno" or "axial-resistor" or "led" or "button" or "placeholder"
                         or "arduino-nano" or "esp32-devkit" or "lcd1602" or "lcd1602-i2c" or "oled-ssd1306" or "seven-segment"
-                        or "buzzer" or "servo" or "relay" or "capacitor" or "inductor" or "potentiometer" or "npn" or "diode")
+                        or "buzzer" or "servo" or "relay" or "capacitor" or "inductor" or "potentiometer" or "npn" or "diode"
+                        or "dht11" or "dht22" or "hc-sr04" or "pir" or "photoresistor" or "thermistor" or "rgb-led" or "switch" or "battery")
                     || footprint.Mounting is not ("free" or "breadboard") || !double.IsFinite(footprint.Body.Width)
                     || !double.IsFinite(footprint.Body.Height) || footprint.Body.Width <= 0 || footprint.Body.Height <= 0
                     || footprint.AllowedRotations.Count == 0 || footprint.AllowedRotations.Any(angle => angle is not (0 or 90 or 180 or 270))
@@ -49,7 +50,11 @@ public sealed class JsonFootprintRepository : IFootprintRepository
                         rotary.Y - rotary.Radius, rotary.Radius * 2, rotary.Radius * 2))))
                     throw new ArgumentException("Неверная геометрия ручки.");
                 string[] required = footprint.Renderer switch
-                { "capacitor" => ["ceramic", "electrolytic"], "servo" => ["case", "left-ear", "right-ear", "shaft", "connector"], _ => [] };
+                {
+                    "capacitor" => ["ceramic", "electrolytic"], "servo" => ["case", "left-ear", "right-ear", "shaft", "connector"],
+                    "hc-sr04" => ["left-eye", "right-eye"], "pir" => ["lens"], "battery" => ["cell"], "switch" => ["slot"],
+                    "rgb-led" => ["lens", "r-knee", "common-knee", "g-knee", "b-knee"], _ => []
+                };
                 if (required.Any(key => footprint.Parts?.ContainsKey(key) != true)
                     || footprint.Renderer == "potentiometer" && footprint.RotaryControl is null)
                     throw new ArgumentException("Отсутствует геометрия частей корпуса.");

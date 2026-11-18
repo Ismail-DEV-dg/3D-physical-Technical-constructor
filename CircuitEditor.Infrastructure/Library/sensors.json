@@ -5,12 +5,12 @@
   "prefix": "S",
   "category": "ДАТЧИКИ",
   "symbol": "sensor",
-  "description": "Датчик температуры и влажности DHT11. Контакт NC не подключается; DATA требует подтяжки. Это фирменный однопроводный протокол, не I2C.",
+  "description": "DHT11, классический SIP-4: 0…50 °C, 20…90 % RH. Контакт NC не подключается; DATA требует подтяжки. Это фирменный однопроводный протокол, не I2C.",
   "voltage": 5,
   "pins": [
     {"id":"VCC","name":"VCC","type":"Power"},
     {"id":"DATA","name":"DATA","type":"DigitalIO"},
-    {"id":"NC","name":"NC","type":"Passive","isExposed":false},
+    {"id":"NC","name":"NC","type":"Passive","isExposed":true,"isNoConnect":true},
     {"id":"GND","name":"GND","type":"Ground"}
   ],
   "defaultValue": "DHT11",
@@ -23,12 +23,12 @@
   "prefix": "S",
   "category": "ДАТЧИКИ",
   "symbol": "sensor",
-  "description": "Датчик температуры и влажности DHT22. Контакт NC не подключается; DATA требует подтяжки. Это фирменный однопроводный протокол, не I2C.",
+  "description": "DHT22, SIP-4: −40…80 °C, 0…100 % RH. Контакт NC не подключается; DATA требует подтяжки. Это фирменный однопроводный протокол, не I2C.",
   "voltage": 5,
   "pins": [
     {"id":"VCC","name":"VCC","type":"Power"},
     {"id":"DATA","name":"DATA","type":"DigitalIO"},
-    {"id":"NC","name":"NC","type":"Passive","isExposed":false},
+    {"id":"NC","name":"NC","type":"Passive","isExposed":true,"isNoConnect":true},
     {"id":"GND","name":"GND","type":"Ground"}
   ],
   "defaultValue": "DHT22",
@@ -55,7 +55,7 @@
 },
 {
   "id": "pir",
-  "name": "PIR",
+  "name": "PIR HC-SR501",
   "prefix": "S",
   "category": "ДАТЧИКИ",
   "symbol": "sensor",

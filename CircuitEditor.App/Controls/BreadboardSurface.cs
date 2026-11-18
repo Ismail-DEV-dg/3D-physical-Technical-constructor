@@ -10,7 +10,7 @@ namespace CircuitEditor.App.Controls;
 
 public sealed class BreadboardSurface : FrameworkElement
 {
-    private const double MinimumCullingPaddingMm = 4;
+    private const double MinimumCullingPaddingMm = 6;
     private readonly ComponentDrawingCache components = new();
     private readonly BreadboardDrawingCache breadboard = new();
     private readonly ToolTip tip = new() { Placement = PlacementMode.MousePoint, IsHitTestVisible = false, Focusable = false };
