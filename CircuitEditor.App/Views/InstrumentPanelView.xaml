@@ -1,0 +1,45 @@
+<UserControl x:Class="CircuitEditor.App.Views.InstrumentPanelView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:controls="clr-namespace:CircuitEditor.App.Controls" xmlns:input="clr-namespace:CircuitEditor.App.Interaction">
+ <UserControl.Resources><BooleanToVisibilityConverter x:Key="VisibleWhen"/></UserControl.Resources>
+ <Border Style="{StaticResource Panel}" Width="294" Padding="8" Visibility="{Binding IsVisible, Converter={StaticResource VisibleWhen}}">
+  <StackPanel>
+   <DockPanel Margin="0,0,0,6">
+    <Button DockPanel.Dock="Right" Content="×" Command="{Binding CloseCommand}" ToolTip="Скрыть прибор" Padding="6,3"/>
+    <Thumb Focusable="False" Cursor="SizeAll" ToolTip="Перетащите прибор" input:InstrumentDragBehavior.Command="{Binding MoveCommand}">
+     <Thumb.Template><ControlTemplate TargetType="Thumb">
+      <Border Background="{DynamicResource HoverBrush}" CornerRadius="4" Padding="7,5">
+       <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
+      </Border>
+     </ControlTemplate></Thumb.Template>
+    </Thumb>
+   </DockPanel>
+   <WrapPanel Margin="0,0,0,5">
+    <ComboBox ItemsSource="{Binding Channels}" SelectedIndex="{Binding Channel}" Width="112" ToolTip="Канал прибора"/>
+    <Button Content="Зонд" Command="{Binding SelectProbeCommand}" Margin="5,0" Padding="7,4"/>
+    <Button Content="Снять" Command="{Binding ClearProbeCommand}" Padding="7,4"/>
+   </WrapPanel>
+   <TextBlock Text="{Binding ProbeLabel}" Style="{StaticResource MutedText}" FontSize="10" TextWrapping="Wrap"/>
+   <StackPanel Visibility="{Binding IsMeter, Converter={StaticResource VisibleWhen}}" Margin="0,5,0,0" Orientation="Horizontal">
+    <ComboBox ItemsSource="{Binding MeterModes}" SelectedIndex="{Binding MeterMode}" Width="130" ToolTip="Режим мультиметра"/>
+    <TextBlock Text="{Binding Reading}" FontFamily="{StaticResource MonoFont}" FontSize="16" Margin="10,0,0,0" VerticalAlignment="Center"/>
+   </StackPanel>
+   <StackPanel Visibility="{Binding HasTrace, Converter={StaticResource VisibleWhen}}">
+    <WrapPanel Margin="0,6,0,5">
+     <ComboBox ItemsSource="{Binding TimeChoices}" SelectedItem="{Binding MillisecondsPerDivision}" Width="61" ToolTip="Время на деление"/>
+     <TextBlock Text="мс/дел" VerticalAlignment="Center" Margin="4,0,8,0"/>
+     <ComboBox ItemsSource="{Binding VoltsChoices}" SelectedItem="{Binding VoltsPerDivision}" Width="59"
+               ToolTip="Вольт на деление" Visibility="{Binding IsScope, Converter={StaticResource VisibleWhen}}"/>
+     <TextBlock Text="В/дел" VerticalAlignment="Center" Margin="4,0,0,0" Visibility="{Binding IsScope, Converter={StaticResource VisibleWhen}}"/>
+    </WrapPanel>
+    <WrapPanel Visibility="{Binding IsScope, Converter={StaticResource VisibleWhen}}" Margin="0,0,0,5">
+     <ComboBox ItemsSource="{Binding Triggers}" SelectedIndex="{Binding TriggerMode}" Width="92" ToolTip="Триггер канала 1"/>
+     <TextBox Text="{Binding TriggerLevel, ValidatesOnExceptions=True}" Width="50" Margin="5,0" ToolTip="Порог триггера, В"/>
+     <TextBlock Text="В · порог" VerticalAlignment="Center"/>
+    </WrapPanel>
+    <controls:InstrumentTrace Height="95" Signal="{Binding Signal}" Kind="{Binding Kind}" Time="{Binding MillisecondsPerDivision}"
+     Volts="{Binding VoltsPerDivision}" TriggerMode="{Binding TriggerMode}" TriggerLevel="{Binding TriggerLevel}"/>
+   </StackPanel>
+  </StackPanel>
+ </Border>
+</UserControl>

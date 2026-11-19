@@ -26,6 +26,7 @@
         <controls:BreadboardSurface Grid.Row="2" Simulation="{Binding Simulation.State}" ShowVoltage="{Binding Simulation.ShowVoltage}" ShowCurrent="{Binding Simulation.ShowCurrent}" Scene="{Binding}" Revision="{Binding Revision}"
             Background="{DynamicResource BackgroundBrush}" input:CanvasInputBehavior.Command="{Binding InputCommand}"
             AutomationProperties.Name="Макет электрической цепи"/>
+        <views:InstrumentDeckView Grid.Row="2" DataContext="{Binding Simulation.Instruments}"/>
         <Border Grid.Row="3" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="12,8">
             <TextBlock Text="Breadboard: тяните за край, R — поворот · Esc — перемещение · Перемычка: два клика · Изгиб: выберите провод и потяните линию · Концы/узлы: перетаскивание · Esc: отмена"
                 Style="{StaticResource MutedText}" TextWrapping="Wrap"/>

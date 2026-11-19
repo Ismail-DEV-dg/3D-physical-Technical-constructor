@@ -13,6 +13,7 @@ public sealed class DcSolver(IElectricalLibraryRepository repository) : IDcSolve
         DcMatrixCache? cache, IReadOnlySet<Guid>? modeledComponents = null)
     {
         var voltages=nets.Nets.ToDictionary(n=>n.Id,_=>(double?)null);var results=new List<DcBranchResult>();var messages=nets.Diagnostics.ToList();
+        var references = new Dictionary<string, string>();
         var data=repository.Load();if(data.Value is null)return new(false,voltages,results,[data.Error??"Нет электрической библиотеки."],[]);
         var assembly=DcCircuitAssembler.Assemble(project,nets,data.Value,modeledComponents);
         assembly = assembly with { Branches = assembly.Branches.Concat(additional).ToArray() };
@@ -31,7 +32,7 @@ public sealed class DcSolver(IElectricalLibraryRepository repository) : IDcSolve
                 if(b.Kind=="V" && unique.Any(v=>v.Kind=="V"&&v.A==b.A&&v.B==b.B&&v.Value==b.Value))redundant.Add(b);else unique.Add(b);
             var solved=DcIslandSolver.Solve(unique,ground.Id,cache);
             if(solved.Error is not null){messages.Add(solved.Error);success=false;continue;}
-            foreach(var pair in solved.Voltages!)voltages[pair.Key]=pair.Value;
+            foreach(var pair in solved.Voltages!) { voltages[pair.Key]=pair.Value; references[pair.Key]=ground.Id; }
             foreach(var result in solved.Branches)
             {
                 var ambiguous=unique.Any(b=>b.Name==result.Name&&b.Kind=="V"&&redundant.Any(r=>r.A==b.A&&r.B==b.B));
@@ -47,6 +48,6 @@ public sealed class DcSolver(IElectricalLibraryRepository repository) : IDcSolve
         }
         if(assembly.Branches.Count==0){messages.Add("Нет поддерживаемых DC-ветвей.");success=false;}
         return new(success,voltages,results,messages,assembly.Unsupported)
-        { IterationLimitReached = messages.Contains(DcIslandSolver.IterationLimitMessage) };
+        { IterationLimitReached = messages.Contains(DcIslandSolver.IterationLimitMessage), References = references };
     }
 }

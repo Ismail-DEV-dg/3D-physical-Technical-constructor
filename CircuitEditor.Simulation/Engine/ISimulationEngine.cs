@@ -7,5 +7,6 @@ public interface ISimulationEngine
     SimulationState State { get; }
     void Schedule(long microseconds, Action action);
     SimulationState Step(CancellationToken cancellationToken = default);
+    void Halt(string reason);
     void Reset();
 }

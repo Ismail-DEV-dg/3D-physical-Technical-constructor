@@ -5,4 +5,6 @@ public sealed record DcResult(bool Success,IReadOnlyDictionary<string,double?> V
 {
     /// <summary>Стабилизация кусочно-линейной модели достигла лимита.</summary>
     public bool IterationLimitReached { get; init; }
+    /// <summary>Узел отсчёта для каждого рассчитанного напряжения.</summary>
+    public IReadOnlyDictionary<string, string> References { get; init; } = new Dictionary<string, string>();
 }

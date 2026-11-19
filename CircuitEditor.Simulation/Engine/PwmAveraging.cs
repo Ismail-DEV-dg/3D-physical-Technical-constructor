@@ -4,17 +4,16 @@ namespace CircuitEditor.Simulation.Engine;
 
 internal static class PwmAveraging
 {
-    internal static DcResult Combine(IReadOnlyList<(double Start, DcResult Result)> phases)
+    internal static DcResult Combine(IReadOnlyList<(double Weight, DcResult Result)> phases)
     {
         if (phases.Count == 1) return phases[0].Result;
         double? Average(Func<DcResult, double?> get)
         {
             var sum = 0d;
-            for (var i = 0; i < phases.Count; i++)
+            foreach (var (weight, result) in phases)
             {
-                var end = i + 1 < phases.Count ? phases[i + 1].Start : 1;
-                if (get(phases[i].Result) is not double value) return null;
-                sum += value * (end - phases[i].Start);
+                if (get(result) is not double value) return null;
+                sum += value * weight;
             }
             return sum;
         }
@@ -29,6 +28,7 @@ internal static class PwmAveraging
         }).ToArray();
         return new(phases.All(p => p.Result.Success), voltages, branches,
             phases.SelectMany(p => p.Result.Diagnostics).Distinct().ToArray(),
-            phases.SelectMany(p => p.Result.UnsupportedComponents).Distinct().ToArray());
+            phases.SelectMany(p => p.Result.UnsupportedComponents).Distinct().ToArray())
+        { References = phases[0].Result.References };
     }
 }

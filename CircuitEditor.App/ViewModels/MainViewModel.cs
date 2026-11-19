@@ -52,7 +52,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         Project.PropertyChanged += OnProjectChanged;
         navigation.PropertyChanged += OnNavigationChanged;
         Code.ShowCodeRequested+=OnShowCode;Code.ToolsRequested+=OnCodeTools;Code.PropertyChanged+=OnCodeChanged;
-        Diagnostics=new(analysis,Code,clipboard,documentation,errorHelp);
+        Diagnostics=new(analysis,Code,clipboard,documentation,errorHelp,Simulation,Project);
+        if (Simulation is not null) Simulation.FrameChanged += OnSimulationFrame;
         themes.PropertyChanged += OnThemeChanged;
     }
 
@@ -60,6 +61,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public ProjectAnalysisViewModel? Analysis { get; }
     public PanelLayoutViewModel Panels { get; } = new();
     public DiagnosticsViewModel Diagnostics {get;}
+    private void OnSimulationFrame(object? sender, Core.Simulation.SimulationState state) => Code.Output.ReceiveSerial(state);
     private void OpenSimulationPanel(object? sender, EventArgs e) => OnCodeTools(sender, 3);
     private void OnInspectRequested(object? sender, EventArgs e) => OnCodeTools(sender,Analysis?.InspectorTabIndex==2?1:0);
     [RelayCommand] private void ErrorHelp()=>errorHelp?.Show();
@@ -197,7 +199,11 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         Diagnostics.Dispose();
-        if (Simulation is not null) Simulation.ConfigurationRequested -= OpenSimulationPanel;
+        if (Simulation is not null)
+        {
+            Simulation.ConfigurationRequested -= OpenSimulationPanel;
+            Simulation.FrameChanged -= OnSimulationFrame;
+        }
         Code.ShowCodeRequested-=OnShowCode;Code.ToolsRequested-=OnCodeTools;Code.PropertyChanged-=OnCodeChanged;
         if (Analysis is not null) Analysis.InspectRequested -= OnInspectRequested;
         navigation.PropertyChanged -= OnNavigationChanged;

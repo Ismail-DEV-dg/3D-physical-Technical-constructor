@@ -16,7 +16,8 @@ public sealed class SimulationCircuit
     private readonly Dictionary<Guid, GpioController> controllers;
     private readonly WireMeasurements wireMeasurements;
     private bool dirty = true;
-    private IReadOnlyList<(double Start, DcResult Result)> phases = [];
+    private PwmPhasePlan? pwm;
+    private Dictionary<string, DcResult> phases = [];
 
     public SimulationCircuit(CircuitProject source, INetlistBuilder netlistBuilder, IDcSolver solver, SimulationModelCatalog catalog)
     {
@@ -36,14 +37,17 @@ public sealed class SimulationCircuit
     public int SolveCount { get; private set; }
     public int MatrixBuildCount => matrices.BuildCount;
     public bool IsDirty => dirty;
-    public bool IterationLimitReached => phases.Any(p => p.Result.IterationLimitReached);
+    public bool PwmApproximation => pwm?.IsApproximation == true;
+    public IEnumerable<long> PhaseTimes => pwm?.Phases.Select(p => p.At) ?? [];
+    public IEnumerable<DcResult> PhaseResults => phases.Values;
+    public bool IterationLimitReached => phases.Values.Any(p => p.IterationLimitReached);
 
     public bool TrySetPin(PinReference pin, GpioState state)
     {
         if (!controllers.TryGetValue(pin.ComponentId, out var board)) return false;
         var previous = board.Get(pin.PinId);
         if (!board.TrySet(pin.PinId, state)) return false;
-        if (previous.Mode != state.Mode || previous.DriveSetting() != state.DriveSetting()) dirty = true;
+        if (previous.Mode != state.Mode || previous.DriveSetting() != state.DriveSetting() || state.Mode == GpioMode.Pwm && previous.PeriodMicroseconds != state.PeriodMicroseconds) dirty = true;
         return true;
     }
 
@@ -60,22 +64,23 @@ public sealed class SimulationCircuit
     public void Refresh(Func<IReadOnlyList<DcBranch>>? componentBranches = null, IReadOnlySet<Guid>? modeled = null)
     {
         if (!dirty) return;
-        var bounds = controllers.Values.SelectMany(b => b.Pins.Select(p => b.Get(p.Id)))
-            .Where(p => p.Mode == GpioMode.Pwm).Select(p => p.Duty).Append(0).Append(1).Distinct().Order().ToArray();
+        pwm = new(controllers.Values);
         var extra = componentBranches?.Invoke() ?? [];
-        var segments = new List<(double Start, DcResult Result)>();
-        for (var i = 0; i < bounds.Length - 1; i++)
+        var results = new List<(double Weight, DcResult Result)>();
+        phases = [];
+        foreach (var phase in pwm.Phases)
         {
-            segments.Add((bounds[i], solver.Solve(Project, Nets, Drivers(bounds[i]).Concat(extra).ToArray(), matrices, modeled)));
+            var result = solver.Solve(Project, Nets, Drivers(pwm, phase).Concat(extra).ToArray(), matrices, modeled);
+            phases.Add(phase.State, result);
+            results.Add((phase.Weight, result));
             SolveCount++;
         }
-
-        phases = segments;
-        Average = PwmAveraging.Combine(segments);
+        Average = PwmAveraging.Combine(results);
         dirty = false;
     }
 
     public System.Collections.Immutable.ImmutableDictionary<Guid, WireSignal> Wires() => wireMeasurements.Read(Nets, Average);
+    public DcResult? ResultAt(long microseconds) => pwm is null ? Average : phases.GetValueOrDefault(pwm.StateAt(microseconds)) ?? Average;
 
     public double? Voltage(PinReference pin) => Nets.Find(pin.ComponentId, pin.PinId) is { } net
         ? Average?.Voltages.GetValueOrDefault(net.Id) : null;
@@ -83,15 +88,17 @@ public sealed class SimulationCircuit
     public DigitalLevel ReadDigital(PinReference pin, long microseconds)
     {
         var net = Nets.Find(pin.ComponentId, pin.PinId);
-        if (net is null) return DigitalLevel.Z;
+        return net is null ? DigitalLevel.Z : ReadDigital(net, microseconds, pin);
+    }
+
+    public DigitalLevel ReadDigital(Net net, long microseconds, PinReference? pin = null)
+    {
         var active = net.Pins.Where(p => controllers.ContainsKey(p.ComponentId)).Select(p =>
             controllers[p.ComponentId].OutputAt(p.PinId, microseconds)).Where(level => level != DigitalLevel.Z).Distinct().ToArray();
         if (active.Length > 1) return DigitalLevel.X;
-        var reference = controllers.GetValueOrDefault(pin.ComponentId) ?? net.Pins
+        var reference = (pin is null ? null : controllers.GetValueOrDefault(pin.ComponentId)) ?? net.Pins
             .Select(p => controllers.GetValueOrDefault(p.ComponentId)).FirstOrDefault(b => b is not null);
-        // Directly driven nets use the driver's instantaneous PWM phase.
-        var index = reference is null ? 0 : (double)(microseconds % reference.Profile.PwmPeriodMicroseconds) / reference.Profile.PwmPeriodMicroseconds;
-        var result = phases.LastOrDefault(p => p.Start <= index).Result;
+        var result = ResultAt(microseconds);
         var voltage = result?.Voltages.GetValueOrDefault(net.Id);
         if (voltage is null) return active.Length == 1 ? active[0] : DigitalLevel.Z;
         var supply = reference?.Profile.LogicVoltage ?? controllers.Values.FirstOrDefault()?.Profile.LogicVoltage;
@@ -111,7 +118,7 @@ public sealed class SimulationCircuit
         return duty is > 0 and < 1 ? duty * board.Period(driver.PinId) : null;
     }
 
-    private IEnumerable<DcBranch> Drivers(double phase)
+    private IEnumerable<DcBranch> Drivers(PwmPhasePlan plan, PwmPhase phase)
     {
         foreach (var board in controllers.Values)
         {
@@ -121,7 +128,7 @@ public sealed class SimulationCircuit
             if (ground is null) continue;
             foreach (var pin in board.Pins)
             {
-                if (board.Drive(pin.Id, phase) is not double voltage || Nets.Find(board.Id, pin.Id) is not { } net) continue;
+                if (board.Drive(pin.Id, plan.PhaseFor(new(board.Id, pin.Id), phase)) is not double voltage || Nets.Find(board.Id, pin.Id) is not { } net) continue;
                 var resistance = board.Get(pin.Id).Mode == GpioMode.InputPullup
                     ? board.Profile.PullupResistanceOhms : board.Profile.OutputResistanceOhms;
                 yield return new(board.Id, GpioBranchName(board, pin.Id), net.Id, ground.Id, "TH", resistance, voltage,

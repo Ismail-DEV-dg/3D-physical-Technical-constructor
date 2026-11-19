@@ -16,7 +16,7 @@ public sealed class ScenarioRunner(IScenarioRepository repository) : IScenarioRu
     private const double MaximumPeriodMs = 3_600_000;
 
     public SimulationDiagnostic? Start(ScenarioConfiguration configuration, SimulationCircuit circuit, BehaviorContext context,
-        ISimulationEngine engine, ISimulationClock clock, Action<string> serial)
+        Action<long, Action> schedule, ISimulationClock clock, Action<string> serial)
     {
         var template = repository.Load().Value?.SingleOrDefault(t => t.Id == configuration.TemplateId);
         if (template is null) return Invalid("Шаблон сценария отсутствует.");
@@ -58,9 +58,9 @@ public sealed class ScenarioRunner(IScenarioRepository repository) : IScenarioRu
             void Next()
             {
                 tick();
-                engine.Schedule(clock.Microseconds + interval, Next);
+                schedule(clock.Microseconds + interval, Next);
             }
-            engine.Schedule(clock.Microseconds, Next);
+            schedule(clock.Microseconds, Next);
         }
 
         switch (template.Id)
@@ -71,7 +71,7 @@ public sealed class ScenarioRunner(IScenarioRepository repository) : IScenarioRu
                 {
                     Set("LED_PIN", new(GpioMode.Output, highLength > 0));
                     if (highLength > 0 && highLength < period)
-                        engine.Schedule(clock.Microseconds + highLength, () => Set("LED_PIN", new(GpioMode.Output)));
+                        schedule(clock.Microseconds + highLength, () => Set("LED_PIN", new(GpioMode.Output)));
                 });
                 break;
             case "button-led":

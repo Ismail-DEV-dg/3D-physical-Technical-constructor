@@ -29,12 +29,15 @@ public sealed class SimulationEngine(ISimulationClock clock, int eventLimit = Si
                 return State = new(clock.Microseconds, true, "Колебательный режим или зацикливание: превышен лимит событий.");
             clock.AdvanceTo(due);
             queue.Take()();
+            if (State.IsHalted) return State;
         }
 
         cancellationToken.ThrowIfCancellationRequested();
         clock.AdvanceTo(target);
         return State = new(target);
     }
+
+    public void Halt(string reason) => State = new(clock.Microseconds, true, reason);
 
     public void Reset()
     {

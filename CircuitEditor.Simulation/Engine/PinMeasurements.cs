@@ -5,17 +5,17 @@ using CircuitEditor.Simulation.Gpio;
 
 namespace CircuitEditor.Simulation.Engine;
 
-public sealed partial class SimulationSession
+internal static class PinMeasurements
 {
-    private ImmutableDictionary<PinReference,PinSignal> ReadPins()
+    internal static ImmutableDictionary<PinReference,PinSignal> Read(SimulationCircuit circuit, long time)
     {
         var snapshot = ImmutableDictionary.CreateBuilder<PinReference,PinSignal>();
-        foreach (var board in Circuit.Controllers.Values)
+        foreach (var board in circuit.Controllers.Values)
             foreach (var p in board.Pins)
             {
                 var pin = new PinReference(board.Id, p.Id);
-                var voltage = Circuit.Voltage(pin);
-                var level = Circuit.ReadDigital(pin, clock.Microseconds) switch
+                var voltage = circuit.Voltage(pin);
+                var level = circuit.ReadDigital(pin, time) switch
                 {
                     DigitalLevel.High => "1", DigitalLevel.Low => "0", DigitalLevel.Z => "Z", _ => "X"
                 };

@@ -58,6 +58,7 @@ public sealed class ThemeResourceTests
             CodeEditorPresentationChecks.Run(resources);
             CodeWorkspacePresentationChecks.Run(resources);
             DiagnosticsPresentationChecks.Run(resources);
+            SimulationPresentationChecks.Run(resources);
             application.Shutdown();
         });
     }

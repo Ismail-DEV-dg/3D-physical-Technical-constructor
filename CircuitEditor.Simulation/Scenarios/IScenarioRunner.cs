@@ -8,5 +8,5 @@ namespace CircuitEditor.Simulation.Scenarios;
 public interface IScenarioRunner
 {
     SimulationDiagnostic? Start(ScenarioConfiguration configuration, SimulationCircuit circuit, BehaviorContext context,
-        ISimulationEngine engine, ISimulationClock clock, Action<string> serial);
+        Action<long, Action> schedule, ISimulationClock clock, Action<string> serial);
 }

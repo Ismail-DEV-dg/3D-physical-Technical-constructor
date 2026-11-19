@@ -3,6 +3,7 @@ using CircuitEditor.Core.Repositories;
 using CircuitEditor.Infrastructure.Repositories;
 using CircuitEditor.Simulation.Components;
 using CircuitEditor.Simulation.Engine;
+using CircuitEditor.Simulation.Instruments;
 using CircuitEditor.Simulation.Scenarios;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,6 +27,10 @@ internal static class SimulationRegistration
         services.AddSingleton<IComponentBehavior, SensorBehavior>();
         services.AddSingleton<IComponentBehavior, PirBehavior>();
         services.AddSingleton<IComponentBehavior, UltrasonicBehavior>();
+        services.AddSingleton<ISimulationDiagnostics, SimulationDiagnostics>();
+        services.AddSingleton<IInstrument, Multimeter>();
+        services.AddSingleton<IInstrument, Oscilloscope>();
+        services.AddSingleton<IInstrument, LogicAnalyzer>();
         services.AddSingleton<ISimulationSessionFactory, SimulationSessionFactory>();
         services.AddSingleton<ISimulationPlayback, SimulationPlayback>();
         services.AddSingleton<ISimulationUiPulse, SimulationUiPulse>();

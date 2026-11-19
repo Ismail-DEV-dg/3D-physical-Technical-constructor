@@ -49,6 +49,13 @@
     <Slider Minimum="0" Maximum="1" Value="{Binding Analog}" IsEnabled="{Binding OverrideAnalog}" AutomationProperties.Name="Доля диапазона АЦП"/>
     <Button Content="Применить режим" Command="{Binding ApplyCommand}" Margin="0,6,0,0"/>
    </StackPanel>
+   <StackPanel Width="240" Margin="0,0,18,12" DataContext="{Binding Instruments}">
+    <TextBlock Text="ПРИБОРЫ" Foreground="{DynamicResource AccentBrush}" FontWeight="Bold" Margin="0,0,0,8"/>
+    <CheckBox Content="Мультиметр" IsChecked="{Binding Meter.IsVisible}" Margin="0,3"/>
+    <CheckBox Content="Осциллограф" IsChecked="{Binding Scope.IsVisible}" Margin="0,3"/>
+    <CheckBox Content="Логический анализатор" IsChecked="{Binding Logic.IsVisible}" Margin="0,3"/>
+    <TextBlock Text="{Binding Hint}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+   </StackPanel>
    <views:ComponentInputsView Width="240" DataContext="{Binding RuntimeInputs}"/>
   </WrapPanel>
  </ScrollViewer>

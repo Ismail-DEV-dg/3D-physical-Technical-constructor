@@ -22,6 +22,7 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
         this.pulse = pulse;
         Scenario = new(project, scenarios);
         Controller = new(project, playback);
+        Instruments = new(project, playback);
         Controller.Refresh();
         pulse.Tick += OnFrame;
         project.ProjectReplaced += OnProjectReplaced;
@@ -31,6 +32,7 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
 
     public SimulationScenarioViewModel Scenario { get; }
     public SimulationControllerViewModel Controller { get; }
+    public SimulationInstrumentsViewModel Instruments { get; }
     public bool HasSession => playback.HasSession;
     public bool CanConfigure => !HasSession;
     public bool IsRunning => playback.IsRunning;
@@ -85,6 +87,7 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
     {
         project.Wiring.Exit();
         playback.Start(project.Model, Scenario.Configuration(), run);
+        Instruments.BeginSession();
         project.IsSimulationActive = true;
         UpdateRuntimeInputs();
         pulse.Start();
@@ -127,6 +130,7 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
         State = value;
         project.Model.SetSimulation(value);
         Controller.Update(HasSession ? value : null);
+        Instruments.Observe(value);
         FrameChanged?.Invoke(this, value);
     }
 

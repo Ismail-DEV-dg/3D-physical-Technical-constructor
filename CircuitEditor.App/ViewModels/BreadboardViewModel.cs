@@ -69,6 +69,13 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     [RelayCommand]
     private void Input(CanvasInput input)
     {
+        if (Simulation is { } tools)
+        {
+            if (input.Action == CanvasAction.Cancel && tools.Instruments.CancelPick()) return;
+            if (input.Action == CanvasAction.Down && !input.Pan && tools.Instruments.TryPick(new(
+                PhysicalSettings.ToMillimeters((input.X - OffsetX) / Zoom),
+                PhysicalSettings.ToMillimeters((input.Y - OffsetY) / Zoom)))) return;
+        }
         if (!Project.CanEdit && Simulation is { } simulation && input.Action != CanvasAction.Resize)
         {
             CursorX = PhysicalSettings.ToMillimeters((input.X - OffsetX) / Zoom);

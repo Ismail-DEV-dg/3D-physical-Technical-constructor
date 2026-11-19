@@ -18,7 +18,7 @@ public sealed class GpioController(Component board, SimulationBoardProfile profi
         if (pin is null || !Enum.IsDefined(state.Mode) || !double.IsFinite(state.Duty) || state.Duty is < 0 or > 1
             || state.AnalogOverride is double analog && (!double.IsFinite(analog) || analog is < 0 or > 1)
             || state.PeriodMicroseconds is < 1 or > 1_000_000
-            || state.Role == PinRole.Output && pin.IsInputOnly
+            || state.Mode != GpioMode.Input && pin.IsInputOnly
             || state.Mode == GpioMode.Pwm && pin.Type != PinType.PWM && !pin.Capabilities.Contains(PinType.PWM))
             return false;
         states[pinId] = state;

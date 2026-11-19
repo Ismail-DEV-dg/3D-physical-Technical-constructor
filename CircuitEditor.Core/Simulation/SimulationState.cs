@@ -12,6 +12,10 @@ public sealed record SimulationState(long Microseconds = 0, bool IsHalted = fals
     public ImmutableDictionary<PinReference, PinSignal> Pins { get; init; } = ImmutableDictionary<PinReference, PinSignal>.Empty;
     /// <summary>Напряжение и ток перемычек текущего расчёта.</summary>
     public ImmutableDictionary<Guid, WireSignal> Wires { get; init; } = ImmutableDictionary<Guid, WireSignal>.Empty;
+    /// <summary>Измерения приборов и история их каналов.</summary>
+    public ImmutableDictionary<InstrumentKind, InstrumentSignal> Instruments { get; init; } = ImmutableDictionary<InstrumentKind, InstrumentSignal>.Empty;
+    /// <summary>Ограниченный журнал Serial текущего сеанса.</summary>
+    public ImmutableArray<SerialLine> Serial { get; init; } = [];
     /// <summary>Диагностика с момента запуска, без повторений.</summary>
     public ImmutableArray<SimulationDiagnostic> Diagnostics { get; init; } = [];
 }
