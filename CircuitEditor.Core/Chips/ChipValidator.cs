@@ -42,11 +42,19 @@ public static class ChipValidator
         }
 
         if (outputs.Count == 0) errors.Add("Добавьте хотя бы один выход.");
-        if (chip.Behavior is ChipTruthTable table)
-            ChipTruthLogic.Validate(table, inputs, outputs,
-                chip.Pins.Where(pin => pin.EnablePin.HasValue).Select(pin => pin.EnablePin!.Value), errors);
-        else
-            errors.Add("Укажите поддерживаемое поведение микросхемы.");
+        var enablePins = chip.Pins.Where(pin => pin.EnablePin.HasValue).Select(pin => pin.EnablePin!.Value);
+        switch (chip.Behavior)
+        {
+            case ChipTruthTable table:
+                ChipTruthLogic.Validate(table, inputs, outputs, enablePins, errors);
+                break;
+            case ChipGraph graph:
+                ChipGraphValidation.Validate(graph, inputs, outputs, enablePins, errors);
+                break;
+            default:
+                errors.Add("Укажите поддерживаемое поведение микросхемы.");
+                break;
+        }
 
         return errors;
     }
