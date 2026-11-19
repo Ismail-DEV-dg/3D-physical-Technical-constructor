@@ -10,11 +10,11 @@
 |---|---|
 | `CircuitEditor.Core` | `net8.0`, без ссылок на другие проекты и WPF. Модель проекта, электрические расчёты, проверки, история, генерация и анализ кода. |
 | `CircuitEditor.Infrastructure` | `net8.0` → Core. Реализации репозиториев в `Repositories/`, встроенные JSON в `Library/` и `Data/`, миграции в `Documents/`. |
-| `CircuitEditor.Simulation` | `net8.0` → Core. Пока содержит только файл проекта. `ISimulationClock` отсутствует. |
+| `CircuitEditor.Simulation` | `net8.0` → Core. Виртуальные часы `ISimulationClock` и событийный движок `ISimulationEngine`. |
 | `CircuitEditor.App` | `net8.0-windows` → Core, Infrastructure, Simulation. WPF и AvalonEdit. Регистрация зависимостей в `Program.cs`, интерфейс в `Views/`, `Controls/`, `Resources/`, ввод в `Interaction/`, команды и состояние UI в `ViewModels/`. |
 | `CircuitEditor.Tests` | `net8.0-windows` → все четыре проекта. xUnit, включая проверки WPF. |
 
-- `Core/Models/CircuitProject.cs` объединяет электрическую модель, два размещения, breadboard, привязки и скетч. `Core/Simulation/SimulationState.cs` пока содержит пустую запись состояния.
+- `Core/Models/CircuitProject.cs` объединяет электрическую модель, два размещения, breadboard, привязки и скетч. `Core/Simulation/SimulationState.cs` хранит неизменяемый снимок времени и состояния сеанса.
 - `Core/Netlist/` — `INetlistBuilder` / `NetlistBuilder` объединяет группы отверстий, привязки, внутренние связи и перемычки. `App/ViewModels/ProjectViewModel.cs` перестраивает netlist перед уведомлением `ModelCommitted`.
 - `Core/Validation/` — `IErcService` / `ErcService` выполняет набор `IErcRule`. `PinDirectionRule` зарегистрировано, но пока возвращает пустой список.
 - `Core/Electronics/` — `IDcSolver` / `DcSolver` рассчитывает поддерживаемые статические цепи. `ProjectAnalysisViewModel` связывает ERC и DC с нижней панелью.
@@ -85,7 +85,8 @@ dotnet run --project CircuitEditor.App
 
 ## Текущий статус
 
-- Этап 7, шаг 0 завершён. README оформлен, история перенесена в `docs/status-history.md`, `*.tmp` добавлено в .gitignore. Debug-сборка прошла с 0 ошибок и 0 предупреждений, тесты 408/408. Реализация симуляции ожидает согласования.
+- Этап 7, шаг 1 завершён. Очередь (время, порядковый номер), шаг 1 мс, лимит событий. Снимок исключён из JSON и Undo, обнуляется при изменении проекта. Сборка 0 ошибок / 0 предупреждений, тесты 411/411. Далее GPIO и DC.
+- Этап 7, шаг 0 завершён. README оформлен, история перенесена в `docs/status-history.md`, `*.tmp` добавлено в .gitignore. Debug-сборка прошла с 0 ошибок и 0 предупреждений, тесты 408/408. Проект симуляции согласован.
 - По отдельным указаниям пользователя созданы два коммита: 9d6ca01 — этап 6 перед правками; ae3a336 — завершённые исправления диагностики, справки и подготовки скетча. Push не выполнялся.
 - Сделано: прочитаны «ку.circ» и автосохранение без записи в них. Причина ошибки генерации — ручной setup/loop без секций <auto>; отдельная ошибка соединений — LED7.A/LED7.K в одной группе A15/B15, R1 отдельно между D13 и GND.
 - Сделано: безопасная кнопка подготовки маркеров, стабильные коды проблем, копирование сообщений/списка/вывода/диалогов, справка по ошибкам из JSON с поиском, подсказками и прямыми переходами. Добавлено ERC-предупреждение LED_SHORT.
@@ -124,4 +125,4 @@ dotnet run --project CircuitEditor.App
 ## История и следующий этап
 
 Подробные отчёты, утверждённый план этапов 3–10, ограничения и ручные проверки перенесены в [docs/status-history.md](docs/status-history.md).
-Задание этапа 7 «Симуляция» получено. Следующий шаг — согласовать проект симуляции перед реализацией.
+Этап 7 реализуется по шести согласованным шагам.

@@ -1,4 +1,4 @@
 namespace CircuitEditor.Core.Simulation;
 
-/// <summary>Пустая сериализуемая заготовка состояния симуляции; алгоритмов исполнения пока нет.</summary>
-public sealed record SimulationState;
+/// <summary>Неизменяемый снимок модельного времени и состояния сеанса.</summary>
+public sealed record SimulationState(long Microseconds = 0, bool IsHalted = false, string? Failure = null);

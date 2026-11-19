@@ -14,7 +14,7 @@ public sealed class CircuitProject
     [JsonConstructor]
     public CircuitProject(Circuit? circuit = null, ViewLayout? mockupLayout = null, ViewLayout? schematicLayout = null,
         IReadOnlyList<BreadboardInstance>? breadboards = null, IReadOnlyList<FootprintDefinition>? footprints = null,
-        IReadOnlyList<ContactBinding>? bindings = null, SimulationState? simulation = null, Code.SketchDocument? sketch = null)
+        IReadOnlyList<ContactBinding>? bindings = null, Code.SketchDocument? sketch = null)
     {
         Circuit = circuit ?? new Circuit();
         MockupLayout = mockupLayout ?? new ViewLayout(RepresentationKind.Mockup);
@@ -24,7 +24,6 @@ public sealed class CircuitProject
         Breadboards = Array.AsReadOnly(breadboards?.ToArray() ?? []);
         Footprints = Array.AsReadOnly(footprints?.ToArray() ?? []);
         this.bindings = bindings?.ToList() ?? [];
-        Simulation = simulation ?? new SimulationState();
         SetSketch(sketch ?? new());
     }
     /// <summary>Общая электрическая модель.</summary>
@@ -39,8 +38,11 @@ public sealed class CircuitProject
     public IReadOnlyList<FootprintDefinition> Footprints { get; }
     /// <summary>Вставленные физические контакты.</summary>
     public IReadOnlyList<ContactBinding> Bindings => bindings.AsReadOnly();
-    /// <summary>Пока пустое состояние симуляции.</summary>
-    public SimulationState Simulation { get; }
+    /// <summary>Снимок активного сеанса, исключённый из файлов проекта и истории.</summary>
+    [JsonIgnore]
+    public SimulationState Simulation { get; private set; } = new();
+    /// <summary>Публикует снимок без изменения данных электрической схемы.</summary>
+    public void SetSimulation(SimulationState state) => Simulation = state;
     /// <summary>Код проекта с независимой историей редактирования.</summary>
     public Code.SketchDocument Sketch { get; private set; } = new();
     /// <summary>Заменяет проверенные данные скетча.</summary>
@@ -69,6 +71,7 @@ public sealed class CircuitProject
     {
         Circuit = state.Circuit; MockupLayout = state.MockupLayout; SchematicLayout = state.SchematicLayout;
         Breadboards = state.Breadboards; bindings.Clear(); bindings.AddRange(state.Bindings);
+        Simulation = new();
     }
     /// <summary>Перемещает/поворачивает плату вместе со вставленными экземплярами и внутренними изгибами.</summary>
     public void TransformBoard(Guid id,double x,double y,int rotation)

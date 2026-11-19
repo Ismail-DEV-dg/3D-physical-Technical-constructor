@@ -31,5 +31,5 @@ public sealed class ProjectSnapshot
         new(c.Definition, reference ?? c.Reference, id ?? c.Id, c.Value, c.Color, c.I2cAddress, c.CapacitorKind, c.PotentiometerAngle, c.Inputs, c.Electrical);
     private static CircuitProject Clone(CircuitProject p) => new(new Circuit(p.Circuit.Components.Select(c => Copy(c)).ToArray(), p.Circuit.Wires.ToArray(), p.Circuit.Counters),
         new ViewLayout(RepresentationKind.Mockup, p.MockupLayout.Placements), new ViewLayout(RepresentationKind.Schematic, p.SchematicLayout.Placements),
-        p.Breadboards, p.Footprints, p.Bindings, p.Simulation);
+        p.Breadboards, p.Footprints, p.Bindings);
 }

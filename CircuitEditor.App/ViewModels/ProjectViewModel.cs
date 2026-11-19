@@ -200,7 +200,12 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
         Committed();
     }
     private void Committed()
-    { Connectivity.Rebuild(); ModelCommitted?.Invoke(this,EventArgs.Empty); OnPropertyChanged(nameof(Connectivity)); }
+    {
+        Model.SetSimulation(new());
+        Connectivity.Rebuild();
+        ModelCommitted?.Invoke(this, EventArgs.Empty);
+        OnPropertyChanged(nameof(Connectivity));
+    }
     private void NotifyHistory()
     {
         OnPropertyChanged(nameof(IsDirty)); OnPropertyChanged(nameof(CanUndo)); OnPropertyChanged(nameof(CanRedo));

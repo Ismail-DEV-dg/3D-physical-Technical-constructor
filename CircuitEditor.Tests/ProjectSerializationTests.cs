@@ -21,7 +21,9 @@ public sealed class ProjectSerializationTests
         Assert.Equal(physical.X, project.MockupLayout.Get(component.Id).X);
         Assert.Equal(physical.Rotation, project.MockupLayout.Get(component.Id).Rotation);
         Assert.Equal(2, project.Bindings.Count);
+        project.SetSimulation(new(1_000));
         var json = JsonSerializer.Serialize(project);
+        Assert.DoesNotContain("\"Simulation\"", json);
         var copy = JsonSerializer.Deserialize<CircuitProject>(json)!;
         Assert.Equal(component.Id, Assert.Single(copy.Circuit.Components).Id);
         Assert.Equal(component.Value, copy.Circuit.Components[0].Value);
@@ -32,7 +34,7 @@ public sealed class ProjectSerializationTests
         Assert.Equal(project.Bindings, copy.Bindings);
         Assert.Equal(board.Id, copy.Breadboards[0].Id);
         Assert.Equal(400, copy.Breadboards[0].Definition.Holes.Count);
-        Assert.Equal("{}", JsonSerializer.Serialize(copy.Simulation));
+        Assert.Equal(0, copy.Simulation.Microseconds);
         copy.SchematicLayout.Get(component.Id).MoveTo(0, 0);
         Assert.Equal(400, project.SchematicLayout.Get(component.Id).X);
         copy.MockupLayout.Get(component.Id).MoveTo(10, 20);
