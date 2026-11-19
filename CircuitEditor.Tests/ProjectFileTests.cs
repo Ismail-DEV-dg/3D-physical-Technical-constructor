@@ -24,7 +24,7 @@ public sealed class ProjectFileTests
         var json=File.ReadAllText(file); Assert.DoesNotContain("defaultColor",json); Assert.DoesNotContain("holePitch",json);
         Assert.DoesNotContain("electricalPinId",json);
         using var parsed=JsonDocument.Parse(json);
-        Assert.Equal(1,parsed.RootElement.GetProperty("schemaVersion").GetInt32());
+        Assert.Equal(ProjectDocument.CurrentSchemaVersion,parsed.RootElement.GetProperty("schemaVersion").GetInt32());
         var res=parsed.RootElement.GetProperty("components").EnumerateArray().Single(c=>c.GetProperty("definitionId").GetString()=="resistor");
         Assert.False(res.TryGetProperty("color",out _));
         var read=e.Repository.Load(file); Assert.True(read.Success,read.Error);
@@ -58,8 +58,8 @@ public sealed class ProjectFileTests
         using var e=new Stage4TestEnvironment(); var file=Path.Combine(e.Folder,"old.circ");
         Assert.Null(e.Repository.Save(file,e.Session.Capture() with {SchemaVersion=0,LibraryVersion="artificial"}));
         Assert.False(e.Repository.Load(file).Success);
-        var migrated=new JsonProjectRepository([new TestOldProjectMigration()]).Load(file);
-        Assert.True(migrated.Success,migrated.Error); Assert.Equal(1,migrated.Value!.SchemaVersion); Assert.Equal("1",migrated.Value.LibraryVersion);
+        var migrated=new JsonProjectRepository([new TestOldProjectMigration(),new CircuitEditor.Infrastructure.Documents.ProjectMigrationV1ToV2()]).Load(file);
+        Assert.True(migrated.Success,migrated.Error); Assert.Equal(ProjectDocument.CurrentSchemaVersion,migrated.Value!.SchemaVersion); Assert.Equal("1",migrated.Value.LibraryVersion);
     }
     [Fact]
     public void SaveCheckpointAndUnsavedGuardRespectCancelAndFailedSave()

@@ -1,0 +1,63 @@
+<SyntaxDefinition name="Arduino" extensions=".ino;.cpp;.h" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+ <Color name="Comment" foreground="{Muted}" fontStyle="italic"/>
+ <Color name="String" foreground="{Green}"/>
+ <Color name="Number" foreground="{Purple}"/>
+ <Color name="Keyword" foreground="{Accent}" fontWeight="bold"/>
+ <Color name="Api" foreground="{Purple}"/>
+ <RuleSet>
+  <Span color="Comment" begin="//"/>
+  <Span color="Comment" multiline="true" begin="/\*" end="\*/"/>
+  <Span color="String" begin="&quot;" end="&quot;"><RuleSet><Span begin="\\" end="."/></RuleSet></Span>
+  <Span color="String" begin="'" end="'"><RuleSet><Span begin="\\" end="."/></RuleSet></Span>
+  <Rule color="Number">\b(0[xX][0-9a-fA-F]+|\d+(\.\d+)?[uUlLfF]*)\b</Rule>
+  <Rule color="Keyword">^\s*\#\s*\w+</Rule>
+  <Keywords color="Keyword">
+   <Word>void</Word><Word>bool</Word><Word>char</Word><Word>int</Word><Word>float</Word><Word>double</Word><Word>long</Word><Word>unsigned</Word><Word>const</Word><Word>constexpr</Word><Word>static</Word><Word>volatile</Word><Word>auto</Word><Word>return</Word><Word>if</Word><Word>else</Word><Word>switch</Word><Word>case</Word><Word>for</Word><Word>while</Word><Word>do</Word><Word>break</Word><Word>continue</Word><Word>true</Word><Word>false</Word><Word>class</Word><Word>struct</Word><Word>enum</Word><Word>public</Word><Word>private</Word><Word>include</Word><Word>define</Word><Word>uint8_t</Word><Word>uint16_t</Word><Word>uint32_t</Word><Word>String</Word>
+  </Keywords>
+  <Keywords color="Api">
+   <Word>analogRead</Word>
+   <Word>analogWrite</Word>
+   <Word>attach</Word>
+   <Word>constrain</Word>
+   <Word>delay</Word>
+   <Word>delayMicroseconds</Word>
+   <Word>DHT</Word>
+   <Word>digitalRead</Word>
+   <Word>digitalWrite</Word>
+   <Word>map</Word>
+   <Word>micros</Word>
+   <Word>millis</Word>
+   <Word>noTone</Word>
+   <Word>pinMode</Word>
+   <Word>pulseIn</Word>
+   <Word>shiftOut</Word>
+   <Word>tone</Word>
+   <Word>HIGH</Word>
+   <Word>LOW</Word>
+   <Word>INPUT</Word>
+   <Word>OUTPUT</Word>
+   <Word>INPUT_PULLUP</Word>
+   <Word>LED_BUILTIN</Word>
+   <Word>DHT11</Word>
+   <Word>DHT22</Word>
+   <Word>SSD1306_SWITCHCAPVCC</Word>
+   <Word>Serial</Word>
+   <Word>Wire</Word>
+   <Word>WiFi</Word>
+   <Word>LiquidCrystal_I2C</Word>
+   <Word>LiquidCrystal</Word>
+   <Word>Adafruit_SSD1306</Word>
+   <Word>Servo</Word>
+   <Word>setup</Word>
+   <Word>loop</Word>
+   <Word>begin</Word>
+   <Word>print</Word>
+   <Word>println</Word>
+   <Word>read</Word>
+   <Word>available</Word>
+   <Word>write</Word>
+   <Word>readTemperature</Word>
+   <Word>readHumidity</Word>
+  </Keywords>
+ </RuleSet>
+</SyntaxDefinition>

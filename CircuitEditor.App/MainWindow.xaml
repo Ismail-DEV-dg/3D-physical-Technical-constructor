@@ -64,11 +64,11 @@
                         <Separator/><MenuItem Header="Выход" Command="{Binding CloseCommand}"/>
                     </MenuItem>
                     <MenuItem Header="_Правка">
-                        <MenuItem Header="Отменить" Command="{Binding Project.UndoCommand}" ToolTip="{input:ShortcutHint Undo}"/>
-                        <MenuItem Header="Повторить" Command="{Binding Project.RedoCommand}" ToolTip="{input:ShortcutHint Redo}"/>
+                        <MenuItem Header="Отменить" Command="{Binding UndoActiveCommand}" ToolTip="{input:ShortcutHint Undo}"/>
+                        <MenuItem Header="Повторить" Command="{Binding RedoActiveCommand}" ToolTip="{input:ShortcutHint Redo}"/>
                         <Separator/>
-                        <MenuItem Header="Копировать · Ctrl+C" Command="{Binding Project.CopyCommand}" ToolTip="{input:ShortcutHint Copy}"/>
-                        <MenuItem Header="Вставить · Ctrl+V" Command="{Binding Project.PasteCommand}" ToolTip="{input:ShortcutHint Paste}"/>
+                        <MenuItem Header="Копировать · Ctrl+C" Command="{Binding CopyActiveCommand}" ToolTip="{input:ShortcutHint Copy}"/>
+                        <MenuItem Header="Вставить · Ctrl+V" Command="{Binding PasteActiveCommand}" ToolTip="{input:ShortcutHint Paste}"/>
                     </MenuItem>
                     <MenuItem Header="_Вид">
                         <MenuItem Header="Вписать проект в холст" InputGestureText="F / Home" Command="{Binding FitViewCommand}" ToolTip="{input:ShortcutHint Fit}"/>
@@ -81,7 +81,7 @@
                         <MenuItem Header="Панели">
                             <MenuItem Header="Компоненты" Command="{Binding Panels.Components.ShowCommand}"/>
                             <MenuItem Header="Свойства и расчёт" Command="{Binding Panels.Inspector.ShowCommand}"/>
-                            <MenuItem Header="Проверка / Расчёт DC" Command="{Binding Panels.Analysis.ShowCommand}"/>
+                            <MenuItem Header="Нижняя панель" Command="{Binding Panels.Analysis.ShowCommand}"/>
                             <Separator/><MenuItem Header="Восстановить расположение панелей" Command="{Binding Panels.ResetCommand}"/>
                         </MenuItem>
                         <MenuItem Header="Тема">
@@ -126,11 +126,20 @@
                     <TextBlock Text="{Binding StatusMessage}" FontSize="10" Foreground="{DynamicResource MutedBrush}" TextTrimming="CharacterEllipsis" MaxWidth="480" ToolTip="{Binding StatusMessage}"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Code.CursorStatus}" Foreground="{DynamicResource AccentBrush}" FontSize="10" Margin="0,0,14,0">
+                        <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedWorkspace.Kind}" Value="{x:Static vm:WorkspaceKind.Code}"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
+                        </Style.Triggers></Style></TextBlock.Style>
+                    </TextBlock>
                     <TextBlock Text="{Binding Analysis.CountSummary}" Style="{StaticResource MutedText}" Margin="0,0,10,0"/>
+                    <StackPanel Orientation="Horizontal"><StackPanel.Style><Style TargetType="StackPanel"><Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedWorkspace.Kind}" Value="{x:Static vm:WorkspaceKind.Code}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger>
+                    </Style.Triggers></Style></StackPanel.Style>
                     <TextBlock Text="{Binding CursorX, StringFormat=X: {0:0.##}}" Style="{StaticResource MutedText}" Margin="0,0,14,0"/>
                     <TextBlock Text="{Binding CursorY, StringFormat=Y: {0:0.##}}" Style="{StaticResource MutedText}" Margin="0,0,6,0"/>
                     <TextBlock Text="{Binding CoordinateUnit}" Style="{StaticResource MutedText}" Margin="0,0,18,0"/>
                     <TextBlock Text="{Binding ZoomPercent, StringFormat={}{0:0}%}" Foreground="{DynamicResource AccentBrush}" FontSize="10" Margin="0,0,22,0"/>
+                    </StackPanel>
                     <TextBlock Text="{Binding ComponentCount, StringFormat=Компонентов: {0}}" Style="{StaticResource MutedText}"/>
                 </StackPanel>
             </Grid>

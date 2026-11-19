@@ -1,0 +1,9 @@
+<UserControl x:Class="CircuitEditor.App.Views.CodeProblemsView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <Grid Margin="6"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
+  <TextBlock Text="{Binding Summary}" FontSize="10" Margin="0,0,0,4" Foreground="{DynamicResource MutedBrush}"/>
+  <ListBox Grid.Row="1" ItemsSource="{Binding Items}" SelectedItem="{Binding Selected}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" AutomationProperties.Name="Проблемы кода">
+   <ListBox.ItemTemplate><DataTemplate><TextBlock Text="{Binding Text}" FontSize="11" TextWrapping="Wrap" ToolTip="Нажмите для перехода к строке"/></DataTemplate></ListBox.ItemTemplate>
+  </ListBox>
+ </Grid>
+</UserControl>

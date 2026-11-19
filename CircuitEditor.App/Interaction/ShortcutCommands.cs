@@ -13,7 +13,7 @@ public static class ShortcutCommands
         {
             "Help"=>vm.ShortcutHelpCommand,"New"=>vm.Session?.NewCommand,"Open"=>vm.Session?.OpenCommand,
             "Save"=>vm.Session?.SaveCommand,"SaveAs"=>vm.Session?.SaveAsCommand,
-            "Undo"=>vm.Project.UndoCommand,"Redo"=>vm.Project.RedoCommand,"Copy"=>vm.Project.CopyCommand,"Paste"=>vm.Project.PasteCommand,
+            "Undo"=>vm.UndoActiveCommand,"Redo"=>vm.RedoActiveCommand,"Copy"=>vm.CopyActiveCommand,"Paste"=>vm.PasteActiveCommand,
             "Check"=>vm.Analysis?.CheckCommand,"Calculate"=>vm.Analysis?.CalculateCommand,"Calculator"=>vm.CalculatorCommand,
             "Theme"=>vm.ToggleThemeCommand,"Png"=>vm.Exports?.PngCommand,"Svg"=>vm.Exports?.SvgCommand,"Bom"=>vm.Exports?.BomCommand,_=>null
         };

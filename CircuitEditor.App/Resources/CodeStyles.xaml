@@ -1,0 +1,7 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ <ControlTemplate x:Key="CodeCompletionWindowTemplate" TargetType="Window">
+  <Border Background="{DynamicResource PanelBrush}" BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" CornerRadius="6" Padding="4">
+   <ContentPresenter/>
+  </Border>
+ </ControlTemplate>
+</ResourceDictionary>

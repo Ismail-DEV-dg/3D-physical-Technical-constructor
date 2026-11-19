@@ -42,6 +42,13 @@ public static class Program
         registrations.AddSingleton<ITextMeasurer, WpfTextMeasurer>();
         registrations.AddSingleton<IComponentLayoutCalculator, ComponentLayoutCalculator>();
         registrations.AddSingleton<IProjectRepository, JsonProjectRepository>();
+        registrations.AddSingleton<CircuitEditor.Core.Documents.IProjectMigration, CircuitEditor.Infrastructure.Documents.ProjectMigrationV1ToV2>();
+        registrations.AddSingleton<ISketchRepository, FileSketchRepository>();
+        registrations.AddSingleton<ICodeCompletionRepository, JsonCodeCompletionRepository>();
+        registrations.AddSingleton<ICodeTemplateRepository, JsonCodeTemplateRepository>();
+        registrations.AddSingleton<CircuitEditor.Core.Code.ICodeGenerator, CircuitEditor.Core.Code.ArduinoCodeGenerator>();
+        registrations.AddSingleton<CircuitEditor.Core.Code.ICodeAnalyzer, CircuitEditor.Core.Code.ArduinoCodeAnalyzer>();
+        registrations.AddSingleton<ICodeAnalysisService, CodeAnalysisService>();
         registrations.AddSingleton<IRecentProjectsRepository, JsonRecentProjectsRepository>();
         registrations.AddSingleton<IExportRepository, FileExportRepository>();
         registrations.AddSingleton<IDialogService, DialogService>();

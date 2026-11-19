@@ -1,0 +1,51 @@
+<UserControl x:Class="CircuitEditor.App.Views.CodeView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:avalon="http://icsharpcode.net/sharpdevelop/avalonedit" xmlns:input="clr-namespace:CircuitEditor.App.Interaction">
+ <Grid Margin="8"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
+  <WrapPanel Margin="0,0,0,6">
+   <ComboBox Width="90" ItemsSource="{Binding Boards}" SelectedItem="{Binding Board}" ToolTip="Семейство платы" Margin="0,0,6,4"/>
+   <Grid Width="100" Margin="0,0,6,4">
+    <ComboBox ItemsSource="{Binding Controllers}" DisplayMemberPath="Reference" SelectedValuePath="Id" SelectedValue="{Binding ControllerId}" ToolTip="Экземпляр платы. Авто — единственная плата выбранного семейства."/>
+    <TextBlock Text="{Binding ControllerHint}" FontSize="11" Margin="12,0,24,0" VerticalAlignment="Center" IsHitTestVisible="False">
+     <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding ControllerId}" Value="{x:Null}"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
+    </TextBlock>
+   </Grid>
+   <Button Content="Обновить" Command="{Binding GenerateCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Обновить только блоки &lt;auto&gt;; ручной код сохраняется"/>
+   <Button Content=".ino" Command="{Binding ExportCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Экспортировать скетч в одноимённую папку"/>
+   <Button Content="Поиск" Command="{Binding FindCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Ctrl+F — поиск; Ctrl+H — замена; Ctrl+G — строка"/>
+  </WrapPanel>
+  <TextBlock Grid.Row="1" Text="{Binding StaleMessage}" FontSize="10" TextWrapping="Wrap" Margin="0,0,0,6">
+   <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/><Style.Triggers><DataTrigger Binding="{Binding IsStale}" Value="True"><Setter Property="Foreground" Value="{DynamicResource RedBrush}"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
+  </TextBlock>
+  <Border Grid.Row="2" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="5" Padding="6" Margin="0,0,0,6">
+   <Border.Style><Style TargetType="Border"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsFindOpen}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></Border.Style>
+   <StackPanel>
+    <WrapPanel>
+     <TextBox x:Name="CodeFind" Width="170" Text="{Binding SearchText,UpdateSourceTrigger=PropertyChanged}" ToolTip="Искать текст" Margin="0,0,6,4"/>
+     <Button Content="Найти" Command="{Binding EditorActionCommand}" CommandParameter="FindNext" Padding="8,5" Margin="0,0,6,4"/>
+     <CheckBox Content="Aa" IsChecked="{Binding MatchCase}" Margin="0,0,6,4" ToolTip="Учитывать регистр"/>
+     <Button Content="Замена" Command="{Binding ReplaceCommand}" Padding="8,5" Margin="0,0,6,4"/>
+     <Button Content="×" Command="{Binding CloseSearchCommand}" Padding="8,5" Margin="0,0,0,4" ToolTip="Закрыть поиск · Esc"/>
+    </WrapPanel>
+    <WrapPanel>
+     <WrapPanel.Style><Style TargetType="WrapPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsReplaceOpen}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></WrapPanel.Style>
+     <TextBox x:Name="CodeReplacement" Width="170" Text="{Binding ReplacementText,UpdateSourceTrigger=PropertyChanged}" ToolTip="Заменить на · Enter — заменить" Margin="0,0,6,4"/>
+     <Button Content="Заменить" Command="{Binding EditorActionCommand}" CommandParameter="ReplaceOne" Padding="8,5" Margin="0,0,6,4"/>
+     <Button Content="Все" Command="{Binding EditorActionCommand}" CommandParameter="ReplaceAll" Padding="8,5" Margin="0,0,6,4"/>
+    </WrapPanel>
+    <TextBlock Text="{Binding SearchMessage}" FontSize="10" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap"/>
+   </StackPanel>
+  </Border>
+  <WrapPanel Grid.Row="3" Margin="0,0,0,6">
+   <WrapPanel.Style><Style TargetType="WrapPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsGoToOpen}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></WrapPanel.Style>
+   <TextBox x:Name="CodeLine" Width="100" Text="{Binding GoToText,UpdateSourceTrigger=PropertyChanged}" ToolTip="Номер строки"/>
+   <Button Content="Перейти" Command="{Binding EditorActionCommand}" CommandParameter="GoLine" Padding="9,7" Margin="6,0"/>
+   <TextBlock Text="{Binding SearchMessage}" VerticalAlignment="Center" FontSize="10"/>
+  </WrapPanel>
+  <Border Grid.Row="4" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="6" ClipToBounds="True">
+   <avalon:TextEditor x:Name="Editor" input:CodeEditorBehavior.Model="{Binding}" Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextBrush}"
+     FontFamily="{StaticResource MonoFont}" FontSize="{Binding EditorFontSize}" ShowLineNumbers="True" LineNumbersForeground="{DynamicResource MutedBrush}"
+     HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="6" ToolTip="Ctrl+Space — дополнение; Ctrl+колесо — масштаб; Ctrl+F/H/G — поиск/замена/строка"/>
+  </Border>
+ </Grid>
+</UserControl>

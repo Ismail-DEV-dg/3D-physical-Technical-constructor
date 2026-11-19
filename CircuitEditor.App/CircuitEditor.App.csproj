@@ -16,9 +16,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <Resource Include="Resources\Fonts\*.ttf" />
+    <Resource Include="Resources\Code\*.xshd" />
     <None Update="Resources\Fonts\JetBrainsMono-LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

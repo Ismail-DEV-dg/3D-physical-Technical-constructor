@@ -14,6 +14,7 @@ public static class ProjectDocumentResolver
     {
         if (data.SchemaVersion != ProjectDocument.CurrentSchemaVersion) throw new ArgumentException($"Версия формата файла: {data.SchemaVersion}. Поддерживаемая версия: {ProjectDocument.CurrentSchemaVersion}.");
         if (data.LibraryVersion != ProjectDocument.CurrentLibraryVersion) throw new ArgumentException("Версия библиотеки проекта не поддерживается.");
+        if (data.Sketch is null || !data.Sketch.IsValid) throw new ArgumentException("Повреждены данные скетча.");
         if (data.Breadboards.Count != 1) throw new ArgumentException("Проект должен содержать одну breadboard.");
         var boards = data.Breadboards.Select(b => b.DefinitionId == board.Id && b.Id != Guid.Empty && double.IsFinite(b.X) && double.IsFinite(b.Y) && b.Rotation is 0 or 90 or 180 or 270
             ? new BreadboardInstance(b.Id, board, b.X, b.Y,b.Rotation) : throw new ArgumentException($"Не найдена или повреждена breadboard: {b.DefinitionId}.")).ToArray();
@@ -61,6 +62,7 @@ public static class ProjectDocumentResolver
         if (!Enum.IsDefined(v.Active) || v.MockupZoom is < ProjectViewState.MinimumZoom or > ProjectViewState.MaximumZoom || v.SchematicZoom is < ProjectViewState.MinimumZoom or > ProjectViewState.MaximumZoom
             || new[] {v.MockupZoom,v.MockupX,v.MockupY,v.SchematicZoom,v.SchematicX,v.SchematicY}.Any(x => !double.IsFinite(x)))
             throw new ArgumentException("Некорректное состояние камеры.");
+        project.SetSketch(data.Sketch);
         return project;
     }
 }

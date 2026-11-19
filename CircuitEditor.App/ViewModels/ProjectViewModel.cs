@@ -130,11 +130,23 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
         foreach (var item in Components) item.PropertyChanged -= OnComponentChanged;
     }
     public CommandHistory History { get; } = new();
+    private Core.Code.SketchDocument savedSketch = new();
+    public event EventHandler? SketchChanged;
+    public event EventHandler? ProjectReplaced;
+    public void UpdateSketch(Core.Code.SketchDocument sketch)
+    {
+        if (Model.Sketch == sketch) return;
+        Model.SetSketch(sketch);OnPropertyChanged(nameof(IsDirty));SketchChanged?.Invoke(this,EventArgs.Empty);
+    }
+    public void MarkSaved()
+    {
+        savedSketch=Model.Sketch;History.MarkSaved();OnPropertyChanged(nameof(IsDirty));
+    }
     private ProjectSnapshot baseline = null!;
     private bool inGesture, restoring;
     private string gestureName = "Изменение проекта";
     private SelectionClipboard? clipboard;
-    public bool IsDirty => History.IsDirty;
+    public bool IsDirty => History.IsDirty || Model.Sketch != savedSketch;
     public bool CanUndo => History.CanUndo && !inGesture;
     public bool CanRedo => History.CanRedo && !inGesture;
     public bool InGesture => inGesture;
@@ -164,7 +176,9 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     }
     public void ReplaceProject(CircuitProject state)
     {
+        Model.SetSketch(state.Sketch);savedSketch=state.Sketch;
         inGesture = false; RestoreState(state); History.Clear(); PropertyError = "";
+        ProjectReplaced?.Invoke(this,EventArgs.Empty);SketchChanged?.Invoke(this,EventArgs.Empty);NotifyHistory();
     }
     private void RestoreState(CircuitProject state)
     {

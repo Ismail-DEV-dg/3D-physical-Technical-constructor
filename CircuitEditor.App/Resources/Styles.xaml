@@ -3,6 +3,7 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="InputStyles.xaml"/>
         <ResourceDictionary Source="DockStyles.xaml"/>
+        <ResourceDictionary Source="CodeStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
     <FontFamily x:Key="UiFont">pack://application:,,,/CircuitEditor.App;component/Resources/Fonts/#JetBrains Mono</FontFamily>

@@ -14,7 +14,7 @@ public sealed class CircuitProject
     [JsonConstructor]
     public CircuitProject(Circuit? circuit = null, ViewLayout? mockupLayout = null, ViewLayout? schematicLayout = null,
         IReadOnlyList<BreadboardInstance>? breadboards = null, IReadOnlyList<FootprintDefinition>? footprints = null,
-        IReadOnlyList<ContactBinding>? bindings = null, SimulationState? simulation = null)
+        IReadOnlyList<ContactBinding>? bindings = null, SimulationState? simulation = null, Code.SketchDocument? sketch = null)
     {
         Circuit = circuit ?? new Circuit();
         MockupLayout = mockupLayout ?? new ViewLayout(RepresentationKind.Mockup);
@@ -25,6 +25,7 @@ public sealed class CircuitProject
         Footprints = Array.AsReadOnly(footprints?.ToArray() ?? []);
         this.bindings = bindings?.ToList() ?? [];
         Simulation = simulation ?? new SimulationState();
+        SetSketch(sketch ?? new());
     }
     /// <summary>Общая электрическая модель.</summary>
     public Circuit Circuit { get; private set; }
@@ -40,6 +41,14 @@ public sealed class CircuitProject
     public IReadOnlyList<ContactBinding> Bindings => bindings.AsReadOnly();
     /// <summary>Пока пустое состояние симуляции.</summary>
     public SimulationState Simulation { get; }
+    /// <summary>Код проекта с независимой историей редактирования.</summary>
+    public Code.SketchDocument Sketch { get; private set; } = new();
+    /// <summary>Заменяет проверенные данные скетча.</summary>
+    public void SetSketch(Code.SketchDocument sketch)
+    {
+        if (!sketch.IsValid) throw new ArgumentException("Некорректные данные скетча.");
+        Sketch = sketch;
+    }
     /// <summary>Создаёт экземпляр и независимые размещения.</summary>
     public Component AddComponent(ComponentDefinition definition)
     {

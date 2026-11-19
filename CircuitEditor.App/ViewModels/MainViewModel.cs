@@ -46,6 +46,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         Mockup.PropertyChanged += OnSchematicChanged;
         Project.PropertyChanged += OnProjectChanged;
         navigation.PropertyChanged += OnNavigationChanged;
+        Code.ShowCodeRequested+=OnShowCode;Code.ToolsRequested+=OnCodeTools;Code.PropertyChanged+=OnCodeChanged;
         themes.PropertyChanged += OnThemeChanged;
     }
 
@@ -82,6 +83,18 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public SchematicViewModel Schematic { get; }
     public BreadboardViewModel Mockup { get; }
     public ProjectViewModel Project => Schematic.Project;
+    public CodeViewModel Code => navigation.Workspaces.OfType<CodeViewModel>().Single();
+    private void OnShowCode(object? sender,EventArgs e){navigation.Navigate(WorkspaceKind.Code);OnCodeTools(sender,2);}
+    private void OnCodeTools(object? sender,int index){Panels.Analysis.ShowCommand.Execute(null);Panels.ToolTabIndex=index;}
+    private void OnCodeChanged(object? sender,PropertyChangedEventArgs e){UndoActiveCommand.NotifyCanExecuteChanged();RedoActiveCommand.NotifyCanExecuteChanged();}
+    private bool CanUndoActive=>SelectedWorkspace.Kind==WorkspaceKind.Code?Code.CanUndo:Project.CanUndo;
+    private bool CanRedoActive=>SelectedWorkspace.Kind==WorkspaceKind.Code?Code.CanRedo:Project.CanRedo;
+    [RelayCommand(CanExecute=nameof(CanUndoActive))]
+    private void UndoActive(){if(SelectedWorkspace.Kind==WorkspaceKind.Code)Code.EditorActionCommand.Execute("Undo");else Project.UndoCommand.Execute(null);}
+    [RelayCommand(CanExecute=nameof(CanRedoActive))]
+    private void RedoActive(){if(SelectedWorkspace.Kind==WorkspaceKind.Code)Code.EditorActionCommand.Execute("Redo");else Project.RedoCommand.Execute(null);}
+    [RelayCommand] private void CopyActive(){if(SelectedWorkspace.Kind==WorkspaceKind.Code)Code.EditorActionCommand.Execute("Copy");else Project.CopyCommand.Execute(null);}
+    [RelayCommand] private void PasteActive(){if(SelectedWorkspace.Kind==WorkspaceKind.Code)Code.EditorActionCommand.Execute("Paste");else Project.PasteCommand.Execute(null);}
     public int LibraryCount => library.Count;
 
     public bool HasPaletteSelection => SelectedPaletteItem is not null;
@@ -102,6 +115,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         if (args.PropertyName == nameof(Project.StatusMessage)) StatusMessage = Project.StatusMessage;
         if (args.PropertyName == nameof(Project.ComponentCount)) OnPropertyChanged(nameof(ComponentCount));
+        if(args.PropertyName is nameof(Project.CanUndo) or nameof(Project.CanRedo)){UndoActiveCommand.NotifyCanExecuteChanged();RedoActiveCommand.NotifyCanExecuteChanged();}
     }
 
     [RelayCommand]
@@ -137,7 +151,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void ShortcutHelp()=>shortcutGuide?.Show();
     [RelayCommand]
-    private void About() => StatusMessage = "Circuit Editor • Arduino / ESP32 • Курсовой проект • Этап 5";
+    private void About() => StatusMessage = "Circuit Editor • Arduino / ESP32 • Курсовой проект • Этап 6";
 
     [RelayCommand]
     private void Minimize() => window.Minimize();
@@ -153,6 +167,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         if (args.PropertyName == nameof(INavigationService.Current))
         {
             OnPropertyChanged(nameof(SelectedWorkspace));
+            UndoActiveCommand.NotifyCanExecuteChanged();RedoActiveCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(CursorX)); OnPropertyChanged(nameof(CursorY)); OnPropertyChanged(nameof(ZoomPercent));
             OnPropertyChanged(nameof(CoordinateUnit));
         }
@@ -170,6 +185,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        Code.ShowCodeRequested-=OnShowCode;Code.ToolsRequested-=OnCodeTools;Code.PropertyChanged-=OnCodeChanged;
         if (Analysis is not null) Analysis.InspectRequested -= OnInspectRequested;
         navigation.PropertyChanged -= OnNavigationChanged;
         themes.PropertyChanged -= OnThemeChanged;

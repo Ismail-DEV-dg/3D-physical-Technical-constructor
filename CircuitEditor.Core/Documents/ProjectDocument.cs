@@ -5,8 +5,10 @@ namespace CircuitEditor.Core.Documents;
 /// <summary>Контракт .circ: только экземпляры и ссылки на библиотечные определения.</summary>
 public sealed record ProjectDocument
 {
-    /// <summary>Первая версия формата; существовавших файлов до неё нет.</summary>
-    public const int CurrentSchemaVersion = 1;
+    /// <summary>Текущая версия формата со скетчем.</summary>
+    public const int CurrentSchemaVersion = 2;
+    /// <summary>Текст скетча и выбранная плата.</summary>
+    public Code.SketchDocument Sketch { get; init; } = new();
     /// <summary>Версия установленной библиотеки.</summary>
     public const string CurrentLibraryVersion = "1";
     /// <summary>Версия формата.</summary>
@@ -32,6 +34,7 @@ public sealed record ProjectDocument
     /// <summary>Снимает документ без библиотечных определений.</summary>
     public static ProjectDocument Capture(CircuitProject project, ProjectViewState? view = null) => new()
     {
+        Sketch = project.Sketch,
         Components = project.Circuit.Components.Select(c => new ComponentData(c.Id, c.Definition.Id,
             project.Footprints.Single(f => f.ComponentDefinitionId == c.Definition.Id).Id, c.Reference, c.Value,
             c.Definition.Id == "led" ? c.Color : null, c.I2cAddress,

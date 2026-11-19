@@ -125,7 +125,7 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
         if (target is null) return false;
         var error = repository.Save(target, Capture());
         if (error is not null) { ReportError(error); return false; }
-        path = target; project.History.MarkSaved(); Remember(target); repository.ClearRecovery();
+        path = target; project.MarkSaved(); Remember(target); repository.ClearRecovery();
         project.StatusMessage = "Проект сохранён."; OnPropertyChanged(nameof(Title)); return true;
     }
     private void ReportError(string message)

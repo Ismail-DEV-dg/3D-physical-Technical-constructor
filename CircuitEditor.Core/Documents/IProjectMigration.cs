@@ -1,6 +1,6 @@
 using System.Text.Json.Nodes;
 namespace CircuitEditor.Core.Documents;
-/// <summary>Расширение механизма миграций; производственных старых версий пока нет.</summary>
+/// <summary>Шаг преобразования сохранённого проекта к следующей версии формата.</summary>
 public interface IProjectMigration
 {
     /// <summary>Исходная версия.</summary>

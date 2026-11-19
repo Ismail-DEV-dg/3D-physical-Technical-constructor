@@ -27,7 +27,7 @@ public sealed class FileNotificationTests : IImageExportService, ISvgExportServi
         Assert.False(e.Session.Load(path));
         var message = Assert.Single(e.Errors);
         Assert.Contains($"Версия формата файла: {version}.", message);
-        Assert.Contains("Поддерживаемая версия: 1.", message);
+        Assert.Contains($"Поддерживаемая версия: {CircuitEditor.Core.Documents.ProjectDocument.CurrentSchemaVersion}.", message);
         Assert.True(before.Matches(e.Project.Model));
     }
 

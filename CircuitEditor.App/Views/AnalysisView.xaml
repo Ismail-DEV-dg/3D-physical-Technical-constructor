@@ -1,7 +1,7 @@
 <UserControl x:Class="CircuitEditor.App.Views.AnalysisView"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- xmlns:input="clr-namespace:CircuitEditor.App.Interaction">
- <TabControl Margin="8,4" Style="{StaticResource PaneTabs}">
+ xmlns:input="clr-namespace:CircuitEditor.App.Interaction" xmlns:views="clr-namespace:CircuitEditor.App.Views">
+ <TabControl Margin="8,4" Style="{StaticResource PaneTabs}" SelectedIndex="{Binding DataContext.Panels.ToolTabIndex, RelativeSource={RelativeSource AncestorType=views:EditorLayoutView}}">
   <TabItem Header="Проверка"><WrapPanel Margin="8">
    <Button Content="Проверить" Command="{Binding CheckCommand}" Padding="10,5" ToolTip="{input:ShortcutHint Check}"/>
   </WrapPanel></TabItem>
@@ -9,5 +9,7 @@
    <Button Content="Рассчитать цепь" Command="{Binding CalculateCommand}" Padding="10,5" ToolTip="{input:ShortcutHint Calculate}"/>
    <CheckBox Content="Показать напряжения" IsChecked="{Binding Results.ShowVoltages}" Margin="12,0"/>
   </WrapPanel></TabItem>
+  <TabItem Header="Проблемы"><views:CodeProblemsView DataContext="{Binding DataContext.Code.ProblemsPanel, RelativeSource={RelativeSource AncestorType=views:EditorLayoutView}}"/></TabItem>
+  <TabItem Header="Вывод"><views:OutputView DataContext="{Binding DataContext.Code.Output, RelativeSource={RelativeSource AncestorType=views:EditorLayoutView}}"/></TabItem>
  </TabControl>
 </UserControl>

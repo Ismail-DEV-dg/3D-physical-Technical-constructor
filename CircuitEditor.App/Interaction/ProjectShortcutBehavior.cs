@@ -4,6 +4,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using CircuitEditor.App.Controls;
 using CircuitEditor.App.ViewModels;
+using CircuitEditor.App.Views;
+using System.Windows.Media;
 namespace CircuitEditor.App.Interaction;
 public static class ProjectShortcutBehavior
 {
@@ -15,7 +17,14 @@ public static class ProjectShortcutBehavior
     {
         var window=(Window)sender;if(window.DataContext is not MainViewModel vm)return;
         var focus=Keyboard.FocusedElement;
-        var editing=focus is TextBoxBase or PasswordBox || focus is ComboBox {IsEditable:true};
+        var parent=focus as DependencyObject;var codeFocus=false;
+        while(parent is not null){if(parent is CodeView){codeFocus=true;break;}parent=parent is Visual?VisualTreeHelper.GetParent(parent):LogicalTreeHelper.GetParent(parent);}
+        if(codeFocus&&Keyboard.Modifiers==ModifierKeys.Control&&e.Key is Key.F or Key.H or Key.G)
+        {if(e.Key==Key.F)vm.Code.FindCommand.Execute(null);else if(e.Key==Key.H)vm.Code.ReplaceCommand.Execute(null);else vm.Code.GoToCommand.Execute(null);e.Handled=true;return;}
+        if(codeFocus&&e.Key==Key.Escape){vm.Code.CloseSearchCommand.Execute(null);e.Handled=true;return;}
+        if(codeFocus&&e.Key==Key.Enter&&focus is TextBox {Name: "CodeFind" or "CodeLine" or "CodeReplacement"} box)
+        {vm.Code.EditorActionCommand.Execute(box.Name=="CodeLine"?"GoLine":box.Name=="CodeReplacement"?"ReplaceOne":"FindNext");e.Handled=true;return;}
+        var editing=codeFocus||focus is TextBoxBase or PasswordBox || focus is ComboBox {IsEditable:true};
         var canvas=focus is BreadboardSurface or SchematicSurface;
         var binding=ShortcutCatalog.Resolve(e.Key==Key.System?e.SystemKey:e.Key,Keyboard.Modifiers,editing,canvas);if(binding is null)return;
         if(binding.Id=="Search" && vm.Project.InGesture){vm.StatusMessage="Завершите жест или нажмите Esc перед поиском.";e.Handled=true;return;}

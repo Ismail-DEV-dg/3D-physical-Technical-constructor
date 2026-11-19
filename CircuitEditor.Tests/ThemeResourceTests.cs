@@ -55,6 +55,8 @@ public sealed class ThemeResourceTests
             SmoothScrollPresentationChecks.Run(resources);
             UnoAndHoverPresentationChecks.Run(resources);
             PanelPresentationChecks.Run(resources);
+            CodeEditorPresentationChecks.Run(resources);
+            CodeWorkspacePresentationChecks.Run(resources);
             application.Shutdown();
         });
     }
