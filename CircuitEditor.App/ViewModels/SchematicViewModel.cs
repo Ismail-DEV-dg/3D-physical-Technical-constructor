@@ -74,7 +74,7 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
         switch (input.Action)
         {
             case CanvasAction.Drop:
-                var definition = Library.FirstOrDefault(item => item.Id == input.DefinitionId);
+                var definition = Project.PaletteLibrary.FirstOrDefault(item => item.Id == input.DefinitionId);
                 if (definition is not null)
                 {
                     var added = AddComponent(definition, CursorX, CursorY);

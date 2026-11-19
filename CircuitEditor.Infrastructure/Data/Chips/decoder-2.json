@@ -1,0 +1,29 @@
+{
+  "id": "d3a42008-0000-4000-8000-000000000008",
+  "definitionVersion": 1,
+  "name": "DECODER-2",
+  "description": "Учебный дешифратор 2→4 с активными высокими выходами. Собственная распиновка, вход разрешения отсутствует.",
+  "package": "DIP-8",
+  "family": "hc",
+  "pins": [
+    {"number":1,"name":"A0","type":"input"},
+    {"number":2,"name":"A1","type":"input"},
+    {"number":3,"name":"Y0","type":"output"},
+    {"number":4,"name":"GND","type":"gnd"},
+    {"number":5,"name":"Y1","type":"output"},
+    {"number":6,"name":"Y2","type":"output"},
+    {"number":7,"name":"Y3","type":"output"},
+    {"number":8,"name":"VCC","type":"vcc"}
+  ],
+  "behavior": {
+    "kind": "truthTable",
+    "sections": [
+      {"inputs":[1,2],"outputs":[3,5,6,7],"rows":[
+        ["00","1000"],
+        ["01","0010"],
+        ["10","0100"],
+        ["11","0001"]
+      ]}
+    ]
+  }
+}

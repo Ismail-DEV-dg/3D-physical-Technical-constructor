@@ -1,0 +1,43 @@
+{
+  "id": "d3a42008-0000-4000-8000-000000000010",
+  "definitionVersion": 1,
+  "name": "7474",
+  "description": "Два D-триггера, фронт CLK и независимые активные низкие CLR/PRE. Одновременный CLR/PRE моделируется неопределёнными X; аналоговые переходы и setup/hold не моделируются.",
+  "package": "DIP-14",
+  "family": "ttl",
+  "pins": [
+    {"number":1,"name":"1CLR#","type":"input"},
+    {"number":2,"name":"1D","type":"input"},
+    {"number":3,"name":"1CLK","type":"input"},
+    {"number":4,"name":"1PRE#","type":"input"},
+    {"number":5,"name":"1Q","type":"output"},
+    {"number":6,"name":"1Q#","type":"output"},
+    {"number":7,"name":"GND","type":"gnd"},
+    {"number":8,"name":"2Q#","type":"output"},
+    {"number":9,"name":"2Q","type":"output"},
+    {"number":10,"name":"2PRE#","type":"input"},
+    {"number":11,"name":"2CLK","type":"input"},
+    {"number":12,"name":"2D","type":"input"},
+    {"number":13,"name":"2CLR#","type":"input"},
+    {"number":14,"name":"VCC","type":"vcc"}
+  ],
+  "behavior": {
+    "kind": "graph",
+    "gates": [
+      {"id":10,"kind":"not","inputs":[{"pin":1}]},
+      {"id":11,"kind":"not","inputs":[{"pin":4}]},
+      {"id":12,"kind":"d","inputs":[{"pin":2},{"pin":3}],"clear":{"gate":10},"preset":{"gate":11}},
+      {"id":13,"kind":"not","inputs":[{"gate":12}]},
+      {"id":20,"kind":"not","inputs":[{"pin":13}]},
+      {"id":21,"kind":"not","inputs":[{"pin":10}]},
+      {"id":22,"kind":"d","inputs":[{"pin":12},{"pin":11}],"clear":{"gate":20},"preset":{"gate":21}},
+      {"id":23,"kind":"not","inputs":[{"gate":22}]}
+    ],
+    "outputs": [
+      {"pin":5,"source":{"gate":12}},
+      {"pin":6,"source":{"gate":13}},
+      {"pin":9,"source":{"gate":22}},
+      {"pin":8,"source":{"gate":23}}
+    ]
+  }
+}

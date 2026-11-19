@@ -8,5 +8,6 @@ public interface IDialogService
     string? SaveFile(string filter, string extension, string? suggested = null);
     SaveDecision ConfirmUnsaved();
     bool ConfirmRecovery();
+    bool ConfirmDeleteChip(string name) => false;
     double? ChooseExportScale();
 }

@@ -25,9 +25,9 @@ public sealed class ChipSimulationTests
         var led = design.Add("led");
         var resistor = design.Add("resistor");
         Assert.True(resistor.Model.TryUpdateProperties(resistance, null, null, out _));
-        var chip = Add(design, ChipTruthTableTests.Nand());
-        LinkChip(design, uno, "5V", chip, "8");
-        LinkChip(design, uno, "GND", chip, "4");
+        var chip = Add(design, ChipTemplateTests.Get("7400"));
+        LinkChip(design, uno, "5V", chip, "14");
+        LinkChip(design, uno, "GND", chip, "7");
         LinkChip(design, uno, "5V", chip, "1");
         LinkChip(design, uno, "5V", chip, "2");
         design.Wire(uno, "5V", resistor, "1");

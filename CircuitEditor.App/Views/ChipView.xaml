@@ -14,6 +14,7 @@
                 <Button Content="Отменить правку" Command="{Binding UndoCommand}" Margin="0,0,6,4"/>
                 <Button Content="Повторить правку" Command="{Binding RedoCommand}" Margin="0,0,6,4"/>
             </WrapPanel>
+            <local:ChipLibraryView DataContext="{Binding Library}"/>
             <Grid>
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="150"/></Grid.ColumnDefinitions>
                 <StackPanel>

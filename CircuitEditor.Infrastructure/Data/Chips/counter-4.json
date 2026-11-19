@@ -1,0 +1,45 @@
+{
+  "id": "d3a42008-0000-4000-8000-000000000011",
+  "definitionVersion": 1,
+  "name": "COUNTER-4",
+  "description": "Учебный синхронный 4-битный счётчик с асинхронным RESET. Это самостоятельная модель с собственной распиновкой.",
+  "package": "DIP-14",
+  "family": "hc",
+  "pins": [
+    {"number":1,"name":"CLK","type":"input"},
+    {"number":2,"name":"RESET","type":"input"},
+    {"number":3,"name":"Q0","type":"output"},
+    {"number":4,"name":"Q1","type":"output"},
+    {"number":5,"name":"Q2","type":"output"},
+    {"number":6,"name":"Q3","type":"output"},
+    {"number":7,"name":"GND","type":"gnd"},
+    {"number":8,"name":"NC8","type":"input","isUnused":true},
+    {"number":9,"name":"NC9","type":"input","isUnused":true},
+    {"number":10,"name":"NC10","type":"input","isUnused":true},
+    {"number":11,"name":"NC11","type":"input","isUnused":true},
+    {"number":12,"name":"NC12","type":"input","isUnused":true},
+    {"number":13,"name":"NC13","type":"input","isUnused":true},
+    {"number":14,"name":"VCC","type":"vcc"}
+  ],
+  "behavior": {
+    "kind": "graph",
+    "gates": [
+      {"id":10,"kind":"not","inputs":[{"gate":1}]},
+      {"id":1,"kind":"d","inputs":[{"gate":10},{"pin":1}],"clear":{"pin":2}},
+      {"id":11,"kind":"xor","inputs":[{"gate":2},{"gate":1}]},
+      {"id":2,"kind":"d","inputs":[{"gate":11},{"pin":1}],"clear":{"pin":2}},
+      {"id":22,"kind":"and","inputs":[{"gate":1},{"gate":2}]},
+      {"id":12,"kind":"xor","inputs":[{"gate":3},{"gate":22}]},
+      {"id":3,"kind":"d","inputs":[{"gate":12},{"pin":1}],"clear":{"pin":2}},
+      {"id":23,"kind":"and","inputs":[{"gate":1},{"gate":2},{"gate":3}]},
+      {"id":13,"kind":"xor","inputs":[{"gate":4},{"gate":23}]},
+      {"id":4,"kind":"d","inputs":[{"gate":13},{"pin":1}],"clear":{"pin":2}}
+    ],
+    "outputs": [
+      {"pin":3,"source":{"gate":1}},
+      {"pin":4,"source":{"gate":2}},
+      {"pin":5,"source":{"gate":3}},
+      {"pin":6,"source":{"gate":4}}
+    ]
+  }
+}

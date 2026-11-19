@@ -1,0 +1,53 @@
+{
+  "id": "d3a42008-0000-4000-8000-000000000003",
+  "definitionVersion": 1,
+  "name": "7404",
+  "description": "Цифровая распиновка и 6 инверторов NOT. Уровни и токи заданы учебным профилем TTL.",
+  "package": "DIP-14",
+  "family": "ttl",
+  "pins": [
+    {"number":1,"name":"1A","type":"input"},
+    {"number":2,"name":"1Y","type":"output"},
+    {"number":3,"name":"2A","type":"input"},
+    {"number":4,"name":"2Y","type":"output"},
+    {"number":5,"name":"3A","type":"input"},
+    {"number":6,"name":"3Y","type":"output"},
+    {"number":7,"name":"GND","type":"gnd"},
+    {"number":8,"name":"4Y","type":"output"},
+    {"number":9,"name":"4A","type":"input"},
+    {"number":10,"name":"5Y","type":"output"},
+    {"number":11,"name":"5A","type":"input"},
+    {"number":12,"name":"6Y","type":"output"},
+    {"number":13,"name":"6A","type":"input"},
+    {"number":14,"name":"VCC","type":"vcc"}
+  ],
+  "behavior": {
+    "kind": "truthTable",
+    "sections": [
+      {"inputs":[1],"outputs":[2],"rows":[
+        ["0","1"],
+        ["1","0"]
+      ]},
+      {"inputs":[3],"outputs":[4],"rows":[
+        ["0","1"],
+        ["1","0"]
+      ]},
+      {"inputs":[5],"outputs":[6],"rows":[
+        ["0","1"],
+        ["1","0"]
+      ]},
+      {"inputs":[9],"outputs":[8],"rows":[
+        ["0","1"],
+        ["1","0"]
+      ]},
+      {"inputs":[11],"outputs":[10],"rows":[
+        ["0","1"],
+        ["1","0"]
+      ]},
+      {"inputs":[13],"outputs":[12],"rows":[
+        ["0","1"],
+        ["1","0"]
+      ]}
+    ]
+  }
+}

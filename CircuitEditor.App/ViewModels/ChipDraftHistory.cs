@@ -31,5 +31,14 @@ internal sealed class ChipDraftHistory<T> where T : class
         return value;
     }
 
+    public void Rebase(Func<T, T> update)
+    {
+        for (var item = undo.First; item is not null; item = item.Next)
+            item.Value = update(item.Value);
+        var future = redo.Reverse().Select(update).ToArray();
+        redo.Clear();
+        foreach (var item in future) redo.Push(item);
+    }
+
     public void Clear() { undo.Clear(); redo.Clear(); }
 }

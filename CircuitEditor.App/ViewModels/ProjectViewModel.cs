@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CircuitEditor.Core.Breadboards;
 using CircuitEditor.Core.Layout;
+using CircuitEditor.App.Services;
 using CircuitEditor.Core.Models;
 using CircuitEditor.Core.Physical;
 using CircuitEditor.Core.Placement;
@@ -16,15 +17,19 @@ namespace CircuitEditor.App.ViewModels;
 public sealed partial class ProjectViewModel : ObservableObject, IDisposable
 {
     private readonly IComponentLayoutCalculator layouts;
+    private readonly IUserChipLibraryService? chipLibrary;
     private readonly Core.Electronics.ElectricalCatalog? electricalCatalog;
     public ProjectViewModel(IComponentLibraryRepository libraryRepository, IBreadboardRepository boardRepository,
-        IFootprintRepository footprintRepository, IComponentLayoutCalculator layouts, Core.Netlist.INetlistBuilder? netlistBuilder = null, IElectricalLibraryRepository? electricalRepository = null)
+        IFootprintRepository footprintRepository, IComponentLayoutCalculator layouts, Core.Netlist.INetlistBuilder? netlistBuilder = null, IElectricalLibraryRepository? electricalRepository = null,
+        IUserChipLibraryService? chipLibrary = null)
     {
         this.layouts = layouts; electricalCatalog=electricalRepository?.Load().Value;
         Wiring = new WireEditorViewModel(this);
         Wiring.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(WireEditorViewModel.Selected)) OnPropertyChanged(nameof(Wiring)); };
         var library = libraryRepository.Load(); var board = boardRepository.Load(); var footprints = footprintRepository.Load();
         Library = library.Components;
+        this.chipLibrary = chipLibrary;
+        if (chipLibrary is not null) chipLibrary.Changed += OnChipLibraryChanged;
         Model = new CircuitProject(footprints: footprints.Value,
             breadboards: board.Value is null ? [] : [new BreadboardInstance(Guid.NewGuid(), board.Value, PhysicalSettings.DefaultBoardX, PhysicalSettings.DefaultBoardY)]);
         Connectivity = new ProjectConnectivityViewModel(this,netlistBuilder);
@@ -40,6 +45,8 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     public WireEditorViewModel Wiring { get; }
     public CircuitProject Model { get; }
     public IReadOnlyList<ComponentDefinition> Library { get; }
+    public IReadOnlyList<ComponentDefinition> PaletteLibrary => chipLibrary is null ? Library : Library.Concat(chipLibrary.Palette).ToArray();
+    private void OnChipLibraryChanged(object? sender, EventArgs args) => OnPropertyChanged(nameof(PaletteLibrary));
     public ObservableCollection<ComponentViewModel> Components { get; } = [];
     public ComponentViewModel? SelectedComponent => Components.LastOrDefault(item => item.IsSelected);
     public int SelectedCount => Components.Count(item => item.IsSelected);
@@ -56,14 +63,20 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     {
         if (!CanEdit) return null;
         var footprint = Model.Footprints.FirstOrDefault(item => item.ComponentDefinitionId == definition.Id);
-        if (footprint is null) { StatusMessage = "Описание корпуса недоступно. Проверьте библиотеку."; return null; }
+        var chip = footprint is null ? chipLibrary?.Definitions.FirstOrDefault(item => item.ComponentId == definition.Id) : null;
+        if (footprint is null && chip is null) { StatusMessage = "Описание корпуса недоступно. Проверьте библиотеку."; return null; }
         var trayY = Components.Count == 0 ? 15 : Components.Max(existing => existing.MockupPlacement.Y +
             ContactGeometry.Bounds(existing.Footprint, existing.MockupPlacement,
                 Model.Breadboards.FirstOrDefault()?.Definition.HolePitch ?? PhysicalSettings.FreeGridMm).Bottom)
             + 2 * PhysicalSettings.FreeGridMm;
         var own = BeginGesture("Добавление компонента");
+        if (chip is not null)
+        {
+            Model.RegisterChip(chip);
+            footprint = Model.Footprints.Single(item => item.ComponentDefinitionId == definition.Id);
+        }
         var model = Model.AddComponent(definition);
-        var item = new ComponentViewModel(model, Model, footprint, layouts, electricalCatalog);
+        var item = new ComponentViewModel(model, Model, footprint!, layouts, electricalCatalog);
         foreach (var other in Components) other.IsSelected = false;
         Components.Add(item);
         item.PropertyChanged += OnComponentChanged;
@@ -134,6 +147,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     }
     public void Dispose()
     {
+        if (chipLibrary is not null) chipLibrary.Changed -= OnChipLibraryChanged;
         foreach (var item in Components) item.PropertyChanged -= OnComponentChanged;
     }
     public CommandHistory History { get; } = new();

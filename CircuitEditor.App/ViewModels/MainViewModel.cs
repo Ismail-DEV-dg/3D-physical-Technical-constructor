@@ -25,7 +25,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     [NotifyPropertyChangedFor(nameof(Palette))]
     private string paletteFilter = "";
 
-    private readonly IReadOnlyList<PaletteItemViewModel> library;
+    private IReadOnlyList<PaletteItemViewModel> library = [];
 
     public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window, ProjectSessionViewModel? session = null, ExportViewModel? exports = null, ProjectAnalysisViewModel? analysis = null, ICalculatorService? calculator = null, IShortcutGuideService? shortcutGuide = null,
         IClipboardService? clipboard=null,IErrorDocumentationService? documentation=null,IErrorHelpService? errorHelp=null, SimulationViewModel? simulation = null)
@@ -44,8 +44,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         Schematic = navigation.Workspaces.OfType<SchematicViewModel>().Single();
         Mockup = navigation.Workspaces.OfType<BreadboardViewModel>().Single();
         // Basic parts must remain visible before the palette is scrolled.
-        library = Schematic.Library.OrderByDescending(definition => definition.Category == "ПАССИВНЫЕ")
-            .Select(definition => new PaletteItemViewModel(definition)).ToArray();
+        RefreshPalette();
         StatusMessage = Schematic.StatusMessage;
         Schematic.PropertyChanged += OnSchematicChanged;
         Mockup.PropertyChanged += OnSchematicChanged;
@@ -55,6 +54,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         Diagnostics=new(analysis,Code,clipboard,documentation,errorHelp,Simulation,Project);
         if (Simulation is not null) Simulation.FrameChanged += OnSimulationFrame;
         themes.PropertyChanged += OnThemeChanged;
+        Chip.UndoCommand.CanExecuteChanged += OnChipHistoryChanged;
+        Chip.RedoCommand.CanExecuteChanged += OnChipHistoryChanged;
     }
 
     public SimulationViewModel? Simulation { get; }
@@ -99,13 +100,15 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public CodeViewModel Code => navigation.Workspaces.OfType<CodeViewModel>().Single();
     private void OnShowCode(object? sender,EventArgs e){navigation.Navigate(WorkspaceKind.Code);OnCodeTools(sender,0);}
     private void OnCodeTools(object? sender,int index){Panels.Analysis.ShowCommand.Execute(null);Panels.ToolTabIndex=index;}
+    private void OnChipHistoryChanged(object? sender, EventArgs e) { UndoActiveCommand.NotifyCanExecuteChanged(); RedoActiveCommand.NotifyCanExecuteChanged(); }
     private void OnCodeChanged(object? sender,PropertyChangedEventArgs e){UndoActiveCommand.NotifyCanExecuteChanged();RedoActiveCommand.NotifyCanExecuteChanged();}
-    private bool CanUndoActive=>SelectedWorkspace.Kind==WorkspaceKind.Code?Code.CanUndo:Project.CanUndo;
-    private bool CanRedoActive=>SelectedWorkspace.Kind==WorkspaceKind.Code?Code.CanRedo:Project.CanRedo;
+    private ChipViewModel Chip => navigation.Workspaces.OfType<ChipViewModel>().Single();
+    private bool CanUndoActive => SelectedWorkspace.Kind switch { WorkspaceKind.Code => Code.CanUndo, WorkspaceKind.Chip => Chip.UndoCommand.CanExecute(null), _ => Project.CanUndo };
+    private bool CanRedoActive => SelectedWorkspace.Kind switch { WorkspaceKind.Code => Code.CanRedo, WorkspaceKind.Chip => Chip.RedoCommand.CanExecute(null), _ => Project.CanRedo };
     [RelayCommand(CanExecute=nameof(CanUndoActive))]
-    private void UndoActive(){if(SelectedWorkspace.Kind==WorkspaceKind.Code)Code.EditorActionCommand.Execute("Undo");else Project.UndoCommand.Execute(null);}
+    private void UndoActive(){if(SelectedWorkspace.Kind==WorkspaceKind.Code)Code.EditorActionCommand.Execute("Undo");else if (SelectedWorkspace.Kind==WorkspaceKind.Chip) Chip.UndoCommand.Execute(null);else Project.UndoCommand.Execute(null);}
     [RelayCommand(CanExecute=nameof(CanRedoActive))]
-    private void RedoActive(){if(SelectedWorkspace.Kind==WorkspaceKind.Code)Code.EditorActionCommand.Execute("Redo");else Project.RedoCommand.Execute(null);}
+    private void RedoActive(){if(SelectedWorkspace.Kind==WorkspaceKind.Code)Code.EditorActionCommand.Execute("Redo");else if (SelectedWorkspace.Kind==WorkspaceKind.Chip) Chip.RedoCommand.Execute(null);else Project.RedoCommand.Execute(null);}
     [RelayCommand] private void CopyActive(){if(SelectedWorkspace.Kind==WorkspaceKind.Code)Code.EditorActionCommand.Execute("Copy");else Project.CopyCommand.Execute(null);}
     [RelayCommand] private void PasteActive(){if(SelectedWorkspace.Kind==WorkspaceKind.Code)Code.EditorActionCommand.Execute("Paste");else Project.PasteCommand.Execute(null);}
     public int LibraryCount => library.Count;
@@ -124,8 +127,19 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             OnPropertyChanged(args.PropertyName);
     }
 
+    private void RefreshPalette()
+    {
+        library = Project.PaletteLibrary.OrderByDescending(definition => definition.Category == "ПАССИВНЫЕ")
+            .Select(definition => new PaletteItemViewModel(definition)).ToArray();
+        if (SelectedPaletteItem is { } current)
+            SelectedPaletteItem = library.FirstOrDefault(item => item.Definition.Id == current.Definition.Id);
+        OnPropertyChanged(nameof(Palette));
+        OnPropertyChanged(nameof(LibraryCount));
+    }
+
     private void OnProjectChanged(object? sender, PropertyChangedEventArgs args)
     {
+        if (args.PropertyName == nameof(Project.PaletteLibrary)) RefreshPalette();
         if (args.PropertyName == nameof(Project.StatusMessage)) StatusMessage = Project.StatusMessage;
         if (args.PropertyName == nameof(Project.ComponentCount)) OnPropertyChanged(nameof(ComponentCount));
         if(args.PropertyName is nameof(Project.CanUndo) or nameof(Project.CanRedo)){UndoActiveCommand.NotifyCanExecuteChanged();RedoActiveCommand.NotifyCanExecuteChanged();}
@@ -208,6 +222,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         if (Analysis is not null) Analysis.InspectRequested -= OnInspectRequested;
         navigation.PropertyChanged -= OnNavigationChanged;
         themes.PropertyChanged -= OnThemeChanged;
+        Chip.UndoCommand.CanExecuteChanged -= OnChipHistoryChanged;
+        Chip.RedoCommand.CanExecuteChanged -= OnChipHistoryChanged;
         Schematic.PropertyChanged -= OnSchematicChanged;
         Mockup.PropertyChanged -= OnSchematicChanged;
         Project.PropertyChanged -= OnProjectChanged;

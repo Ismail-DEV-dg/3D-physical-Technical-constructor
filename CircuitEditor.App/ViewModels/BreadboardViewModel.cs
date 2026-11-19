@@ -130,7 +130,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
                 dragging = null; rotatingKnob = null; draft = null; Preview = null; panning = false;
                 break;
             case CanvasAction.Drop:
-                var definition = Project.Library.FirstOrDefault(item => item.Id == input.DefinitionId);
+                var definition = Project.PaletteLibrary.FirstOrDefault(item => item.Id == input.DefinitionId);
                 if (definition is null) break;
                 var added = Project.Add(definition);
                 if (added is null) break;

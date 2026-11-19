@@ -19,7 +19,8 @@ public sealed partial class ChipViewModel : WorkspaceViewModel
     [ObservableProperty] private string message = "";
 
     public ChipViewModel(ILogicFamilyRepository? familyRepository = null, IDialogService? dialogs = null,
-        IChipCsvRepository? csv = null, IExportRepository? exports = null, IChipTestBenchFactory? bench = null)
+        IChipCsvRepository? csv = null, IExportRepository? exports = null, IChipTestBenchFactory? bench = null,
+        IUserChipLibraryService? library = null, IChipRepository? storage = null, IChipTemplateRepository? templates = null)
         : base(WorkspaceKind.Chip, "Микросхема", "03", "Конструктор микросхем", "")
     {
         var catalog = familyRepository?.Load();
@@ -27,6 +28,7 @@ public sealed partial class ChipViewModel : WorkspaceViewModel
         Truth = new(this, dialogs, csv, exports);
         Graph = new(this);
         Bench = new(this, bench);
+        Library = new(this, library, storage, templates, dialogs);
         Definition = ChipEditorDefaults.Create(families.Keys.FirstOrDefault() ?? "ttl");
         Load(Definition);
         if (catalog is { Success: false }) Message = catalog.Error!;
@@ -35,6 +37,7 @@ public sealed partial class ChipViewModel : WorkspaceViewModel
     public ChipTruthEditorViewModel Truth { get; }
     public ChipGraphEditorViewModel Graph { get; }
     public ChipBenchViewModel Bench { get; }
+    public ChipLibraryViewModel Library { get; }
     public ChipDefinition Definition { get; private set; }
     public IReadOnlyList<ChipPinEdit> Pins { get; private set; } = [];
     public IReadOnlyList<string> Problems { get; private set; } = [];
@@ -103,6 +106,21 @@ public sealed partial class ChipViewModel : WorkspaceViewModel
 
     internal IReadOnlyList<string> Validate(ChipDefinition definition) => ChipValidator.Validate(definition, families);
     internal void ChangeBehavior(ChipBehaviorDefinition value) => Change(Definition with { Behavior = value });
+
+    internal void LoadDraft(ChipDefinition value)
+    {
+        history.Clear();
+        Message = "";
+        Load(value);
+    }
+
+    internal void UpdateRevision(ChipDefinition value)
+    {
+        history.Rebase(previous => previous.Id == value.Id
+            ? previous with { DefinitionVersion = value.DefinitionVersion } : previous);
+        Load(value);
+    }
+
 
     private void Change(ChipDefinition value)
     {

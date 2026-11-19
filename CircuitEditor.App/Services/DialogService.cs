@@ -27,6 +27,8 @@ public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpSe
     }
     public SaveDecision ConfirmUnsaved() => Choose("Несохранённый проект", "Сохранить изменения перед продолжением?", "Сохранить", "Не сохранять", "Отмена") switch
     { "Сохранить" => SaveDecision.Save, "Не сохранять" => SaveDecision.Discard, _ => SaveDecision.Cancel };
+    public bool ConfirmDeleteChip(string name) => Choose("Удаление микросхемы",
+        $"Удалить «{name}» из пользовательской библиотеки?", "Удалить", "Отмена") == "Удалить";
     public bool ConfirmRecovery() => Choose("Восстановление", "Найдено автосохранение после незавершённого сеанса. Восстановить проект?", "Восстановить", "Пропустить") == "Восстановить";
     public double? ChooseExportScale() => Choose("Экспорт PNG", "Масштаб изображения относительно 100% вида. Экспортируется весь проект.", "1×", "2×", "4×", "Отмена") switch
     { "1×" => 1, "2×" => 2, "4×" => 4, _ => null };

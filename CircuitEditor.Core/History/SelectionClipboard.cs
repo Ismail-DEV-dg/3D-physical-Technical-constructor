@@ -26,6 +26,7 @@ public sealed class SelectionClipboard
         var dx = right - maxX; var dy = PasteOffsetMm * pasteCount - minY;
         foreach (var original in originals)
         {
+            if (source.FindChip(original.Definition.Id) is { } chip) target.RegisterChip(chip);
             var allocated = target.AddComponent(original.Definition);
             var copy = ProjectSnapshot.Copy(original, allocated.Id, allocated.Reference);
             target.RemoveComponent(allocated.Id); copies.Add(copy); map.Add(original.Id, copy.Id);
@@ -39,7 +40,7 @@ public sealed class SelectionClipboard
             wires.Add(new Wire(WireEndpoint.Contact(map[wire.Start.OwnerId], wire.Start.TerminalId), WireEndpoint.Contact(map[wire.End.OwnerId], wire.End.TerminalId),
                 wire.Color, wire.ControlPoints.Select(p => new Layout.LayoutPoint(p.X + dx, p.Y + dy)).ToArray()));
         var state = new CircuitProject(new Circuit(target.Circuit.Components.Concat(copies).ToArray(), wires, target.Circuit.Counters),
-            target.MockupLayout, target.SchematicLayout, target.Breadboards, target.Footprints, target.Bindings);
+            target.MockupLayout, target.SchematicLayout, target.Breadboards, target.Footprints, target.Bindings, chips: target.Chips);
         target.Restore(state); return copies.Select(c => c.Id).ToArray();
     }
 }
