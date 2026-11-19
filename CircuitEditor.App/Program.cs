@@ -30,6 +30,7 @@ public static class Program
         registrations.AddSingleton<IChipRepository, JsonChipRepository>();
         registrations.AddSingleton<IChipTemplateRepository, JsonChipTemplateRepository>();
         registrations.AddSingleton<IUserChipLibraryService, UserChipLibraryService>();
+        registrations.AddSingleton<IProjectChipVersionSelector, ProjectChipVersionSelector>();
         registrations.AddSingleton<CircuitEditor.Core.Chips.IChipEvaluator, CircuitEditor.Core.Chips.ChipEvaluator>();
         registrations.AddSingleton<IErrorLogRepository, ErrorLogRepository>();
         registrations.AddSingleton<IClipboardService, ClipboardService>();
@@ -57,6 +58,7 @@ public static class Program
         registrations.AddSingleton<IProjectRepository, JsonProjectRepository>();
         registrations.AddSingleton<CircuitEditor.Core.Documents.IProjectMigration, CircuitEditor.Infrastructure.Documents.ProjectMigrationV1ToV2>();
         registrations.AddSingleton<CircuitEditor.Core.Documents.IProjectMigration, CircuitEditor.Infrastructure.Documents.ProjectMigrationV2ToV3>();
+        registrations.AddSingleton<CircuitEditor.Core.Documents.IProjectMigration, CircuitEditor.Infrastructure.Documents.ProjectMigrationV3ToV4>();
         registrations.AddSingleton<ISketchRepository, FileSketchRepository>();
         registrations.AddSingleton<ICodeCompletionRepository, JsonCodeCompletionRepository>();
         registrations.AddSingleton<ICodeTemplateRepository, JsonCodeTemplateRepository>();

@@ -30,7 +30,8 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
         Library = library.Components;
         this.chipLibrary = chipLibrary;
         if (chipLibrary is not null) chipLibrary.Changed += OnChipLibraryChanged;
-        Model = new CircuitProject(footprints: footprints.Value,
+        StandardFootprints = footprints.Value ?? [];
+        Model = new CircuitProject(footprints: StandardFootprints,
             breadboards: board.Value is null ? [] : [new BreadboardInstance(Guid.NewGuid(), board.Value, PhysicalSettings.DefaultBoardX, PhysicalSettings.DefaultBoardY)]);
         Connectivity = new ProjectConnectivityViewModel(this,netlistBuilder);
         baseline = new CircuitEditor.Core.History.ProjectSnapshot(Model);
@@ -45,7 +46,12 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     public WireEditorViewModel Wiring { get; }
     public CircuitProject Model { get; }
     public IReadOnlyList<ComponentDefinition> Library { get; }
-    public IReadOnlyList<ComponentDefinition> PaletteLibrary => chipLibrary is null ? Library : Library.Concat(chipLibrary.Palette).ToArray();
+    public IReadOnlyList<FootprintDefinition> StandardFootprints { get; }
+    public IReadOnlyList<ComponentDefinition> PaletteLibrary => chipLibrary is null
+        ? Library : Library.Concat(chipLibrary.Palette.Select(PreferOwnedChip)).ToArray();
+
+    private ComponentDefinition PreferOwnedChip(ComponentDefinition definition) =>
+        Model.FindChip(definition.Id) is { } owned && chipLibrary?.ComponentFor(owned) is { } original ? original : definition;
     private void OnChipLibraryChanged(object? sender, EventArgs args) => OnPropertyChanged(nameof(PaletteLibrary));
     public ObservableCollection<ComponentViewModel> Components { get; } = [];
     public ComponentViewModel? SelectedComponent => Components.LastOrDefault(item => item.IsSelected);
@@ -75,7 +81,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
             Model.RegisterChip(chip);
             footprint = Model.Footprints.Single(item => item.ComponentDefinitionId == definition.Id);
         }
-        var model = Model.AddComponent(definition);
+        var model = Model.AddComponent(PreferOwnedChip(definition));
         var item = new ComponentViewModel(model, Model, footprint!, layouts, electricalCatalog);
         foreach (var other in Components) other.IsSelected = false;
         Components.Add(item);
@@ -208,6 +214,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
         Model.SetSketch(state.Sketch);savedSketch=state.Sketch;
         Model.SetSimulationSetup(state.SimulationSetup);savedSimulationSetup=state.SimulationSetup;
         inGesture = false; RestoreState(state); History.Clear(); PropertyError = "";
+        OnPropertyChanged(nameof(PaletteLibrary));
         ProjectReplaced?.Invoke(this,EventArgs.Empty);SketchChanged?.Invoke(this,EventArgs.Empty);NotifyHistory();
     }
     private void RestoreState(CircuitProject state)
@@ -256,7 +263,9 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     {
         if (!CanEdit || clipboard is null || inGesture) return;
         BeginGesture("Вставка копии");
-        var ids = clipboard.Paste(Model).ToHashSet();
+        HashSet<Guid> ids;
+        try { ids = clipboard.Paste(Model).ToHashSet(); }
+        catch (ArgumentException error) { CancelGesture(); StatusMessage = error.Message; return; }
         // Rebuild bindings without replacing the pre-gesture snapshot.
         var before = baseline; RestoreState(new ProjectSnapshot(Model).Restore()); baseline = before;
         foreach (var c in Components) c.IsSelected = ids.Contains(c.Model.Id);

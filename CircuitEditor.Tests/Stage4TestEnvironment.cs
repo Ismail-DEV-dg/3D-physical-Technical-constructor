@@ -21,12 +21,16 @@ internal sealed class Stage4TestEnvironment : IDialogService, IAutosaveService, 
     public void ShowError(string message) => Errors.Add(message);
     public void ShowWarning(string message) => Warnings.Add(message);
     public bool Recover { get; set; }
+    public bool UseLibraryChip { get; set; }
+    public int ChipVersionQuestions { get; private set; }
+    public bool UseLocalChipVersion(string name, int embeddedRevision, int localRevision)
+    { ChipVersionQuestions++; return UseLibraryChip; }
     public Action? Tick { get; private set; }
     public byte[]? Exported { get; private set; }
     public Stage4TestEnvironment()
     {
         Directory.CreateDirectory(Folder);
-        Repository = new([new ProjectMigrationV1ToV2(), new ProjectMigrationV2ToV3()],Path.Combine(Folder,"recovery.circ"));
+        Repository = new([new ProjectMigrationV1ToV2(), new ProjectMigrationV2ToV3(), new ProjectMigrationV3ToV4()],Path.Combine(Folder,"recovery.circ"));
         Mockup=TestProjectFactory.Mockup(Project); Schematic=new(Project);
         Navigation=new(Mockup,Schematic,new ChipViewModel(),new ThreeDViewModel(),new CodeViewModel());
         Session=new(Project,Mockup,Schematic,Navigation,Repository,this,this,this,new JsonBreadboardRepository(),new Core.Services.ComponentInsertionService());

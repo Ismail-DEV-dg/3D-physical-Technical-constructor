@@ -29,11 +29,12 @@ public sealed class SimulationStorageTests
         var node = JsonSerializer.SerializeToNode(document, JsonProjectRepository.Options)!.AsObject();
         node["schemaVersion"] = 2;
         node.Remove("simulationSetup");
+        node.Remove("embeddedChips");
         var path = Path.Combine(test.Folder, "version-two.circ");
         File.WriteAllText(path, node.ToJsonString());
         var migrated = test.Repository.Load(path);
         Assert.True(migrated.Success, migrated.Error);
-        Assert.Equal(3, migrated.Value!.SchemaVersion);
+        Assert.Equal(CircuitEditor.Core.Documents.ProjectDocument.CurrentSchemaVersion, migrated.Value!.SchemaVersion);
         Assert.Equal(document.Sketch, migrated.Value.Sketch);
         Assert.Equal(document.Components, migrated.Value.Components);
         Assert.Equal(document.Breadboards, migrated.Value.Breadboards);

@@ -29,6 +29,9 @@ public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpSe
     { "Сохранить" => SaveDecision.Save, "Не сохранять" => SaveDecision.Discard, _ => SaveDecision.Cancel };
     public bool ConfirmDeleteChip(string name) => Choose("Удаление микросхемы",
         $"Удалить «{name}» из пользовательской библиотеки?", "Удалить", "Отмена") == "Удалить";
+    public bool UseLocalChipVersion(string name, int embeddedRevision, int localRevision) =>
+        Choose("Версия микросхемы", $"«{name}»: встроенная ревизия {embeddedRevision}, локальная {localRevision}. Копии различаются. Какую использовать?",
+            "Использовать встроенную", "Обновить из библиотеки") == "Обновить из библиотеки";
     public bool ConfirmRecovery() => Choose("Восстановление", "Найдено автосохранение после незавершённого сеанса. Восстановить проект?", "Восстановить", "Пропустить") == "Восстановить";
     public double? ChooseExportScale() => Choose("Экспорт PNG", "Масштаб изображения относительно 100% вида. Экспортируется весь проект.", "1×", "2×", "4×", "Отмена") switch
     { "1×" => 1, "2×" => 2, "4×" => 4, _ => null };

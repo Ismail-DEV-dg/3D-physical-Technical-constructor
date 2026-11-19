@@ -19,13 +19,18 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
     private readonly IDialogService dialogs;
     private readonly IAutosaveService autosave;
     private readonly IBreadboardRepository boards;
+    private readonly IProjectChipVersionSelector? chipVersions;
+    private readonly IReadOnlyDictionary<string, Core.Chips.LogicFamilyProfile>? logicFamilies;
     private string? path;
     private readonly Core.Services.IComponentInsertionService insertion;
     public ProjectSessionViewModel(ProjectViewModel project, BreadboardViewModel mockup, SchematicViewModel schematic,
         INavigationService navigation, IProjectRepository repository, IRecentProjectsRepository recent, IDialogService dialogs,
-        IAutosaveService autosave, IBreadboardRepository boards, Core.Services.IComponentInsertionService insertion)
+        IAutosaveService autosave, IBreadboardRepository boards, Core.Services.IComponentInsertionService insertion,
+        ILogicFamilyRepository? families = null, IProjectChipVersionSelector? chipVersions = null)
     {
         this.insertion=insertion;
+        this.chipVersions = chipVersions;
+        logicFamilies = families?.Load().Value;
         this.project=project; this.mockup=mockup; this.schematic=schematic; this.navigation=navigation;
         this.repository=repository; this.recent=recent; this.dialogs=dialogs; this.autosave=autosave; this.boards=boards;
         foreach (var file in recent.Load()) RecentFiles.Add(new RecentProjectViewModel(file,OpenRecentCommand));
@@ -77,7 +82,7 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
         project.Wiring.Cancel();
         var board = boards.Load();
         if (board.Value is null) { ReportError(board.Error ?? "Не удалось загрузить breadboard."); return; }
-        project.ReplaceProject(new Core.Models.CircuitProject(footprints: project.Model.Footprints,
+        project.ReplaceProject(new Core.Models.CircuitProject(footprints: project.StandardFootprints,
             breadboards: [new Core.Breadboards.BreadboardInstance(Guid.NewGuid(),board.Value,Core.Physical.PhysicalSettings.DefaultBoardX,Core.Physical.PhysicalSettings.DefaultBoardY)]));
         mockup.ResetViewCommand.Execute(null); schematic.ResetViewCommand.Execute(null);
         navigation.Navigate(WorkspaceKind.Mockup); path = null; repository.ClearRecovery(); OnPropertyChanged(nameof(Title));
@@ -98,11 +103,14 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
         try
         {
             var board = boards.Load().Value ?? throw new ArgumentException("Библиотека breadboard недоступна.");
-            var state = ProjectDocumentResolver.Resolve(data.Value, project.Library, project.Model.Footprints, board, insertion);
+            Core.Models.CircuitProject Build(ProjectDocument document) => ProjectDocumentResolver.Resolve(
+                document, project.Library, project.StandardFootprints, board, insertion, logicFamilies);
+            var (state, updated) = chipVersions?.Resolve(data.Value, Build) ?? (Build(data.Value), false);
             project.Wiring.Cancel(); mockup.InputCommand.Execute(new Interaction.CanvasInput(Interaction.CanvasAction.Cancel));
             schematic.InputCommand.Execute(new Interaction.CanvasInput(Interaction.CanvasAction.Cancel));
             project.ReplaceProject(state); ApplyView(data.Value.View);
-            project.StatusMessage = "Проект открыт.";
+            if (updated) project.History.MarkUnsaved();
+            project.StatusMessage = updated ? "Проект открыт с обновлёнными микросхемами." : "Проект открыт.";
             if (data.Warning is { } warning) dialogs.ShowWarning(warning);
             return true;
         }

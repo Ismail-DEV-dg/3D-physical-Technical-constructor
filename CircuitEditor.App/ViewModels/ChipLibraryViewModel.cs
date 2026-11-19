@@ -24,6 +24,7 @@ public sealed partial class ChipLibraryViewModel : ObservableObject
         this.catalog = catalog;
         this.storage = storage;
         this.dialogs = dialogs;
+        if (catalog is not null) catalog.Changed += (_, _) => OnPropertyChanged(nameof(Saved));
         var templatesResult = templates?.Load();
         Templates = templatesResult?.Value ?? [];
         if (templatesResult?.Error is { } error) editor.Message = error;

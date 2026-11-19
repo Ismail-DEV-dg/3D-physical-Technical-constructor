@@ -58,7 +58,7 @@ public sealed class ProjectFileTests
         using var e=new Stage4TestEnvironment(); var file=Path.Combine(e.Folder,"old.circ");
         Assert.Null(e.Repository.Save(file,e.Session.Capture() with {SchemaVersion=0,LibraryVersion="artificial"}));
         Assert.False(e.Repository.Load(file).Success);
-        var migrated=new JsonProjectRepository([new TestOldProjectMigration(),new CircuitEditor.Infrastructure.Documents.ProjectMigrationV1ToV2(),new CircuitEditor.Infrastructure.Documents.ProjectMigrationV2ToV3()]).Load(file);
+        var migrated=new JsonProjectRepository([new TestOldProjectMigration(),new CircuitEditor.Infrastructure.Documents.ProjectMigrationV1ToV2(),new CircuitEditor.Infrastructure.Documents.ProjectMigrationV2ToV3(),new CircuitEditor.Infrastructure.Documents.ProjectMigrationV3ToV4()]).Load(file);
         Assert.True(migrated.Success,migrated.Error); Assert.Equal(ProjectDocument.CurrentSchemaVersion,migrated.Value!.SchemaVersion); Assert.Equal("1",migrated.Value.LibraryVersion);
     }
     [Fact]

@@ -20,6 +20,9 @@ public sealed class UserChipLibraryService : IUserChipLibraryService
     public IReadOnlyList<ChipDefinition> Definitions { get; private set; } = [];
     public IReadOnlyList<ComponentDefinition> Palette { get; private set; } = [];
 
+    public ComponentDefinition? ComponentFor(ChipDefinition definition) =>
+        families.TryGetValue(definition.Family, out var family) ? ChipPackage.Component(definition, family) : null;
+
     public string? Refresh()
     {
         var result = storage.List();

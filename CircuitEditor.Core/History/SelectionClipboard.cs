@@ -19,6 +19,10 @@ public sealed class SelectionClipboard
         var map = new Dictionary<Guid, Guid>(); var copies = new List<Component>(); pasteCount++;
         var originals = source.Circuit.Components.Where(c => selected.Contains(c.Id)).ToArray();
         if (originals.Length == 0) return [];
+        foreach (var original in originals)
+            if (source.FindChip(original.Definition.Id) is { } copied && target.FindChip(original.Definition.Id) is { } placed
+                && !Chips.ChipContent.Matches(copied, placed))
+                throw new ArgumentException("В проекте уже есть отличающаяся копия этой ревизии микросхемы.");
         var minY = originals.Min(c => source.MockupLayout.Get(c.Id).Y);
         var maxX = originals.Max(c => { var p = source.MockupLayout.Get(c.Id); var f = source.Footprints.Single(f => f.ComponentDefinitionId == c.Definition.Id);
             return p.X + Physical.ContactGeometry.Bounds(f,p,Physical.PhysicalSettings.FreeGridMm).Right; });

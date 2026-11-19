@@ -9,5 +9,6 @@ public interface IDialogService
     SaveDecision ConfirmUnsaved();
     bool ConfirmRecovery();
     bool ConfirmDeleteChip(string name) => false;
+    bool UseLocalChipVersion(string name, int embeddedRevision, int localRevision) => false;
     double? ChooseExportScale();
 }

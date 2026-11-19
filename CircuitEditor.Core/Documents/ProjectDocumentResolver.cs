@@ -1,4 +1,5 @@
 using CircuitEditor.Core.Breadboards;
+using CircuitEditor.Core.Chips;
 using CircuitEditor.Core.Models;
 using CircuitEditor.Core.Physical;
 using CircuitEditor.Core.Placement;
@@ -10,7 +11,8 @@ public static class ProjectDocumentResolver
 {
     /// <summary>Создаёт отдельный проект; существующий проект не изменяется при ошибке.</summary>
     public static CircuitProject Resolve(ProjectDocument data, IReadOnlyList<ComponentDefinition> library,
-        IReadOnlyList<FootprintDefinition> footprints, BreadboardDefinition board, IComponentInsertionService insertion)
+        IReadOnlyList<FootprintDefinition> footprints, BreadboardDefinition board, IComponentInsertionService insertion,
+        IReadOnlyDictionary<string, LogicFamilyProfile>? logicFamilies = null)
     {
         if (data.SchemaVersion != ProjectDocument.CurrentSchemaVersion) throw new ArgumentException($"Версия формата файла: {data.SchemaVersion}. Поддерживаемая версия: {ProjectDocument.CurrentSchemaVersion}.");
         if (data.LibraryVersion != ProjectDocument.CurrentLibraryVersion) throw new ArgumentException("Версия библиотеки проекта не поддерживается.");
@@ -18,9 +20,16 @@ public static class ProjectDocumentResolver
         if (data.Breadboards.Count != 1) throw new ArgumentException("Проект должен содержать одну breadboard.");
         var boards = data.Breadboards.Select(b => b.DefinitionId == board.Id && b.Id != Guid.Empty && double.IsFinite(b.X) && double.IsFinite(b.Y) && b.Rotation is 0 or 90 or 180 or 270
             ? new BreadboardInstance(b.Id, board, b.X, b.Y,b.Rotation) : throw new ArgumentException($"Не найдена или повреждена breadboard: {b.DefinitionId}.")).ToArray();
+        if (data.EmbeddedChips is null) throw new ArgumentException("Повреждён список встроенных микросхем.");
+        var profiles = logicFamilies ?? new Dictionary<string, LogicFamilyProfile>();
+        var chips = ProjectChipDefinitions.Read(data, profiles);
+        var definitions = library.Concat(chips.Values.Select(chip => ChipPackage.Component(chip, profiles[chip.Family])))
+            .ToDictionary(definition => definition.Id);
+        footprints = footprints.Concat(chips.Values.Select(ChipPackage.Footprint)).ToArray();
         var components = data.Components.Select(c =>
         {
-            var definition = library.FirstOrDefault(d => d.Id == c.DefinitionId) ?? throw new ArgumentException($"В библиотеке не найден компонент: {c.DefinitionId}.");
+            ProjectChipDefinitions.CheckReference(c, chips);
+            var definition = definitions.GetValueOrDefault(c.DefinitionId) ?? throw new ArgumentException($"В библиотеке не найден компонент: {c.DefinitionId}.");
             if (!footprints.Any(f => f.Id == c.FootprintId && f.ComponentDefinitionId == c.DefinitionId))
                 throw new ArgumentException($"В библиотеке не найден корпус: {c.FootprintId}.");
             if (c.CapacitorKind is not null && c.DefinitionId != "capacitor" || c.PotentiometerAngle is not null && c.DefinitionId != "potentiometer")
@@ -43,7 +52,7 @@ public static class ProjectDocumentResolver
         }
         if (data.Counters.Any(p => p.Value < 0)) throw new ArgumentException("Повреждены счётчики обозначений.");
         var project = new CircuitProject(new Circuit(components, counters: data.Counters),
-            new ViewLayout(RepresentationKind.Mockup, data.Mockup), new ViewLayout(RepresentationKind.Schematic, data.Schematic), boards, footprints);
+            new ViewLayout(RepresentationKind.Mockup, data.Mockup), new ViewLayout(RepresentationKind.Schematic, data.Schematic), boards, footprints, chips: chips.Values.ToArray());
         foreach (var group in data.Bindings.GroupBy(b => b.ComponentId))
         {
             var component = components.SingleOrDefault(c => c.Id == group.Key) ?? throw new ArgumentException("Привязка ссылается на неизвестный компонент.");
