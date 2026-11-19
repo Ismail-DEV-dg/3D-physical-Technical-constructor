@@ -64,7 +64,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private void OnSimulationFrame(object? sender, Core.Simulation.SimulationState state) => Code.Output.ReceiveSerial(state);
     private void OpenSimulationPanel(object? sender, EventArgs e) => OnCodeTools(sender, 3);
     private void OnInspectRequested(object? sender, EventArgs e) => OnCodeTools(sender,Analysis?.InspectorTabIndex==2?1:0);
-    [RelayCommand] private void ErrorHelp()=>errorHelp?.Show();
+    [RelayCommand] private void Documentation(string? section) => errorHelp?.ShowSection(section ?? "home");
     [RelayCommand] private void ShowProblems(){Diagnostics.Source="Все";Diagnostics.Severity="Все";Diagnostics.Search="";OnCodeTools(this,0);}
     public ProjectSessionViewModel? Session { get; }
     public ExportViewModel? Exports { get; }

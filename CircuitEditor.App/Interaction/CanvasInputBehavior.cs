@@ -22,7 +22,7 @@ public static class CanvasInputBehavior
             element.Drop -= Drop; element.DragOver -= DragOver; element.LostMouseCapture -= LostCapture;
         }
         if (args.NewValue is null) return;
-        element.Focusable = true; element.AllowDrop = true;
+        element.Focusable = true;
         element.SizeChanged += SizeChanged; element.MouseDown += Down; element.MouseMove += Move; element.MouseUp += Up;
         element.MouseWheel += Wheel; element.KeyDown += KeyDown;
         element.Drop += Drop; element.DragOver += DragOver; element.LostMouseCapture += LostCapture;
@@ -93,14 +93,14 @@ public static class CanvasInputBehavior
 
     private static void DragOver(object sender, DragEventArgs args)
     {
-        args.Effects = args.Data.GetDataPresent(DragFormat) ? DragDropEffects.Copy : DragDropEffects.None;
+        args.Effects = sender is UIElement { AllowDrop: true } && args.Data.GetDataPresent(DragFormat) ? DragDropEffects.Copy : DragDropEffects.None;
         args.Handled = true;
     }
 
     private static void Drop(object sender, DragEventArgs args)
     {
         var element = (FrameworkElement)sender;
-        if (args.Data.GetData(DragFormat) is not string id) return;
+        if (!element.AllowDrop || args.Data.GetData(DragFormat) is not string id) return;
         var point = args.GetPosition(element);
         Send(element, new CanvasInput(CanvasAction.Drop, point.X, point.Y, DefinitionId: id));
         element.Focus();

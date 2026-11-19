@@ -50,7 +50,7 @@
         </Style></TextBlock.Style>
     </TextBlock>
 </Grid>
-<ListBox input:PaletteDragBehavior.Enabled="True" ItemsSource="{Binding Source={StaticResource GroupedPalette}}" SelectedItem="{Binding SelectedPaletteItem}" AutomationProperties.Name="Палитра компонентов">
+<ListBox input:PaletteDragBehavior.Enabled="{Binding Project.CanEdit}" IsEnabled="{Binding Project.CanEdit}" ItemsSource="{Binding Source={StaticResource GroupedPalette}}" SelectedItem="{Binding SelectedPaletteItem}" AutomationProperties.Name="Палитра компонентов">
                             <ListBox.GroupStyle><GroupStyle>
                                 <GroupStyle.HeaderTemplate><DataTemplate>
                                     <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1" Padding="0,12,0,7" Margin="0,0,0,6">
@@ -74,7 +74,20 @@
                             </DataTemplate></ListBox.ItemTemplate>
                         </ListBox></DockPanel>
                         <Border Grid.Row="3" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="0,14,0,2">
-                            <TextBlock Text="Перетащите карточку&#10;на активный холст." Foreground="{DynamicResource MutedBrush}" FontSize="10" LineHeight="18"/>
+                            <Grid>
+                                <TextBlock Text="Перетащите карточку&#10;на активный холст." Foreground="{DynamicResource MutedBrush}" FontSize="10" LineHeight="18">
+                                    <TextBlock.Style><Style TargetType="TextBlock"><Style.Triggers>
+                                        <DataTrigger Binding="{Binding Project.CanEdit}" Value="False"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger>
+                                    </Style.Triggers></Style></TextBlock.Style>
+                                </TextBlock>
+                                <StackPanel>
+                                    <StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers>
+                                        <DataTrigger Binding="{Binding Project.CanEdit}" Value="False"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
+                                    </Style.Triggers></Style></StackPanel.Style>
+                                    <TextBlock Text="Сеанс симуляции открыт. Остановите его, чтобы добавить компоненты." Style="{StaticResource MutedText}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                    <Button Content="Стоп и редактировать" Command="{Binding Simulation.ResetCommand}" FontSize="10"/>
+                                </StackPanel>
+                            </Grid>
                         </Border>
                     </Grid>
   </controls:DockPane>

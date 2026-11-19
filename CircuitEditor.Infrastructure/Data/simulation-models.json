@@ -1,7 +1,7 @@
 {
   "boards": {
-    "arduino-uno": { "logicVoltage": 5, "outputResistanceOhms": 25, "pullupResistanceOhms": 30000, "adcBits": 10, "recommendedCurrentAmps": 0.02, "absoluteCurrentAmps": 0.04, "pwmPeriodMicroseconds": 2040 },
-    "arduino-nano": { "logicVoltage": 5, "outputResistanceOhms": 25, "pullupResistanceOhms": 30000, "adcBits": 10, "recommendedCurrentAmps": 0.02, "absoluteCurrentAmps": 0.04, "pwmPeriodMicroseconds": 2040 },
+    "arduino-uno": { "logicVoltage": 5, "outputResistanceOhms": 25, "pullupResistanceOhms": 30000, "adcBits": 10, "recommendedCurrentAmps": 0.02, "absoluteCurrentAmps": 0.04, "pwmPeriodMicroseconds": 2040, "onboardLedPin": "D13" },
+    "arduino-nano": { "logicVoltage": 5, "outputResistanceOhms": 25, "pullupResistanceOhms": 30000, "adcBits": 10, "recommendedCurrentAmps": 0.02, "absoluteCurrentAmps": 0.04, "pwmPeriodMicroseconds": 2040, "onboardLedPin": "D13" },
     "esp32-devkit": { "logicVoltage": 3.3, "outputResistanceOhms": 33, "pullupResistanceOhms": 45000, "adcBits": 12, "recommendedCurrentAmps": 0.02, "absoluteCurrentAmps": 0.04, "pwmPeriodMicroseconds": 2000 }
   },
   "components": {

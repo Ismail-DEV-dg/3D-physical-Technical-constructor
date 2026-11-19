@@ -31,6 +31,18 @@ internal static class PanelPresentationChecks
         var column=(ColumnDefinition)layout.FindName("PaletteColumn");
         var right=(ColumnDefinition)layout.FindName("InspectorColumn");
         var row=(RowDefinition)layout.FindName("AnalysisRow");
+        var palette = Descendants<ListBox>((DockPane)layout.FindName("PalettePane")).Single();
+        var surface = Descendants<BreadboardSurface>(layout).Single();
+        Assert.True(palette.IsEnabled);
+        Assert.True(surface.AllowDrop);
+        vm.Project.IsSimulationActive = true;
+        window.UpdateLayout();
+        Assert.False(palette.IsEnabled);
+        Assert.False(surface.AllowDrop);
+        vm.Project.IsSimulationActive = false;
+        window.UpdateLayout();
+        Assert.True(palette.IsEnabled);
+        Assert.True(surface.AllowDrop);
         var splitters=Descendants<GridSplitter>(layout).ToArray();Assert.Equal(3,splitters.Length);
         Assert.Equal(224,column.ActualWidth,2);
         var keyboardResize=new KeyEventArgs(Keyboard.PrimaryDevice,PresentationSource.FromVisual(window),0,Key.Right){RoutedEvent=Keyboard.KeyDownEvent};

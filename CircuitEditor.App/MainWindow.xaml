@@ -96,7 +96,8 @@
                         <MenuItem Header="Запустить симуляцию" Command="{Binding ExplainCommand}" CommandParameter="Симуляция"/>
                     </MenuItem>
                     <MenuItem Header="_Справка">
-                        <MenuItem Header="Ошибки и способы исправления…" Command="{Binding ErrorHelpCommand}"/>
+                        <MenuItem Header="Документация…" Command="{Binding DocumentationCommand}"/>
+                        <Separator/>
                         <MenuItem Header="Горячие клавиши…" InputGestureText="F1" Command="{Binding ShortcutHelpCommand}"/>
                         <MenuItem Header="Показать все компоненты" Command="{Binding ShowAllComponentsCommand}"/>
                         <MenuItem Header="О программе" Command="{Binding AboutCommand}"/>

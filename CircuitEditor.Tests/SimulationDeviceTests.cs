@@ -7,6 +7,24 @@ namespace CircuitEditor.Tests;
 
 public sealed class SimulationDeviceTests
 {
+    [Theory]
+    [InlineData("arduino-uno")]
+    [InlineData("arduino-nano")]
+    public void BuiltinLedBlinksOnD13WithoutExternalWiring(string type)
+    {
+        using var design = new ElectricalTestCircuit();
+        var board = design.Add(type);
+        ScenarioConfiguration Blink(string pin) => new("blink",
+            ImmutableDictionary<string, PinReference>.Empty.Add("LED_PIN", new(board.Model.Id, pin)),
+            ImmutableDictionary<string, double>.Empty.Add("periodMs", 4));
+
+        var session = SimulationScenarioTests.Create(design, Blink("D13"));
+        Assert.Equal(1, session.Step().Components[board.Model.Id].Intensity);
+        Assert.Equal(0, session.Step().Components[board.Model.Id].Intensity);
+        var otherPin = SimulationScenarioTests.Create(design, Blink("D12"));
+        Assert.Equal(0, otherPin.Step().Components[board.Model.Id].Intensity);
+    }
+
     [Fact]
     public void SevenSegmentTurnsOnOnlyWiredSegments()
     {

@@ -5,6 +5,7 @@ using CircuitEditor.Core.Physical;
 namespace CircuitEditor.App.Controls;
 internal static class ArduinoUnoDrawing
 {
+    internal static readonly Point BuiltinLed = new(24, 9.5);
     private const double LabelSize=1.85;
     private const double HeaderHalfWidth=1.15;
     private static readonly Brush Silk=PhysicalDrawing.Ink("#E4F4EA");
@@ -35,7 +36,7 @@ internal static class ArduinoUnoDrawing
         PhysicalDrawing.Text(dc,"REV3",58,24,1.25,Silk);
         foreach(var part in new[]{new Rect(24,14,1.5,.8),new Rect(27,14,1.5,.8),new Rect(24,24,1.5,.8),new Rect(27,24,1.5,.8),new Rect(38,24,1.5,.8),new Rect(41,24,1.5,.8)})
             Smd(dc,part,"#D4C8AA");
-        Indicator(dc,new Point(24,9.5),"L","#DCC44E");
+        Indicator(dc,BuiltinLed,"L","#DCC44E");
         Indicator(dc,new Point(10.5,27),"TX","#D7A855");Indicator(dc,new Point(10.5,30),"RX","#D7A855");
         Indicator(dc,new Point(62,39),"ON","#76BA77");
         for(var x=0;x<2;x++)for(var y=0;y<3;y++)

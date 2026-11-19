@@ -23,6 +23,12 @@ internal static class SimulationDrawing
         var center = new Point(body.Left + body.Width / 2, body.Top + body.Height / 2);
         switch (footprint.Renderer)
         {
+            case "arduino-uno" when signal.Intensity > 0:
+                BuiltinLed(dc, ArduinoUnoDrawing.BuiltinLed);
+                break;
+            case "arduino-nano" when signal.Intensity > 0:
+                BuiltinLed(dc, ArduinoNanoDrawing.BuiltinLed(footprint));
+                break;
             case "led" when signal.Intensity > 0:
                 var color = (Color)ColorConverter.ConvertFromString(item.Model.Color ?? item.Model.Definition.DefaultColor);
                 Glow(dc, center, body.Width, color, signal.Intensity);
@@ -81,6 +87,15 @@ internal static class SimulationDrawing
             dc.DrawEllipse(CurrentParticle, null, new Point(a.X + (b.X - a.X) * f, a.Y + (b.Y - a.Y) * f), .36, .36);
         }
         return count;
+    }
+
+    private static void BuiltinLed(DrawingContext dc, Point origin)
+    {
+        const double width = 1.5;
+        const double height = .8;
+        var center = origin + new Vector(width / 2, height / 2);
+        Glow(dc, center, 3.4, Colors.Gold, 1);
+        dc.DrawRoundedRectangle(PhysicalDrawing.Ink("#FFF2A2"), null, new Rect(origin, new Size(width, height)), .12, .12);
     }
 
     private static void Glow(DrawingContext dc, Point position, double radius, Color color, double level)

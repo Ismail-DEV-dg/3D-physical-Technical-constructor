@@ -178,6 +178,12 @@ public sealed class SimulationSession
     {
         var visuals = parts.Select(p => (p.Part.Id, Value: p.Behavior.Observe(context, p.Part)))
             .Where(p => p.Value is not null).ToImmutableDictionary(p => p.Id, p => p.Value!);
+        foreach (var board in Circuit.Controllers.Values)
+            if (board.Profile.OnboardLedPin is { } pin)
+            {
+                var level = Circuit.ReadDigital(new PinReference(board.Id, pin), clock.Microseconds);
+                visuals = visuals.SetItem(board.Id, new(Intensity: level == DigitalLevel.High ? 1 : 0));
+            }
         return new(clock.Microseconds, HasHalted, failure)
         {
             Components = visuals,

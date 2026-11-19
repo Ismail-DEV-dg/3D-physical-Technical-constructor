@@ -51,6 +51,7 @@ internal static class DiagnosticsPresentationChecks
             Assert.Contains(Find<TextBox>(helpWindow),t=>t.IsReadOnly&&t.Text.Contains("Подготовить"));
             helpModel.Search="A15";helpWindow.UpdateLayout();Assert.Single(helpModel.Articles);helpModel.CopyCommand.Execute(null);Assert.Contains("LED_SHORT",services.Copied!);
             Save(helpWindow,"CIRCUIT_EDITOR_ERROR_HELP_REVIEW");helpWindow.Close();helpWindow=null;
+            GuidePresentationChecks.Run();
             Save(window,"CIRCUIT_EDITOR_DIAGNOSTICS_REVIEW");
             themes.SetTheme(ThemeKind.LightTech);window.UpdateLayout();Save(window,"CIRCUIT_EDITOR_DIAGNOSTICS_LIGHT_REVIEW");themes.SetTheme(ThemeKind.NeonDark);
             var manual=code.Text;code.PrepareMarkersCommand.Execute(null);Assert.Contains("digitalWrite(13,HIGH);",code.Text);

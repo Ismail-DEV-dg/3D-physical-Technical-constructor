@@ -13,7 +13,7 @@
         </WrapPanel>
         <controls:SchematicSurface Grid.Row="1" Scene="{Binding}" Revision="{Binding Revision}"
             Background="{DynamicResource BackgroundBrush}" ClipToBounds="True"
-            input:CanvasInputBehavior.Command="{Binding InputCommand}"
+            AllowDrop="{Binding Project.CanEdit}" input:CanvasInputBehavior.Command="{Binding InputCommand}"
             AutomationProperties.Name="Холст схемы"/>
         <Border Grid.Row="2" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="12,8">
             <TextBlock Text="F1 — справка · F — вписать всё · W — провод · V / Esc — выбор · R — поворот · Ctrl+D — копия" Style="{StaticResource MutedText}" TextWrapping="Wrap"/>

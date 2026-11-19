@@ -28,6 +28,7 @@ public static class Program
         registrations.AddSingleton<IErrorLogRepository, ErrorLogRepository>();
         registrations.AddSingleton<IClipboardService, ClipboardService>();
         registrations.AddSingleton<IErrorHelpRepository, JsonErrorHelpRepository>();
+        registrations.AddSingleton<IGuideRepository, JsonGuideRepository>();
         registrations.AddSingleton<IErrorDocumentationService, ErrorDocumentationService>();
         registrations.AddSingleton<IErrorHelpService, ErrorHelpService>();
         registrations.AddSingleton<IElectricalLibraryRepository, JsonElectricalLibraryRepository>();

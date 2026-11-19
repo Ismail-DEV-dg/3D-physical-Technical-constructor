@@ -6,6 +6,9 @@ namespace CircuitEditor.App.Controls;
 
 internal static class ArduinoNanoDrawing
 {
+    internal static Point BuiltinLed(FootprintDefinition footprint) =>
+        new(footprint.Body.X + footprint.Body.Width / 2 + 1.1, 34.5);
+
     public static void Draw(DrawingContext dc, FootprintDefinition footprint)
     {
         var body = PhysicalDrawing.Rect(footprint.Body);
@@ -25,6 +28,8 @@ internal static class ArduinoNanoDrawing
             dc.DrawRectangle(PhysicalDrawing.Metal, null, new Rect(center - 2.6, y, 1.5, .7));
             dc.DrawRectangle(PhysicalDrawing.Ink("#A3BC69"), null, new Rect(center + 1.1, y, 1.4, .7));
         }
+        var led = BuiltinLed(footprint);
+        dc.DrawRectangle(PhysicalDrawing.Ink("#DCC44E"), null, new Rect(led.X, led.Y, 1.4, .7));
         BoardDetailDrawing.RowLabels(dc, footprint, false);
     }
 }
