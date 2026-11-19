@@ -26,6 +26,7 @@ public static class Program
         registrations.AddSingleton<IBreadboardRepository, JsonBreadboardRepository>();
         registrations.AddSingleton<IFootprintRepository, JsonFootprintRepository>();
         registrations.AddSingleton<ILogicFamilyRepository, JsonLogicFamilyRepository>();
+        registrations.AddSingleton<IChipCsvRepository, FileChipCsvRepository>();
         registrations.AddSingleton<CircuitEditor.Core.Chips.IChipEvaluator, CircuitEditor.Core.Chips.ChipEvaluator>();
         registrations.AddSingleton<IErrorLogRepository, ErrorLogRepository>();
         registrations.AddSingleton<IClipboardService, ClipboardService>();

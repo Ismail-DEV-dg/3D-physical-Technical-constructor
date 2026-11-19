@@ -1,0 +1,40 @@
+<UserControl x:Class="CircuitEditor.App.Views.ChipTruthView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel>
+        <TextBlock Text="Секции таблицы" FontWeight="SemiBold"/>
+        <WrapPanel Margin="0,4">
+            <ComboBox ItemsSource="{Binding Sections}" SelectedIndex="{Binding SelectedSection}" MinWidth="185" Margin="0,0,6,4" AutomationProperties.Name="Секция"/>
+            <Button Content="Новая секция" Command="{Binding AddSectionCommand}" Margin="0,0,6,4"/>
+            <Button Content="Удалить секцию" Command="{Binding RemoveSectionCommand}" Margin="0,0,6,4"/>
+            <Button Content="Импорт CSV" Command="{Binding ImportCsvCommand}" Margin="0,0,6,4"/>
+            <Button Content="Экспорт CSV" Command="{Binding ExportCsvCommand}" Margin="0,0,6,4"/>
+        </WrapPanel>
+        <WrapPanel>
+            <StackPanel Width="125" Margin="0,0,6,4">
+                <TextBlock Text="Входы через запятую"/>
+                <TextBox Text="{Binding InputPins, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Входы через запятую"/>
+            </StackPanel>
+            <StackPanel Width="125" Margin="0,0,6,4">
+                <TextBlock Text="Выходы через запятую"/>
+                <TextBox Text="{Binding OutputPins, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Выходы через запятую"/>
+            </StackPanel>
+            <Button Content="Создать строки" Command="{Binding GenerateCommand}" VerticalAlignment="Bottom" Margin="0,0,6,4"/>
+            <Button Content="Применить ячейки" Command="{Binding ApplyCellsCommand}" VerticalAlignment="Bottom" Margin="0,0,6,4"/>
+        </WrapPanel>
+        <TextBlock Text="Входы отсортированы по номеру. Для каждого выхода укажите 0, 1 или X." TextWrapping="Wrap" Margin="0,4,0,8"/>
+        <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left">
+            <ItemsControl ItemsSource="{Binding Rows}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
+                            <TextBlock Width="105" VerticalAlignment="Center" Text="{Binding Inputs}"/>
+                            <TextBox Width="130" Text="{Binding Outputs, UpdateSourceTrigger=PropertyChanged}"
+                                     AutomationProperties.Name="Уровни выходов"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </StackPanel>
+</UserControl>

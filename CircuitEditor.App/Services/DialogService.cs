@@ -7,9 +7,10 @@ public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpSe
 {
     public void ShowError(string message) => Choose("Ошибка", message, "ОК");
     public void ShowWarning(string message) => Choose("Предупреждение", message, "ОК");
-    public string? OpenProject()
+    public string? OpenProject() => OpenFile("Circuit Editor (*.circ)|*.circ");
+    public string? OpenFile(string filter)
     {
-        var dialog = new OpenFileDialog { Filter = "Circuit Editor (*.circ)|*.circ", CheckFileExists = true };
+        var dialog = new OpenFileDialog { Filter = filter, CheckFileExists = true };
         return dialog.ShowDialog(Application.Current.MainWindow) == true ? dialog.FileName : null;
     }
     public string? SaveFile(string filter, string extension, string? suggested = null)
