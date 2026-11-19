@@ -25,6 +25,7 @@ public static class Program
         registrations.AddSingleton<IComponentLibraryRepository, JsonComponentLibraryRepository>();
         registrations.AddSingleton<IBreadboardRepository, JsonBreadboardRepository>();
         registrations.AddSingleton<IFootprintRepository, JsonFootprintRepository>();
+        registrations.AddSingleton<ILogicFamilyRepository, JsonLogicFamilyRepository>();
         registrations.AddSingleton<IErrorLogRepository, ErrorLogRepository>();
         registrations.AddSingleton<IClipboardService, ClipboardService>();
         registrations.AddSingleton<IErrorHelpRepository, JsonErrorHelpRepository>();

@@ -1,0 +1,80 @@
+{
+  "ttl": {
+    "name": "74xx (TTL)",
+    "nominalSupply": 5,
+    "minimumSupply": 4.75,
+    "maximumSupply": 5.25,
+    "inputLow": {
+      "value": 0.8,
+      "supplyFraction": false
+    },
+    "inputHigh": {
+      "value": 2,
+      "supplyFraction": false
+    },
+    "outputLow": {
+      "value": 0.1,
+      "supplyFraction": false
+    },
+    "outputHigh": {
+      "value": 3.4,
+      "supplyFraction": false
+    },
+    "sourceResistanceOhms": 100,
+    "sinkResistanceOhms": 0.4,
+    "sourceLimitAmps": 0.0004,
+    "sinkLimitAmps": 0.016
+  },
+  "ls": {
+    "name": "74LS (TTL-LS)",
+    "nominalSupply": 5,
+    "minimumSupply": 4.75,
+    "maximumSupply": 5.25,
+    "inputLow": {
+      "value": 0.8,
+      "supplyFraction": false
+    },
+    "inputHigh": {
+      "value": 2,
+      "supplyFraction": false
+    },
+    "outputLow": {
+      "value": 0.1,
+      "supplyFraction": false
+    },
+    "outputHigh": {
+      "value": 3.4,
+      "supplyFraction": false
+    },
+    "sourceResistanceOhms": 100,
+    "sinkResistanceOhms": 10,
+    "sourceLimitAmps": 0.0004,
+    "sinkLimitAmps": 0.008
+  },
+  "hc": {
+    "name": "74HC (CMOS)",
+    "nominalSupply": 5,
+    "minimumSupply": 2,
+    "maximumSupply": 6,
+    "inputLow": {
+      "value": 0.3,
+      "supplyFraction": true
+    },
+    "inputHigh": {
+      "value": 0.7,
+      "supplyFraction": true
+    },
+    "outputLow": {
+      "value": 0,
+      "supplyFraction": true
+    },
+    "outputHigh": {
+      "value": 1,
+      "supplyFraction": true
+    },
+    "sourceResistanceOhms": 50,
+    "sinkResistanceOhms": 50,
+    "sourceLimitAmps": 0.004,
+    "sinkLimitAmps": 0.004
+  }
+}
