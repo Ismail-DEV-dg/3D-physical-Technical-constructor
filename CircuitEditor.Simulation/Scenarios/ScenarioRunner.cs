@@ -12,7 +12,7 @@ namespace CircuitEditor.Simulation.Scenarios;
 public sealed class ScenarioRunner(IScenarioRepository repository) : IScenarioRunner
 {
     private const long InputPollMicroseconds = 1_000;
-    private const int MaximumTextLength = 512;
+
     private const double MaximumPeriodMs = 3_600_000;
 
     public SimulationDiagnostic? Start(ScenarioConfiguration configuration, SimulationCircuit circuit, BehaviorContext context,
@@ -31,6 +31,9 @@ public sealed class ScenarioRunner(IScenarioRepository repository) : IScenarioRu
                 return Invalid($"Вывод {name} ({binding.PinId}) отсутствует или не поддерживает выбранный режим.", binding);
         }
 
+        if (template.Pins.Keys.Select(k => configuration.Pins[k]).Distinct().Count() != template.Pins.Count)
+            return Invalid("Назначьте разные GPIO входам и выходам сценария.");
+
         var target = configuration.TargetId is Guid id ? circuit.Project.Circuit.Components.SingleOrDefault(c => c.Id == id) : null;
         if (template.Target == "display" && target?.Definition.Id is not ("lcd1602" or "lcd1602-i2c" or "oled-ssd1306") ||
             configuration.TargetId is not null && (target is null || template.Target == "sensor" &&
@@ -47,7 +50,7 @@ public sealed class ScenarioRunner(IScenarioRepository repository) : IScenarioRu
             template.Id == "blink" && (!double.IsFinite(duty) || duty is < 0 or > 1) ||
             template.Id == "servo-sweep" && (!double.IsFinite(minimum) || !double.IsFinite(maximum) || minimum < 0 || maximum > 180 || minimum > maximum) ||
             template.Id == "button-led" && Number("activeLow") is not (0 or 1) ||
-            text.Length > MaximumTextLength)
+            text.Length > ScenarioConfiguration.MaximumTextLength)
             return Invalid("Проверьте период, скважность, угол и длину текста сценария.");
 
         var period = (long)Math.Round(periodMs * 1000);

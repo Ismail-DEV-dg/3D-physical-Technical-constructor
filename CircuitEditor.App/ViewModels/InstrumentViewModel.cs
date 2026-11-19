@@ -15,6 +15,7 @@ public sealed partial class InstrumentViewModel : ObservableObject
     {
         Kind = kind;
         Name = name;
+        DefaultLayout = new(left, top, false);
         Left = left;
         Top = top;
         this.pick = pick;
@@ -26,6 +27,8 @@ public sealed partial class InstrumentViewModel : ObservableObject
     }
 
     public InstrumentKind Kind { get; }
+    internal InstrumentLayout DefaultLayout { get; }
+    internal InstrumentLayout Layout => new(Left, Top, IsVisible);
     public string Name { get; }
     public IReadOnlyList<string> Channels { get; }
     internal WireEndpoint?[] Probes { get; }
@@ -72,6 +75,16 @@ public sealed partial class InstrumentViewModel : ObservableObject
         Left = Math.Clamp(Left + move.DeltaX, 0, Math.Max(0, move.MaximumX));
         Top = Math.Clamp(Top + move.DeltaY, 0, Math.Max(0, move.MaximumY));
         LayoutChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    internal void Restore(InstrumentLayout? saved)
+    {
+        var layout = saved ?? DefaultLayout;
+        Left = layout.X;
+        Top = layout.Y;
+        IsVisible = layout.Visible;
+        for (var i = 0; i < Probes.Length; i++) SetProbe(i, null);
+        Signal = null;
     }
 
     internal void SetProbe(int channel, WireEndpoint? terminal)

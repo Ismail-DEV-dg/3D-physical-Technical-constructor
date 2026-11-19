@@ -6,12 +6,13 @@ using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CircuitEditor.App.ViewModels;
 
-public sealed partial class SimulationInstrumentsViewModel : ObservableObject
+public sealed partial class SimulationInstrumentsViewModel : ObservableObject, IDisposable
 {
     private readonly ProjectViewModel project;
     private readonly ISimulationPlayback playback;
     private InstrumentViewModel? picking;
     private int pickingChannel;
+    private bool restoring;
 
     public SimulationInstrumentsViewModel(ProjectViewModel project, ISimulationPlayback playback)
     {
@@ -22,12 +23,17 @@ public sealed partial class SimulationInstrumentsViewModel : ObservableObject
         Logic = new(InstrumentKind.Logic, "Логический анализатор", 58, 112, BeginPick, Assign);
         Panels = [Meter, Scope, Logic];
         foreach (var panel in Panels)
+        {
+            panel.LayoutChanged += SaveLayout;
             panel.PropertyChanged += (_, e) =>
             {
                 if (e.PropertyName != nameof(InstrumentViewModel.IsVisible)) return;
                 if (!panel.IsVisible && picking == panel) CancelPick();
                 for (var i = 0; i < panel.Probes.Length; i++) Assign(panel.Kind, i, panel.Probes[i]);
             };
+        }
+        project.ProjectReplaced += Restore;
+        Restore(this, EventArgs.Empty);
     }
 
     public InstrumentViewModel Meter { get; }
@@ -78,6 +84,33 @@ public sealed partial class SimulationInstrumentsViewModel : ObservableObject
         pickingChannel = panel.Channel;
         panel.IsPicking = true;
         Hint = $"{panel.Name}: выберите точку для {panel.Channels[pickingChannel]}. Esc — отмена.";
+    }
+
+    private void SaveLayout(object? sender, EventArgs e)
+    {
+        if (restoring || sender is not InstrumentViewModel panel) return;
+        var setup = project.Model.SimulationSetup;
+        var layout = panel.Layout;
+        var instruments = layout == panel.DefaultLayout ? setup.Instruments.Remove(panel.Kind) : setup.Instruments.SetItem(panel.Kind, layout);
+        project.UpdateSimulationSetup(setup with { Instruments = instruments });
+    }
+
+    private void Restore(object? sender, EventArgs e)
+    {
+        restoring = true;
+        try
+        {
+            CancelPick();
+            foreach (var panel in Panels)
+                panel.Restore(project.Model.SimulationSetup.Instruments.GetValueOrDefault(panel.Kind));
+        }
+        finally { restoring = false; }
+    }
+
+    public void Dispose()
+    {
+        project.ProjectReplaced -= Restore;
+        foreach (var panel in Panels) panel.LayoutChanged -= SaveLayout;
     }
 
     private void Assign(InstrumentKind kind, int channel, WireEndpoint? endpoint)

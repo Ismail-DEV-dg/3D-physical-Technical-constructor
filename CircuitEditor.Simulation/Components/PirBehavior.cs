@@ -8,11 +8,11 @@ namespace CircuitEditor.Simulation.Components;
 
 public sealed class PirBehavior : IComponentBehavior
 {
-    public IReadOnlyList<string> ComponentTypes => ["pir"];
+    public string ComponentType => "pir";
 
     public IEnumerable<DcBranch> Branches(BehaviorContext context, Component c)
     {
-        if (!context.For(c).Echo) return [];
+        if (!context.For(c).Powered) return [];
         return context.Branch(c, "OUT", "OUT", "GND", "TH", context.Parameter(c, "outputOhms"),
             c.Inputs.Values.GetValueOrDefault(ComponentInput.Motion) > 0 ? context.Parameter(c, "outputVolts") : 0);
     }
@@ -21,8 +21,8 @@ public sealed class PirBehavior : IComponentBehavior
     {
         var memory = context.For(c);
         var powered = context.Powered(c);
-        if (memory.Echo == powered) return false;
-        memory.Echo = powered;
+        if (memory.Powered == powered) return false;
+        memory.Powered = powered;
         return true;
     }
 

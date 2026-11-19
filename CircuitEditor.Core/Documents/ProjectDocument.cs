@@ -1,14 +1,17 @@
 using CircuitEditor.Core.Breadboards;
 using CircuitEditor.Core.Models;
 using CircuitEditor.Core.Placement;
+using CircuitEditor.Core.Simulation;
 namespace CircuitEditor.Core.Documents;
 /// <summary>Контракт .circ: только экземпляры и ссылки на библиотечные определения.</summary>
 public sealed record ProjectDocument
 {
-    /// <summary>Текущая версия формата со скетчем.</summary>
-    public const int CurrentSchemaVersion = 2;
+    /// <summary>Текущая версия формата со скетчем и настройками симуляции.</summary>
+    public const int CurrentSchemaVersion = 3;
     /// <summary>Текст скетча и выбранная плата.</summary>
     public Code.SketchDocument Sketch { get; init; } = new();
+    /// <summary>Сценарий и положения приборов, без данных активного сеанса.</summary>
+    public SimulationSetup SimulationSetup { get; init; } = new();
     /// <summary>Версия установленной библиотеки.</summary>
     public const string CurrentLibraryVersion = "1";
     /// <summary>Версия формата.</summary>
@@ -35,6 +38,7 @@ public sealed record ProjectDocument
     public static ProjectDocument Capture(CircuitProject project, ProjectViewState? view = null) => new()
     {
         Sketch = project.Sketch,
+        SimulationSetup = project.SimulationSetup,
         Components = project.Circuit.Components.Select(c => new ComponentData(c.Id, c.Definition.Id,
             project.Footprints.Single(f => f.ComponentDefinitionId == c.Definition.Id).Id, c.Reference, c.Value,
             c.Definition.Id == "led" ? c.Color : null, c.I2cAddress,

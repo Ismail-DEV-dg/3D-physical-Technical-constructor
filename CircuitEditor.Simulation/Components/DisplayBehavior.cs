@@ -3,13 +3,13 @@ using CircuitEditor.Core.Simulation;
 
 namespace CircuitEditor.Simulation.Components;
 
-public sealed class DisplayBehavior : IComponentBehavior
+public abstract class DisplayBehavior(string componentType, bool parallel = false) : IComponentBehavior
 {
-    public IReadOnlyList<string> ComponentTypes => ["lcd1602", "lcd1602-i2c", "oled-ssd1306"];
+    public string ComponentType => componentType;
 
     public ComponentSignal Observe(BehaviorContext context, Component c)
     {
-        var powered = c.Definition.Id == "lcd1602" ? context.Powered(c, "VDD", "VSS") : context.Powered(c);
+        var powered = parallel ? context.Powered(c, "VDD", "VSS") : context.Powered(c);
         if (!powered) return new();
         var text = context.For(c).Text ?? "";
         var columns = (int)context.Parameter(c, "columns");

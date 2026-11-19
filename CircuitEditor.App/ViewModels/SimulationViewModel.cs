@@ -190,6 +190,8 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        Scenario.Dispose();
+        Instruments.Dispose();
         playback.Stop();
         pulse.Stop();
         pulse.Tick -= OnFrame;

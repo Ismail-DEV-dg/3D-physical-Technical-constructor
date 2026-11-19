@@ -48,6 +48,7 @@ public static class Program
         registrations.AddSingleton<IComponentLayoutCalculator, ComponentLayoutCalculator>();
         registrations.AddSingleton<IProjectRepository, JsonProjectRepository>();
         registrations.AddSingleton<CircuitEditor.Core.Documents.IProjectMigration, CircuitEditor.Infrastructure.Documents.ProjectMigrationV1ToV2>();
+        registrations.AddSingleton<CircuitEditor.Core.Documents.IProjectMigration, CircuitEditor.Infrastructure.Documents.ProjectMigrationV2ToV3>();
         registrations.AddSingleton<ISketchRepository, FileSketchRepository>();
         registrations.AddSingleton<ICodeCompletionRepository, JsonCodeCompletionRepository>();
         registrations.AddSingleton<ICodeTemplateRepository, JsonCodeTemplateRepository>();

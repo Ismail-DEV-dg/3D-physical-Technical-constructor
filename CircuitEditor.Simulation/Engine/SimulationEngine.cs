@@ -9,6 +9,7 @@ public sealed class SimulationEngine(ISimulationClock clock, int eventLimit = Si
     public const int EventsPerStep = 10_000;
     private readonly SimulationEventQueue queue = new();
     private readonly int limit = eventLimit > 0 ? eventLimit : throw new ArgumentOutOfRangeException(nameof(eventLimit));
+    public ISimulationClock Clock => clock;
     public SimulationState State { get; private set; } = new();
 
     public void Schedule(long microseconds, Action action)

@@ -9,7 +9,7 @@ namespace CircuitEditor.Simulation.Components;
 
 public sealed class UltrasonicBehavior : IComponentBehavior
 {
-    public IReadOnlyList<string> ComponentTypes => ["hc-sr04"];
+    public string ComponentType => "hc-sr04";
 
     public IEnumerable<DcBranch> Branches(BehaviorContext context, Component c) => !context.For(c).Powered ? [] :
         context.Branch(c, "ECHO", "ECHO", "GND", "TH", context.Parameter(c, "outputOhms"),

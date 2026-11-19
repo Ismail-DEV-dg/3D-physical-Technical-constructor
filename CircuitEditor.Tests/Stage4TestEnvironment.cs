@@ -3,6 +3,7 @@ using CircuitEditor.App.Services;
 using CircuitEditor.App.ViewModels;
 using CircuitEditor.Core.Repositories;
 using CircuitEditor.Infrastructure.Repositories;
+using CircuitEditor.Infrastructure.Documents;
 namespace CircuitEditor.Tests;
 internal sealed class Stage4TestEnvironment : IDialogService, IAutosaveService, IRecentProjectsRepository, IExportRepository, IDisposable
 {
@@ -25,7 +26,7 @@ internal sealed class Stage4TestEnvironment : IDialogService, IAutosaveService, 
     public Stage4TestEnvironment()
     {
         Directory.CreateDirectory(Folder);
-        Repository = new([],Path.Combine(Folder,"recovery.circ"));
+        Repository = new([new ProjectMigrationV1ToV2(), new ProjectMigrationV2ToV3()],Path.Combine(Folder,"recovery.circ"));
         Mockup=TestProjectFactory.Mockup(Project); Schematic=new(Project);
         Navigation=new(Mockup,Schematic,new ChipViewModel(),new ThreeDViewModel(),new CodeViewModel());
         Session=new(Project,Mockup,Schematic,Navigation,Repository,this,this,this,new JsonBreadboardRepository(),new Core.Services.ComponentInsertionService());

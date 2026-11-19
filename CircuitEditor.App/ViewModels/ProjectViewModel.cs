@@ -7,6 +7,7 @@ using CircuitEditor.Core.Models;
 using CircuitEditor.Core.Physical;
 using CircuitEditor.Core.Placement;
 using CircuitEditor.Core.Repositories;
+using CircuitEditor.Core.Simulation;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -137,6 +138,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     }
     public CommandHistory History { get; } = new();
     private Core.Code.SketchDocument savedSketch = new();
+    private SimulationSetup savedSimulationSetup = new();
     public event EventHandler? SketchChanged;
     public event EventHandler? ProjectReplaced;
     public void UpdateSketch(Core.Code.SketchDocument sketch)
@@ -144,15 +146,22 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
         if (Model.Sketch == sketch) return;
         Model.SetSketch(sketch);OnPropertyChanged(nameof(IsDirty));SketchChanged?.Invoke(this,EventArgs.Empty);
     }
+    public void UpdateSimulationSetup(SimulationSetup setup)
+    {
+        if (Model.SimulationSetup.Matches(setup)) return;
+        Model.SetSimulationSetup(setup);
+        OnPropertyChanged(nameof(IsDirty));
+    }
+
     public void MarkSaved()
     {
-        savedSketch=Model.Sketch;History.MarkSaved();OnPropertyChanged(nameof(IsDirty));
+        savedSketch=Model.Sketch;savedSimulationSetup=Model.SimulationSetup;History.MarkSaved();OnPropertyChanged(nameof(IsDirty));
     }
     private ProjectSnapshot baseline = null!;
     private bool inGesture, restoring;
     private string gestureName = "Изменение проекта";
     private SelectionClipboard? clipboard;
-    public bool IsDirty => History.IsDirty || Model.Sketch != savedSketch;
+    public bool IsDirty => History.IsDirty || Model.Sketch != savedSketch || !Model.SimulationSetup.Matches(savedSimulationSetup);
     public bool CanUndo => CanEdit && History.CanUndo && !inGesture;
     public bool CanRedo => CanEdit && History.CanRedo && !inGesture;
     public bool InGesture => inGesture;
@@ -183,6 +192,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     public void ReplaceProject(CircuitProject state)
     {
         Model.SetSketch(state.Sketch);savedSketch=state.Sketch;
+        Model.SetSimulationSetup(state.SimulationSetup);savedSimulationSetup=state.SimulationSetup;
         inGesture = false; RestoreState(state); History.Clear(); PropertyError = "";
         ProjectReplaced?.Invoke(this,EventArgs.Empty);SketchChanged?.Invoke(this,EventArgs.Empty);NotifyHistory();
     }

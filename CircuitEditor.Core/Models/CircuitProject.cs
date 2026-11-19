@@ -14,7 +14,7 @@ public sealed class CircuitProject
     [JsonConstructor]
     public CircuitProject(Circuit? circuit = null, ViewLayout? mockupLayout = null, ViewLayout? schematicLayout = null,
         IReadOnlyList<BreadboardInstance>? breadboards = null, IReadOnlyList<FootprintDefinition>? footprints = null,
-        IReadOnlyList<ContactBinding>? bindings = null, Code.SketchDocument? sketch = null)
+        IReadOnlyList<ContactBinding>? bindings = null, Code.SketchDocument? sketch = null, SimulationSetup? simulationSetup = null)
     {
         Circuit = circuit ?? new Circuit();
         MockupLayout = mockupLayout ?? new ViewLayout(RepresentationKind.Mockup);
@@ -25,6 +25,7 @@ public sealed class CircuitProject
         Footprints = Array.AsReadOnly(footprints?.ToArray() ?? []);
         this.bindings = bindings?.ToList() ?? [];
         SetSketch(sketch ?? new());
+        SetSimulationSetup(simulationSetup ?? new());
     }
     /// <summary>Общая электрическая модель.</summary>
     public Circuit Circuit { get; private set; }
@@ -43,6 +44,14 @@ public sealed class CircuitProject
     public SimulationState Simulation { get; private set; } = new();
     /// <summary>Публикует снимок без изменения данных электрической схемы.</summary>
     public void SetSimulation(SimulationState state) => Simulation = state;
+    /// <summary>Настройки будущего запуска и положения приборов, сохраняемые в .circ.</summary>
+    public SimulationSetup SimulationSetup { get; private set; } = new();
+    /// <summary>Заменяет проверенные настройки, не меняя электрическую схему.</summary>
+    public void SetSimulationSetup(SimulationSetup setup)
+    {
+        if (setup?.IsValid != true) throw new ArgumentException("Некорректные данные симуляции.");
+        SimulationSetup = setup;
+    }
     /// <summary>Код проекта с независимой историей редактирования.</summary>
     public Code.SketchDocument Sketch { get; private set; } = new();
     /// <summary>Заменяет проверенные данные скетча.</summary>

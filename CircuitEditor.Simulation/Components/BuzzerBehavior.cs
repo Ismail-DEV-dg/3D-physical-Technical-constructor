@@ -6,7 +6,7 @@ namespace CircuitEditor.Simulation.Components;
 
 public sealed class BuzzerBehavior : IComponentBehavior
 {
-    public IReadOnlyList<string> ComponentTypes => ["buzzer"];
+    public string ComponentType => "buzzer";
 
     public IEnumerable<DcBranch> Branches(BehaviorContext context, Component c) =>
         context.Branch(c, "пьезо", "+", "-", "R", context.Parameter(c, "resistanceOhms"));

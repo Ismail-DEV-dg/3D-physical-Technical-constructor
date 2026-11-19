@@ -6,6 +6,7 @@ internal sealed class ComponentMemory
 {
     public double Angle { get; set; }
     public double TargetAngle { get; set; }
+    public long AngleUpdatedAt { get; set; }
     public double CollectorLimit { get; set; }
     public bool AlternateCollector { get; set; }
     public bool Powered { get; set; }

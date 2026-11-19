@@ -15,6 +15,7 @@
     "dht22": { "minimumVolts": 3 },
     "pir": { "minimumVolts": 4.5, "outputVolts": 3.3, "outputOhms": 100 },
     "hc-sr04": { "minimumVolts": 4.5, "echoUsPerCm": 58, "minimumTriggerUs": 10, "outputOhms": 100 },
+    "seven-segment": { "forwardVolts": 1.9, "dynamicOhms": 10, "visibleAmps": 0.0005 },
     "diode": { "forwardVolts": 0.7, "dynamicOhms": 2 },
     "npn": { "baseVolts": 0.7, "baseOhms": 10, "gain": 100, "saturationVolts": 0.2, "saturationOhms": 2 },
     "resistor": { "maximumWatts": 0.25 }

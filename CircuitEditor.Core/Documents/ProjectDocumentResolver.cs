@@ -63,6 +63,7 @@ public static class ProjectDocumentResolver
             || new[] {v.MockupZoom,v.MockupX,v.MockupY,v.SchematicZoom,v.SchematicX,v.SchematicY}.Any(x => !double.IsFinite(x)))
             throw new ArgumentException("Некорректное состояние камеры.");
         project.SetSketch(data.Sketch);
+        project.SetSimulationSetup(data.SimulationSetup);
         return project;
     }
 }

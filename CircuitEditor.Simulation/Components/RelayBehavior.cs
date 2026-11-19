@@ -7,7 +7,7 @@ namespace CircuitEditor.Simulation.Components;
 
 public sealed class RelayBehavior : IComponentBehavior
 {
-    public IReadOnlyList<string> ComponentTypes => ["relay"];
+    public string ComponentType => "relay";
 
     public IEnumerable<DcBranch> Branches(BehaviorContext context, Component c) =>
         context.Branch(c, "катушка", "COIL+", "COIL-", "R", context.Parameter(c, "coilOhms"));

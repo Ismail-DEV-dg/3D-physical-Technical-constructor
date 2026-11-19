@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using CircuitEditor.Core.History;
 using CircuitEditor.Core.Models;
@@ -10,73 +9,64 @@ namespace CircuitEditor.App.Services;
 public sealed class SimulationPlayback(ISimulationSessionFactory factory) : ISimulationPlayback, IDisposable
 {
     private const int FrameMilliseconds = 33;
+    private const int SlowFrameMilliseconds = 100;
     private const int WorkerBatch = 32;
-    private readonly object deliveryGate = new();
+    private const int PausedPollingMilliseconds = 8;
     private double speed = 1;
-    private ConcurrentQueue<Action<SimulationSession>> edits = new();
-    private ConcurrentDictionary<object, Action<SimulationSession>> latest = new();
-    private bool running;
-    private int pendingSteps;
-    private CancellationTokenSource? lifetime;
-    private SimulationState? frame;
-    private int generation;
+    private SimulationPlaybackRun? current;
 
-    public bool HasSession => lifetime is not null;
-    public bool IsRunning => Volatile.Read(ref running);
-    public double Speed { get => Volatile.Read(ref speed); set => Volatile.Write(ref speed, Math.Clamp(value, .1, 10)); }
+    public bool HasSession => current is not null;
+    public bool IsRunning => current?.Running == true;
+    public double Speed
+    {
+        get => Volatile.Read(ref speed);
+        set { if (double.IsFinite(value)) Volatile.Write(ref speed, Math.Clamp(value, .1, 10)); }
+    }
 
-    public SimulationState? TakeFrame() => Interlocked.Exchange(ref frame, null);
+    public SimulationState? TakeFrame() => current?.TakeFrame();
 
     public void Start(CircuitProject project, ScenarioConfiguration? scenario, bool run)
     {
         if (HasSession) return;
         var frozen = new ProjectSnapshot(project).Restore();
-        Volatile.Write(ref running, run);
-        Volatile.Write(ref pendingSteps, run ? 0 : 1);
-        lifetime = new();
-        var token = lifetime.Token;
-        var id = Interlocked.Increment(ref generation);
-        var commands = edits;
-        var changes = latest;
+        var playback = new SimulationPlaybackRun(run);
+        current = playback;
+        var token = playback.Token;
         _ = Task.Run(async () =>
         {
+            SimulationSession? session = null;
             try
             {
-                await Play(factory.Create(frozen, scenario), id, commands, changes, token).ConfigureAwait(false);
+                token.ThrowIfCancellationRequested();
+                session = factory.Create(frozen, scenario);
+                await Play(session, playback, token).ConfigureAwait(false);
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { }
             catch (Exception error) when (error is ArgumentException or InvalidOperationException or KeyNotFoundException or ArithmeticException)
             {
+                var time = session?.ModelTime ?? 0;
                 var message = $"Не удалось продолжить симуляцию. {error.Message}";
-                Publish(id, new(0, true, message) { Diagnostics = [new("SIM_RUNTIME", message, 0, IsError: true)] });
+                playback.Publish(new(time, true, message) { Diagnostics = [new("SIM_RUNTIME", message, time, IsError: true)] });
             }
         });
     }
 
-    public void Resume() => Volatile.Write(ref running, true);
-    public void Pause() => Volatile.Write(ref running, false);
-    public void Step() => Interlocked.Increment(ref pendingSteps);
-    public void Send(Action<SimulationSession> action) { if (HasSession) edits.Enqueue(action); }
-    public void SetLatest(object key, Action<SimulationSession> action) { if (HasSession) latest[key] = action; }
-
-    public void Stop()
+    public void Resume() { if (current is { } run) run.Running = true; }
+    public void Pause() { if (current is { } run) run.Running = false; }
+    public void Step() => current?.RequestStep();
+    public void Send(Action<SimulationSession> action) => current?.Commands.Enqueue(action);
+    public void SetLatest(object key, Action<SimulationSession> action)
     {
-        Interlocked.Increment(ref generation);
-        lifetime?.Cancel();
-        lifetime?.Dispose();
-        lifetime = null;
-        Pause();
-        frame = null;
-        edits = new();
-        latest = new();
+        if (current is { } run) run.Latest[key] = action;
     }
 
-    private async Task Play(SimulationSession session, int id, ConcurrentQueue<Action<SimulationSession>> commands,
-        ConcurrentDictionary<object, Action<SimulationSession>> changes, CancellationToken token)
+    public void Stop() => Interlocked.Exchange(ref current, null)?.Cancel();
+
+    private async Task Play(SimulationSession session, SimulationPlaybackRun playback, CancellationToken token)
     {
         var wall = Stopwatch.StartNew();
         var previous = wall.ElapsedTicks;
-        long lastFrame = -FrameMilliseconds;
+        long lastFrame = -SlowFrameMilliseconds;
         var available = 0d;
         var dirty = true;
         while (!token.IsCancellationRequested)
@@ -84,19 +74,21 @@ public sealed class SimulationPlayback(ISimulationSessionFactory factory) : ISim
             var now = wall.ElapsedTicks;
             var elapsed = (now - previous) * 1_000_000d / Stopwatch.Frequency;
             previous = now;
-            if (id != Volatile.Read(ref generation)) return;
-            available = IsRunning ? available + elapsed * Speed : 0;
-            var steps = Interlocked.Exchange(ref pendingSteps, 0);
-            for (var i = 0; i < WorkerBatch && commands.TryDequeue(out var action); i++)
+            var running = playback.Running;
+            var rate = Speed;
+            available = running ? available + elapsed * rate : 0;
+            var steps = playback.TakeSteps();
+            if (!session.HasHalted)
             {
-                action(session);
-                dirty = true;
-            }
-            foreach (var key in changes.Keys)
-                if (changes.TryRemove(key, out var action)) { action(session); dirty = true; }
-            if (!session.State.IsHalted)
-            {
-                for (var i = 0; i < WorkerBatch && (steps > 0 || available >= SimulationEngine.StepMicroseconds); i++)
+                for (var i = 0; i < WorkerBatch && playback.Commands.TryDequeue(out var action); i++)
+                {
+                    action(session);
+                    dirty = true;
+                }
+                foreach (var key in playback.Latest.Keys)
+                    if (playback.Latest.TryRemove(key, out var action)) { action(session); dirty = true; }
+                for (var i = 0; i < WorkerBatch &&
+                    (steps > 0 || playback.Running && available >= SimulationEngine.StepMicroseconds); i++)
                 {
                     session.Advance(token);
                     if (steps > 0) steps--;
@@ -104,29 +96,20 @@ public sealed class SimulationPlayback(ISimulationSessionFactory factory) : ISim
                     dirty = true;
                     if (session.HasHalted) break;
                 }
-                if (steps > 0 && !session.HasHalted) Interlocked.Add(ref pendingSteps, steps);
+                if (steps > 0 && !session.HasHalted) playback.DeferSteps(steps);
             }
-            if (dirty && (wall.ElapsedMilliseconds - lastFrame >= FrameMilliseconds || session.HasHalted))
+
+            var cadence = available > SlowFrameMilliseconds * 1000 * rate ? SlowFrameMilliseconds : FrameMilliseconds;
+            if (dirty && (wall.ElapsedMilliseconds - lastFrame >= cadence || session.HasHalted))
             {
                 var next = session.Observe();
-                if (id != Volatile.Read(ref generation)) return;
-                if (next.IsHalted) Pause();
-                Interlocked.Exchange(ref frame, next);
+                playback.Publish(next);
+                if (next.IsHalted) return;
                 dirty = false;
                 lastFrame = wall.ElapsedMilliseconds;
             }
-            if (available >= SimulationEngine.StepMicroseconds && !session.HasHalted) await Task.Yield();
-            else await Task.Delay(1, token).ConfigureAwait(false);
-        }
-    }
-
-    private void Publish(int id, SimulationState value)
-    {
-        lock (deliveryGate)
-        {
-            if (id != generation) return;
-            if (value.IsHalted) Pause();
-            Interlocked.Exchange(ref frame, value);
+            if (playback.Running && available >= SimulationEngine.StepMicroseconds) await Task.Yield();
+            else await Task.Delay(running ? 1 : PausedPollingMilliseconds, token).ConfigureAwait(false);
         }
     }
 

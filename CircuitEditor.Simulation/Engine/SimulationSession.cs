@@ -27,7 +27,7 @@ public sealed class SimulationSession
     private readonly SessionInstruments instruments;
     private readonly ISimulationDiagnostics diagnosticReader;
     private readonly SimulationModelCatalog catalog;
-    private long serialSequence, observedTime;
+    private long serialSequence;
     private string? failure;
 
     internal SimulationSession(SimulationCircuit circuit, SimulationModelCatalog catalog, string? libraryError,
@@ -41,7 +41,7 @@ public sealed class SimulationSession
         this.instruments = new(circuit, instruments);
         this.clock = clock;
         this.timeline = timeline;
-        var registry = behaviors.SelectMany(b => b.ComponentTypes.Select(type => (type, b))).ToDictionary(pair => pair.type, pair => pair.b);
+        var registry = behaviors.ToDictionary(behavior => behavior.ComponentType);
         parts = circuit.Project.Circuit.Components.Where(c => registry.ContainsKey(c.Definition.Id))
             .Select(c => (c, registry[c.Definition.Id])).ToArray();
         modeled = parts.Select(p => p.Part.Id).ToHashSet();
@@ -61,6 +61,7 @@ public sealed class SimulationSession
 
     public SimulationCircuit Circuit { get; }
     public SimulationState State { get; private set; }
+    public long ModelTime => clock.Microseconds;
     public bool HasHalted => failure is not null;
 
     public SimulationState Step(CancellationToken token = default)
@@ -71,6 +72,8 @@ public sealed class SimulationSession
 
     public void Advance(CancellationToken token = default)
     {
+        if (HasHalted) return;
+        if (Circuit.IsDirty) Settle();
         if (HasHalted) return;
         if (instruments.IsRecording)
         {
@@ -123,7 +126,7 @@ public sealed class SimulationSession
         if (previous == value) return true;
         if (!component.TrySetInput(input, value)) return false;
         if (input is ComponentInput.ButtonPressed or ComponentInput.SwitchPosition) Circuit.RebuildTopology();
-        else if (input is ComponentInput.Illuminance or ComponentInput.Temperature or ComponentInput.Motion) Circuit.InvalidateParameters();
+        else if (component.Definition.Id is "photoresistor" or "thermistor" or "pir") Circuit.InvalidateParameters();
         return true;
     }
 
@@ -173,8 +176,6 @@ public sealed class SimulationSession
 
     private SimulationState Capture()
     {
-        context.Elapsed = context.Now - observedTime;
-        observedTime = context.Now;
         var visuals = parts.Select(p => (p.Part.Id, Value: p.Behavior.Observe(context, p.Part)))
             .Where(p => p.Value is not null).ToImmutableDictionary(p => p.Id, p => p.Value!);
         return new(clock.Microseconds, HasHalted, failure)

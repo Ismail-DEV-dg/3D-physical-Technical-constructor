@@ -5,7 +5,7 @@ namespace CircuitEditor.Simulation.Components;
 
 public sealed class DiodeBehavior : IComponentBehavior
 {
-    public IReadOnlyList<string> ComponentTypes => ["diode"];
+    public string ComponentType => "diode";
 
     public IEnumerable<DcBranch> Branches(BehaviorContext context, Component c) =>
         context.Branch(c, "диод", "A", "K", "LED",

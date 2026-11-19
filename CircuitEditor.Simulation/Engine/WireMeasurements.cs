@@ -13,6 +13,8 @@ internal sealed class WireMeasurements(CircuitProject project, INetlistBuilder b
     private readonly Dictionary<Guid, HashSet<string>?> partitions = [];
     private Netlist? unwired;
     private Dictionary<WireEndpoint, string> origins = [];
+    private DcResult? previous;
+    private ImmutableDictionary<Guid,WireSignal> cached = ImmutableDictionary<Guid,WireSignal>.Empty;
 
     internal void Rebuild()
     {
@@ -49,13 +51,13 @@ internal sealed class WireMeasurements(CircuitProject project, INetlistBuilder b
     {
         if (project.Circuit.Wires.Count == 0 || result is null) return ImmutableDictionary<Guid,WireSignal>.Empty;
         if (unwired is null) Rebuild();
-        var nodeByEnd = nets.Nets.SelectMany(n => n.Terminals.Where(t => t.Kind is "c" or "h").Select(t =>
-            (End: t.Kind == "c" ? WireEndpoint.Contact(t.OwnerId, t.TerminalId) : WireEndpoint.Hole(t.OwnerId, t.TerminalId),
-            Node: n.Id))).ToDictionary(p => p.End, p => p.Node);
+        if (ReferenceEquals(previous, result)) return cached;
+        previous = result;
         var values = ImmutableDictionary.CreateBuilder<Guid,WireSignal>();
         foreach (var wire in project.Circuit.Wires)
         {
-            if (!nodeByEnd.TryGetValue(wire.Start, out var node)) continue;
+            if (nets.Find(wire.Start) is not { } resultNet) continue;
+            var node = resultNet.Id;
             var voltage = result.Voltages.GetValueOrDefault(node);
             double? amps = null;
             if (voltage is not null && partitions.GetValueOrDefault(wire.Id) is { } cut)
@@ -72,8 +74,12 @@ internal sealed class WireMeasurements(CircuitProject project, INetlistBuilder b
             }
             values.Add(wire.Id, new(voltage, amps));
         }
-        return values.ToImmutable();
+        return cached = values.ToImmutable();
     }
 
-    internal void Invalidate() => unwired = null;
+    internal void Invalidate()
+    {
+        unwired = null;
+        previous = null;
+    }
 }

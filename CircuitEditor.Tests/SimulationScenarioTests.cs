@@ -115,6 +115,10 @@ public sealed class SimulationScenarioTests
         var session = Create(design);
         Assert.True(session.SetPin(new(uno.Model.Id, "D9"), new(GpioMode.Pwm, Duty: 0.075, PeriodMicroseconds: 20_000)));
         for (var i = 0; i < 200; i++) session.Step();
+        var coalesced = Create(design);
+        coalesced.SetPin(new(uno.Model.Id, "D9"), new(GpioMode.Pwm, Duty: 0.075, PeriodMicroseconds: 20_000));
+        for (var i = 0; i < 200; i++) coalesced.Advance();
+        Assert.Equal(session.State.Components[servo.Model.Id].Angle, coalesced.Observe().Components[servo.Model.Id].Angle, 6);
         Assert.Equal(90, session.State.Components[servo.Model.Id].Angle, 4);
     }
 
@@ -169,7 +173,10 @@ public sealed class SimulationScenarioTests
         var electrical = new JsonElectricalLibraryRepository();
         var factory = new SimulationSessionFactory(new NetlistBuilder(electrical), new DcSolver(electrical),
             new JsonSimulationModelRepository(), new ScenarioRunner(new JsonScenarioRepository()),
-            [new LedBehavior(), new RelayBehavior(), new ServoBehavior(), new SensorBehavior()]);
+            [new LedBehavior(), new RgbLedBehavior(), new RelayBehavior(), new ServoBehavior(), new ButtonBehavior(),
+                new SwitchBehavior(), new PotentiometerBehavior(), new Dht11Behavior(), new Dht22Behavior(), new LcdBehavior(),
+                new I2cLcdBehavior(), new OledBehavior(), new NpnBehavior(), new DiodeBehavior(), new SevenSegmentBehavior(),
+                new UltrasonicBehavior(), new PirBehavior()]);
         return factory.Create(design.Project.Model, scenario);
     }
 }

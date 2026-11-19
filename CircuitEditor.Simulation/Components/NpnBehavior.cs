@@ -5,7 +5,7 @@ namespace CircuitEditor.Simulation.Components;
 
 public sealed class NpnBehavior : IComponentBehavior
 {
-    public IReadOnlyList<string> ComponentTypes => ["npn"];
+    public string ComponentType => "npn";
 
     public IEnumerable<DcBranch> Branches(BehaviorContext context, Component c)
     {

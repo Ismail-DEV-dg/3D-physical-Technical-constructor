@@ -52,8 +52,7 @@ public sealed class SimulationDiagnostics : ISimulationDiagnostics
 
     public SimulationDiagnostic InvalidPin(SimulationCircuit circuit, PinReference pin, GpioState requested, long now)
     {
-        var inputOnly = circuit.Controllers.GetValueOrDefault(pin.ComponentId)?.Pins
-            .Any(p => p.Id == pin.PinId && p.IsInputOnly) == true;
+        var inputOnly = circuit.Controllers.GetValueOrDefault(pin.ComponentId)?.IsInputOnly(pin.PinId) == true;
         return inputOnly && requested.Mode != GpioMode.Input
             ? new("SIM_INPUT_ONLY", $"{pin.PinId}: вывод работает только на вход. Выберите Input без подтяжки.",
                 now, pin.ComponentId, pin.PinId)

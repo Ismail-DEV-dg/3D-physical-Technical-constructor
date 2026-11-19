@@ -5,12 +5,14 @@ namespace CircuitEditor.Simulation.Gpio;
 
 public sealed class GpioController(Component board, SimulationBoardProfile profile)
 {
+    private static readonly GpioState DefaultState = new();
     private readonly Dictionary<string, GpioState> states = new(StringComparer.Ordinal);
     public Guid Id => board.Id;
     public string Reference => board.Reference;
     public SimulationBoardProfile Profile => profile;
     public IReadOnlyList<Pin> Pins { get; } = board.Definition.Pins.Where(IsGpio).ToArray();
-    public GpioState Get(string pinId) => states.GetValueOrDefault(pinId) ?? new();
+    public GpioState Get(string pinId) => states.GetValueOrDefault(pinId) ?? DefaultState;
+    public bool IsInputOnly(string pinId) => board.Definition.Pins.Any(p => p.Id == pinId && p.IsInputOnly);
 
     public bool TrySet(string pinId, GpioState state)
     {

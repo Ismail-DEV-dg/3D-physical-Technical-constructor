@@ -14,10 +14,10 @@ public sealed class SketchStorageTests
         using var e=new Stage4TestEnvironment();e.Project.Add(e.Project.Library[0]);
         var original=e.Session.Capture();
         var node=JsonSerializer.SerializeToNode(original,JsonProjectRepository.Options)!.AsObject();
-        node["schemaVersion"]=1;node.Remove("sketch");
+        node["schemaVersion"]=1;node.Remove("sketch");node.Remove("simulationSetup");
         var path=Path.Combine(e.Folder,"v1.circ");File.WriteAllText(path,node.ToJsonString());
-        var result=new JsonProjectRepository([new ProjectMigrationV1ToV2()]).Load(path);
-        Assert.True(result.Success,result.Error);Assert.Equal(2,result.Value!.SchemaVersion);
+        var result=new JsonProjectRepository([new ProjectMigrationV1ToV2(),new ProjectMigrationV2ToV3()]).Load(path);
+        Assert.True(result.Success,result.Error);Assert.Equal(ProjectDocument.CurrentSchemaVersion,result.Value!.SchemaVersion);
         Assert.Equal(new SketchDocument(),result.Value.Sketch);Assert.Equal(original.Components,result.Value.Components);
         Assert.Equal(original.Wires,result.Value.Wires);
     }

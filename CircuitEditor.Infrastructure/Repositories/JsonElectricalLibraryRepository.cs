@@ -4,7 +4,10 @@ using CircuitEditor.Core.Repositories;
 namespace CircuitEditor.Infrastructure.Repositories;
 public sealed class JsonElectricalLibraryRepository : IElectricalLibraryRepository
 {
-    public RepositoryResult<ElectricalCatalog> Load()
+    private static readonly Lazy<RepositoryResult<ElectricalCatalog>> Catalog = new(Read);
+    public RepositoryResult<ElectricalCatalog> Load() => Catalog.Value;
+
+    private static RepositoryResult<ElectricalCatalog> Read()
     {
         try
         {

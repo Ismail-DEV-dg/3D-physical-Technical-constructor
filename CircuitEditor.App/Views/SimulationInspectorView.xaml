@@ -17,7 +17,7 @@
     <ItemsControl ItemsSource="{Binding Numbers}">
      <ItemsControl.ItemTemplate><DataTemplate>
       <StackPanel Margin="0,8,0,0">
-       <TextBlock Text="{Binding Name}"/>
+       <TextBlock Text="{Binding Label}" TextWrapping="Wrap"/>
        <TextBox Text="{Binding Value, ValidatesOnExceptions=True}" AutomationProperties.Name="{Binding Name}"/>
       </StackPanel>
      </DataTemplate></ItemsControl.ItemTemplate>
@@ -27,7 +27,7 @@
       <DataTrigger Binding="{Binding ShowsTarget}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
      </Style.Triggers></Style></StackPanel.Style>
      <TextBlock Text="Компонент" Margin="0,8,0,0"/>
-     <ComboBox ItemsSource="{Binding Targets}" DisplayMemberPath="Reference" SelectedItem="{Binding Target}" AutomationProperties.Name="Компонент сценария"/>
+     <ComboBox ItemsSource="{Binding Targets}" DisplayMemberPath="Name" SelectedItem="{Binding Target}" AutomationProperties.Name="Компонент сценария"/>
     </StackPanel>
     <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" MaxLength="512" Margin="0,8,0,0" AcceptsReturn="True" AutomationProperties.Name="Текст сценария">
      <TextBox.Style><Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers>

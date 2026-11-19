@@ -11,7 +11,6 @@ public sealed class BehaviorContext(SimulationCircuit circuit, SimulationModelCa
 {
     internal Dictionary<Guid, ComponentMemory> Memory { get; } = [];
     public long Now { get; internal set; }
-    public long Elapsed { get; internal set; }
 
     internal ComponentMemory For(Component c)
     {
