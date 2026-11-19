@@ -6,11 +6,17 @@ public sealed class DcSolver(IElectricalLibraryRepository repository) : IDcSolve
 {
     private const double ResistorPowerLimit=.25;
     /// <inheritdoc/>
-    public DcResult Solve(CircuitProject project,Netlist.Netlist nets)
+    public DcResult Solve(CircuitProject project,Netlist.Netlist nets) => Solve(project, nets, [], null);
+
+    /// <inheritdoc/>
+    public DcResult Solve(CircuitProject project, Netlist.Netlist nets, IReadOnlyList<DcBranch> additional,
+        DcMatrixCache? cache, IReadOnlySet<Guid>? modeledComponents = null)
     {
         var voltages=nets.Nets.ToDictionary(n=>n.Id,_=>(double?)null);var results=new List<DcBranchResult>();var messages=nets.Diagnostics.ToList();
         var data=repository.Load();if(data.Value is null)return new(false,voltages,results,[data.Error??"Нет электрической библиотеки."],[]);
-        var assembly=DcCircuitAssembler.Assemble(project,nets,data.Value);messages.AddRange(assembly.Diagnostics);
+        var assembly=DcCircuitAssembler.Assemble(project,nets,data.Value,modeledComponents);
+        assembly = assembly with { Branches = assembly.Branches.Concat(additional).ToArray() };
+        messages.AddRange(assembly.Diagnostics);
         var remaining=assembly.Branches.ToList();var success=nets.Diagnostics.Count==0 && !assembly.HasErrors;
         while(remaining.Count>0)
         {
@@ -23,7 +29,7 @@ public sealed class DcSolver(IElectricalLibraryRepository repository) : IDcSolve
             var unique=new List<DcBranch>();var redundant=new List<DcBranch>();
             foreach(var b in branches)
                 if(b.Kind=="V" && unique.Any(v=>v.Kind=="V"&&v.A==b.A&&v.B==b.B&&v.Value==b.Value))redundant.Add(b);else unique.Add(b);
-            var solved=DcIslandSolver.Solve(unique,ground.Id);
+            var solved=DcIslandSolver.Solve(unique,ground.Id,cache);
             if(solved.Error is not null){messages.Add(solved.Error);success=false;continue;}
             foreach(var pair in solved.Voltages!)voltages[pair.Key]=pair.Value;
             foreach(var result in solved.Branches)
@@ -40,6 +46,7 @@ public sealed class DcSolver(IElectricalLibraryRepository repository) : IDcSolve
             if(component.Definition.Id=="resistor" && result.Power>ResistorPowerLimit)messages.Add(result.Name+": мощность резистора выше 0.25 Вт.");
         }
         if(assembly.Branches.Count==0){messages.Add("Нет поддерживаемых DC-ветвей.");success=false;}
-        return new(success,voltages,results,messages,assembly.Unsupported);
+        return new(success,voltages,results,messages,assembly.Unsupported)
+        { IterationLimitReached = messages.Contains(DcIslandSolver.IterationLimitMessage) };
     }
 }

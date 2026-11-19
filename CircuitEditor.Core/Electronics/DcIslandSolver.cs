@@ -1,11 +1,12 @@
 namespace CircuitEditor.Core.Electronics;
 internal static class DcIslandSolver
 {
+    internal const string IterationLimitMessage = "Кусочно-линейная LED-модель не сошлась за допустимое число итераций.";
     private const int MaximumIterations=64;
     private const double CurrentTolerance=1e-9;
     private const double VoltageTolerance=1e-8;
     internal static (Dictionary<string,double>? Voltages,List<DcBranchResult> Branches,string? Error) Solve(
-        IReadOnlyList<DcBranch> branches,string reference)
+        IReadOnlyList<DcBranch> branches,string reference,DcMatrixCache? cache)
     {
         var nodes=branches.SelectMany(b=>new[]{b.A,b.B}).Distinct().Where(n=>n!=reference).ToArray();
         var indices=nodes.Select((n,i)=>(n,i)).ToDictionary(p=>p.n,p=>p.i);
@@ -16,7 +17,13 @@ internal static class DcIslandSolver
         double Voltage(string node)=>node==reference?0:solution![Index(node)];
         for(var iteration=0;iteration<MaximumIterations;iteration++)
         {
-            var a=new double[size,size];var right=new double[size];
+            // Source voltage and diode offset affect only the right-hand side.
+            var key = cache is null ? "" : reference + "|" + string.Join("|", branches.Select(b =>
+                FormattableString.Invariant($"{b.A}:{b.B}:{b.Kind}:{(b.Kind == "V" ? 0 : b.Value):R}:{active.GetValueOrDefault(b.Name)}")));
+            double[,]? a = null;
+            var stampMatrix = cache?.TryGet(key, out a) != true;
+            a ??= new double[size,size];
+            var right=new double[size];
             foreach(var branch in branches)
             {
                 var x=Index(branch.A);var y=Index(branch.B);
@@ -24,16 +31,18 @@ internal static class DcIslandSolver
                 {
                     if(branch.A==branch.B){if(branch.Value!=0)return(null,[],"КЗ идеального источника: вырожденная/несовместимая система.");continue;}
                     var index=nodes.Length+Array.IndexOf(sources,branch);
-                    if(x>=0){a[x,index]+=1;a[index,x]+=1;}if(y>=0){a[y,index]-=1;a[index,y]-=1;}right[index]=branch.Value;
+                    if(stampMatrix){if(x>=0){a[x,index]+=1;a[index,x]+=1;}if(y>=0){a[y,index]-=1;a[index,y]-=1;}}
+                    right[index]=branch.Value;
                 }
-                else if(branch.Kind=="R" || branch.Kind=="LED" && active[branch.Name])
+                else if(branch.Kind is "R" or "TH" || branch.Kind=="LED" && active[branch.Name])
                 {
                     var g=1/branch.Value;
                     if(!double.IsFinite(g)||g<=0)return(null,[],"Некорректное сопротивление ветви.");
-                    if(x>=0)a[x,x]+=g;if(y>=0)a[y,y]+=g;if(x>=0&&y>=0){a[x,y]-=g;a[y,x]-=g;}
-                    if(branch.Kind=="LED"){if(x>=0)right[x]+=branch.Vf*g;if(y>=0)right[y]-=branch.Vf*g;}
+                    if(stampMatrix){if(x>=0)a[x,x]+=g;if(y>=0)a[y,y]+=g;if(x>=0&&y>=0){a[x,y]-=g;a[y,x]-=g;}}
+                    if(branch.Kind is "LED" or "TH"){if(x>=0)right[x]+=branch.Vf*g;if(y>=0)right[y]-=branch.Vf*g;}
                 }
             }
+            if(stampMatrix)cache?.Add(key,a);
             solution=LinearSystemSolver.Solve(a,right);
             if(solution is null)return(null,[],"Вырожденная матрица: плавающий узел или несовместимые идеальные источники.");
             var changed=false;
@@ -49,11 +58,11 @@ internal static class DcIslandSolver
             {
                 var drop=Voltage(b.A)-Voltage(b.B);
                 double? current=b.Kind=="V" ? b.A==b.B ? null : solution[nodes.Length+Array.IndexOf(sources,b)]
-                    : b.Kind=="LED" ? active[b.Name] ? Math.Max(0,(drop-b.Vf)/b.Value):0 : drop/b.Value;
+                    : b.Kind=="LED" ? active[b.Name] ? Math.Max(0,(drop-b.Vf)/b.Value):0 : (drop-(b.Kind=="TH"?b.Vf:0))/b.Value;
                 return new DcBranchResult(b.ComponentId,b.Name,b.A,b.B,drop,current,drop*current);
             }).ToList();
             return(voltages,results,null);
         }
-        return(null,[],"Кусочно-линейная LED-модель не сошлась за допустимое число итераций.");
+        return(null,[],IterationLimitMessage);
     }
 }

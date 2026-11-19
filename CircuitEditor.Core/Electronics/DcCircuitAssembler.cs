@@ -7,7 +7,8 @@ namespace CircuitEditor.Core.Electronics;
 public static class DcCircuitAssembler
 {
     /// <summary>Собирает линейные и кусочно-линейные ветви из снимка проекта.</summary>
-    public static DcAssembly Assemble(CircuitProject project,Netlist.Netlist nets,ElectricalCatalog catalog)
+    public static DcAssembly Assemble(CircuitProject project,Netlist.Netlist nets,ElectricalCatalog catalog,
+        IReadOnlySet<Guid>? modeledComponents = null)
     {
         var branches=new List<DcBranch>();var unsupported=new List<Guid>();var messages=new List<string>();var invalid=false;
         foreach(var c in project.Circuit.Components)
@@ -52,7 +53,7 @@ public static class DcCircuitAssembler
                 Add("","1","2","R",resistance);
             }
             else if(model=="switch")messages.Add(c.Reference+": идеальные замкнутые контакты входят в узлы; отдельный ток контакта не определяется после объединения.");
-            else if(model!="source"){unsupported.Add(c.Id);messages.Add(c.Reference+" · "+c.Definition.Name+": не поддерживается и исключён из DC-расчёта.");}
+            else if(model!="source" && modeledComponents?.Contains(c.Id) != true){unsupported.Add(c.Id);messages.Add(c.Reference+" · "+c.Definition.Name+": не поддерживается и исключён из DC-расчёта.");}
         }
         foreach(var s in new ErcContext(project,nets,catalog).Sources)
             if(nets.Find(s.ComponentId,s.Positive.PinId) is { } a && nets.Find(s.ComponentId,s.Negative.PinId) is { } b)
