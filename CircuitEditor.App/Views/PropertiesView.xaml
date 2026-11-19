@@ -7,10 +7,10 @@
  xmlns:models="clr-namespace:CircuitEditor.Core.Models;assembly=CircuitEditor.Core">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="14">
-            <TextBlock Text="СВОЙСТВА" FontWeight="Bold"/>
-            <TextBlock Text="{Binding SelectedCount, StringFormat=На холсте выбрано: {0}}" Style="{StaticResource MutedText}" Margin="0,8,0,18"/>
-            <TextBlock Text="Выберите компонент на холсте. При мультивыборе редактируется последний выбранный в порядке схемы."
-                       TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" FontSize="10" LineHeight="18">
+
+            <TextBlock Text="{Binding SelectedCount, StringFormat=Выбрано: {0}}" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,0,0,12"/>
+            <TextBlock Text="Выберите деталь или перемычку на холсте."
+                       TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" FontSize="12" LineHeight="19">
                 <TextBlock.Style><Style TargetType="TextBlock">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}"><Setter Property="Visibility" Value="Visible"/></DataTrigger><DataTrigger Binding="{Binding Wiring.HasSelection}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
@@ -32,7 +32,7 @@
                     <Setter Property="Visibility" Value="Visible"/>
                     <Style.Triggers><DataTrigger Binding="{Binding SelectedComponent}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger></Style.Triggers>
                 </Style></StackPanel.Style>
-                <TextBlock Text="{Binding SelectedComponent.Reference}" Foreground="{DynamicResource AccentBrush}" FontSize="20" FontWeight="Bold"/>
+                <TextBlock Text="{Binding SelectedComponent.Reference}" FontFamily="{StaticResource MonoFont}" Foreground="{DynamicResource AccentBrush}" FontSize="22" FontWeight="SemiBold"/>
                 <TextBlock Text="{Binding SelectedComponent.Name}" Margin="0,6,0,12" TextWrapping="Wrap"/>
                 <TextBlock Text="{Binding SelectedComponent.Voltage, StringFormat=Питание: {0} В}">
                     <TextBlock.Style><Style TargetType="TextBlock" BasedOn="{StaticResource MutedText}">
@@ -112,7 +112,7 @@
                     </Style></Button.Style>
                 </Button>
                 <TextBlock Text="{Binding PropertyError}" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap" FontSize="10"/>
-                <TextBlock Text="{Binding SelectedComponent.Description}" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" FontSize="10" LineHeight="18" Margin="0,16,0,16"/>
+                <TextBlock Text="{Binding SelectedComponent.Description}" TextWrapping="Wrap" Foreground="{DynamicResource MutedBrush}" FontSize="12" LineHeight="19" Margin="0,16,0,16"/>
                 <TextBlock Text="ВЫВОДЫ" Style="{StaticResource MutedText}"/>
                 <TextBlock Text="{Binding SelectedComponent.PinSummary}" FontSize="9" TextWrapping="Wrap" LineHeight="17" Margin="0,8,0,0"/>
             </StackPanel>

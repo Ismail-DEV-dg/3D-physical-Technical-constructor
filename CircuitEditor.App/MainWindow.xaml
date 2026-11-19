@@ -11,7 +11,7 @@
  Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextBrush}"
  FontFamily="{StaticResource UiFont}" FontSize="12">
     <shell:WindowChrome.WindowChrome>
-        <shell:WindowChrome CaptionHeight="56" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
+        <shell:WindowChrome CaptionHeight="46" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </shell:WindowChrome.WindowChrome>
 
 
@@ -19,33 +19,21 @@
             Margin="{Binding Padding, RelativeSource={RelativeSource AncestorType=Window}}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="48"/><RowDefinition Height="38"/><RowDefinition Height="64"/>
-                <RowDefinition Height="*"/><RowDefinition Height="38"/>
+                <RowDefinition Height="44"/><RowDefinition Height="60"/>
+                <RowDefinition Height="*"/><RowDefinition Height="32"/>
             </Grid.RowDefinitions>
-            <Grid Margin="14,0,8,0">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Path Data="M 2,8 L 8,8 8,2 22,2 22,8 28,8 M 2,20 L 8,20 8,26 22,26 22,20 28,20 M 8,8 L 22,8 22,20 8,20 Z"
-                          Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.6" Width="30" Height="30" Stretch="Uniform" Margin="0,0,12,0"/>
-                    <TextBlock Text="CIRCUIT" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
-                    <TextBlock Text=" / EDITOR" Foreground="{DynamicResource AccentBrush}" FontSize="18" VerticalAlignment="Center"/>
-                    <Border Background="{DynamicResource RaisedBrush}" CornerRadius="4" Margin="18,0,0,0" Padding="8,4" VerticalAlignment="Center">
-                        <TextBlock Text="ARDUINO + ESP32" Style="{StaticResource MutedText}"/>
-                    </Border>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
-                    <Button Style="{StaticResource CaptionButton}" Command="{Binding MinimizeCommand}" ToolTip="Свернуть" AutomationProperties.Name="Свернуть">
-                        <Path Data="M 0,4 L 10,4" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.3"/>
-                    </Button>
-                    <Button Style="{StaticResource CaptionButton}" Command="{Binding ToggleMaximizeCommand}" ToolTip="Развернуть / восстановить" AutomationProperties.Name="Развернуть">
-                        <Path Data="M 0,0 L 10,0 10,9 0,9 Z" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.2"/>
-                    </Button>
-                    <Button Style="{StaticResource CaptionButton}" Command="{Binding CloseCommand}" ToolTip="Закрыть" AutomationProperties.Name="Закрыть">
-                        <Path Data="M 0,0 L 10,10 M 0,10 L 10,0" Stroke="{DynamicResource RedBrush}" StrokeThickness="1.4"/>
-                    </Button>
-                </StackPanel>
-            </Grid>
-            <Border Grid.Row="1" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1" Margin="10,0">
-                <Menu VerticalAlignment="Center">
+            <Border Background="{DynamicResource ChromeBrush}" CornerRadius="8,8,0,0"
+                    BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1">
+                <Grid Margin="12,0,5,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,22,0">
+                        <Border Background="{DynamicResource ActiveSurfaceBrush}" CornerRadius="7" Width="30" Height="30" Margin="0,0,9,0">
+                            <Path Data="M 4,8 L 8,8 8,4 15,4 15,12 20,12 M 4,16 L 11,16 11,9 19,9 M 8,4 A 1.5,1.5 0 1 0 8,1"
+                                  Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.5" Width="18" Height="18" Stretch="Uniform"/>
+                        </Border>
+                        <TextBlock Text="Circuit Editor" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <Menu Grid.Column="1" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
                     <MenuItem Header="_Файл">
                         <MenuItem Header="Новый проект" Command="{Binding Session.NewCommand}" ToolTip="{input:ShortcutHint New}"/>
                         <MenuItem Header="Открыть…" Command="{Binding Session.OpenCommand}" ToolTip="{input:ShortcutHint Open}"/>
@@ -103,25 +91,54 @@
                         <MenuItem Header="О программе" Command="{Binding AboutCommand}"/>
                     </MenuItem>
                 </Menu>
-            </Border>
-            <Grid Grid.Row="2" Margin="14,10">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Width="3" Height="30" Background="{DynamicResource AccentBrush}" Margin="0,0,12,0"/>
-                    <StackPanel><TextBlock Text="{Binding Session.Title}" FontSize="12" FontWeight="Bold"/><TextBlock Text="Локальное рабочее пространство" Style="{StaticResource MutedText}" Margin="0,4,0,0"/></StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Button Style="{StaticResource CaptionButton}" Command="{Binding MinimizeCommand}" ToolTip="Свернуть" AutomationProperties.Name="Свернуть">
+                        <Path Data="M 0,4 L 10,4" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.3"/>
+                    </Button>
+                    <Button Style="{StaticResource CaptionButton}" Command="{Binding ToggleMaximizeCommand}" ToolTip="Развернуть / восстановить" AutomationProperties.Name="Развернуть">
+                        <Path Data="M 0,0 L 10,0 10,9 0,9 Z" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.2"/>
+                    </Button>
+                    <Button Style="{StaticResource CaptionButton}" Command="{Binding CloseCommand}" ToolTip="Закрыть" AutomationProperties.Name="Закрыть">
+                        <Path Data="M 0,0 L 10,10 M 0,10 L 10,0" Stroke="{DynamicResource RedBrush}" StrokeThickness="1.4"/>
+                    </Button>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBlock Text="ОФОРМЛЕНИЕ" Style="{StaticResource MutedText}" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                    <ComboBox Width="170" SelectedValuePath="Tag" SelectedValue="{Binding SelectedTheme, Mode=TwoWay}" AutomationProperties.Name="Тема интерфейса">
+                </Grid>
+            </Border>
+            <Border Grid.Row="1" Background="{DynamicResource TitleSurfaceBrush}" CornerRadius="10" Margin="0,3,0,7" Padding="14,0">
+              <Grid>
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Path Stroke="{DynamicResource PurpleBrush}" StrokeThickness="1.45" Data="M 1,1 H 9 L 14,6 V 17 H 1 Z M 9,1 V 6 H 14 M 4,9 H 11 M 4,12 H 11"
+                          Width="14" Height="17" Stretch="Uniform" Margin="0,0,9,0"/>
+                    <TextBlock Text="{Binding Session.Title}" ToolTip="{Binding Session.Title}" TextTrimming="CharacterEllipsis"
+                               MaxWidth="390" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="Открыть" Command="{Binding Session.OpenCommand}" ToolTip="{input:ShortcutHint Open}" Style="{StaticResource QuietAction}" Margin="0,0,4,0"/>
+                    <Button Content="Сохранить" Command="{Binding Session.SaveCommand}" ToolTip="{input:ShortcutHint Save}" Style="{StaticResource PrimaryAction}" Margin="0,0,4,0"/>
+                    <Button Content="Вписать" Command="{Binding FitViewCommand}" ToolTip="{input:ShortcutHint Fit}">
+                        <Button.Style><Style TargetType="Button" BasedOn="{StaticResource QuietAction}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedWorkspace.Kind}" Value="{x:Static vm:WorkspaceKind.Mockup}"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
+                                <DataTrigger Binding="{Binding SelectedWorkspace.Kind}" Value="{x:Static vm:WorkspaceKind.Schematic}"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
+                            </Style.Triggers>
+                        </Style></Button.Style>
+                    </Button>
+                    <Border Background="{DynamicResource LineBrush}" Width="1" Margin="10,6"/>
+                    <ComboBox Width="122" SelectedValuePath="Tag" SelectedValue="{Binding SelectedTheme, Mode=TwoWay}" AutomationProperties.Name="Тема интерфейса">
                         <ComboBoxItem Content="Neon Dark" Tag="{x:Static services:ThemeKind.NeonDark}"/>
                         <ComboBoxItem Content="Light Tech" Tag="{x:Static services:ThemeKind.LightTech}"/>
                     </ComboBox>
-                    <Button Command="{Binding ToggleThemeCommand}" Margin="10,0,0,0" ToolTip="Переключить тему" AutomationProperties.Name="Переключить тему" Padding="10">
-                        <Path Data="M 8,0 L 8,3 M 8,13 L 8,16 M 0,8 L 3,8 M 13,8 L 16,8 M 2,2 L 4,4 M 12,12 L 14,14 M 2,14 L 4,12 M 12,4 L 14,2 M 11,8 A 3,3 0 1 1 5,8 A 3,3 0 1 1 11,8" Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.2" Width="16" Height="16"/>
+                    <Button Command="{Binding ToggleThemeCommand}" Margin="5,0,0,0" Style="{StaticResource QuietAction}" ToolTip="Переключить тему" AutomationProperties.Name="Переключить тему">
+                        <Path Data="M 8,0 L 8,3 M 8,13 L 8,16 M 0,8 L 3,8 M 13,8 L 16,8 M 2,2 L 4,4 M 12,12 L 14,14 M 2,14 L 4,12 M 12,4 L 14,2 M 11,8 A 3,3 0 1 1 5,8 A 3,3 0 1 1 11,8"
+                              Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.2" Width="15" Height="15"/>
                     </Button>
                 </StackPanel>
             </Grid>
-            <views:EditorLayoutView x:Name="EditorLayout" Grid.Row="3" Margin="10,0"/>
-            <Grid Grid.Row="4" Margin="18,8,18,0">
+            </Border>
+            <views:EditorLayoutView x:Name="EditorLayout" Grid.Row="2" Margin="0"/>
+            <Grid Grid.Row="3" Margin="8,4,8,0">
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Ellipse Width="5" Height="5" Fill="{DynamicResource GreenBrush}" Margin="0,0,8,0"/>

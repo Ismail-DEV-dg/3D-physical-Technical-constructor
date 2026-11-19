@@ -4,9 +4,10 @@
         <ResourceDictionary Source="InputStyles.xaml"/>
         <ResourceDictionary Source="DockStyles.xaml"/>
         <ResourceDictionary Source="CodeStyles.xaml"/>
+        <ResourceDictionary Source="WorkspaceStyles.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 
-    <FontFamily x:Key="UiFont">pack://application:,,,/CircuitEditor.App;component/Resources/Fonts/#JetBrains Mono</FontFamily>
+    <FontFamily x:Key="UiFont">Segoe UI</FontFamily>
     <FontFamily x:Key="MonoFont">pack://application:,,,/CircuitEditor.App;component/Resources/Fonts/#JetBrains Mono</FontFamily>
     <Style TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
@@ -22,22 +23,22 @@
         <Setter Property="Background" Value="{DynamicResource PanelBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource LineBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="10"/>
+        <Setter Property="CornerRadius" Value="12"/>
     </Style>
     <Style x:Key="InteractiveFrame" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource RaisedBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource LineBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="5"/>
+        <Setter Property="CornerRadius" Value="7"/>
         <Setter Property="Effect">
-            <Setter.Value><DropShadowEffect Color="{DynamicResource AccentColor}" BlurRadius="12" ShadowDepth="0" Opacity="0"/></Setter.Value>
+            <Setter.Value><DropShadowEffect Color="{DynamicResource AccentColor}" BlurRadius="8" ShadowDepth="0" Opacity="0"/></Setter.Value>
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
                 <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
                 <Trigger.EnterActions><BeginStoryboard><Storyboard>
-                    <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)" To="0.45" Duration="0:0:0.16"/>
+                    <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)" To="0.22" Duration="0:0:0.16"/>
                 </Storyboard></BeginStoryboard></Trigger.EnterActions>
                 <Trigger.ExitActions><BeginStoryboard><Storyboard>
                     <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).(DropShadowEffect.Opacity)" To="0" Duration="0:0:0.22"/>
@@ -85,7 +86,8 @@
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TextBox">
             <Border Style="{StaticResource InteractiveFrame}" Padding="{TemplateBinding Padding}">
-                <ScrollViewer x:Name="PART_ContentHost"/>
+                <ScrollViewer x:Name="PART_ContentHost" HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
+                              VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
             </Border>
         </ControlTemplate></Setter.Value></Setter>
     </Style>
@@ -117,9 +119,9 @@
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
         <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ComboBox">
             <Grid>
-                <ToggleButton Focusable="False" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
-                    <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="22"/></Grid.ColumnDefinitions>
-                        <ContentPresenter Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" Margin="0,0,12,0"/>
+                <ToggleButton Focusable="False" Style="{DynamicResource ComboSelectionToggle}" IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
+                    <Grid><Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="13"/></Grid.ColumnDefinitions>
+                        <ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" VerticalAlignment="Center" Margin="0,0,3,0"/>
                         <Path Grid.Column="1" Data="M 0,0 L 4,4 8,0" Stroke="{DynamicResource AccentBrush}" VerticalAlignment="Center"/>
                     </Grid>
                 </ToggleButton>
@@ -230,6 +232,8 @@
                 <Trigger Property="HasItems" Value="True"><Setter TargetName="Arrow" Property="Visibility" Value="Visible"/></Trigger>
                 <Trigger Property="Role" Value="TopLevelHeader">
                     <Setter TargetName="PART_Popup" Property="Placement" Value="Bottom"/>
+                    <Setter TargetName="Frame" Property="Background" Value="Transparent"/>
+                    <Setter TargetName="Frame" Property="BorderBrush" Value="Transparent"/>
                     <Setter TargetName="Arrow" Property="Visibility" Value="Collapsed"/>
                 </Trigger>
                 <Trigger Property="IsHighlighted" Value="True"><Setter TargetName="Frame" Property="Background" Value="{DynamicResource HoverBrush}"/><Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/></Trigger>
@@ -273,9 +277,6 @@
   <Style.Triggers><DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource Self}}" Value="True"><Setter Property="Foreground" Value="{DynamicResource AccentBrush}"/><Setter Property="FontWeight" Value="Bold"/></DataTrigger></Style.Triggers>
  </Style>
  <Style x:Key="PaneTabs" TargetType="TabControl" BasedOn="{StaticResource {x:Type TabControl}}">
-  <Setter Property="ItemContainerStyle"><Setter.Value><Style TargetType="TabItem" BasedOn="{StaticResource {x:Type TabItem}}">
-   <Setter Property="Padding" Value="7,7"/><Setter Property="FontSize" Value="10"/>
-  </Style></Setter.Value></Setter>
   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TabControl">
    <Grid KeyboardNavigation.TabNavigation="Local"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
     <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1"><ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Focusable="False"><StackPanel Orientation="Horizontal" IsItemsHost="True" Margin="4,5,0,0"/></ScrollViewer></Border>

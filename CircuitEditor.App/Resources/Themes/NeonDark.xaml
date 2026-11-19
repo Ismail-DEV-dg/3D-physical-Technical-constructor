@@ -2,17 +2,17 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Color x:Key="BackgroundColor">#0A0E17</Color>
     <SolidColorBrush x:Key="BackgroundBrush" Color="{DynamicResource BackgroundColor}"/>
-    <Color x:Key="PanelColor">#E6111928</Color>
+    <Color x:Key="PanelColor">#F2141829</Color>
     <SolidColorBrush x:Key="PanelBrush" Color="{DynamicResource PanelColor}"/>
-    <Color x:Key="RaisedColor">#182236</Color>
+    <Color x:Key="RaisedColor">#20253B</Color>
     <SolidColorBrush x:Key="RaisedBrush" Color="{DynamicResource RaisedColor}"/>
-    <Color x:Key="HoverColor">#22324B</Color>
+    <Color x:Key="HoverColor">#2B3450</Color>
     <SolidColorBrush x:Key="HoverBrush" Color="{DynamicResource HoverColor}"/>
     <Color x:Key="TextColor">#E7F0FC</Color>
     <SolidColorBrush x:Key="TextBrush" Color="{DynamicResource TextColor}"/>
     <Color x:Key="MutedColor">#8D9DB7</Color>
     <SolidColorBrush x:Key="MutedBrush" Color="{DynamicResource MutedColor}"/>
-    <Color x:Key="LineColor">#30435E</Color>
+    <Color x:Key="LineColor">#30354F</Color>
     <SolidColorBrush x:Key="LineBrush" Color="{DynamicResource LineColor}"/>
     <Color x:Key="AccentColor">#00E5FF</Color>
     <SolidColorBrush x:Key="AccentBrush" Color="{DynamicResource AccentColor}"/>
@@ -24,4 +24,26 @@
     <SolidColorBrush x:Key="RedBrush" Color="{DynamicResource RedColor}"/>
     <Color x:Key="GridColor">#19283D</Color>
     <SolidColorBrush x:Key="GridBrush" Color="{DynamicResource GridColor}"/>
+    <SolidColorBrush x:Key="ChromeBrush" Color="#101322"/>
+    <SolidColorBrush x:Key="ActiveSurfaceBrush" Color="#18333E"/>
+    <DrawingBrush x:Key="CanvasFieldBrush" TileMode="Tile" ViewportUnits="Absolute" ViewboxUnits="Absolute"
+                  Viewport="0,0,18,18" Viewbox="0,0,18,18" Stretch="None">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="#0E1321" Geometry="M 0,0 L 18,0 18,18 0,18 Z"/>
+                <GeometryDrawing Brush="#344161"><GeometryDrawing.Geometry>
+                    <EllipseGeometry Center="1,1" RadiusX=".72" RadiusY=".72"/>
+                </GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    <SolidColorBrush x:Key="WorkSurfaceBrush" Color="#0E1321"/>
+    <SolidColorBrush x:Key="ToolRailBrush" Color="#151A2B"/>
+    <SolidColorBrush x:Key="DividerGripBrush" Color="#242D43"/>
+    <SolidColorBrush x:Key="ActionFillBrush" Color="#B9A3FF"/>
+    <SolidColorBrush x:Key="ActionInkBrush" Color="#171022"/>
+    <LinearGradientBrush x:Key="TitleSurfaceBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#1B1833" Offset="0"/>
+        <GradientStop Color="#101829" Offset="1"/>
+    </LinearGradientBrush>
 </ResourceDictionary>

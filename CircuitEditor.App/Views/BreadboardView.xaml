@@ -6,7 +6,7 @@
  xmlns:input="clr-namespace:CircuitEditor.App.Interaction">
     <Grid>
         <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-        <WrapPanel Margin="12,8" IsEnabled="{Binding Project.CanEdit}">
+        <WrapPanel Margin="9,6,9,4" IsEnabled="{Binding Project.CanEdit}">
             <Button Content="↶" Command="{Binding Project.UndoCommand}" ToolTip="Отменить · Ctrl+Z" Margin="0,0,6,0"/>
             <Button Content="↷" Command="{Binding Project.RedoCommand}" ToolTip="Повторить · Ctrl+Y" Margin="0,0,6,0"/>
             <CheckBox Content="Перемычка" IsChecked="{Binding Project.Wiring.IsWiring,Mode=TwoWay}" ToolTip="Перемычки · W — включить/выключить · V / Esc — перемещение" Margin="0,0,10,0" VerticalAlignment="Center"/>
@@ -24,10 +24,10 @@
         </WrapPanel>
         <views:SimulationToolbarView Grid.Row="1" DataContext="{Binding Simulation}" />
         <controls:BreadboardSurface Grid.Row="2" Simulation="{Binding Simulation.State}" ShowVoltage="{Binding Simulation.ShowVoltage}" ShowCurrent="{Binding Simulation.ShowCurrent}" Scene="{Binding}" Revision="{Binding Revision}"
-            Background="{DynamicResource BackgroundBrush}" AllowDrop="{Binding Project.CanEdit}" input:CanvasInputBehavior.Command="{Binding InputCommand}"
+            Background="{DynamicResource CanvasFieldBrush}" AllowDrop="{Binding Project.CanEdit}" input:CanvasInputBehavior.Command="{Binding InputCommand}"
             AutomationProperties.Name="Макет электрической цепи"/>
         <views:InstrumentDeckView Grid.Row="2" DataContext="{Binding Simulation.Instruments}"/>
-        <Border Grid.Row="3" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="12,8">
+        <Border Grid.Row="3" Background="{DynamicResource ChromeBrush}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,1,0,0" Padding="12,8">
             <TextBlock Text="Breadboard: тяните за край, R — поворот · Esc — перемещение · Перемычка: два клика · Изгиб: выберите провод и потяните линию · Концы/узлы: перетаскивание · Esc: отмена"
                 Style="{StaticResource MutedText}" TextWrapping="Wrap"/>
         </Border>

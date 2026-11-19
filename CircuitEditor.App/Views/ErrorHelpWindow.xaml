@@ -3,7 +3,16 @@
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework" xmlns:views="clr-namespace:CircuitEditor.App.Views"
  Title="{Binding Heading}" Width="1060" Height="750" MinWidth="760" MinHeight="520" WindowStartupLocation="CenterOwner"
  Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextBrush}" FontFamily="{StaticResource UiFont}">
- <Window.Resources><BooleanToVisibilityConverter x:Key="VisibleIf"/></Window.Resources>
+  <Window.Resources>
+  <BooleanToVisibilityConverter x:Key="VisibleIf"/>
+  <Style x:Key="GuideTile" TargetType="Button" BasedOn="{StaticResource QuietAction}">
+   <Setter Property="Background" Value="{DynamicResource WorkSurfaceBrush}"/>
+   <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+   <Setter Property="Padding" Value="16,13"/>
+   <Setter Property="Margin" Value="0,0,9,9"/>
+   <Setter Property="MinHeight" Value="84"/>
+  </Style>
+ </Window.Resources>
  <shell:WindowChrome.WindowChrome><shell:WindowChrome CaptionHeight="48" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></shell:WindowChrome.WindowChrome>
  <Window.InputBindings><KeyBinding Key="Escape" Command="{Binding BackCommand}"/><KeyBinding Key="F" Modifiers="Control" Command="{Binding FocusSearchCommand}"/></Window.InputBindings>
  <Border Style="{StaticResource Panel}" Padding="18"><Grid>
@@ -19,13 +28,40 @@
    <TextBlock Text="{Binding Heading}" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
   </DockPanel>
   <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="{Binding IsHome, Converter={StaticResource VisibleIf}}">
-   <StackPanel Margin="0,14,12,0" MaxWidth="620" HorizontalAlignment="Left">
-    <Button Content="Ошибки и способы исправления" Command="{Binding OpenSectionCommand}" CommandParameter="errors" Padding="16,12" Margin="0,0,0,8"/>
-    <Button Content="Arduino Nano · подключение и скетчи" Command="{Binding OpenSectionCommand}" CommandParameter="nano" Padding="16,12" Margin="0,0,0,8"/>
-    <Button Content="Arduino Uno · подключение и скетчи" Command="{Binding OpenSectionCommand}" CommandParameter="uno" Padding="16,12" Margin="0,0,0,8"/>
-    <Button Content="ESP32 DevKit · подключение и скетчи" Command="{Binding OpenSectionCommand}" CommandParameter="esp32" Padding="16,12" Margin="0,0,0,8"/>
-    <Button Content="Руководство по Circuit Editor" Command="{Binding OpenSectionCommand}" CommandParameter="application" Padding="16,12"/>
-    <TextBlock Text="{Binding LibraryError}" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap" Margin="0,12,0,0"/>
+   <StackPanel Margin="0,18,5,0">
+    <UniformGrid Columns="2">
+     <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="errors">
+      <StackPanel>
+       <TextBlock Text="Ошибки и исправления" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
+       <TextBlock Text="Причины сообщений и шаги для проверки соединений." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+      </StackPanel>
+     </Button>
+     <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="application">
+      <StackPanel>
+       <TextBlock Text="Руководство по редактору" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
+       <TextBlock Text="Макет, перемычки, симуляция, приборы и экспорт." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+      </StackPanel>
+     </Button>
+     <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="nano">
+      <StackPanel>
+       <TextBlock Text="Arduino Nano" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
+       <TextBlock Text="Монтаж на breadboard и скетчи для 27 деталей." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+      </StackPanel>
+     </Button>
+     <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="uno">
+      <StackPanel>
+       <TextBlock Text="Arduino Uno" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
+       <TextBlock Text="Подключение деталей, номиналы и примеры скетчей." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+      </StackPanel>
+     </Button>
+     <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="esp32">
+      <StackPanel>
+       <TextBlock Text="ESP32 DevKit" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
+       <TextBlock Text="Подключение деталей с учётом логики 3,3 В." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+      </StackPanel>
+     </Button>
+    </UniformGrid>
+    <TextBlock Text="{Binding LibraryError}" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap"/>
    </StackPanel>
   </ScrollViewer>
   <views:GuideBrowserView Grid.Row="1" x:Name="GuideBrowser" DataContext="{Binding Guide}"
