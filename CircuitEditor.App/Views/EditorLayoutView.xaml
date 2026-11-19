@@ -107,11 +107,7 @@
   </Grid>
   <GridSplitter Grid.Column="3" Width="6" HorizontalAlignment="Stretch" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext" IsEnabled="{Binding Panels.Inspector.IsExpanded}" ToolTip="Изменить ширину свойств и расчёта"/>
   <controls:DockPane Grid.Column="4" x:Name="InspectorPane" Pane="{Binding Panels.Inspector}">
-   <TabControl SelectedIndex="{Binding Analysis.InspectorTabIndex, Mode=TwoWay}" Margin="4" Style="{StaticResource PaneTabs}">
-    <TabItem Header="Свойства"><views:PropertiesView DataContext="{Binding Project}"/></TabItem>
-    <TabItem Header="Проверка"><views:AnalysisIssuesView DataContext="{Binding Analysis}"/></TabItem>
-    <TabItem Header="Расчёт"><views:CalculationResultsView DataContext="{Binding Analysis.Results}"/></TabItem>
-   </TabControl>
+   <views:PropertiesView DataContext="{Binding Project}"/>
   </controls:DockPane>
  </Grid>
 </UserControl>

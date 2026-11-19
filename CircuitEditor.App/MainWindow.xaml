@@ -80,7 +80,7 @@
                         <Separator/>
                         <MenuItem Header="Панели">
                             <MenuItem Header="Компоненты" Command="{Binding Panels.Components.ShowCommand}"/>
-                            <MenuItem Header="Свойства и расчёт" Command="{Binding Panels.Inspector.ShowCommand}"/>
+                            <MenuItem Header="Свойства" Command="{Binding Panels.Inspector.ShowCommand}"/>
                             <MenuItem Header="Нижняя панель" Command="{Binding Panels.Analysis.ShowCommand}"/>
                             <Separator/><MenuItem Header="Восстановить расположение панелей" Command="{Binding Panels.ResetCommand}"/>
                         </MenuItem>
@@ -96,6 +96,7 @@
                         <MenuItem Header="Запустить симуляцию" Command="{Binding ExplainCommand}" CommandParameter="Симуляция"/>
                     </MenuItem>
                     <MenuItem Header="_Справка">
+                        <MenuItem Header="Ошибки и способы исправления…" Command="{Binding ErrorHelpCommand}"/>
                         <MenuItem Header="Горячие клавиши…" InputGestureText="F1" Command="{Binding ShortcutHelpCommand}"/>
                         <MenuItem Header="Показать все компоненты" Command="{Binding ShowAllComponentsCommand}"/>
                         <MenuItem Header="О программе" Command="{Binding AboutCommand}"/>

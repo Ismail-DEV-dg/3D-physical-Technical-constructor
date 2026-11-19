@@ -26,6 +26,10 @@ public static class Program
         registrations.AddSingleton<IBreadboardRepository, JsonBreadboardRepository>();
         registrations.AddSingleton<IFootprintRepository, JsonFootprintRepository>();
         registrations.AddSingleton<IErrorLogRepository, ErrorLogRepository>();
+        registrations.AddSingleton<IClipboardService, ClipboardService>();
+        registrations.AddSingleton<IErrorHelpRepository, JsonErrorHelpRepository>();
+        registrations.AddSingleton<IErrorDocumentationService, ErrorDocumentationService>();
+        registrations.AddSingleton<IErrorHelpService, ErrorHelpService>();
         registrations.AddSingleton<IElectricalLibraryRepository, JsonElectricalLibraryRepository>();
         registrations.AddSingleton<CircuitEditor.Core.Netlist.INetlistBuilder, CircuitEditor.Core.Netlist.NetlistBuilder>();
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcService, CircuitEditor.Core.Validation.ErcService>();
@@ -37,6 +41,7 @@ public static class Program
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.RequiredPinRule>();
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.I2cAddressRule>();
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.LedResistorRule>();
+        registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.LedShortRule>();
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.PinDirectionRule>();
         registrations.AddSingleton<IComponentInsertionService, ComponentInsertionService>();
         registrations.AddSingleton<ITextMeasurer, WpfTextMeasurer>();

@@ -46,16 +46,16 @@ public sealed class PanelAndResultsViewModelTests
         vm.Invalidate();Assert.Empty(vm.Entries);Assert.True(vm.IsStale);Assert.False(vm.HasEntries);
     }
     [Fact]
-    public void CalculationAndManualCheckRestoreInspectorWithoutAutomaticErcStealingFocus()
+    public void CalculationAndManualCheckRestoreToolsWithoutOpeningInspector()
     {
         using var e=new ElectricalTestCircuit();var repo=new JsonElectricalLibraryRepository();var timer=new TestDebounceService();
         using var analysis=new ProjectAnalysisViewModel(e.Project,new ErcService(repo,[]),timer,e.Environment.Navigation,new DcSolver(repo));
         using var main=new MainViewModel(e.Environment.Navigation,new ThemeService(new TestThemeResources()),new TestWindowService(),analysis:analysis);
         main.Panels.Inspector.HideCommand.Execute(null);
         e.Add("resistor");timer.Flush();Assert.False(main.Panels.Inspector.IsVisible);
-        analysis.CalculateCommand.Execute(null);Assert.True(main.Panels.Inspector.IsVisible);Assert.Equal(2,analysis.InspectorTabIndex);
+        analysis.CalculateCommand.Execute(null);Assert.False(main.Panels.Inspector.IsVisible);Assert.True(main.Panels.Analysis.IsVisible);Assert.Equal(1,main.Panels.ToolTabIndex);
         main.Panels.Inspector.HideCommand.Execute(null);
-        analysis.CheckCommand.Execute(null);Assert.True(main.Panels.Inspector.IsExpanded);Assert.Equal(1,analysis.InspectorTabIndex);
+        analysis.CheckCommand.Execute(null);Assert.False(main.Panels.Inspector.IsVisible);Assert.True(main.Panels.Analysis.IsExpanded);Assert.Equal(0,main.Panels.ToolTabIndex);
     }
     [Fact]
     public void PinHideRestoreAndResetPreserveIndependentPanelSizes()
@@ -70,7 +70,7 @@ public sealed class PanelAndResultsViewModelTests
         pane.ShowCommand.Execute(null);Assert.True(pane.IsExpanded);Assert.Equal(280,pane.Size);
         layout.Inspector.Size=410;layout.Analysis.Size=230;layout.Analysis.HideCommand.Execute(null);
         layout.ResetCommand.Execute(null);
-        Assert.Equal(224,pane.Size);Assert.Equal(310,layout.Inspector.Size);Assert.Equal(140,layout.Analysis.Size);
+        Assert.Equal(224,pane.Size);Assert.Equal(280,layout.Inspector.Size);Assert.Equal(280,layout.Analysis.Size);
         Assert.True(layout.Analysis.IsVisible);Assert.True(layout.Analysis.IsPinned);
     }
 }

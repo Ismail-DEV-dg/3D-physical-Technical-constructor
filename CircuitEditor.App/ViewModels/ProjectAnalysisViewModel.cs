@@ -14,8 +14,10 @@ public sealed partial class ProjectAnalysisViewModel : ObservableObject, IDispos
     private readonly Core.Electronics.IDcSolver? solver;
     public CalculationResultsViewModel Results {get;}
     public event EventHandler? InspectRequested;
+    public void ShowResults(){InspectorTabIndex=2;InspectRequested?.Invoke(this,EventArgs.Empty);}
     [ObservableProperty] private int inspectorTabIndex;
     private IReadOnlyList<ErcIssueViewModel> issues=[];
+    public IReadOnlyList<ErcIssueViewModel> AllIssues=>issues;
     public ProjectAnalysisViewModel(ProjectViewModel project,IErcService erc,IDebounceService debounce,INavigationService navigation,Core.Electronics.IDcSolver? solver=null)
     {
         this.solver=solver;Results=new CalculationResultsViewModel(project);
@@ -36,6 +38,7 @@ public sealed partial class ProjectAnalysisViewModel : ObservableObject, IDispos
     {
         project.InvalidatePresentation();
         if(value is null)return;
+        if(navigation.Current.Kind is not (WorkspaceKind.Mockup or WorkspaceKind.Schematic))navigation.Navigate(WorkspaceKind.Mockup);
         var ids=value.Issue.Components.ToHashSet();foreach(var item in project.Components)item.IsSelected=ids.Contains(item.Model.Id);
         var pin=value.Issue.Pins.FirstOrDefault();var component=project.Components.FirstOrDefault(c=>c.Model.Id==(pin?.ComponentId ?? ids.FirstOrDefault()));
         if(component is null)return;

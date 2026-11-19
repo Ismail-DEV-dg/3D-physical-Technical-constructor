@@ -3,7 +3,7 @@ using Microsoft.Win32;
 using CircuitEditor.App.ViewModels;
 using CircuitEditor.App.Views;
 namespace CircuitEditor.App.Services;
-public sealed class DialogService : IDialogService
+public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpService? help=null,IErrorDocumentationService? documentation=null) : IDialogService
 {
     public void ShowError(string message) => Choose("Ошибка", message, "ОК");
     public void ShowWarning(string message) => Choose("Предупреждение", message, "ОК");
@@ -17,11 +17,11 @@ public sealed class DialogService : IDialogService
         var dialog = new SaveFileDialog { Filter = filter, DefaultExt = extension, AddExtension = true, FileName = suggested ?? "Новый проект" };
         return dialog.ShowDialog(Application.Current.MainWindow) == true ? dialog.FileName : null;
     }
-    private static string? Choose(string title, string message, params string[] choices)
+    private string? Choose(string title, string message, params string[] choices)
     {
         string? result = null;
         var window = new ChoiceDialog { Owner = Application.Current.MainWindow };
-        window.DataContext = new ChoiceDialogViewModel(title, message, choices, choice => { result = choice; window.DialogResult = true; });
+        window.DataContext = new ChoiceDialogViewModel(title, message, choices, choice => { result = choice; window.DialogResult = true; },clipboard,help,documentation);
         window.ShowDialog(); return result;
     }
     public SaveDecision ConfirmUnsaved() => Choose("Несохранённый проект", "Сохранить изменения перед продолжением?", "Сохранить", "Не сохранять", "Отмена") switch

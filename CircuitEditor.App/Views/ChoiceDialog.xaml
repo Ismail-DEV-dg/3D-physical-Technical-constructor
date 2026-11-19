@@ -6,7 +6,12 @@
  Foreground="{DynamicResource TextBrush}" FontFamily="{StaticResource UiFont}">
  <Border Style="{StaticResource Panel}" Padding="24"><StackPanel>
  <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="18"/>
- <TextBlock Text="{Binding Message}" Margin="0,18" TextWrapping="Wrap" MaxWidth="500"/>
+ <TextBox Text="{Binding Message,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" MaxWidth="520" MaxHeight="330" VerticalScrollBarVisibility="Auto" Margin="0,18" ToolTip="Можно выделить текст и скопировать Ctrl+C"/>
+ <WrapPanel Margin="0,0,0,12">
+  <WrapPanel.Style><Style TargetType="WrapPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsDiagnostic}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></WrapPanel.Style>
+  <Button Content="Скопировать сообщение" Command="{Binding CopyCommand}" Padding="9,6" Margin="0,0,8,0"/><Button Content="Как исправить…" Command="{Binding HelpCommand}" Padding="9,6"/>
+ </WrapPanel>
+ <TextBlock Text="{Binding Feedback}" FontSize="10" Foreground="{DynamicResource AccentBrush}" Margin="0,0,0,6"/>
  <ItemsControl ItemsSource="{Binding Choices}"><ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
  <ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding}" Margin="0,0,10,0"
  Command="{Binding DataContext.ChooseCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/></DataTemplate></ItemsControl.ItemTemplate>

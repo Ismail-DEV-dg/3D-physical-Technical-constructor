@@ -13,7 +13,9 @@ public static class AutoRegionUpdater
             || matches.Any(m=>!sections.ContainsKey(m.Groups["name"].Value))
             || Regex.Matches(text,@"(?m)^[ \t]*// <auto>[ \t]*\r?$").Count!=sections.Count
             || Regex.Matches(text,@"(?m)^[ \t]*// </auto>[ \t]*\r?$").Count!=sections.Count)
-            throw new ArgumentException("Маркеры <auto> отсутствуют или повреждены. Ручной текст не изменён; нужен каркас с секциями globals/setup/loop.");
+            throw new ArgumentException(text.Contains("<auto>",StringComparison.Ordinal)||text.Contains("</auto>",StringComparison.Ordinal)
+                ? "Повреждены секции <auto>: нужны ровно три пары с section: globals/setup/loop. Ручной код не изменён. Способ исправления — в справке по ошибке."
+                : "Ручной скетч ещё не подготовлен для генератора: нет секций <auto>. Нажмите «Подготовить» во вкладке «Код», затем «Обновить». Ваши инструкции сохранятся.");
         return Regions.Replace(text,m=>
         {
             var body=m.Groups["body"];var newline=m.Value.Contains("\r\n",StringComparison.Ordinal)?"\r\n":"\n";

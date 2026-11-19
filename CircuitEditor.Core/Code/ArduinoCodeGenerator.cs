@@ -8,9 +8,9 @@ public sealed class ArduinoCodeGenerator(ICodeTemplateRepository repository) : I
     public CodeGenerationResult Generate(CircuitProject project, Netlist.Netlist nets, SketchDocument sketch)
     {
         var problems=new List<CodeProblem>();
-        CodeGenerationResult Fail(string error)=>new(false,sketch.Text,null,[new(error)]);
-        var loaded=repository.Load();if(loaded.Value is not { } catalog)return Fail(loaded.Error??"Нет шаблонов.");
-        var context=CodeCircuitContext.Create(project,nets,sketch,catalog,out var error);if(context is null)return Fail(error!);
+        CodeGenerationResult Fail(string error,string code)=>new(false,sketch.Text,null,[new(error,Severity:"Error",Code:code)]);
+        var loaded=repository.Load();if(loaded.Value is not { } catalog)return Fail(loaded.Error??"Нет шаблонов.","FILE_LIBRARY");
+        var context=CodeCircuitContext.Create(project,nets,sketch,catalog,out var error);if(context is null)return Fail(error!,"CODE_BOARD_SELECTION");
         var includes=new SortedSet<string>(StringComparer.Ordinal);var globals=new List<string>();var setup=new List<string>();var loop=new List<string>();
         if(sketch.Board==BoardKind.Esp32&&CppTokenScanner.Scan(sketch.Text).GroupBy(t=>t.Line)
             .Any(g=>g.First().Text!="#"&&g.Any(t=>t.Text=="WiFi")))includes.Add("WiFi.h");
@@ -30,7 +30,7 @@ public sealed class ArduinoCodeGenerator(ICodeTemplateRepository repository) : I
                     : signal.Direction is "output" or "bidirectional" or "i2c" && pin.IsInputOnly ? "GPIO допускает только ввод"
                     : template.RequiresPwm&&!pin.SupportsPwm ? "пин не поддерживает ШИМ для серво"
                     : signal.Direction=="analog"&&!pin.IsAnalog ? "нужен аналоговый вход" : null;
-                if(reason is not null){problems.Add(new($"{component.Reference}, {signal.Pin}: {reason}."));valid=false;continue;}
+                if(reason is not null){problems.Add(new($"{component.Reference}, {signal.Pin}: {reason}.",Code:template.RequiresPwm?"CODE_SERVO_PWM":"CODE_PIN_CONNECTION"));valid=false;continue;}
                 var macro=component.Reference.ToUpperInvariant()+"_"+signal.Suffix;
                 values[signal.Suffix]=macro;definitions.Add($"#define {macro} {pin!.Code}");
                 if(template.IsI2c)values[signal.Suffix+"_NUMBER"]=pin.Code;
@@ -64,6 +64,6 @@ public sealed class ArduinoCodeGenerator(ICodeTemplateRepository repository) : I
             ["globals"]=string.Join("\n",includes.Select(i=>"#include <"+i+">").Concat(globals)),
             ["setup"]=string.Join("\n",setup),["loop"]=string.Join("\n",loop)};
         try{return new(true,AutoRegionUpdater.Update(sketch.Text,sections),CodeCircuitSignature.Compute(project,nets,sketch),problems);}
-        catch(ArgumentException e){return Fail(e.Message);}
+        catch(ArgumentException e){return Fail(e.Message,"CODE_AUTO_MARKERS");}
     }
 }

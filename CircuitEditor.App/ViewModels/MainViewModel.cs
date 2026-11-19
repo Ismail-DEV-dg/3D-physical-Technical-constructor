@@ -12,6 +12,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private readonly IWindowService window;
     private readonly ICalculatorService? calculator;
     private readonly IShortcutGuideService? shortcutGuide;
+    private readonly IErrorHelpService? errorHelp;
 
     [ObservableProperty]
     private string statusMessage = "Готово к работе";
@@ -26,8 +27,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     private readonly IReadOnlyList<PaletteItemViewModel> library;
 
-    public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window, ProjectSessionViewModel? session = null, ExportViewModel? exports = null, ProjectAnalysisViewModel? analysis = null, ICalculatorService? calculator = null, IShortcutGuideService? shortcutGuide = null)
+    public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window, ProjectSessionViewModel? session = null, ExportViewModel? exports = null, ProjectAnalysisViewModel? analysis = null, ICalculatorService? calculator = null, IShortcutGuideService? shortcutGuide = null,
+        IClipboardService? clipboard=null,IErrorDocumentationService? documentation=null,IErrorHelpService? errorHelp=null)
     {
+        this.errorHelp=errorHelp;
         this.shortcutGuide=shortcutGuide;
         this.calculator=calculator;
         Analysis=analysis;
@@ -47,12 +50,16 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         Project.PropertyChanged += OnProjectChanged;
         navigation.PropertyChanged += OnNavigationChanged;
         Code.ShowCodeRequested+=OnShowCode;Code.ToolsRequested+=OnCodeTools;Code.PropertyChanged+=OnCodeChanged;
+        Diagnostics=new(analysis,Code,clipboard,documentation,errorHelp);
         themes.PropertyChanged += OnThemeChanged;
     }
 
     public ProjectAnalysisViewModel? Analysis { get; }
     public PanelLayoutViewModel Panels { get; } = new();
-    private void OnInspectRequested(object? sender, EventArgs e) => Panels.Inspector.ShowCommand.Execute(null);
+    public DiagnosticsViewModel Diagnostics {get;}
+    private void OnInspectRequested(object? sender, EventArgs e) => OnCodeTools(sender,Analysis?.InspectorTabIndex==2?1:0);
+    [RelayCommand] private void ErrorHelp()=>errorHelp?.Show();
+    [RelayCommand] private void ShowProblems(){Diagnostics.Source="Все";Diagnostics.Severity="Все";Diagnostics.Search="";OnCodeTools(this,0);}
     public ProjectSessionViewModel? Session { get; }
     public ExportViewModel? Exports { get; }
     public IReadOnlyList<WorkspaceViewModel> Workspaces => navigation.Workspaces;
@@ -84,7 +91,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public BreadboardViewModel Mockup { get; }
     public ProjectViewModel Project => Schematic.Project;
     public CodeViewModel Code => navigation.Workspaces.OfType<CodeViewModel>().Single();
-    private void OnShowCode(object? sender,EventArgs e){navigation.Navigate(WorkspaceKind.Code);OnCodeTools(sender,2);}
+    private void OnShowCode(object? sender,EventArgs e){navigation.Navigate(WorkspaceKind.Code);OnCodeTools(sender,0);}
     private void OnCodeTools(object? sender,int index){Panels.Analysis.ShowCommand.Execute(null);Panels.ToolTabIndex=index;}
     private void OnCodeChanged(object? sender,PropertyChangedEventArgs e){UndoActiveCommand.NotifyCanExecuteChanged();RedoActiveCommand.NotifyCanExecuteChanged();}
     private bool CanUndoActive=>SelectedWorkspace.Kind==WorkspaceKind.Code?Code.CanUndo:Project.CanUndo;
@@ -185,6 +192,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        Diagnostics.Dispose();
         Code.ShowCodeRequested-=OnShowCode;Code.ToolsRequested-=OnCodeTools;Code.PropertyChanged-=OnCodeChanged;
         if (Analysis is not null) Analysis.InspectRequested -= OnInspectRequested;
         navigation.PropertyChanged -= OnNavigationChanged;

@@ -26,10 +26,11 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
     private string? currentSignature;
     public CodeViewModel(ProjectViewModel? project=null,ICodeGenerator? generator=null,ICodeCompletionRepository? completion=null,
         ICodeTemplateRepository? templates=null,IThemeService? themes=null,ISketchRepository? sketches=null,IDialogService? dialogs=null,
-        ICodeAnalysisService? analysisService=null)
+        ICodeAnalysisService? analysisService=null,IClipboardService? clipboard=null)
         :base(WorkspaceKind.Code,"Код","05","Arduino / ESP32","Редактор поддерживаемых скетчей; C++ не исполняется.")
     {
         this.project=project;this.generator=generator;this.themes=themes;this.sketches=sketches;this.dialogs=dialogs;
+        Output=new(clipboard);
         this.analysisService=analysisService;ProblemsPanel.NavigateRequested+=NavigateToProblem;
         observed=Sketch;
         var loaded=completion?.Load();api=loaded?.Value??[];catalog=templates?.Load().Value;
@@ -38,7 +39,7 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
         if(themes is not null)themes.PropertyChanged+=ThemeChanged;
     }
     public SketchDocument Sketch=>project?.Model.Sketch??detached;
-    public OutputViewModel Output {get;}=new();
+    public OutputViewModel Output {get;}
     public CodeProblemsViewModel ProblemsPanel {get;}=new();
     public Task AnalysisTask {get;private set;}=Task.CompletedTask;
     public void RequestAnalysis()=>ScheduleAnalysis();
@@ -94,6 +95,15 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
     public event EventHandler<string>? EditorActionRequested;
     public event EventHandler? ShowCodeRequested;
     public event EventHandler<int>? ToolsRequested;
+    public void RevealProblem(CodeProblem problem)=>NavigateToProblem(this,problem);
+    [ObservableProperty] private string operationMessage="";
+    public bool NeedsPreparation=>!string.IsNullOrWhiteSpace(Text)&&!Text.Contains("<auto>",StringComparison.Ordinal);
+    [RelayCommand] private void PrepareMarkers()
+    {
+        var result=AutoRegionInitializer.Prepare(Text);OperationMessage=result.Message;
+        if(result.Success){Text=result.Text;ProblemsPanel.SetGeneration([]);}
+        else {ProblemsPanel.SetGeneration([new(result.Message,Code:"CODE_AUTO_MARKERS")]);ToolsRequested?.Invoke(this,0);}
+    }
     private void NavigateToProblem(object? sender,CodeProblem value)
     {
         RequestedLine=value.Line;RequestedColumn=value.Column;
@@ -109,14 +119,19 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
         if(project is null||generator is null)return;
         if(project.InGesture){Output.Append("Завершите текущий жест перед генерацией.");return;}
         var result=generator.Generate(project.Model,project.Connectivity.Netlist,Sketch);
-        ProblemsPanel.SetGeneration(result.Problems);ToolsRequested?.Invoke(this,result.Problems.Count>0?2:3);
-        if(!result.Success){dialogs?.ShowWarning(string.Join("\n",result.Problems.Select(p=>p.Message)));Output.Append("Генерация отменена; ручной текст сохранён.");return;}
-        Update(Sketch with {Text=result.Text,GeneratedCircuitSignature=result.CircuitSignature});Output.Append($"Генерация выполнена. Предупреждений: {result.Problems.Count}.");
+        ProblemsPanel.SetGeneration(result.Problems);ToolsRequested?.Invoke(this,0);
+        if(!result.Success)
+        {
+            var message=string.Join("\n",result.Problems.Select(p=>$"[{p.Code}] {p.Message}"));
+            if(result.Problems.Any(p=>p.Severity=="Error"))dialogs?.ShowError(message);else dialogs?.ShowWarning(message);
+            Output.Append(message);return;
+        }
+        Update(Sketch with {Text=result.Text,GeneratedCircuitSignature=result.CircuitSignature});OperationMessage="Скетч обновлён. Ручной код вне секций сохранён.";
     }
     [RelayCommand] private void Export()
     {
         var path=dialogs?.SaveFile("Arduino sketch (*.ino)|*.ino",".ino",SketchName+".ino");if(path is null||sketches is null)return;
-        var result=sketches.Export(path,Text);if(result.Error is { } error)dialogs?.ShowError(error);else Output.Append("Скетч экспортирован: "+result.Value);
+        var result=sketches.Export(path,Text);if(result.Error is { } error)dialogs?.ShowError(error);else OperationMessage="Экспортировано: "+result.Value;
     }
     private void Update(SketchDocument sketch)
     {if(project is null){detached=sketch;NotifySketch();}else project.UpdateSketch(sketch);}
@@ -127,7 +142,7 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
     private void NotifySketch()
     {
         var previous=observed;observed=Sketch;
-        if(previous.Text!=observed.Text)OnPropertyChanged(nameof(Text));
+        if(previous.Text!=observed.Text){OnPropertyChanged(nameof(Text));OnPropertyChanged(nameof(NeedsPreparation));}
         if(previous.Name!=observed.Name)OnPropertyChanged(nameof(SketchName));
         if(previous.Board!=observed.Board)
         {OnPropertyChanged(nameof(Board));OnPropertyChanged(nameof(Controllers));OnPropertyChanged(nameof(ControllerHint));}
@@ -150,7 +165,7 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
             var sketch=Sketch;var snapshot=new Core.History.ProjectSnapshot(project.Model).Restore();snapshot.SetSketch(sketch);
             var result=await analysisService!.AnalyzeAsync(snapshot,sketch,token);
             if(token.IsCancellationRequested||disposed)return;
-            ProblemsPanel.SetAnalysis(result);Output.Append($"Анализ кода: найдено проблем {ProblemsPanel.Items.Count}.");
+            ProblemsPanel.SetAnalysis(result);
         }
         catch(OperationCanceledException) { }
         catch(Exception e) {if(!disposed&&!token.IsCancellationRequested)Output.Append("Анализ кода не выполнен: "+e.Message);}

@@ -40,7 +40,7 @@ public sealed partial class CalculationResultsViewModel(ProjectViewModel project
                 .Concat(result.Branches.Where(b=>ShowAll || usedNetIds.Contains(b.A) && usedNetIds.Contains(b.B)).Select(b=>
                     new CalculationRowViewModel(b.Name,QuantityFormatter.Format(b.Voltage,"В"),
                         $"I = {QuantityFormatter.Format(b.Current,"А")}   P = {QuantityFormatter.Format(b.Power,"Вт")}","Деталь")))
-                .Concat(result.Diagnostics.Select(d=>new CalculationRowViewModel("Диагностика","",d,"Сообщение"))).ToArray();
+                .ToArray();
         }
         OnPropertyChanged(nameof(Result));OnPropertyChanged(nameof(IsStale));OnPropertyChanged(nameof(Entries));
         OnPropertyChanged(nameof(Rows));OnPropertyChanged(nameof(Summary));OnPropertyChanged(nameof(HasEntries));

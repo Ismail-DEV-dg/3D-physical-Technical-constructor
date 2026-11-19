@@ -11,12 +11,16 @@
     </TextBlock>
    </Grid>
    <Button Content="Обновить" Command="{Binding GenerateCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Обновить только блоки &lt;auto&gt;; ручной код сохраняется"/>
+   <Button Content="Подготовить" Command="{Binding PrepareMarkersCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Добавить пустые маркеры генератора в ручные setup/loop, сохранив инструкции">
+    <Button.Style><Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding NeedsPreparation}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></Button.Style>
+   </Button>
    <Button Content=".ino" Command="{Binding ExportCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Экспортировать скетч в одноимённую папку"/>
    <Button Content="Поиск" Command="{Binding FindCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Ctrl+F — поиск; Ctrl+H — замена; Ctrl+G — строка"/>
   </WrapPanel>
-  <TextBlock Grid.Row="1" Text="{Binding StaleMessage}" FontSize="10" TextWrapping="Wrap" Margin="0,0,0,6">
+  <StackPanel Grid.Row="1"><TextBlock Text="{Binding OperationMessage}" FontSize="10" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,5"/>
+  <TextBlock Text="{Binding StaleMessage}" FontSize="10" TextWrapping="Wrap" Margin="0,0,0,6">
    <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/><Style.Triggers><DataTrigger Binding="{Binding IsStale}" Value="True"><Setter Property="Foreground" Value="{DynamicResource RedBrush}"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
-  </TextBlock>
+  </TextBlock></StackPanel>
   <Border Grid.Row="2" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="5" Padding="6" Margin="0,0,0,6">
    <Border.Style><Style TargetType="Border"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsFindOpen}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></Border.Style>
    <StackPanel>

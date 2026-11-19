@@ -36,7 +36,7 @@ internal static class CodeWorkspacePresentationChecks
             main.SelectedWorkspace=code;window.Show();window.UpdateLayout();window.Dispatcher.Invoke(()=>{},DispatcherPriority.Loaded);
             var view=Find<CodeView>(window).Single();var editor=(TextEditor)view.FindName("Editor");
             code.ControllerId=board.Model.Id;
-            code.GenerateCommand.Execute(null);window.UpdateLayout();Assert.Equal(3,main.Panels.ToolTabIndex);
+            code.GenerateCommand.Execute(null);window.UpdateLayout();Assert.Equal(0,main.Panels.ToolTabIndex);
             Assert.Contains("#define LED1_PIN 9",editor.Text);var count=e.Project.History.Count;
             editor.Document.Insert(editor.Document.TextLength,"\n// manual extension\nvoid testPin() { digitalWrite(8,HIGH); }\n");
             Assert.Equal(board.Model.Id,code.ControllerId);
@@ -46,7 +46,7 @@ internal static class CodeWorkspacePresentationChecks
             var problem=code.ProblemsPanel.Items.First(p=>p.Problem.Message.Contains("D8"));
             main.SelectedWorkspace=e.Environment.Mockup;window.UpdateLayout();code.ProblemsPanel.Selected=problem;
             window.UpdateLayout();window.Dispatcher.Invoke(()=>{},DispatcherPriority.Loaded);
-            Assert.Same(code,main.SelectedWorkspace);Assert.Equal(2,main.Panels.ToolTabIndex);
+            Assert.Same(code,main.SelectedWorkspace);Assert.Equal(0,main.Panels.ToolTabIndex);
             view=Find<CodeView>(window).Single();editor=(TextEditor)view.FindName("Editor");Assert.Equal(problem.Problem.Line,editor.TextArea.Caret.Line);
             var original=editor.Text;editor.Document.Insert(editor.Document.TextLength,"\npin");editor.CaretOffset=editor.Document.TextLength;window.UpdateLayout();
             using(var completion=new EditorCompletionController(editor,code))
@@ -61,7 +61,7 @@ internal static class CodeWorkspacePresentationChecks
             var fold=editor.TextArea.LeftMargins.OfType<FoldingMargin>().Single().FoldingManager.AllFoldings.First();
             fold.IsFolded=true;Assert.True(fold.IsFolded);fold.IsFolded=false;window.UpdateLayout();
             Assert.False(code.IsAnalyzing);Assert.Contains(code.ProblemsPanel.Items,p=>p.Problem.Message.Contains("D8"));
-            Assert.Contains(code.Output.Lines,l=>l.Contains("Анализ кода"));
+            Assert.DoesNotContain(code.Output.Lines,l=>l.Contains("Анализ кода"));
             Save(window,"CIRCUIT_EDITOR_CODE_REVIEW");
             themes.SetTheme(ThemeKind.LightTech);window.UpdateLayout();Save(window,"CIRCUIT_EDITOR_CODE_LIGHT_REVIEW");
             themes.SetTheme(ThemeKind.NeonDark);

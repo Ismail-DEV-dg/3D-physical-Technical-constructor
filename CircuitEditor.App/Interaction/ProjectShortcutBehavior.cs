@@ -18,7 +18,11 @@ public static class ProjectShortcutBehavior
         var window=(Window)sender;if(window.DataContext is not MainViewModel vm)return;
         var focus=Keyboard.FocusedElement;
         var parent=focus as DependencyObject;var codeFocus=false;
-        while(parent is not null){if(parent is CodeView){codeFocus=true;break;}parent=parent is Visual?VisualTreeHelper.GetParent(parent):LogicalTreeHelper.GetParent(parent);}
+        while(parent is not null)
+        {
+            if(parent is DiagnosticsView or OutputView&&Keyboard.Modifiers==ModifierKeys.Control&&e.Key==Key.C)return;
+            if(parent is CodeView){codeFocus=true;break;}parent=parent is Visual?VisualTreeHelper.GetParent(parent):LogicalTreeHelper.GetParent(parent);
+        }
         if(codeFocus&&Keyboard.Modifiers==ModifierKeys.Control&&e.Key is Key.F or Key.H or Key.G)
         {if(e.Key==Key.F)vm.Code.FindCommand.Execute(null);else if(e.Key==Key.H)vm.Code.ReplaceCommand.Execute(null);else vm.Code.GoToCommand.Execute(null);e.Handled=true;return;}
         if(codeFocus&&e.Key==Key.Escape){vm.Code.CloseSearchCommand.Execute(null);e.Handled=true;return;}
