@@ -17,6 +17,7 @@ public sealed class GpioController(Component board, SimulationBoardProfile profi
         var pin = Pins.FirstOrDefault(p => p.Id == pinId);
         if (pin is null || !Enum.IsDefined(state.Mode) || !double.IsFinite(state.Duty) || state.Duty is < 0 or > 1
             || state.AnalogOverride is double analog && (!double.IsFinite(analog) || analog is < 0 or > 1)
+            || state.PeriodMicroseconds is < 1 or > 1_000_000
             || state.Role == PinRole.Output && pin.IsInputOnly
             || state.Mode == GpioMode.Pwm && pin.Type != PinType.PWM && !pin.Capabilities.Contains(PinType.PWM))
             return false;
@@ -40,9 +41,12 @@ public sealed class GpioController(Component board, SimulationBoardProfile profi
     {
         var state = Get(id);
         if (state.Role != PinRole.Output) return DigitalLevel.Z;
-        return Drive(id, (double)(microseconds % Profile.PwmPeriodMicroseconds) / Profile.PwmPeriodMicroseconds) > 0
+        var period = Period(id);
+        return Drive(id, (double)(microseconds % period) / period) > 0
             ? DigitalLevel.High : DigitalLevel.Low;
     }
+
+    public long Period(string id) => Get(id).PeriodMicroseconds ?? Profile.PwmPeriodMicroseconds;
 
     public int? ReadAdc(string id, double? voltage)
     {

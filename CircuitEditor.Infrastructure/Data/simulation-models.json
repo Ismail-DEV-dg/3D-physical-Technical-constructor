@@ -4,5 +4,19 @@
     "arduino-nano": { "logicVoltage": 5, "outputResistanceOhms": 25, "pullupResistanceOhms": 30000, "adcBits": 10, "recommendedCurrentAmps": 0.02, "absoluteCurrentAmps": 0.04, "pwmPeriodMicroseconds": 2040 },
     "esp32-devkit": { "logicVoltage": 3.3, "outputResistanceOhms": 33, "pullupResistanceOhms": 45000, "adcBits": 12, "recommendedCurrentAmps": 0.02, "absoluteCurrentAmps": 0.04, "pwmPeriodMicroseconds": 2000 }
   },
-  "components": {}
+  "components": {
+    "relay": { "coilOhms": 70, "pickupVolts": 3.75, "releaseVolts": 1 },
+    "buzzer": { "minimumVolts": 2, "resistanceOhms": 500 },
+    "servo": { "minimumVolts": 3.5, "minimumPulseUs": 1000, "maximumPulseUs": 2000, "frameUs": 20000, "degreesPerSecond": 500 },
+    "lcd1602": { "minimumVolts": 4, "columns": 16, "rows": 2 },
+    "lcd1602-i2c": { "minimumVolts": 4, "columns": 16, "rows": 2 },
+    "oled-ssd1306": { "minimumVolts": 2.7, "columns": 21, "rows": 4 },
+    "dht11": { "minimumVolts": 3 },
+    "dht22": { "minimumVolts": 3 },
+    "pir": { "minimumVolts": 4.5, "outputVolts": 3.3, "outputOhms": 100 },
+    "hc-sr04": { "minimumVolts": 4.5, "echoUsPerCm": 58, "minimumTriggerUs": 10, "outputOhms": 100 },
+    "diode": { "forwardVolts": 0.7, "dynamicOhms": 2 },
+    "npn": { "baseVolts": 0.7, "baseOhms": 10, "gain": 100, "saturationVolts": 0.2, "saturationOhms": 2 },
+    "resistor": { "maximumWatts": 0.25 }
+  }
 }

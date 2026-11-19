@@ -19,7 +19,7 @@ internal static class DcIslandSolver
         {
             // Source voltage and diode offset affect only the right-hand side.
             var key = cache is null ? "" : reference + "|" + string.Join("|", branches.Select(b =>
-                FormattableString.Invariant($"{b.A}:{b.B}:{b.Kind}:{(b.Kind == "V" ? 0 : b.Value):R}:{active.GetValueOrDefault(b.Name)}")));
+                FormattableString.Invariant($"{b.A}:{b.B}:{b.Kind}:{(b.Kind is "V" or "I" ? 0 : b.Value):R}:{active.GetValueOrDefault(b.Name)}")));
             double[,]? a = null;
             var stampMatrix = cache?.TryGet(key, out a) != true;
             a ??= new double[size,size];
@@ -33,6 +33,11 @@ internal static class DcIslandSolver
                     var index=nodes.Length+Array.IndexOf(sources,branch);
                     if(stampMatrix){if(x>=0){a[x,index]+=1;a[index,x]+=1;}if(y>=0){a[y,index]-=1;a[index,y]-=1;}}
                     right[index]=branch.Value;
+                }
+                else if (branch.Kind == "I")
+                {
+                    if (x >= 0) right[x] -= branch.Value;
+                    if (y >= 0) right[y] += branch.Value;
                 }
                 else if(branch.Kind is "R" or "TH" || branch.Kind=="LED" && active[branch.Name])
                 {
@@ -58,7 +63,7 @@ internal static class DcIslandSolver
             {
                 var drop=Voltage(b.A)-Voltage(b.B);
                 double? current=b.Kind=="V" ? b.A==b.B ? null : solution[nodes.Length+Array.IndexOf(sources,b)]
-                    : b.Kind=="LED" ? active[b.Name] ? Math.Max(0,(drop-b.Vf)/b.Value):0 : (drop-(b.Kind=="TH"?b.Vf:0))/b.Value;
+                    : b.Kind=="I" ? b.Value : b.Kind=="LED" ? active[b.Name] ? Math.Max(0,(drop-b.Vf)/b.Value):0 : (drop-(b.Kind=="TH"?b.Vf:0))/b.Value;
                 return new DcBranchResult(b.ComponentId,b.Name,b.A,b.B,drop,current,drop*current);
             }).ToList();
             return(voltages,results,null);

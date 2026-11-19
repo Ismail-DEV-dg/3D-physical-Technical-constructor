@@ -42,7 +42,7 @@ public sealed class DcSolver(IElectricalLibraryRepository repository) : IDcSolve
         foreach(var result in results)
         {
             var branch=assembly.Branches.First(b=>b.Name==result.Name);var component=project.Circuit.Components.Single(c=>c.Id==result.ComponentId);
-            if(branch.Kind=="LED" && result.Current>branch.MaximumCurrent)messages.Add(result.Name+": ток LED выше допустимого.");
+            if(branch.Kind=="LED" && branch.MaximumCurrent>0 && result.Current>branch.MaximumCurrent)messages.Add(result.Name+": ток LED выше допустимого.");
             if(component.Definition.Id=="resistor" && result.Power>ResistorPowerLimit)messages.Add(result.Name+": мощность резистора выше 0.25 Вт.");
         }
         if(assembly.Branches.Count==0){messages.Add("Нет поддерживаемых DC-ветвей.");success=false;}

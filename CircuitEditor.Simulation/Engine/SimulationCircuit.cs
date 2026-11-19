@@ -95,6 +95,17 @@ public sealed class SimulationCircuit
             voltage >= supply * HighThresholdFraction ? DigitalLevel.High : DigitalLevel.X;
     }
 
+    public double? PulseWidth(PinReference input)
+    {
+        var drivers = Nets.Find(input.ComponentId, input.PinId)?.Pins
+            .Where(p => controllers.GetValueOrDefault(p.ComponentId)?.Get(p.PinId).Mode == GpioMode.Pwm).ToArray();
+        if (drivers?.Length != 1) return null;
+        var driver = drivers[0];
+        var board = controllers[driver.ComponentId];
+        var duty = board.Get(driver.PinId).Duty;
+        return duty is > 0 and < 1 ? duty * board.Period(driver.PinId) : null;
+    }
+
     private IEnumerable<DcBranch> Drivers(double phase)
     {
         foreach (var board in controllers.Values)

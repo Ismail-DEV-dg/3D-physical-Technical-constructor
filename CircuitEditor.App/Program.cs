@@ -68,6 +68,7 @@ public static class Program
         registrations.AddSingleton<ICalculatorService, CalculatorService>();
         registrations.AddSingleton<CalculatorViewModel>();
         registrations.AddSingleton<IDebounceService, DebounceService>();
+        registrations.AddSimulation();
         registrations.AddSingleton<ProjectAnalysisViewModel>();
         registrations.AddSingleton<ProjectViewModel>();
         registrations.AddSingleton<BreadboardViewModel>();

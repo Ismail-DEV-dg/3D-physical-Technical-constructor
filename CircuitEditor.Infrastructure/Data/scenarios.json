@@ -1,0 +1,8 @@
+[
+  {"id":"blink","name":"Мигающий светодиод","pins":{"LED_PIN":"output"},"numbers":{"periodMs":1000,"duty":0.5}},
+  {"id":"button-led","name":"Кнопка → светодиод","pins":{"BUTTON_PIN":"input","LED_PIN":"output"},"numbers":{"activeLow":1}},
+  {"id":"pot-pwm","name":"Потенциометр → ШИМ","pins":{"POT_PIN":"analog","LED_PIN":"pwm"},"numbers":{}},
+  {"id":"servo-sweep","name":"Качание сервопривода","pins":{"SERVO_PIN":"pwm"},"numbers":{"periodMs":1000,"minimumAngle":0,"maximumAngle":180}},
+  {"id":"display","name":"Текст на LCD/OLED","pins":{},"numbers":{},"text":"CircuitEditor","target":"display"},
+  {"id":"serial","name":"Печать в Serial","pins":{},"numbers":{"periodMs":1000},"text":"CircuitEditor","target":"sensor"}
+]
