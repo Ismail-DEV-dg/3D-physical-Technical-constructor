@@ -2,6 +2,37 @@
 
 Курсовой проект: десктопный редактор электрических схем с футуристичным интерфейсом, встроенным редактором кода, конструктором микросхем, симуляцией и 3D-видом.
 
+## Карта проекта
+
+Решение `CircuitEditor.sln` состоит из пяти проектов. Настройки SDK и языка находятся в `global.json` и `Directory.Build.props`.
+
+| Проект | Зависимости и назначение |
+|---|---|
+| `CircuitEditor.Core` | `net8.0`, без ссылок на другие проекты и WPF. Модель проекта, электрические расчёты, проверки, история, генерация и анализ кода. |
+| `CircuitEditor.Infrastructure` | `net8.0` → Core. Реализации репозиториев в `Repositories/`, встроенные JSON в `Library/` и `Data/`, миграции в `Documents/`. |
+| `CircuitEditor.Simulation` | `net8.0` → Core. Пока содержит только файл проекта. `ISimulationClock` отсутствует. |
+| `CircuitEditor.App` | `net8.0-windows` → Core, Infrastructure, Simulation. WPF и AvalonEdit. Регистрация зависимостей в `Program.cs`, интерфейс в `Views/`, `Controls/`, `Resources/`, ввод в `Interaction/`, команды и состояние UI в `ViewModels/`. |
+| `CircuitEditor.Tests` | `net8.0-windows` → все четыре проекта. xUnit, включая проверки WPF. |
+
+- `Core/Models/CircuitProject.cs` объединяет электрическую модель, два размещения, breadboard, привязки и скетч. `Core/Simulation/SimulationState.cs` пока содержит пустую запись состояния.
+- `Core/Netlist/` — `INetlistBuilder` / `NetlistBuilder` объединяет группы отверстий, привязки, внутренние связи и перемычки. `App/ViewModels/ProjectViewModel.cs` перестраивает netlist перед уведомлением `ModelCommitted`.
+- `Core/Validation/` — `IErcService` / `ErcService` выполняет набор `IErcRule`. `PinDirectionRule` зарегистрировано, но пока возвращает пустой список.
+- `Core/Electronics/` — `IDcSolver` / `DcSolver` рассчитывает поддерживаемые статические цепи. `ProjectAnalysisViewModel` связывает ERC и DC с нижней панелью.
+- `Core/History/` — `IEditCommand`, `ProjectEditCommand`, `ProjectSnapshot`, `CommandHistory` (200 действий). `ProjectViewModel` управляет жестами и Undo/Redo схемы. У скетча своя история AvalonEdit.
+- `Core/Code/` — `ICodeGenerator` / `ArduinoCodeGenerator`, `ICodeAnalyzer` / `ArduinoCodeAnalyzer`. `CodeViewModel` управляет скетчем, `ICodeAnalysisService` запускает фоновый анализ. Генератор обновляет секции `<auto>` по netlist и шаблонам.
+- `Core/Repositories/` содержит `IProjectRepository`, `IComponentLibraryRepository`, `IFootprintRepository`, `IBreadboardRepository`, `IElectricalLibraryRepository`, репозитории шаблонов, дополнения, справки и экспорта. `ProjectSessionViewModel` координирует сохранение, открытие и восстановление через репозиторий проекта и `IDialogService`.
+- `.circ` — JSON с `schemaVersion: 2` и `libraryVersion: "1"`. `Core/Documents/ProjectDocument.cs` описывает экземпляры по ID, счётчики, размещения, привязки, провода, состояние вида и скетч. `JsonProjectRepository` читает и пишет файл. `ProjectMigrationV1ToV2` добавляет пустой скетч, `ProjectDocumentResolver` проверяет ссылки на библиотеку и восстанавливает модель.
+
+Из корня решения на Windows с .NET SDK 8.0.425 или более свежим патчем ветки 8.0.4xx:
+
+```powershell
+dotnet build CircuitEditor.sln
+dotnet test CircuitEditor.sln --no-build --no-restore
+dotnet run --project CircuitEditor.App
+```
+
+Проверка при составлении карты: Debug собран с 0 ошибок и 0 предупреждений. Тесты — 408 пройдено, 0 упало, 0 пропущено.
+
 ## Порядок работы
 
 - Работать строго по этапам, которые пользователь присылает по одному. Не реализовывать будущие этапы.
