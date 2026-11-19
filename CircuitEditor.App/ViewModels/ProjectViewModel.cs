@@ -47,8 +47,13 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string propertyError = "";
     [ObservableProperty] private int revision;
 
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(CanEdit))] private bool isSimulationActive;
+    public bool CanEdit => !IsSimulationActive;
+    partial void OnIsSimulationActiveChanged(bool value) => NotifyHistory();
+
     public ComponentViewModel? Add(ComponentDefinition definition)
     {
+        if (!CanEdit) return null;
         var footprint = Model.Footprints.FirstOrDefault(item => item.ComponentDefinitionId == definition.Id);
         if (footprint is null) { StatusMessage = "Описание корпуса недоступно. Проверьте библиотеку."; return null; }
         var trayY = Components.Count == 0 ? 15 : Components.Max(existing => existing.MockupPlacement.Y +
@@ -80,6 +85,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
 
     public void RemoveSelected()
     {
+        if (!CanEdit) return;
         var own = BeginGesture("Удаление компонентов");
         var selected = Components.Where(item => item.IsSelected).ToArray();
         foreach (var item in selected)
@@ -95,7 +101,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void ApplyProperties()
     {
-        if (SelectedComponent is not { } selected) return;
+        if (!CanEdit || SelectedComponent is not { } selected) return;
         if (!selected.Model.TryUpdateProperties(selected.EditValue, selected.EditColor,
             selected.SupportsI2c ? selected.EditI2cAddress : null, out var error))
         { PropertyError = error ?? "Некорректное значение."; return; }
@@ -147,12 +153,12 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     private string gestureName = "Изменение проекта";
     private SelectionClipboard? clipboard;
     public bool IsDirty => History.IsDirty || Model.Sketch != savedSketch;
-    public bool CanUndo => History.CanUndo && !inGesture;
-    public bool CanRedo => History.CanRedo && !inGesture;
+    public bool CanUndo => CanEdit && History.CanUndo && !inGesture;
+    public bool CanRedo => CanEdit && History.CanRedo && !inGesture;
     public bool InGesture => inGesture;
     public bool BeginGesture(string name = "Изменение проекта")
     {
-        if (inGesture) return false;
+        if (!CanEdit || inGesture) return false;
         inGesture = true; gestureName = name; NotifyHistory(); return true;
     }
     public void EndGesture()
@@ -224,7 +230,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void Paste()
     {
-        if (clipboard is null || inGesture) return;
+        if (!CanEdit || clipboard is null || inGesture) return;
         BeginGesture("Вставка копии");
         var ids = clipboard.Paste(Model).ToHashSet();
         // Rebuild bindings without replacing the pre-gesture snapshot.

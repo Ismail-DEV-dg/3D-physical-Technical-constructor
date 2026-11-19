@@ -1,0 +1,55 @@
+<UserControl x:Class="CircuitEditor.App.Views.SimulationInspectorView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:views="clr-namespace:CircuitEditor.App.Views" xmlns:vm="clr-namespace:CircuitEditor.App.ViewModels">
+ <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+  <WrapPanel Margin="12">
+   <StackPanel Width="240" Margin="0,0,18,12" DataContext="{Binding Scenario}" IsEnabled="{Binding DataContext.CanConfigure, RelativeSource={RelativeSource AncestorType=views:SimulationInspectorView}}">
+    <TextBlock Text="СЦЕНАРИЙ" Foreground="{DynamicResource AccentBrush}" FontWeight="Bold" Margin="0,0,0,8"/>
+    <ComboBox ItemsSource="{Binding Templates}" SelectedItem="{Binding Template}" DisplayMemberPath="Name" AutomationProperties.Name="Сценарий"/>
+    <ItemsControl ItemsSource="{Binding Bindings}">
+     <ItemsControl.ItemTemplate><DataTemplate>
+      <StackPanel Margin="0,8,0,0">
+       <TextBlock Text="{Binding Name}"/>
+       <ComboBox ItemsSource="{Binding Options}" DisplayMemberPath="Name" SelectedItem="{Binding Selected}" AutomationProperties.Name="{Binding Name}"/>
+      </StackPanel>
+     </DataTemplate></ItemsControl.ItemTemplate>
+    </ItemsControl>
+    <ItemsControl ItemsSource="{Binding Numbers}">
+     <ItemsControl.ItemTemplate><DataTemplate>
+      <StackPanel Margin="0,8,0,0">
+       <TextBlock Text="{Binding Name}"/>
+       <TextBox Text="{Binding Value, ValidatesOnExceptions=True}" AutomationProperties.Name="{Binding Name}"/>
+      </StackPanel>
+     </DataTemplate></ItemsControl.ItemTemplate>
+    </ItemsControl>
+    <StackPanel>
+     <StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers>
+      <DataTrigger Binding="{Binding ShowsTarget}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
+     </Style.Triggers></Style></StackPanel.Style>
+     <TextBlock Text="Компонент" Margin="0,8,0,0"/>
+     <ComboBox ItemsSource="{Binding Targets}" DisplayMemberPath="Reference" SelectedItem="{Binding Target}" AutomationProperties.Name="Компонент сценария"/>
+    </StackPanel>
+    <TextBox Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}" MaxLength="512" Margin="0,8,0,0" AcceptsReturn="True" AutomationProperties.Name="Текст сценария">
+     <TextBox.Style><Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers>
+      <DataTrigger Binding="{Binding ShowsText}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
+     </Style.Triggers></Style></TextBox.Style>
+    </TextBox>
+   </StackPanel>
+   <StackPanel Width="240" DataContext="{Binding Controller}" Margin="0,0,18,12" IsEnabled="{Binding HasSession}">
+    <TextBlock Text="КОНТРОЛЛЕР" Foreground="{DynamicResource AccentBrush}" FontWeight="Bold" Margin="0,0,0,8"/>
+    <ComboBox ItemsSource="{Binding Pins}" SelectedItem="{Binding Pin}" DisplayMemberPath="Name" AutomationProperties.Name="Вывод контроллера"/>
+    <TextBlock Text="{Binding Reading}" TextWrapping="Wrap" Margin="0,4,0,4"/>
+    <ComboBox ItemsSource="{x:Static vm:SimulationControllerViewModel.Modes}" SelectedItem="{Binding Mode}" AutomationProperties.Name="Режим вывода"/>
+    <CheckBox Content="Уровень HIGH" IsChecked="{Binding High}" Margin="0,6"/>
+    <TextBlock Text="{Binding Duty, StringFormat=Скважность {0:P0}}"/>
+    <Slider Minimum="0" Maximum="1" Value="{Binding Duty}" AutomationProperties.Name="Скважность"/>
+    <TextBlock Text="Период ШИМ, мкс (0 — авто)" TextWrapping="Wrap"/>
+    <TextBox Text="{Binding PwmPeriodUs, ValidatesOnExceptions=True}" AutomationProperties.Name="Период ШИМ"/>
+    <CheckBox Content="Задать АЦП вручную" IsChecked="{Binding OverrideAnalog}" Margin="0,6"/>
+    <Slider Minimum="0" Maximum="1" Value="{Binding Analog}" IsEnabled="{Binding OverrideAnalog}" AutomationProperties.Name="Доля диапазона АЦП"/>
+    <Button Content="Применить режим" Command="{Binding ApplyCommand}" Margin="0,6,0,0"/>
+   </StackPanel>
+   <views:ComponentInputsView Width="240" DataContext="{Binding RuntimeInputs}"/>
+  </WrapPanel>
+ </ScrollViewer>
+</UserControl>

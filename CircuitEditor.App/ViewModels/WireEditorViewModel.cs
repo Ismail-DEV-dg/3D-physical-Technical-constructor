@@ -15,6 +15,7 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
     [ObservableProperty] private bool isWiring;
     partial void OnIsWiringChanged(bool value)
     {
+        if (value && !project.CanEdit) { IsWiring = false; return; }
         if(!value){Cancel();selectedId=null;HoveredId=null;Refresh();}
         project.InvalidatePresentation();
     }
@@ -33,7 +34,7 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
         get => Selected?.Color ?? color;
         set
         {
-            if (!Colors.Contains(value)) return;
+            if (!project.CanEdit || !Colors.Contains(value)) return;
             color = value;
             if (Selected is { } wire && wire.Color != value)
             {
@@ -46,7 +47,7 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
     public void Refresh() { OnPropertyChanged(nameof(Selected)); OnPropertyChanged(nameof(HasSelection)); OnPropertyChanged(nameof(Color)); }
     public bool Handle(CanvasInput input, LayoutPoint point)
     {
-        if (input.Pan) return false;
+        if (!project.CanEdit || input.Pan) return false;
         if (input.Action == CanvasAction.Cancel && (first is not null || draggingNode is not null))
         { Cancel(); return true; }
         if (input.Action == CanvasAction.Delete && Selected is { } deleted)

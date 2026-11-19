@@ -278,7 +278,7 @@
   </Style></Setter.Value></Setter>
   <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="TabControl">
    <Grid KeyboardNavigation.TabNavigation="Local"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
-    <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1"><TabPanel IsItemsHost="True" Margin="4,5,0,0"/></Border>
+    <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1"><ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" Focusable="False"><StackPanel Orientation="Horizontal" IsItemsHost="True" Margin="4,5,0,0"/></ScrollViewer></Border>
     <ContentPresenter x:Name="PART_SelectedContentHost" Grid.Row="1" ContentSource="SelectedContent"/>
    </Grid>
   </ControlTemplate></Setter.Value></Setter>

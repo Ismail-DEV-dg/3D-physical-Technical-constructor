@@ -64,7 +64,7 @@ internal static class DcIslandSolver
                 var drop=Voltage(b.A)-Voltage(b.B);
                 double? current=b.Kind=="V" ? b.A==b.B ? null : solution[nodes.Length+Array.IndexOf(sources,b)]
                     : b.Kind=="I" ? b.Value : b.Kind=="LED" ? active[b.Name] ? Math.Max(0,(drop-b.Vf)/b.Value):0 : (drop-(b.Kind=="TH"?b.Vf:0))/b.Value;
-                return new DcBranchResult(b.ComponentId,b.Name,b.A,b.B,drop,current,drop*current);
+                return new DcBranchResult(b.ComponentId,b.Name,b.A,b.B,drop,current,drop*current,b.PinA,b.PinB,b.MaximumCurrent);
             }).ToList();
             return(voltages,results,null);
         }

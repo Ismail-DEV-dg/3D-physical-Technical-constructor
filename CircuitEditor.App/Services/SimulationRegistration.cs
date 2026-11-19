@@ -1,3 +1,4 @@
+using CircuitEditor.App.ViewModels;
 using CircuitEditor.Core.Repositories;
 using CircuitEditor.Infrastructure.Repositories;
 using CircuitEditor.Simulation.Components;
@@ -26,5 +27,8 @@ internal static class SimulationRegistration
         services.AddSingleton<IComponentBehavior, PirBehavior>();
         services.AddSingleton<IComponentBehavior, UltrasonicBehavior>();
         services.AddSingleton<ISimulationSessionFactory, SimulationSessionFactory>();
+        services.AddSingleton<ISimulationPlayback, SimulationPlayback>();
+        services.AddSingleton<ISimulationUiPulse, SimulationUiPulse>();
+        services.AddSingleton<SimulationViewModel>();
     }
 }

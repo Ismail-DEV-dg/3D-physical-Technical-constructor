@@ -21,13 +21,13 @@ internal static class PotentiometerDrawing
         }
     }
 
-    public static void DrawKnob(DrawingContext dc, ComponentViewModel item)
+    public static void DrawKnob(DrawingContext dc, ComponentViewModel item, double? angleOverride = null)
     {
         if (item.Footprint.RotaryControl is not { } knob) return;
         var center = new Point(knob.X, knob.Y);
         dc.DrawEllipse(PhysicalDrawing.Metal, new Pen(Brushes.Black, .2), center, knob.Radius, knob.Radius);
         dc.DrawEllipse(PhysicalDrawing.Ink("#252D39"), new Pen(Brushes.DimGray, .14), center, knob.Radius * .83, knob.Radius * .83);
-        var angle = item.Model.PotentiometerAngle * Math.PI / 180;
+        var angle = (angleOverride ?? item.Model.PotentiometerAngle) * Math.PI / 180;
         dc.DrawLine(new Pen(Brushes.WhiteSmoke, .45), center,
             new Point(center.X + Math.Sin(angle) * knob.Radius * .7, center.Y - Math.Cos(angle) * knob.Radius * .7));
     }

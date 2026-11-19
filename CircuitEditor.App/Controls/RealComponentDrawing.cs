@@ -99,9 +99,10 @@ internal static class RealComponentDrawing
     }
 
     public static void DrawSelection(DrawingContext dc, ComponentViewModel item, ComponentPlacement pose,
-        double pitch, bool invalidPreview)
+        double pitch, bool invalidPreview, double? simulatedAngle = null)
     {
-        if (item.Footprint.Renderer == "potentiometer") PotentiometerDrawing.DrawKnob(dc, item);
+        if (item.Footprint.Renderer == "potentiometer") PotentiometerDrawing.DrawKnob(dc, item, simulatedAngle);
+        if (item.Footprint.Renderer == "servo") ServoDrawing.DrawArm(dc, item.Footprint, simulatedAngle ?? 0);
         if (item.IsSelected || invalidPreview)
         {
             var body = ContactGeometry.Body(item.Footprint, pose, pitch);

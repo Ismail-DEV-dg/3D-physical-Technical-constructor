@@ -38,9 +38,6 @@ internal static class ServoDrawing
         var shaft = PhysicalDrawing.Rect(parts["shaft"]);
         var center = new Point(shaft.Left + shaft.Width / 2, shaft.Top + shaft.Height / 2);
         dc.DrawEllipse(PhysicalDrawing.Ink("#EBEBDE"), new Pen(Brushes.Gray, .2), center, shaft.Width / 2, shaft.Height / 2);
-        dc.DrawRoundedRectangle(Brushes.WhiteSmoke, new Pen(Brushes.Gray, .15), new Rect(center.X - 2, center.Y - 1.1, 16, 2.2), 1, 1);
-        for (var i = 0; i < 4; i++) dc.DrawEllipse(PhysicalDrawing.Ink("#586471"), null, new Point(center.X + 4 + i * 2.5, center.Y), .35, .35);
-        dc.DrawEllipse(PhysicalDrawing.Metal, new Pen(Brushes.Gray, .1), center, .9, .9);
         PhysicalDrawing.Text(dc, "SG90", body.Left + 12, body.Top + 8.5, 1.6, Brushes.White);
         dc.DrawRoundedRectangle(PhysicalDrawing.Ink("#232A32"), new Pen(Brushes.Black, .18), connector, .4, .4);
         foreach (var contact in footprint.Contacts)
@@ -49,5 +46,16 @@ internal static class ServoDrawing
             PhysicalDrawing.Contact(dc, new Point(contact.X, contact.Y));
             PhysicalDrawing.Text(dc, contact.ElectricalPinId, connector.Left + .4, contact.Y - 1.2, BoardDetailDrawing.PinLabelSize, Brushes.WhiteSmoke);
         }
+    }
+
+    internal static void DrawArm(DrawingContext dc, FootprintDefinition footprint, double angle)
+    {
+        var shaft = PhysicalDrawing.Rect(footprint.Parts!["shaft"]);
+        var center = new Point(shaft.Left + shaft.Width / 2, shaft.Top + shaft.Height / 2);
+        dc.PushTransform(new RotateTransform(angle, center.X, center.Y));
+        dc.DrawRoundedRectangle(Brushes.WhiteSmoke, new Pen(Brushes.Gray, .15), new Rect(center.X - 2, center.Y - 1.1, 16, 2.2), 1, 1);
+        for (var i = 0; i < 4; i++) dc.DrawEllipse(PhysicalDrawing.Ink("#586471"), null, new Point(center.X + 4 + i * 2.5, center.Y), .35, .35);
+        dc.DrawEllipse(PhysicalDrawing.Metal, new Pen(Brushes.Gray, .1), center, .9, .9);
+        dc.Pop();
     }
 }

@@ -28,8 +28,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private readonly IReadOnlyList<PaletteItemViewModel> library;
 
     public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window, ProjectSessionViewModel? session = null, ExportViewModel? exports = null, ProjectAnalysisViewModel? analysis = null, ICalculatorService? calculator = null, IShortcutGuideService? shortcutGuide = null,
-        IClipboardService? clipboard=null,IErrorDocumentationService? documentation=null,IErrorHelpService? errorHelp=null)
+        IClipboardService? clipboard=null,IErrorDocumentationService? documentation=null,IErrorHelpService? errorHelp=null, SimulationViewModel? simulation = null)
     {
+        Simulation = simulation;
+        if (Simulation is not null) Simulation.ConfigurationRequested += OpenSimulationPanel;
         this.errorHelp=errorHelp;
         this.shortcutGuide=shortcutGuide;
         this.calculator=calculator;
@@ -54,9 +56,11 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         themes.PropertyChanged += OnThemeChanged;
     }
 
+    public SimulationViewModel? Simulation { get; }
     public ProjectAnalysisViewModel? Analysis { get; }
     public PanelLayoutViewModel Panels { get; } = new();
     public DiagnosticsViewModel Diagnostics {get;}
+    private void OpenSimulationPanel(object? sender, EventArgs e) => OnCodeTools(sender, 3);
     private void OnInspectRequested(object? sender, EventArgs e) => OnCodeTools(sender,Analysis?.InspectorTabIndex==2?1:0);
     [RelayCommand] private void ErrorHelp()=>errorHelp?.Show();
     [RelayCommand] private void ShowProblems(){Diagnostics.Source="Все";Diagnostics.Severity="Все";Diagnostics.Search="";OnCodeTools(this,0);}
@@ -193,6 +197,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public void Dispose()
     {
         Diagnostics.Dispose();
+        if (Simulation is not null) Simulation.ConfigurationRequested -= OpenSimulationPanel;
         Code.ShowCodeRequested-=OnShowCode;Code.ToolsRequested-=OnCodeTools;Code.PropertyChanged-=OnCodeChanged;
         if (Analysis is not null) Analysis.InspectRequested -= OnInspectRequested;
         navigation.PropertyChanged -= OnNavigationChanged;

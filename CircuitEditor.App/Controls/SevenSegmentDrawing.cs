@@ -34,6 +34,36 @@ internal static class SevenSegmentDrawing
         }
     }
 
+    internal static void DrawActive(DrawingContext dc, FootprintDefinition footprint, int mask)
+    {
+        if (mask == 0) return;
+        var body = PhysicalDrawing.Rect(footprint.Body);
+        var face = new Rect(body.Left + .7, body.Top + 2.5, body.Width - 1.4, body.Height - 5);
+        var center = face.Left + face.Width / 2 - .5;
+        var top = face.Top + 1;
+        var middle = face.Top + face.Height / 2;
+        var bottom = face.Bottom - 1;
+        var ink = PhysicalDrawing.Ink("#FF474E");
+        void Horizontal(int bit, double y)
+        {
+            if ((mask & (1 << bit)) != 0) Segment(dc, new(center - 2.5, y), new(center + 2.5, y), ink);
+        }
+        void Vertical(int bit, double x, bool upper)
+        {
+            if ((mask & (1 << bit)) == 0) return;
+            if (upper) Segment(dc, new(x, top + .8), new(x - .25, middle - .8), ink);
+            else Segment(dc, new(x - .25, middle + .8), new(x - .5, bottom - .8), ink);
+        }
+        Horizontal(0, top);
+        Vertical(1, center + 3.1, true);
+        Vertical(2, center + 3.1, false);
+        Horizontal(3, bottom);
+        Vertical(4, center - 3.1, false);
+        Vertical(5, center - 3.1, true);
+        Horizontal(6, middle);
+        if ((mask & (1 << 7)) != 0) dc.DrawEllipse(ink, null, new Point(face.Right - .8, bottom), .55, .55);
+    }
+
     private static void Segment(DrawingContext dc, Point start, Point end, Brush ink)
     {
         const double halfWidth = .48;

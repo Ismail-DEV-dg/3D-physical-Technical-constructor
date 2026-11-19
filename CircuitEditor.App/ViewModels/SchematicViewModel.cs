@@ -57,6 +57,8 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
     [RelayCommand]
     private void Input(CanvasInput input)
     {
+        if (!Project.CanEdit && !input.Pan && !panning &&
+            input.Action is not (CanvasAction.Resize or CanvasAction.Wheel or CanvasAction.Cancel)) return;
         if(input.Action==CanvasAction.Resize){ViewportWidth=input.X;ViewportHeight=input.Y;return;}
         if (input.Action is CanvasAction.Rotate) { RotateSelected(); return; }
         if (input.Action is CanvasAction.Delete) { DeleteSelected(); return; }
@@ -177,6 +179,7 @@ public sealed partial class SchematicViewModel : WorkspaceViewModel, IDisposable
     [RelayCommand]
     private void RotateSelected()
     {
+        if (!Project.CanEdit) return;
         Project.BeginGesture("Поворот символов");
         foreach (var item in Components.Where(item => item.IsSelected)) item.SchematicPlacement.Rotate();
         Project.EndGesture();

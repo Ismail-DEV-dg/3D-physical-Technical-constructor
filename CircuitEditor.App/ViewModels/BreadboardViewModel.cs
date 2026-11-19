@@ -13,6 +13,8 @@ namespace CircuitEditor.App.ViewModels;
 public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposable
 {
     private readonly IComponentInsertionService insertion;
+    private readonly MockupSimulationInput simulationInput;
+    public SimulationViewModel? Simulation { get; }
     private ComponentViewModel? dragging;
     private ComponentViewModel? rotatingKnob;
     private double originalKnobAngle;
@@ -20,9 +22,10 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     private double grabX, grabY, startX, startY, oldOffsetX, oldOffsetY;
     private bool panning;
     private Guid? selectionId;
-    public BreadboardViewModel(ProjectViewModel project, IComponentInsertionService insertion)
+    public BreadboardViewModel(ProjectViewModel project, IComponentInsertionService insertion, SimulationViewModel? simulation = null)
         : base(WorkspaceKind.Mockup, "Макет", "01", "Физический макет", "Breadboard и компоненты")
     {
+        Simulation = simulation; simulationInput = new(this);
         BoardInteraction=new BoardInteractionViewModel(this);
         Project = project; this.insertion = insertion;
         Project.PropertyChanged += OnProjectChanged;
@@ -38,7 +41,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
         item == dragging && draft is not null ? draft : item.MockupPlacement;
     public IReadOnlyList<int> SpanOptions => Project.SelectedComponent?.Footprint is { IsFlexible: true } footprint
         ? Enumerable.Range(footprint.MinSpan!.Value, footprint.MaxSpan!.Value - footprint.MinSpan.Value + 1).ToArray() : [];
-    public bool CanAdjustSpan => Project.SelectedComponent?.Footprint.IsFlexible == true;
+    public bool CanAdjustSpan => Project.CanEdit && Project.SelectedComponent?.Footprint.IsFlexible == true;
     public int SelectedSpan
     {
         get => Project.SelectedComponent is { } item
@@ -66,13 +69,19 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     [RelayCommand]
     private void Input(CanvasInput input)
     {
+        if (!Project.CanEdit && Simulation is { } simulation && input.Action != CanvasAction.Resize)
+        {
+            CursorX = PhysicalSettings.ToMillimeters((input.X - OffsetX) / Zoom);
+            CursorY = PhysicalSettings.ToMillimeters((input.Y - OffsetY) / Zoom);
+            if (simulationInput.Handle(input, new(CursorX, CursorY), simulation)) return;
+        }
         if(input.Action==CanvasAction.Resize){ViewportWidth=input.X;ViewportHeight=input.Y;return;}
         if (input.Action == CanvasAction.Cancel) { BoardInteraction.Handle(input,new(CursorX,CursorY)); Project.Wiring.Exit(); Cancel(); return; }
         if (input.Action == CanvasAction.Rotate) { RotateSelected(); return; }
         if (input.Action == CanvasAction.Delete) { if (!Project.Wiring.Handle(input, new(CursorX,CursorY))) { Cancel(); Project.RemoveSelected(); } return; }
         CursorX = PhysicalSettings.ToMillimeters((input.X - OffsetX) / Zoom);
         CursorY = PhysicalSettings.ToMillimeters((input.Y - OffsetY) / Zoom);
-        if(BoardInteraction.Handle(input,new(CursorX,CursorY))){Revision++;return;}
+        if(Project.CanEdit && BoardInteraction.Handle(input,new(CursorX,CursorY))){Revision++;return;}
         var componentDrag=input.Action==CanvasAction.Down && !Project.Wiring.IsWiring && !Project.Wiring.HasSelection && Project.Components.Any(c=>Hit(c,CursorX,CursorY));
         if (dragging is null && rotatingKnob is null && !panning && !componentDrag && Project.Wiring.Handle(input, new(CursorX, CursorY))) { Revision++; return; }
         if (input.Action is CanvasAction.Down or CanvasAction.Drop && !input.Pan) Project.BeginGesture("Макет: размещение / ручка");
@@ -195,6 +204,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
 
     public bool TryPlace(ComponentViewModel item, ComponentPlacement proposed)
     {
+        if (!Project.CanEdit) return false;
         if (item.Footprint.IsFlexible)
         {
             var span = proposed.SpanHoles == 0 ? item.Footprint.DefaultSpan : proposed.SpanHoles;
@@ -221,6 +231,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     [RelayCommand]
     private void RotateSelected()
     {
+        if (!Project.CanEdit) return;
         Cancel();
         if(BoardInteraction.Handle(new(CanvasAction.Rotate),new(CursorX,CursorY)))return;
         if (Project.SelectedComponent is not { } item) return;
@@ -239,7 +250,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
         if (panning) { OffsetX = oldOffsetX; OffsetY = oldOffsetY; }
         dragging = null; rotatingKnob = null; draft = null; Preview = null; panning = false; Project.CancelGesture(); Revision++;
     }
-    private static LayoutPoint KnobPoint(ComponentViewModel item, double x, double y)
+    internal static LayoutPoint KnobPoint(ComponentViewModel item, double x, double y)
     {
         var pose = item.MockupPlacement; var control = item.Footprint.RotaryControl!;
         var angle = -pose.Rotation * Math.PI / 180;
@@ -256,6 +267,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     private void OnProjectChanged(object? sender, PropertyChangedEventArgs args)
     {
         if (args.PropertyName == nameof(Project.Revision)) { Revision++; OnPropertyChanged(nameof(SelectedSpan)); }
+        if (args.PropertyName == nameof(Project.CanEdit)) OnPropertyChanged(nameof(CanAdjustSpan));
         if (args.PropertyName != nameof(Project.SelectedComponent)) return;
         if (selectionId == Project.SelectedComponent?.Model.Id) return;
         selectionId = Project.SelectedComponent?.Model.Id;

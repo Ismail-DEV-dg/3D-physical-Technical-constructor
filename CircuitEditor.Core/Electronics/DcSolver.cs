@@ -37,7 +37,7 @@ public sealed class DcSolver(IElectricalLibraryRepository repository) : IDcSolve
                 var ambiguous=unique.Any(b=>b.Name==result.Name&&b.Kind=="V"&&redundant.Any(r=>r.A==b.A&&r.B==b.B));
                 results.Add(ambiguous ? result with {Current=null,Power=null}:result);
             }
-            foreach(var b in redundant){results.Add(new(b.ComponentId,b.Name,b.A,b.B,b.Value,null,null));messages.Add(b.Name+": ток параллельных идеальных источников не определяется однозначно.");}
+            foreach(var b in redundant){results.Add(new(b.ComponentId,b.Name,b.A,b.B,b.Value,null,null,b.PinA,b.PinB));messages.Add(b.Name+": ток параллельных идеальных источников не определяется однозначно.");}
         }
         foreach(var result in results)
         {

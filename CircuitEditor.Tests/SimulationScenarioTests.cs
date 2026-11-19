@@ -143,6 +143,24 @@ public sealed class SimulationScenarioTests
         Assert.InRange(oscillating.Circuit.SolveCount, 2, 32);
     }
 
+    [Fact]
+    public void UnbranchedJumperReportsSignedCurrentAndOhmicLoad()
+    {
+        using var design = new ElectricalTestCircuit();
+        var uno = design.Add("arduino-uno");
+        var resistor = design.Add("resistor");
+        design.Wire(uno, "5V", resistor, "1");
+        design.Wire(uno, "GND", resistor, "2");
+        var session = Create(design);
+        var wires = design.Project.Model.Circuit.Wires;
+        var supply = session.State.Wires[wires[0].Id];
+        var ground = session.State.Wires[wires[1].Id];
+        Assert.Equal(5, supply.Voltage);
+        Assert.Equal(0, ground.Voltage);
+        Assert.True(supply.Current > 0);
+        Assert.Equal(supply.Current!.Value, -ground.Current!.Value, 9);
+    }
+
     private static ScenarioConfiguration Configure(string template, params (string Name, PinReference Pin)[] pins) =>
         new(template, pins.ToImmutableDictionary(p => p.Name, p => p.Pin), ImmutableDictionary<string,double>.Empty);
 

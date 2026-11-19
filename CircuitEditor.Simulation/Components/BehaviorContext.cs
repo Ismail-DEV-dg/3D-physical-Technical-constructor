@@ -31,7 +31,7 @@ public sealed class BehaviorContext(SimulationCircuit circuit, SimulationModelCa
         var from = circuit.Nets.Find(c.Id, a);
         var to = circuit.Nets.Find(c.Id, b);
         if (from is not null && to is not null)
-            yield return new(c.Id, $"{c.Reference}.{name}", from.Id, to.Id, kind, value, vf);
+            yield return new(c.Id, $"{c.Reference}.{name}", from.Id, to.Id, kind, value, vf, PinA: a, PinB: b);
     }
 
     public IEnumerable<DcBranchResult> Currents(Component c) =>

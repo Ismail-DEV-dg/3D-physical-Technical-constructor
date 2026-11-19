@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using CircuitEditor.App.ViewModels;
 using CircuitEditor.Core.Physical;
+using CircuitEditor.Core.Simulation;
 
 namespace CircuitEditor.App.Controls;
 
@@ -25,6 +26,15 @@ public sealed class BreadboardSurface : FrameworkElement
         typeof(int), typeof(BreadboardSurface), new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.AffectsRender,(owner,_)=>((BreadboardSurface)owner).RefreshHover()));
     public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register(nameof(Background),
         typeof(Brush), typeof(BreadboardSurface), new FrameworkPropertyMetadata(Brushes.Transparent, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty SimulationProperty = DependencyProperty.Register(nameof(Simulation),
+        typeof(SimulationState), typeof(BreadboardSurface), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty ShowVoltageProperty = DependencyProperty.Register(nameof(ShowVoltage),
+        typeof(bool), typeof(BreadboardSurface), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
+    public static readonly DependencyProperty ShowCurrentProperty = DependencyProperty.Register(nameof(ShowCurrent),
+        typeof(bool), typeof(BreadboardSurface), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
+    public SimulationState? Simulation { get => (SimulationState?)GetValue(SimulationProperty); set => SetValue(SimulationProperty, value); }
+    public bool ShowVoltage { get => (bool)GetValue(ShowVoltageProperty); set => SetValue(ShowVoltageProperty, value); }
+    public bool ShowCurrent { get => (bool)GetValue(ShowCurrentProperty); set => SetValue(ShowCurrentProperty, value); }
     public BreadboardViewModel? Scene { get => (BreadboardViewModel?)GetValue(SceneProperty); set => SetValue(SceneProperty, value); }
     public int Revision { get => (int)GetValue(RevisionProperty); set => SetValue(RevisionProperty, value); }
     public Brush Background { get => (Brush)GetValue(BackgroundProperty); set => SetValue(BackgroundProperty, value); }
@@ -64,11 +74,13 @@ public sealed class BreadboardSurface : FrameworkElement
             dc.PushTransform(new TranslateTransform(pose.X, pose.Y));
             dc.PushTransform(new RotateTransform(pose.Rotation));
             dc.DrawDrawing(components.Get(item, pose, pitch));
+            var signal = Simulation?.Components.GetValueOrDefault(item.Model.Id);
+            SimulationDrawing.Component(dc, item, signal);
             RealComponentDrawing.DrawSelection(dc, item, pose, pitch,
-                scene.Preview is { Success: false } && item.IsSelected);
+                scene.Preview is { Success: false } && item.IsSelected, signal?.Angle);
             dc.Pop(); dc.Pop();
         }
-        WireDrawing.Draw(dc, scene);
+        WireDrawing.Draw(dc, scene, simulation: Simulation, showVoltage: ShowVoltage, showCurrent: ShowCurrent);
         AnalysisDrawing.Draw(dc,scene.Project,true);
         VoltageDrawing.Draw(dc,scene.Project,true);
         dc.Pop(); dc.Pop();

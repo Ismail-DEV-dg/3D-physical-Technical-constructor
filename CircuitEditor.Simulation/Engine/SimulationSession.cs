@@ -56,10 +56,23 @@ public sealed partial class SimulationSession
 
     public SimulationState Step(CancellationToken token = default)
     {
-        if (failure is not null) return State = Capture();
+        Advance(token);
+        return Observe();
+    }
+
+    public bool HasHalted => failure is not null;
+
+    public void Advance(CancellationToken token = default)
+    {
+        if (HasHalted) return;
         var step = timeline.Step(token);
         if (step.IsHalted)
             Halt(new("SIM_OSCILLATION", step.Failure!, clock.Microseconds, IsError: true));
+        Settle();
+    }
+
+    public SimulationState Observe()
+    {
         Settle();
         return State = Capture();
     }
@@ -135,6 +148,8 @@ public sealed partial class SimulationSession
         return new(clock.Microseconds, failure is not null, failure)
         {
             Components = visuals,
+            Wires = Circuit.Wires(),
+            Pins = ReadPins(),
             Diagnostics = diagnostics.ToImmutableArray()
         };
     }

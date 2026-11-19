@@ -56,7 +56,7 @@ public sealed class GpioController(Component board, SimulationBoardProfile profi
         return fraction is double value ? (int)Math.Round(Math.Clamp(value, 0, 1) * ((1 << Profile.AdcBits) - 1)) : null;
     }
 
-    private static bool IsGpio(Pin pin) => pin.IsExposed && !pin.IsNoConnect &&
+    public static bool IsGpio(Pin pin) => pin.IsExposed && !pin.IsNoConnect &&
         (pin.Id.StartsWith("GPIO", StringComparison.Ordinal)
             || pin.Id.Length > 1 && pin.Id[0] is 'D' or 'A' && pin.Id.AsSpan(1).ToString().All(char.IsAsciiDigit));
 }

@@ -14,6 +14,7 @@ public sealed class SimulationCircuit
     private readonly IDcSolver solver;
     private readonly DcMatrixCache matrices = new();
     private readonly Dictionary<Guid, GpioController> controllers;
+    private readonly WireMeasurements wireMeasurements;
     private bool dirty = true;
     private IReadOnlyList<(double Start, DcResult Result)> phases = [];
 
@@ -22,6 +23,7 @@ public sealed class SimulationCircuit
         Project = new ProjectSnapshot(source).Restore();
         this.netlistBuilder = netlistBuilder;
         this.solver = solver;
+        wireMeasurements = new(Project, netlistBuilder);
         controllers = Project.Circuit.Components.Where(c => catalog.Boards.ContainsKey(c.Definition.Id))
             .ToDictionary(c => c.Id, c => new GpioController(c, catalog.Boards[c.Definition.Id]));
         Nets = netlistBuilder.Build(Project);
@@ -51,6 +53,7 @@ public sealed class SimulationCircuit
     {
         Nets = netlistBuilder.Build(Project);
         matrices.Clear();
+        wireMeasurements.Invalidate();
         dirty = true;
     }
 
@@ -71,6 +74,8 @@ public sealed class SimulationCircuit
         Average = PwmAveraging.Combine(segments);
         dirty = false;
     }
+
+    public System.Collections.Immutable.ImmutableDictionary<Guid, WireSignal> Wires() => wireMeasurements.Read(Nets, Average);
 
     public double? Voltage(PinReference pin) => Nets.Find(pin.ComponentId, pin.PinId) is { } net
         ? Average?.Voltages.GetValueOrDefault(net.Id) : null;
@@ -119,7 +124,9 @@ public sealed class SimulationCircuit
                 if (board.Drive(pin.Id, phase) is not double voltage || Nets.Find(board.Id, pin.Id) is not { } net) continue;
                 var resistance = board.Get(pin.Id).Mode == GpioMode.InputPullup
                     ? board.Profile.PullupResistanceOhms : board.Profile.OutputResistanceOhms;
-                yield return new(board.Id, GpioBranchName(board, pin.Id), net.Id, ground.Id, "TH", resistance, voltage);
+                yield return new(board.Id, GpioBranchName(board, pin.Id), net.Id, ground.Id, "TH", resistance, voltage,
+                    PinA: pin.Id, PinB: ground.Pins.First(p => p.ComponentId == board.Id &&
+                        component.Definition.Pins.Any(pin => pin.Id == p.PinId && pin.Type == PinType.Ground)).PinId);
             }
         }
     }

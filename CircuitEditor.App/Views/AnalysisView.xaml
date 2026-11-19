@@ -11,6 +11,7 @@
    <TabItem Header="Проблемы"><views:DiagnosticsView DataContext="{Binding DataContext.Diagnostics, RelativeSource={RelativeSource AncestorType=views:EditorLayoutView}}"/></TabItem>
    <TabItem Header="Расчёт DC"><views:CalculationResultsView DataContext="{Binding Results}"/></TabItem>
    <TabItem Header="Вывод"><views:OutputView DataContext="{Binding DataContext.Code.Output, RelativeSource={RelativeSource AncestorType=views:EditorLayoutView}}"/></TabItem>
+   <TabItem Header="Симуляция"><views:SimulationInspectorView DataContext="{Binding DataContext.Simulation, RelativeSource={RelativeSource AncestorType=views:EditorLayoutView}}"/></TabItem>
   </TabControl>
  </Grid>
 </UserControl>

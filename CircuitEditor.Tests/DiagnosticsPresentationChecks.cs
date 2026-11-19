@@ -39,7 +39,7 @@ internal static class DiagnosticsPresentationChecks
             var layout=(EditorLayoutView)window.FindName("EditorLayout");var inspector=(DockPane)layout.FindName("InspectorPane");
             Assert.IsType<PropertiesView>(inspector.Content);Assert.Empty(Find<TabControl>(inspector));
             var tools=(DockPane)layout.FindName("AnalysisPane");var tabs=Find<TabControl>(tools).Single();
-            Assert.Equal(new[]{"Проблемы","Расчёт DC","Вывод"},tabs.Items.Cast<TabItem>().Select(t=>t.Header.ToString()));
+            Assert.Equal(new[]{"Проблемы","Расчёт DC","Вывод","Симуляция"},tabs.Items.Cast<TabItem>().Select(t=>t.Header.ToString()));
             var list=Find<DiagnosticsView>(tools).Single();var message=Find<TextBox>(list).First(t=>t.DataContext is DiagnosticItemViewModel {Code:"CODE_AUTO_MARKERS"});
             Assert.True(message.IsReadOnly);var row=(DiagnosticItemViewModel)message.DataContext;
             row.CopyCommand.Execute(null);Assert.Contains("CODE_AUTO_MARKERS",services.Copied!);

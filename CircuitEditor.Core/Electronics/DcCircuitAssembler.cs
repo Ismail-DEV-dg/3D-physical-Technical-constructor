@@ -16,7 +16,7 @@ public static class DcCircuitAssembler
             var definition=catalog.Find(c.Definition.Id);var model=definition?.Model??"unsupported";
             string? Node(string pin)=>nets.Find(c.Id,pin)?.Id;
             void Add(string name,string a,string b,string kind,double value,double vf=0,double limit=0)
-            { if(Node(a) is { } x && Node(b) is { } y) branches.Add(new(c.Id,c.Reference+name,x,y,kind,value,vf,limit)); }
+            { if(Node(a) is { } x && Node(b) is { } y) branches.Add(new(c.Id,c.Reference+name,x,y,kind,value,vf,limit,a,b)); }
             double Parameter(string key,double fallback)=>c.Electrical.Parameters.GetValueOrDefault(key,fallback);
             if(model is "resistor" or "potentiometer")
             {
@@ -57,7 +57,7 @@ public static class DcCircuitAssembler
         }
         foreach(var s in new ErcContext(project,nets,catalog).Sources)
             if(nets.Find(s.ComponentId,s.Positive.PinId) is { } a && nets.Find(s.ComponentId,s.Negative.PinId) is { } b)
-                branches.Add(new(s.ComponentId,project.Circuit.Components.Single(c=>c.Id==s.ComponentId).Reference+"."+s.Positive.PinId,a.Id,b.Id,"V",s.Voltage));
+                branches.Add(new(s.ComponentId,project.Circuit.Components.Single(c=>c.Id==s.ComponentId).Reference+"."+s.Positive.PinId,a.Id,b.Id,"V",s.Voltage, PinA: s.Positive.PinId, PinB: s.Negative.PinId));
         return new(branches,unsupported,messages,invalid);
     }
 }
