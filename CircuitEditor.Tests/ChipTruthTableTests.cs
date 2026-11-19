@@ -64,6 +64,12 @@ public sealed class ChipTruthTableTests
         Assert.Equal("right/F/05", result.Bindings.Single(binding => binding.ContactId == "5").HoleId);
         Assert.Equal("right/F/02", result.Bindings.Single(binding => binding.ContactId == "8").HoleId);
         Assert.Equal(chip.Pins.Count, result.Bindings.Count);
+        var sameSide = board.Definition.Holes.Single(hole => hole.Id == "left/A/02");
+        var rejected = new ComponentInsertionService().Insert(project, component.Id, footprint, board.Id,
+            new ComponentPlacement(board.X + sameSide.Position.X, board.Y + sameSide.Position.Y, 0));
+        Assert.False(rejected.Success);
+        Assert.Contains("центрального канала", rejected.Error);
+        Assert.Equal(result.Bindings.ToArray(), project.Bindings.ToArray());
     }
 
     [Fact]

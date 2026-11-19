@@ -87,6 +87,25 @@ public sealed class ChipGraphTests
         Assert.Contains(errors, error => error.Contains("входы"));
     }
 
+    [Fact]
+    public void OpenCollectorReleasesHighAndBidirectionalDriverRespectsEnablePin()
+    {
+        var nand = ChipTruthTableTests.Nand();
+        ChipDefinition Connect(ChipPinType type, int? enable = null) => nand with
+        {
+            Pins = nand.Pins.Select(pin => pin.Number == 3
+                ? pin with { Type = type, EnablePin = enable, EnableLow = false } : pin).ToArray()
+        };
+        var evaluator = new ChipEvaluator();
+        var openCollector = evaluator.Compile(Connect(ChipPinType.OpenCollector));
+        Assert.Equal(ChipLevel.Z, openCollector(Inputs(false, false), ChipState.Empty).Outputs[3]);
+        Assert.Equal(ChipLevel.Low, openCollector(Inputs(true, true), ChipState.Empty).Outputs[3]);
+        var bidirectional = evaluator.Compile(Connect(ChipPinType.Bidirectional, 2));
+        Assert.Equal(ChipLevel.Z, bidirectional(Inputs(false, false), ChipState.Empty).Outputs[3]);
+        Assert.Equal(ChipLevel.High, bidirectional(Inputs(false, true), ChipState.Empty).Outputs[3]);
+    }
+
+
     private static Dictionary<int, ChipLevel> Inputs(bool first, bool second) =>
         new() { [1] = first ? ChipLevel.High : ChipLevel.Low, [2] = second ? ChipLevel.High : ChipLevel.Low };
 

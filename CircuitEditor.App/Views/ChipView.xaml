@@ -67,7 +67,7 @@
                                 <ComboBox DockPanel.Dock="Right" SelectedIndex="{Binding EnableIndex}" ToolTip="Активный уровень разрешающего входа">
                                     <ComboBoxItem Content="1"/><ComboBoxItem Content="0"/>
                                 </ComboBox>
-                                <TextBox Text="{Binding EnablePin, UpdateSourceTrigger=PropertyChanged}" ToolTip="Номер разрешающего входа, пусто если отсутствует"/>
+                                <TextBox Text="{Binding EnablePin, UpdateSourceTrigger=PropertyChanged}" ToolTip="Номер входа разрешения. Обязателен для двунаправленных выводов."/>
                             </DockPanel>
                         </UniformGrid>
                     </DataTemplate>
@@ -84,6 +84,13 @@
             <Border Visibility="{Binding IsGraph, Converter={StaticResource VisibleWhenTrue}}">
                 <local:ChipGraphView DataContext="{Binding Graph}"/>
             </Border>
+            <TextBlock Text="Экспорт документации" FontWeight="SemiBold" Margin="0,10,0,4"/>
+            <WrapPanel>
+                <Button Content="Распиновка PNG" Command="{Binding Documentation.PinoutPngCommand}" Margin="0,0,6,4"/>
+                <Button Content="Распиновка Markdown" Command="{Binding Documentation.PinoutMarkdownCommand}" Margin="0,0,6,4"/>
+                <Button Content="Таблица Markdown" Command="{Binding Documentation.TruthMarkdownCommand}" IsEnabled="{Binding IsTruth}" Margin="0,0,6,4"/>
+                <Button Content="Таблица CSV" Command="{Binding Truth.ExportCsvCommand}" IsEnabled="{Binding IsTruth}" Margin="0,0,6,4"/>
+            </WrapPanel>
             <local:ChipBenchView DataContext="{Binding Bench}"/>
             <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Foreground="{DynamicResource AccentBrush}" Margin="0,10,0,3"/>
             <ItemsControl ItemsSource="{Binding Problems}">

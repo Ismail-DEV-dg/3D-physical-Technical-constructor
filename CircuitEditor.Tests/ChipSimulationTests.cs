@@ -121,6 +121,31 @@ public sealed class ChipSimulationTests
         Assert.Empty(ChipBenchVerification.Verify(chip, (ChipTruthTable)chip.Behavior, factory));
     }
 
+    [Fact]
+    public void InputPulseShorterThanPropagationDelayDoesNotReachOutput()
+    {
+        using var design = new ElectricalTestCircuit();
+        var uno = design.Add("arduino-uno");
+        var chip = Add(design, ChipTruthTableTests.Nand() with { PropagationDelayUs = 200 });
+        LinkChip(design, uno, "5V", chip, "8");
+        LinkChip(design, uno, "GND", chip, "4");
+        LinkChip(design, uno, "D9", chip, "1");
+        LinkChip(design, uno, "5V", chip, "2");
+        var session = Start(design);
+        var control = new PinReference(uno.Model.Id, "D9");
+        var output = new PinReference(chip.Id, "3");
+        session.SetPin(control, new(GpioMode.Output));
+        session.Schedule(350, () => session.SetPin(control, new(GpioMode.Output, true)));
+        session.Schedule(400, () => session.SetPin(control, new(GpioMode.Output)));
+        var observed = new List<DigitalLevel>();
+        foreach (var time in new long[] { 300, 380, 551, 601 })
+            session.Schedule(time, () => observed.Add(session.Circuit.ChipOutput(output)));
+        Assert.False(session.Step().IsHalted);
+        Assert.Equal(4, observed.Count);
+        Assert.All(observed, level => Assert.Equal(DigitalLevel.High, level));
+    }
+
+
     private static Component Add(ElectricalTestCircuit design, ChipDefinition chip)
     {
         design.Project.Model.RegisterChip(chip);

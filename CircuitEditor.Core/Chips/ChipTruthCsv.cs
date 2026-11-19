@@ -11,17 +11,16 @@ public static class ChipTruthCsv
     private const string OutputPrefix = "OUT:";
 
     /// <summary>Разворачивает маски X во входах в полную таблицу с предсказуемым порядком колонок.</summary>
-    public static string Format(ChipTruthTable table)
+    public static string Format(ChipTruthTable table, IReadOnlyDictionary<int, string>? pinNames = null)
     {
         StringBuilder text = new();
         foreach (var section in table.Sections)
         {
-            text.AppendJoin(Delimiter, section.Inputs.Select(pin => InputPrefix + ChipPackage.PinId(pin))
-                .Concat(section.Outputs.Select(pin => OutputPrefix + ChipPackage.PinId(pin)))).AppendLine();
+            text.AppendJoin(Delimiter, section.Inputs.Select(pin => Column(InputPrefix, pin, pinNames))
+                .Concat(section.Outputs.Select(pin => Column(OutputPrefix, pin, pinNames)))).AppendLine();
             foreach (var pattern in ChipTruthLogic.Patterns(section.Inputs.Count))
             {
-                var result = section.Rows.First(row => row[0].Zip(pattern)
-                    .All(pair => pair.First == 'X' || pair.First == pair.Second))[1];
+                var result = ChipTruthLogic.ResultFor(section, pattern);
                 text.AppendJoin(Delimiter, pattern.Concat(result)).AppendLine();
             }
             text.AppendLine();
@@ -60,8 +59,45 @@ public static class ChipTruthCsv
         return new(sections);
     }
 
-    private static string[] Cells(string line) => line.Split(Delimiter, StringSplitOptions.TrimEntries);
-    private static int PinNumber(string column, string prefix) =>
-        int.TryParse(column.AsSpan(prefix.Length), NumberStyles.None, CultureInfo.InvariantCulture, out var number)
-            && number > 0 ? number : throw new FormatException("Некорректный номер вывода в заголовке CSV.");
+    private static string Column(string prefix, int pin, IReadOnlyDictionary<int, string>? names)
+    {
+        var value = prefix + ChipPackage.PinId(pin);
+        if (names?.TryGetValue(pin, out var name) == true) value += ":" + name;
+        return value.Contains(Delimiter) || value.Contains('"')
+            ? "\"" + value.Replace("\"", "\"\"", StringComparison.Ordinal) + "\"" : value;
+    }
+
+    private static string[] Cells(string line)
+    {
+        List<string> fields = [];
+        StringBuilder cell = new();
+        var quoted = false;
+        for (var i = 0; i < line.Length; i++)
+        {
+            var character = line[i];
+            if (character == '"')
+            {
+                if (quoted && i + 1 < line.Length && line[i + 1] == '"') { cell.Append('"'); i++; }
+                else quoted = !quoted;
+            }
+            else if (character == Delimiter && !quoted)
+            {
+                fields.Add(cell.ToString().Trim());
+                cell.Clear();
+            }
+            else cell.Append(character);
+        }
+        if (quoted) throw new FormatException("Кавычки в CSV не закрыты.");
+        fields.Add(cell.ToString().Trim());
+        return fields.ToArray();
+    }
+
+    private static int PinNumber(string column, string prefix)
+    {
+        var token = column.AsSpan(prefix.Length);
+        var separator = token.IndexOf(':');
+        if (separator >= 0) token = token[..separator];
+        return int.TryParse(token, NumberStyles.None, CultureInfo.InvariantCulture, out var number) && number > 0
+            ? number : throw new FormatException("Некорректный номер вывода в заголовке CSV.");
+    }
 }

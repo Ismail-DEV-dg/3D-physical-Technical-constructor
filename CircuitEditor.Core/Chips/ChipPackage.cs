@@ -8,6 +8,9 @@ namespace CircuitEditor.Core.Chips;
 /// <summary>Геометрия стандартного узкого DIP с шагом 2,54 мм и межрядным расстоянием 7,62 мм.</summary>
 public static class ChipPackage
 {
+    /// <summary>Ключ процедурного корпуса DIP.</summary>
+    public const string Renderer = "dip-chip";
+
     private const double RowSeparation = 3 * PhysicalSettings.FreeGridMm;
     private const double BodyInset = PhysicalSettings.FreeGridMm / 3;
     private const double EndMargin = PhysicalSettings.FreeGridMm / 2;
@@ -37,7 +40,7 @@ public static class ChipPackage
             return new ContactDefinition(PinId(pin), PinId(pin), left ? 0 : RowSeparation,
                 row * PhysicalSettings.FreeGridMm);
         }).ToArray();
-        return new(chip.ComponentId, chip.ComponentId, "dip-chip", "breadboard",
+        return new(chip.ComponentId, chip.ComponentId, Renderer, "breadboard",
             new(BodyInset, -EndMargin, RowSeparation - 2 * BodyInset, side * PhysicalSettings.FreeGridMm),
             contacts, [0, 90, 180, 270]);
     }

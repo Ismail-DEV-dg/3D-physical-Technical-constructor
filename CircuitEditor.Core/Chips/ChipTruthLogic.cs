@@ -84,6 +84,9 @@ public static class ChipTruthLogic
 
     internal static ChipLevel Level(char value) => value switch { '0' => ChipLevel.Low, '1' => ChipLevel.High, _ => ChipLevel.X };
 
+    internal static string ResultFor(ChipTruthSection section, string pattern) =>
+        section.Rows.First(row => Matches(row[0], pattern))[1];
+
     private static bool Matches(string candidate, string binary) =>
         candidate.Zip(binary).All(pair => pair.First is 'X' or 'Z' || pair.First == pair.Second);
 

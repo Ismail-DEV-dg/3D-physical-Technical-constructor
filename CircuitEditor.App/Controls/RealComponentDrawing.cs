@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Media;
 using CircuitEditor.App.ViewModels;
 using CircuitEditor.Core.Physical;
+using CircuitEditor.Core.Chips;
 using CircuitEditor.Core.Placement;
 
 namespace CircuitEditor.App.Controls;
@@ -29,7 +30,7 @@ internal static class RealComponentDrawing
         }
         switch (footprint.Renderer)
         {
-            case "dip-chip": ChipPackageDrawing.Draw(dc, footprint, item.Name); break;
+            case ChipPackage.Renderer: ChipPackageDrawing.Draw(dc, footprint, item.Name); break;
             case "arduino-uno": ArduinoUnoDrawing.Draw(dc, footprint); break;
             case "arduino-nano": ArduinoNanoDrawing.Draw(dc, footprint); break;
             case "esp32-devkit": Esp32Drawing.Draw(dc, footprint); break;

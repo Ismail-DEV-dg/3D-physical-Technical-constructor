@@ -26,7 +26,8 @@ public static class ChipValidator
             return errors;
         }
 
-        if (chip.Pins.Any(pin => string.IsNullOrWhiteSpace(pin.Name) || !Enum.IsDefined(pin.Type)
+        if (chip.Pins.Any(pin => string.IsNullOrWhiteSpace(pin.Name) || pin.Name.Contains('\r')
+                || pin.Name.Contains('\n') || !Enum.IsDefined(pin.Type)
                 || pin.IsUnused && pin.Type != ChipPinType.Input)
             || chip.Pins.Select(pin => pin.Name?.Trim()).Distinct(StringComparer.OrdinalIgnoreCase).Count() != count)
             errors.Add("Укажите уникальное имя и корректный тип каждого вывода.");
@@ -35,6 +36,8 @@ public static class ChipValidator
 
         var inputs = chip.Pins.Where(pin => pin.Reads).Select(pin => pin.Number).ToHashSet();
         var outputs = chip.Pins.Where(pin => pin.Drives).Select(pin => pin.Number).ToHashSet();
+        foreach (var pin in chip.Pins.Where(pin => pin.Type == ChipPinType.Bidirectional && !pin.EnablePin.HasValue))
+            errors.Add($"Двунаправленный вывод {pin.Number}: укажите вход разрешения драйвера.");
         foreach (var pin in chip.Pins.Where(pin => pin.EnablePin.HasValue))
         {
             if (!pin.Drives || pin.EnablePin == pin.Number || !inputs.Contains(pin.EnablePin!.Value))

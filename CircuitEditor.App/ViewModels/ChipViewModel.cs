@@ -20,7 +20,8 @@ public sealed partial class ChipViewModel : WorkspaceViewModel
 
     public ChipViewModel(ILogicFamilyRepository? familyRepository = null, IDialogService? dialogs = null,
         IChipCsvRepository? csv = null, IExportRepository? exports = null, IChipTestBenchFactory? bench = null,
-        IUserChipLibraryService? library = null, IChipRepository? storage = null, IChipTemplateRepository? templates = null)
+        IUserChipLibraryService? library = null, IChipRepository? storage = null, IChipTemplateRepository? templates = null,
+        IChipPinoutRenderer? pinout = null)
         : base(WorkspaceKind.Chip, "Микросхема", "03", "Конструктор микросхем", "")
     {
         var catalog = familyRepository?.Load();
@@ -29,6 +30,7 @@ public sealed partial class ChipViewModel : WorkspaceViewModel
         Graph = new(this);
         Bench = new(this, bench);
         Library = new(this, library, storage, templates, dialogs);
+        Documentation = new(this, dialogs, exports, pinout);
         Definition = ChipEditorDefaults.Create(families.Keys.FirstOrDefault() ?? "ttl");
         Load(Definition);
         if (catalog is { Success: false }) Message = catalog.Error!;
@@ -38,6 +40,7 @@ public sealed partial class ChipViewModel : WorkspaceViewModel
     public ChipGraphEditorViewModel Graph { get; }
     public ChipBenchViewModel Bench { get; }
     public ChipLibraryViewModel Library { get; }
+    public ChipDocumentationViewModel Documentation { get; }
     public ChipDefinition Definition { get; private set; }
     public IReadOnlyList<ChipPinEdit> Pins { get; private set; } = [];
     public IReadOnlyList<string> Problems { get; private set; } = [];

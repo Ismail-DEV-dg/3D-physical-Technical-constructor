@@ -100,7 +100,8 @@ public sealed partial class ChipTruthEditorViewModel(ChipViewModel editor, IDial
     {
         if (!editor.CheckReady() || exports is null || dialogs?.SaveFile(CsvFilter, ".csv", editor.Definition.Name) is not { } path) return;
         var encoding = new UTF8Encoding(true);
-        if (exports.Write(path, [.. encoding.GetPreamble(), .. encoding.GetBytes(ChipTruthCsv.Format(table))]) is { } error)
+        var names = editor.Definition.Pins.ToDictionary(pin => pin.Number, pin => pin.Name);
+        if (exports.Write(path, [.. encoding.GetPreamble(), .. encoding.GetBytes(ChipTruthCsv.Format(table, names))]) is { } error)
             dialogs.ShowError(error);
     }
 

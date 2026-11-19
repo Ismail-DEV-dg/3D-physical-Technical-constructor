@@ -1,4 +1,5 @@
 using CircuitEditor.Core.Breadboards;
+using CircuitEditor.Core.Chips;
 using CircuitEditor.Core.Layout;
 using CircuitEditor.Core.Models;
 using CircuitEditor.Core.Physical;
@@ -31,6 +32,7 @@ public sealed class ComponentInsertionService : IComponentInsertionService
         var snapped = new ComponentPlacement(proposed.X + BreadboardGeometry.World(board,anchor.Position).X - first.X,
             proposed.Y + BreadboardGeometry.World(board,anchor.Position).Y - first.Y, proposed.Rotation, footprint.IsFlexible ? span : 0);
         var candidates = new List<ContactBinding>();
+        var dipGroups = footprint.Renderer == ChipPackage.Renderer ? new HashSet<string>(StringComparer.Ordinal) : null;
         foreach (var contact in footprint.Contacts)
         {
             if (!component.Definition.Pins.Any(pin => pin.Id == contact.ElectricalPinId && pin.IsExposed))
@@ -43,6 +45,8 @@ public sealed class ComponentInsertionService : IComponentInsertionService
                 return Fail("Два контакта попали в одно отверстие.");
             if (project.Bindings.Any(binding => binding.BoardId == boardId && binding.HoleId == hole.Id
                 && binding.ComponentId != componentId)) return Fail($"Отверстие {hole.Id} занято.");
+            if (dipGroups is not null && !dipGroups.Add(hole.GroupId))
+                return Fail("Вставьте DIP поперёк центрального канала, чтобы выводы не замыкались.");
             candidates.Add(new ContactBinding(componentId, contact.Id, boardId, hole.Id));
         }
         return new InsertionResult(true, null, snapped, candidates.AsReadOnly());

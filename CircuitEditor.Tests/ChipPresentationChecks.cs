@@ -1,4 +1,6 @@
+using System.IO;
 using System.Windows;
+using CircuitEditor.App.Services;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using CircuitEditor.App.ViewModels;
@@ -24,6 +26,12 @@ internal static class ChipPresentationChecks
         model.Bench.StartCommand.Execute(null);
         Render(view);
         Assert.Equal(8, model.Pins.Count);
+        var renderer = new ChipPinoutRenderer();
+        var png = renderer.Render(ChipTemplateTests.Get("74HC595"));
+        using var stream = new MemoryStream(png);
+        var pinout = new PngBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+        Assert.True(pinout.Frames[0].PixelWidth > 200);
+        Assert.True(pinout.Frames[0].PixelHeight > 300);
     }
 
     private static void Render(FrameworkElement view)

@@ -70,6 +70,7 @@ public static class Program
         registrations.AddSingleton<IDialogService, DialogService>();
         registrations.AddSingleton<IAutosaveService, AutosaveService>();
         registrations.AddSingleton<IImageExportService, ImageExportService>();
+        registrations.AddSingleton<IChipPinoutRenderer, ChipPinoutRenderer>();
         registrations.AddSingleton<ISvgExportService, SvgExportService>();
         registrations.AddSingleton<CircuitEditor.Core.Export.IBomExportService, CircuitEditor.Core.Export.BomExportService>();
         registrations.AddSingleton<ProjectSessionViewModel>();
