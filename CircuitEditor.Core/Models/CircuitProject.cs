@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using CircuitEditor.Core.Breadboards;
+using CircuitEditor.Core.Chips;
 using CircuitEditor.Core.Physical;
 using CircuitEditor.Core.Placement;
 using CircuitEditor.Core.Simulation;
@@ -10,11 +11,13 @@ namespace CircuitEditor.Core.Models;
 public sealed class CircuitProject
 {
     private readonly List<ContactBinding> bindings;
+    private readonly List<ChipDefinition> chips;
     /// <summary>Создаёт или восстанавливает полный проект без файлового ввода-вывода.</summary>
     [JsonConstructor]
     public CircuitProject(Circuit? circuit = null, ViewLayout? mockupLayout = null, ViewLayout? schematicLayout = null,
         IReadOnlyList<BreadboardInstance>? breadboards = null, IReadOnlyList<FootprintDefinition>? footprints = null,
-        IReadOnlyList<ContactBinding>? bindings = null, Code.SketchDocument? sketch = null, SimulationSetup? simulationSetup = null)
+        IReadOnlyList<ContactBinding>? bindings = null, Code.SketchDocument? sketch = null, SimulationSetup? simulationSetup = null,
+        IReadOnlyList<ChipDefinition>? chips = null)
     {
         Circuit = circuit ?? new Circuit();
         MockupLayout = mockupLayout ?? new ViewLayout(RepresentationKind.Mockup);
@@ -24,6 +27,7 @@ public sealed class CircuitProject
         Breadboards = Array.AsReadOnly(breadboards?.ToArray() ?? []);
         Footprints = Array.AsReadOnly(footprints?.ToArray() ?? []);
         this.bindings = bindings?.ToList() ?? [];
+        this.chips = chips?.ToList() ?? [];
         SetSketch(sketch ?? new());
         SetSimulationSetup(simulationSetup ?? new());
     }
@@ -36,7 +40,22 @@ public sealed class CircuitProject
     /// <summary>Платы, видимые только в макете.</summary>
     public IReadOnlyList<BreadboardInstance> Breadboards { get; private set; }
     /// <summary>Физические определения, пригодные для сериализации проекта.</summary>
-    public IReadOnlyList<FootprintDefinition> Footprints { get; }
+    public IReadOnlyList<FootprintDefinition> Footprints { get; private set; }
+
+    /// <summary>Версии пользовательских микросхем, которыми владеет проект.</summary>
+    public IReadOnlyList<ChipDefinition> Chips => chips.AsReadOnly();
+
+    /// <summary>Добавляет новую версию и корпус для размещения её экземпляров.</summary>
+    public void RegisterChip(ChipDefinition definition)
+    {
+        if (chips.Any(chip => chip.ComponentId == definition.ComponentId)) return;
+        var footprint = ChipPackage.Footprint(definition);
+        chips.Add(definition);
+        Footprints = Array.AsReadOnly(Footprints.Append(footprint).ToArray());
+    }
+
+    /// <summary>Находит определение установленной версии по ключу электрической модели.</summary>
+    public ChipDefinition? FindChip(string componentId) => chips.Find(chip => chip.ComponentId == componentId);
     /// <summary>Вставленные физические контакты.</summary>
     public IReadOnlyList<ContactBinding> Bindings => bindings.AsReadOnly();
     /// <summary>Снимок активного сеанса, исключённый из файлов проекта и истории.</summary>
@@ -79,7 +98,9 @@ public sealed class CircuitProject
     public void Restore(CircuitProject state)
     {
         Circuit = state.Circuit; MockupLayout = state.MockupLayout; SchematicLayout = state.SchematicLayout;
-        Breadboards = state.Breadboards; bindings.Clear(); bindings.AddRange(state.Bindings);
+        Breadboards = state.Breadboards; Footprints = state.Footprints;
+        chips.Clear(); chips.AddRange(state.Chips);
+        bindings.Clear(); bindings.AddRange(state.Bindings);
         Simulation = new();
     }
     /// <summary>Перемещает/поворачивает плату вместе со вставленными экземплярами и внутренними изгибами.</summary>

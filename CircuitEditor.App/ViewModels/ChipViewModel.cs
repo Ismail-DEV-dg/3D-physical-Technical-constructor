@@ -1,6 +1,7 @@
 using CircuitEditor.App.Services;
 using CircuitEditor.Core.Chips;
 using CircuitEditor.Core.Repositories;
+using CircuitEditor.Simulation.Instruments;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -18,13 +19,14 @@ public sealed partial class ChipViewModel : WorkspaceViewModel
     [ObservableProperty] private string message = "";
 
     public ChipViewModel(ILogicFamilyRepository? familyRepository = null, IDialogService? dialogs = null,
-        IChipCsvRepository? csv = null, IExportRepository? exports = null)
+        IChipCsvRepository? csv = null, IExportRepository? exports = null, IChipTestBenchFactory? bench = null)
         : base(WorkspaceKind.Chip, "Микросхема", "03", "Конструктор микросхем", "")
     {
         var catalog = familyRepository?.Load();
         families = catalog?.Value ?? new Dictionary<string, LogicFamilyProfile>();
         Truth = new(this, dialogs, csv, exports);
         Graph = new(this);
+        Bench = new(this, bench);
         Definition = ChipEditorDefaults.Create(families.Keys.FirstOrDefault() ?? "ttl");
         Load(Definition);
         if (catalog is { Success: false }) Message = catalog.Error!;
@@ -32,6 +34,7 @@ public sealed partial class ChipViewModel : WorkspaceViewModel
 
     public ChipTruthEditorViewModel Truth { get; }
     public ChipGraphEditorViewModel Graph { get; }
+    public ChipBenchViewModel Bench { get; }
     public ChipDefinition Definition { get; private set; }
     public IReadOnlyList<ChipPinEdit> Pins { get; private set; } = [];
     public IReadOnlyList<string> Problems { get; private set; } = [];
@@ -110,6 +113,7 @@ public sealed partial class ChipViewModel : WorkspaceViewModel
     private void Load(ChipDefinition value)
     {
         Definition = value;
+        Bench.Reset();
         ChipName = value.Name;
         ChipDescription = value.Description;
         SelectedFamily = value.Family;

@@ -1,3 +1,4 @@
+using CircuitEditor.Core.Chips;
 using CircuitEditor.Core.Electronics;
 using CircuitEditor.Core.Models;
 using CircuitEditor.Core.Simulation;
@@ -10,6 +11,43 @@ public sealed class BehaviorContext(SimulationCircuit circuit, SimulationModelCa
     Action<long, Action> schedule)
 {
     internal Dictionary<Guid, ComponentMemory> Memory { get; } = [];
+    internal Dictionary<Guid, ChipRuntime> Chips { get; } = [];
+    internal ChipDefinition? Chip(Component component) => circuit.Project.FindChip(component.Definition.Id);
+
+    internal double? ChipVoltage(Component component, string a, string b)
+    {
+        var left = circuit.Nets.Find(component.Id, a)?.Id;
+        var right = circuit.Nets.Find(component.Id, b)?.Id;
+        var result = circuit.ResultAt(Now);
+        return left is not null && right is not null
+            && result?.References.TryGetValue(left, out var reference) == true
+            && result.References.GetValueOrDefault(right) == reference
+            ? result.Voltages.GetValueOrDefault(left) - result.Voltages.GetValueOrDefault(right) : null;
+    }
+
+    internal ChipLevel ReadChip(Component component, string pin, string ground, LogicFamilyProfile family, double supply)
+    {
+        var net = circuit.Nets.Find(component.Id, pin);
+        var drivers = net is null ? [] : circuit.DriverLevels(net, Now).Distinct().ToArray();
+        return drivers.Length > 1 || drivers.Contains(DigitalLevel.X) ? ChipLevel.X
+            : family.Read(ChipVoltage(component, pin, ground), supply);
+    }
+
+    internal void PublishChip(Component component, IReadOnlyDictionary<int, ChipLevel> outputs)
+    {
+        foreach (var (pin, level) in outputs)
+            circuit.SetChipLevel(new(component.Id, ChipPackage.PinId(pin)), level);
+    }
+
+    internal void ScheduleChip(long due, Func<bool> update) => schedule(due, () =>
+    {
+        if (update()) circuit.InvalidateParameters();
+    });
+
+    internal IEnumerable<DcBranchResult> PhaseCurrents(Component c) =>
+        circuit.PhaseResults.SelectMany(result => result.Branches.Where(b => b.ComponentId == c.Id));
+
+
     public long Now { get; internal set; }
 
     internal ComponentMemory For(Component c)

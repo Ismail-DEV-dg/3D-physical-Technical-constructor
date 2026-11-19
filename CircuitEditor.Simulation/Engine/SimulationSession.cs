@@ -42,8 +42,10 @@ public sealed class SimulationSession
         this.clock = clock;
         this.timeline = timeline;
         var registry = behaviors.ToDictionary(behavior => behavior.ComponentType);
-        parts = circuit.Project.Circuit.Components.Where(c => registry.ContainsKey(c.Definition.Id))
-            .Select(c => (c, registry[c.Definition.Id])).ToArray();
+        parts = circuit.Project.Circuit.Components.Select(component => (Part: component,
+                Behavior: registry.GetValueOrDefault(component.Definition.Id) ??
+                    (circuit.Project.FindChip(component.Definition.Id) is null ? null : registry.GetValueOrDefault(ChipBehavior.TypeId))))
+            .Where(part => part.Behavior is not null).Select(part => (part.Part, part.Behavior!)).ToArray();
         modeled = parts.Select(p => p.Part.Id).ToHashSet();
         context = new(circuit, catalog, Schedule);
         if (libraryError is not null)
@@ -166,7 +168,11 @@ public sealed class SimulationSession
             if (!Circuit.IsDirty)
             {
                 if (changed || i > 0)
+                {
                     foreach (var problem in diagnosticReader.Read(Circuit, catalog, clock.Microseconds)) Report(problem);
+                    foreach (var (part, behavior) in parts)
+                        foreach (var problem in behavior.Diagnostics(context, part)) Report(problem);
+                }
                 return;
             }
         }

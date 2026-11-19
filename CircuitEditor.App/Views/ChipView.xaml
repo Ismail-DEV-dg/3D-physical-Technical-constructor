@@ -83,6 +83,7 @@
             <Border Visibility="{Binding IsGraph, Converter={StaticResource VisibleWhenTrue}}">
                 <local:ChipGraphView DataContext="{Binding Graph}"/>
             </Border>
+            <local:ChipBenchView DataContext="{Binding Bench}"/>
             <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Foreground="{DynamicResource AccentBrush}" Margin="0,10,0,3"/>
             <ItemsControl ItemsSource="{Binding Problems}">
                 <ItemsControl.ItemTemplate>

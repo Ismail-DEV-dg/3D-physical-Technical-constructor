@@ -15,9 +15,12 @@ internal static class SimulationRegistration
     internal static void AddSimulation(this IServiceCollection services)
     {
         services.AddSingleton<ISimulationModelRepository, JsonSimulationModelRepository>();
+        services.AddSingleton<ILogicFamilyRepository, JsonLogicFamilyRepository>();
+        services.AddSingleton<CircuitEditor.Core.Chips.IChipEvaluator, CircuitEditor.Core.Chips.ChipEvaluator>();
         services.AddSingleton<IScenarioRepository, JsonScenarioRepository>();
         services.AddSingleton<IScenarioRunner, ScenarioRunner>();
         services.AddSingleton<IComponentBehavior, LedBehavior>();
+        services.AddSingleton<IComponentBehavior, ChipBehavior>();
         services.AddSingleton<IComponentBehavior, RgbLedBehavior>();
         services.AddSingleton<IComponentBehavior, RelayBehavior>();
         services.AddSingleton<IComponentBehavior, BuzzerBehavior>();
@@ -41,6 +44,7 @@ internal static class SimulationRegistration
         services.AddSingleton<IInstrument, Multimeter>();
         services.AddSingleton<IInstrument, Oscilloscope>();
         services.AddSingleton<IInstrument, LogicAnalyzer>();
+        services.AddSingleton<IChipTestBenchFactory, ChipTestBenchFactory>();
         services.AddTransient<ISimulationClock, SimulationClock>();
         services.AddTransient<ISimulationEngine, SimulationEngine>();
         services.AddSingleton<Func<ISimulationEngine>>(provider => provider.GetRequiredService<ISimulationEngine>);

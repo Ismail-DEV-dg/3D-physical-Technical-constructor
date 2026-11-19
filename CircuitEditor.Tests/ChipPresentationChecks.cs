@@ -5,6 +5,7 @@ using CircuitEditor.App.ViewModels;
 using CircuitEditor.App.Views;
 using CircuitEditor.Core.Chips;
 using CircuitEditor.Infrastructure.Repositories;
+using CircuitEditor.Simulation.Instruments;
 
 namespace CircuitEditor.Tests;
 
@@ -12,13 +13,15 @@ internal static class ChipPresentationChecks
 {
     public static void Run(ResourceDictionary resources)
     {
-        var model = new ChipViewModel(new JsonLogicFamilyRepository());
+        var model = new ChipViewModel(new JsonLogicFamilyRepository(), bench: new ChipTestBenchFactory(new ChipEvaluator()));
         var view = new ChipView { DataContext = model, Resources = resources };
+        model.Bench.StartCommand.Execute(null);
         Render(view);
         model.ShowGraphCommand.Execute(null);
         model.Graph.GateKind = ChipGateKind.Nand;
         model.Graph.GatePorts = "P1, P2";
         model.Graph.AddGateCommand.Execute(null);
+        model.Bench.StartCommand.Execute(null);
         Render(view);
         Assert.Equal(8, model.Pins.Count);
     }

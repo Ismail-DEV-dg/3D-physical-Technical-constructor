@@ -42,6 +42,7 @@ public static class Program
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.BatteryShortRule>();
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.EspOvervoltageRule>();
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.DisconnectedSupplyRule>();
+        registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.ChipSupplyRule>();
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.RequiredPinRule>();
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.I2cAddressRule>();
         registrations.AddSingleton<CircuitEditor.Core.Validation.IErcRule, CircuitEditor.Core.Validation.LedResistorRule>();

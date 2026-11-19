@@ -1,3 +1,4 @@
+using CircuitEditor.Core.Chips;
 using CircuitEditor.Core.Electronics;
 using CircuitEditor.Core.History;
 using CircuitEditor.Core.Models;
@@ -15,6 +16,7 @@ public sealed class SimulationCircuit
     private readonly DcMatrixCache matrices = new();
     private readonly Dictionary<Guid, GpioController> controllers;
     private readonly WireMeasurements wireMeasurements;
+    private readonly Dictionary<PinReference, DigitalLevel> chipLevels = [];
     private bool dirty = true;
     private PwmPhasePlan? pwm;
     private Dictionary<string, DcResult> phases = [];
@@ -93,19 +95,33 @@ public sealed class SimulationCircuit
 
     public DigitalLevel ReadDigital(Net net, long microseconds, PinReference? pin = null)
     {
-        var active = net.Pins.Where(p => controllers.ContainsKey(p.ComponentId)).Select(p =>
-            controllers[p.ComponentId].OutputAt(p.PinId, microseconds)).Where(level => level != DigitalLevel.Z).Distinct().ToArray();
-        if (active.Length > 1) return DigitalLevel.X;
+        var active = DriverLevels(net, microseconds).Distinct().ToArray();
+        if (active.Length > 1 || active.Contains(DigitalLevel.X)) return DigitalLevel.X;
         var reference = (pin is null ? null : controllers.GetValueOrDefault(pin.ComponentId)) ?? net.Pins
             .Select(p => controllers.GetValueOrDefault(p.ComponentId)).FirstOrDefault(b => b is not null);
         var result = ResultAt(microseconds);
         var voltage = result?.Voltages.GetValueOrDefault(net.Id);
         if (voltage is null) return active.Length == 1 ? active[0] : DigitalLevel.Z;
+        if (reference is null && active.Length == 1 && net.Pins.Any(chipLevels.ContainsKey)) return active[0];
         var supply = reference?.Profile.LogicVoltage ?? controllers.Values.FirstOrDefault()?.Profile.LogicVoltage;
-        if (supply is null) return DigitalLevel.X;
+        if (supply is null) return active.Length == 1 ? active[0] : DigitalLevel.X;
         return voltage <= supply * LowThresholdFraction ? DigitalLevel.Low :
             voltage >= supply * HighThresholdFraction ? DigitalLevel.High : DigitalLevel.X;
     }
+
+    internal IEnumerable<DigitalLevel> DriverLevels(Net net, long micros) =>
+        net.Pins.Select(pin => controllers.GetValueOrDefault(pin.ComponentId)?.OutputAt(pin.PinId, micros)
+                              ?? chipLevels.GetValueOrDefault(pin, DigitalLevel.Z))
+            .Where(level => level != DigitalLevel.Z);
+
+    public DigitalLevel ChipOutput(PinReference pin) => chipLevels.GetValueOrDefault(pin, DigitalLevel.Z);
+
+    internal void SetChipLevel(PinReference pin, ChipLevel level)
+    {
+        if (level == ChipLevel.Z) { chipLevels.Remove(pin); return; }
+        chipLevels[pin] = level switch { ChipLevel.Low => DigitalLevel.Low, ChipLevel.High => DigitalLevel.High, _ => DigitalLevel.X };
+    }
+
 
     public double? PulseWidth(PinReference input)
     {
