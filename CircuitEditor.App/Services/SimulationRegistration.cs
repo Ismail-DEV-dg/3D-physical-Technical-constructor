@@ -5,8 +5,10 @@ using CircuitEditor.Simulation.Components;
 using CircuitEditor.Simulation.Engine;
 using CircuitEditor.Simulation.Instruments;
 using CircuitEditor.Simulation.Scenarios;
+using CircuitEditor.Simulation.Sketches;
 using CircuitEditor.Simulation.Timing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CircuitEditor.App.Services;
 
@@ -19,6 +21,8 @@ internal static class SimulationRegistration
         services.AddSingleton<CircuitEditor.Core.Chips.IChipEvaluator, CircuitEditor.Core.Chips.ChipEvaluator>();
         services.AddSingleton<IScenarioRepository, JsonScenarioRepository>();
         services.AddSingleton<IScenarioRunner, ScenarioRunner>();
+        services.TryAddSingleton<ICodeTemplateRepository, JsonCodeTemplateRepository>();
+        services.AddSingleton<ISketchRunner, SketchRunner>();
         services.AddSingleton<IComponentBehavior, LedBehavior>();
         services.AddSingleton<IComponentBehavior, ChipBehavior>();
         services.AddSingleton<IComponentBehavior, RgbLedBehavior>();

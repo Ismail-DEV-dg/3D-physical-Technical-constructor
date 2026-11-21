@@ -24,7 +24,7 @@ public sealed class BoardInteractionViewModel(BreadboardViewModel scene)
         if(dragging)
         {
             if(input.Action==CanvasAction.Move)
-            {project.Model.TransformBoard(board.Id,PhysicalSettings.SnapFree(point.X-grabX),PhysicalSettings.SnapFree(point.Y-grabY),board.Rotation);project.Refresh();}
+            {project.Model.TransformBoard(board.Id,PhysicalSettings.SnapFree(point.X-grabX),PhysicalSettings.SnapFree(point.Y-grabY),board.Rotation);project.Wiring.InvalidatePaths();project.Refresh();}
             if(input.Action==CanvasAction.Up){dragging=false;project.EndGesture();project.Refresh();}
             return true;
         }

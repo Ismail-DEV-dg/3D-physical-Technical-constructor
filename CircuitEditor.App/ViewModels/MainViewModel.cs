@@ -31,7 +31,11 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         IClipboardService? clipboard=null,IErrorDocumentationService? documentation=null,IErrorHelpService? errorHelp=null, SimulationViewModel? simulation = null)
     {
         Simulation = simulation;
-        if (Simulation is not null) Simulation.ConfigurationRequested += OpenSimulationPanel;
+        if (Simulation is not null)
+        {
+            Simulation.ConfigurationRequested += OpenSimulationPanel;
+            Simulation.SketchStarted += ObserveSketch;
+        }
         this.errorHelp=errorHelp;
         this.shortcutGuide=shortcutGuide;
         this.calculator=calculator;
@@ -62,7 +66,21 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public ProjectAnalysisViewModel? Analysis { get; }
     public PanelLayoutViewModel Panels { get; } = new();
     public DiagnosticsViewModel Diagnostics {get;}
-    private void OnSimulationFrame(object? sender, Core.Simulation.SimulationState state) => Code.Output.ReceiveSerial(state);
+    private void ObserveSketch(object? sender, EventArgs e)
+    {
+        if (navigation.Current.Kind != WorkspaceKind.ThreeD)
+            navigation.Navigate(WorkspaceKind.Mockup);
+    }
+
+    private void OnSimulationFrame(object? sender, Core.Simulation.SimulationState state)
+    {
+        Code.Output.ReceiveSerial(state);
+        if (!state.IsHalted || state.Diagnostics.FirstOrDefault(d => d.SketchLine.HasValue) is not { } error) return;
+        Diagnostics.Source = "Все";
+        Diagnostics.Severity = "Все";
+        Diagnostics.Search = "";
+        Code.RevealProblem(new(error.Message, error.SketchLine!.Value, error.SketchColumn ?? 1, "Error", error.Code));
+    }
     private void OpenSimulationPanel(object? sender, EventArgs e) => OnCodeTools(sender, 3);
     private void OnInspectRequested(object? sender, EventArgs e) => OnCodeTools(sender,Analysis?.InspectorTabIndex==2?1:0);
     [RelayCommand] private void Documentation(string? section) => errorHelp?.ShowSection(section ?? "home");
@@ -216,6 +234,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         if (Simulation is not null)
         {
             Simulation.ConfigurationRequested -= OpenSimulationPanel;
+            Simulation.SketchStarted -= ObserveSketch;
             Simulation.FrameChanged -= OnSimulationFrame;
         }
         Code.ShowCodeRequested-=OnShowCode;Code.ToolsRequested-=OnCodeTools;Code.PropertyChanged-=OnCodeChanged;

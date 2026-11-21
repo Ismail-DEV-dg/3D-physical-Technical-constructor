@@ -82,7 +82,8 @@
                         <MenuItem Header="Калькулятор…" Command="{Binding CalculatorCommand}" ToolTip="{input:ShortcutHint Calculator}"/>
                         <MenuItem Header="Рассчитать цепь" Command="{Binding Analysis.CalculateCommand}" ToolTip="{input:ShortcutHint Calculate}"/>
                         <MenuItem Header="Проверить соединения" Command="{Binding Analysis.CheckCommand}" ToolTip="{input:ShortcutHint Check}"/>
-                        <MenuItem Header="Запустить симуляцию" Command="{Binding ExplainCommand}" CommandParameter="Симуляция"/>
+                        <MenuItem Header="Запустить схему без кода" Command="{Binding Simulation.StartCircuitCommand}"/>
+                        <MenuItem Header="{Binding Simulation.SketchPlaybackAction}" Command="{Binding Simulation.ToggleSketchCommand}" InputGestureText="Ctrl+Shift+B"/>
                     </MenuItem>
                     <MenuItem Header="_Справка">
                         <MenuItem Header="Документация…" Command="{Binding DocumentationCommand}"/>
@@ -115,6 +116,28 @@
                                MaxWidth="390" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Command="{Binding Simulation.ToggleSketchCommand}" Style="{StaticResource PrimaryAction}"
+                            ContentTemplate="{x:Null}" ToolTip="{input:ShortcutHint RunSketch}"
+                            AutomationProperties.Name="{Binding Simulation.SketchPlaybackAction}" MinWidth="146" Margin="0,0,4,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Width="15" Height="15" Stretch="Uniform" Margin="0,0,6,0"
+                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}">
+                                <Path.Style>
+                                    <Style TargetType="Path">
+                                        <Setter Property="Data" Value="M3,1 L14,8 3,15 Z"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Simulation.IsSketchRunning}" Value="True">
+                                                <Setter Property="Data" Value="F0 M0,0 H16 V16 H0 Z M4,4 H6 V12 H4 Z M10,4 H12 V12 H10 Z"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Path.Style>
+                            </Path>
+                            <TextBlock Text="{Binding Simulation.SketchPlaybackAction}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Content="■" Command="{Binding Simulation.ResetCommand}" Style="{StaticResource QuietAction}"
+                            ToolTip="Остановить симуляцию" AutomationProperties.Name="Остановить симуляцию" Margin="0,0,10,0"/>
                     <Button Content="Открыть" Command="{Binding Session.OpenCommand}" ToolTip="{input:ShortcutHint Open}" Style="{StaticResource QuietAction}" Margin="0,0,4,0"/>
                     <Button Content="Сохранить" Command="{Binding Session.SaveCommand}" ToolTip="{input:ShortcutHint Save}" Style="{StaticResource PrimaryAction}" Margin="0,0,4,0"/>
                     <Button Content="Вписать" Command="{Binding FitViewCommand}" ToolTip="{input:ShortcutHint Fit}">

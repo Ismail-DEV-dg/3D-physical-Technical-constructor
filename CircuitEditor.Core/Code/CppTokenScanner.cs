@@ -4,14 +4,15 @@ public static class CppTokenScanner
 {
     private const int MaximumRawDelimiterLength=16;
     private static readonly string[] RawPrefixes=["u8R\"","uR\"","UR\"","LR\"","R\""];
-    /// <summary>Пропускает комментарии, строки, raw-строки и символьные литералы, сохраняя позиции.</summary>
-    public static IReadOnlyList<CppToken> Scan(string text)
+    /// <summary>Сохраняет позиции лексем. Строки и символьные литералы включаются по запросу.</summary>
+    public static IReadOnlyList<CppToken> Scan(string text, bool includeLiterals = false)
     {
         var result=new List<CppToken>();var i=0;var line=1;var column=1;
         void Advance(){if(text[i++]=='\n'){line++;column=1;}else column++;}
         bool At(string value)=>text.AsSpan(i).StartsWith(value,StringComparison.Ordinal);
         while(i<text.Length)
         {
+            var start=i;var startColumn=column;var startLine=line;
             if(char.IsWhiteSpace(text[i])){Advance();continue;}
             if(At("//"))
             {
@@ -22,7 +23,13 @@ public static class CppTokenScanner
                 }
                 continue;
             }
-            if(At("/*")){Advance();Advance();while(i<text.Length&&!At("*/"))Advance();if(i<text.Length){Advance();Advance();}continue;}
+            if(At("/*"))
+            {
+                Advance();Advance();while(i<text.Length&&!At("*/"))Advance();
+                if(i<text.Length){Advance();Advance();}
+                else if(includeLiterals)result.Add(new("/*",start,startLine,startColumn));
+                continue;
+            }
             if(RawPrefixes.FirstOrDefault(At) is { } rawPrefix)
             {
                 var delimiterStart=i+rawPrefix.Length;var open=text.IndexOf('(',delimiterStart);
@@ -30,7 +37,9 @@ public static class CppTokenScanner
                 {
                     var end=")"+text[delimiterStart..open]+"\"";while(i<=open)Advance();
                     while(i<text.Length&&!At(end))Advance();
-                    if(i<text.Length)for(var n=0;n<end.Length;n++)Advance();continue;
+                    if(i<text.Length)for(var n=0;n<end.Length;n++)Advance();
+                    if(includeLiterals)result.Add(new(text[start..i],start,startLine,startColumn));
+                    continue;
                 }
             }
             if(text[i] is '\"' or '\'')
@@ -41,9 +50,9 @@ public static class CppTokenScanner
                     if(text[i]=='\\'){Advance();if(i<text.Length)Advance();continue;}
                     if(text[i]==quote){Advance();break;}Advance();
                 }
+                if(includeLiterals)result.Add(new(text[start..i],start,startLine,startColumn));
                 continue;
             }
-            var start=i;var startColumn=column;var startLine=line;
             if(char.IsLetterOrDigit(text[i])||text[i]=='_')
                 while(i<text.Length&&(char.IsLetterOrDigit(text[i])||text[i]=='_'))Advance();
             else Advance();

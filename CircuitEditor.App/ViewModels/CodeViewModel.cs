@@ -27,7 +27,7 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
     public CodeViewModel(ProjectViewModel? project=null,ICodeGenerator? generator=null,ICodeCompletionRepository? completion=null,
         ICodeTemplateRepository? templates=null,IThemeService? themes=null,ISketchRepository? sketches=null,IDialogService? dialogs=null,
         ICodeAnalysisService? analysisService=null,IClipboardService? clipboard=null)
-        :base(WorkspaceKind.Code,"Код","05","Arduino / ESP32","Редактор поддерживаемых скетчей; C++ не исполняется.")
+        :base(WorkspaceKind.Code,"Код","05","Arduino / ESP32","Редактор скетчей Arduino с учебным запуском GPIO.")
     {
         this.project=project;this.generator=generator;this.themes=themes;this.sketches=sketches;this.dialogs=dialogs;
         Output=new(clipboard);

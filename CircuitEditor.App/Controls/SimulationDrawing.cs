@@ -61,9 +61,6 @@ internal static class SimulationDrawing
         }
     }
 
-    internal static Brush VoltageBrush(double volts) =>
-        PhysicalDrawing.Ink(Core.Scene.SceneSignalStyle.VoltageColor(volts));
-
     internal static int Flow(DrawingContext dc, IReadOnlyList<LayoutPoint> points, double amps, long microseconds, int budget)
     {
         if (budget <= 0 || Math.Abs(amps) < MinimumDisplayCurrentAmps) return 0;

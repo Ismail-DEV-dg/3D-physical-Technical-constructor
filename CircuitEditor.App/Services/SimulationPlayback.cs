@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using CircuitEditor.Core.History;
+using CircuitEditor.Core.Code;
 using CircuitEditor.Core.Models;
 using CircuitEditor.Core.Simulation;
 using CircuitEditor.Simulation.Engine;
@@ -25,10 +26,16 @@ public sealed class SimulationPlayback(ISimulationSessionFactory factory) : ISim
 
     public SimulationState? TakeFrame() => current?.TakeFrame();
 
-    public void Start(CircuitProject project, ScenarioConfiguration? scenario, bool run)
+    public void Start(CircuitProject project, ScenarioConfiguration? scenario, bool run) =>
+        StartRun(project, run, (copy, _) => factory.Create(copy, scenario));
+
+    public void StartSketch(CircuitProject project, SketchDocument sketch) =>
+        StartRun(project, true, (copy, token) => factory.CreateForSketch(copy, sketch, token));
+
+    private void StartRun(CircuitProject project, bool run, Func<CircuitProject, CancellationToken, SimulationSession> create)
     {
         if (HasSession) return;
-        var frozen = new ProjectSnapshot(project).Restore();
+        var snapshot = new ProjectSnapshot(project);
         var playback = new SimulationPlaybackRun(run);
         current = playback;
         var token = playback.Token;
@@ -38,7 +45,10 @@ public sealed class SimulationPlayback(ISimulationSessionFactory factory) : ISim
             try
             {
                 token.ThrowIfCancellationRequested();
-                session = factory.Create(frozen, scenario);
+                session = create(snapshot.Restore(), token);
+                token.ThrowIfCancellationRequested();
+                playback.Publish(session.State);
+                if (session.HasHalted) return;
                 await Play(session, playback, token).ConfigureAwait(false);
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { }
@@ -66,7 +76,7 @@ public sealed class SimulationPlayback(ISimulationSessionFactory factory) : ISim
     {
         var wall = Stopwatch.StartNew();
         var previous = wall.ElapsedTicks;
-        long lastFrame = -SlowFrameMilliseconds;
+        long lastFrame = 0;
         var available = 0d;
         var dirty = true;
         while (!token.IsCancellationRequested)

@@ -15,6 +15,7 @@ public static class ShortcutCommands
             "Save"=>vm.Session?.SaveCommand,"SaveAs"=>vm.Session?.SaveAsCommand,
             "Undo"=>vm.UndoActiveCommand,"Redo"=>vm.RedoActiveCommand,"Copy"=>vm.CopyActiveCommand,"Paste"=>vm.PasteActiveCommand,
             "Check"=>vm.Analysis?.CheckCommand,"Calculate"=>vm.Analysis?.CalculateCommand,"Calculator"=>vm.CalculatorCommand,
+            "RunSketch"=>vm.Simulation?.ToggleSketchCommand,
             "Theme"=>vm.ToggleThemeCommand,"Png"=>vm.Exports?.PngCommand,"Svg"=>vm.Exports?.SvgCommand,"Bom"=>vm.Exports?.BomCommand,_=>null
         };
         if(command is not null){if(command.CanExecute(null))command.Execute(null);return;}

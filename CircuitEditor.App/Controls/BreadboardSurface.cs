@@ -18,6 +18,7 @@ public sealed class BreadboardSurface : FrameworkElement
     private const double MinimumCullingPaddingMm = 6;
     private readonly ComponentDrawingCache components = new();
     private readonly BreadboardDrawingCache breadboard = new();
+    private readonly WireDrawingCache wires = new();
     private readonly ToolTip tip = new() { Placement = PlacementMode.MousePoint, IsHitTestVisible = false, Focusable = false };
     public static readonly DependencyProperty SceneProperty = DependencyProperty.Register(nameof(Scene),
         typeof(BreadboardViewModel), typeof(BreadboardSurface), new FrameworkPropertyMetadata(null,
@@ -80,7 +81,8 @@ public sealed class BreadboardSurface : FrameworkElement
                 scene.Preview is { Success: false } && item.IsSelected, signal?.Angle);
             dc.Pop(); dc.Pop();
         }
-        WireDrawing.Draw(dc, scene, simulation: Simulation, showVoltage: ShowVoltage, showCurrent: ShowCurrent);
+        WireDrawing.Draw(dc, scene, simulation: Simulation, showVoltage: ShowVoltage, showCurrent: ShowCurrent, cache: wires,
+            viewport: new(-scene.OffsetX / scale, -scene.OffsetY / scale, RenderSize.Width / scale, RenderSize.Height / scale));
         AnalysisDrawing.Draw(dc,scene.Project,true);
         VoltageDrawing.Draw(dc,scene.Project,true);
         dc.Pop(); dc.Pop();

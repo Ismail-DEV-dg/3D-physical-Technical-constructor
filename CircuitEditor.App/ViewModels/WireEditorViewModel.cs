@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using CircuitEditor.App.Interaction;
 using CircuitEditor.Core.Layout;
 using CircuitEditor.Core.Models;
@@ -7,6 +8,7 @@ namespace CircuitEditor.App.ViewModels;
 public sealed partial class WireEditorViewModel(ProjectViewModel project) : ObservableObject
 {
     private const double PickRadiusMm = 1.3;
+    private readonly ConditionalWeakTable<Wire, WirePath> paths = new();
     private WireEndpoint? first;
     private Guid? selectedId;
     private int? draggingNode;
@@ -22,7 +24,7 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
     public void Exit(){IsWiring=false;Cancel();selectedId=null;Refresh();}
     [ObservableProperty] private Guid? hoveredId;
     [ObservableProperty] private LayoutPoint pointer;
-    public Wire? Selected => project.Model.Circuit.Wires.FirstOrDefault(w => w.Id == selectedId);
+    public Wire? Selected => selectedId is Guid id ? project.Model.Circuit.Wires.FirstOrDefault(w => w.Id == id) : null;
     public bool HasSelection => Selected is not null;
     public LayoutPoint? DraggedStart => draggingNode == -1 ? Pointer : null;
     public LayoutPoint? DraggedEnd => draggingNode is not null && Selected is { } w && draggingNode == w.ControlPoints.Count ? Pointer : null;
@@ -139,11 +141,34 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
         var a = WireGeometry.Resolve(project.Model, wire.Start); var b = WireGeometry.Resolve(project.Model, wire.End);
         return a is null || b is null ? [] : new[] { a.Value }.Concat(wire.ControlPoints).Append(b.Value).ToArray();
     }
-    private Wire? Hit(LayoutPoint point) => project.Model.Circuit.Wires.Reverse().FirstOrDefault(w =>
+    internal void InvalidatePaths() => paths.Clear();
+
+    internal WirePath? GetPath(Wire wire)
     {
-        var points = WireCurve.Sample(Points(w));
-        return points.Zip(points.Skip(1)).Any(p => SegmentDistance(point, p.First, p.Second) <= PickRadiusMm);
-    });
+        if (paths.TryGetValue(wire, out var existing)) return existing;
+        var terminals = Points(wire);
+        if (terminals.Count < 2) return null;
+        var path = new WirePath(terminals.ToArray());
+        paths.Add(wire, path);
+        return path;
+    }
+
+    private Wire? Hit(LayoutPoint point)
+    {
+        var wires = project.Model.Circuit.Wires;
+        for (var index = wires.Count - 1; index >= 0; index--)
+        {
+            var wire = wires[index];
+            if (GetPath(wire) is not { } path) continue;
+            var b = path.Bounds;
+            if (point.X < b.X - PickRadiusMm || point.X > b.Right + PickRadiusMm ||
+                point.Y < b.Y - PickRadiusMm || point.Y > b.Bottom + PickRadiusMm) continue;
+            for (var i = 1; i < path.Points.Count; i++)
+                if (SegmentDistance(point, path.Points[i - 1], path.Points[i]) <= PickRadiusMm) return wire;
+        }
+        return null;
+    }
+
     private static double SegmentDistance(LayoutPoint p, LayoutPoint a, LayoutPoint b)
     {
         var dx = b.X - a.X; var dy = b.Y - a.Y; var squared = dx * dx + dy * dy;

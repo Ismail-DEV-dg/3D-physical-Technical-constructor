@@ -64,6 +64,14 @@ public sealed partial class DiagnosticsViewModel : ObservableObject,IDisposable
         }
         foreach (var issue in simulationProblems)
         {
+            if (issue.SketchLine is int line)
+            {
+                var column = issue.SketchColumn ?? 1;
+                rows.Add(new("Код", issue.Code, $"Строка {line}:{column} · {issue.Message}", "Error",
+                    () => code.RevealProblem(new(issue.Message, line, column, "Error", issue.Code)),
+                    clipboard, documentation, help));
+                continue;
+            }
             var seconds = issue.Microseconds / 1_000_000d;
             rows.Add(new("Симуляция",issue.HelpKey,$"{seconds:0.000} с · {issue.Message}",issue.IsError ? "Error" : "Warning",
                 () => { if (project?.Components.FirstOrDefault(c => c.Model.Id == issue.ComponentId) is { } item) project.Select(item); },

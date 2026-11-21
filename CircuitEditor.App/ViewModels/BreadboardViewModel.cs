@@ -159,17 +159,17 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
         Revision++;
     }
 
-    public LayoutPoint? ResolveEndpoint(Core.Wiring.WireEndpoint endpoint)
+    public LayoutPoint? ResolveEndpoint(Core.Wiring.WireEndpoint endpoint) =>
+        ResolveDraftEndpoint(endpoint) ?? Core.Wiring.WireGeometry.Resolve(Project.Model, endpoint);
+
+    internal LayoutPoint? ResolveDraftEndpoint(Core.Wiring.WireEndpoint endpoint)
     {
-        if (endpoint.Kind == Core.Wiring.WireEndpointKind.ComponentContact)
-        {
-            var item = Project.Components.FirstOrDefault(c => c.Model.Id == endpoint.OwnerId);
-            var contact = item?.Footprint.Contacts.FirstOrDefault(c => c.Id == endpoint.TerminalId);
-            if (item is not null && contact is not null)
-                return ContactGeometry.World(item.Footprint,contact,PlacementOf(item),PhysicalSettings.FreeGridMm);
-        }
-        return Core.Wiring.WireGeometry.Resolve(Project.Model,endpoint);
+        if (endpoint.Kind != Core.Wiring.WireEndpointKind.ComponentContact || dragging is not { } item ||
+            draft is null || item.Model.Id != endpoint.OwnerId) return null;
+        var contact = item.Footprint.Contacts.FirstOrDefault(c => c.Id == endpoint.TerminalId);
+        return contact is null ? null : ContactGeometry.World(item.Footprint, contact, draft, PhysicalSettings.FreeGridMm);
     }
+
     public bool Hit(ComponentViewModel item, double x, double y)
     {
         var pose = PlacementOf(item);

@@ -1,4 +1,6 @@
 using System.Collections.Immutable;
+using CircuitEditor.Core.Code;
+using CircuitEditor.Simulation.Sketches;
 using CircuitEditor.Core.Electronics;
 using CircuitEditor.Core.Inputs;
 using CircuitEditor.Core.Models;
@@ -168,7 +170,7 @@ public sealed class SimulationScenarioTests
     private static ScenarioConfiguration Configure(string template, params (string Name, PinReference Pin)[] pins) =>
         new(template, pins.ToImmutableDictionary(p => p.Name, p => p.Pin), ImmutableDictionary<string,double>.Empty);
 
-    internal static SimulationSession Create(ElectricalTestCircuit design, ScenarioConfiguration? scenario = null)
+    internal static SimulationSession Create(ElectricalTestCircuit design, ScenarioConfiguration? scenario = null, SketchDocument? sketch = null)
     {
         var electrical = new JsonElectricalLibraryRepository();
         var factory = new SimulationSessionFactory(new NetlistBuilder(electrical), new DcSolver(electrical),
@@ -176,7 +178,7 @@ public sealed class SimulationScenarioTests
             [new LedBehavior(), new RgbLedBehavior(), new RelayBehavior(), new ServoBehavior(), new ButtonBehavior(),
                 new SwitchBehavior(), new PotentiometerBehavior(), new Dht11Behavior(), new Dht22Behavior(), new LcdBehavior(),
                 new I2cLcdBehavior(), new OledBehavior(), new NpnBehavior(), new DiodeBehavior(), new SevenSegmentBehavior(),
-                new UltrasonicBehavior(), new PirBehavior()]);
-        return factory.Create(design.Project.Model, scenario);
+                new UltrasonicBehavior(), new PirBehavior()], sketches: new SketchRunner(new JsonCodeTemplateRepository()));
+        return sketch is null ? factory.Create(design.Project.Model, scenario) : factory.CreateForSketch(design.Project.Model, sketch);
     }
 }

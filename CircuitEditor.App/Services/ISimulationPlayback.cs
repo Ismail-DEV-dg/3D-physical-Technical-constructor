@@ -1,4 +1,5 @@
 using CircuitEditor.Core.Models;
+using CircuitEditor.Core.Code;
 using CircuitEditor.Core.Simulation;
 using CircuitEditor.Simulation.Engine;
 
@@ -11,6 +12,7 @@ public interface ISimulationPlayback
     double Speed { get; set; }
     SimulationState? TakeFrame();
     void Start(CircuitProject project, ScenarioConfiguration? scenario, bool run);
+    void StartSketch(CircuitProject project, SketchDocument sketch);
     void Resume();
     void Pause();
     void Step();

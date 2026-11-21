@@ -22,6 +22,8 @@ public sealed class ShortcutTests
     [InlineData(Key.F1,ModifierKeys.None,true,false,"Help")]
     [InlineData(Key.F,ModifierKeys.Control,true,false,"Search")]
     [InlineData(Key.R,ModifierKeys.None,false,false,null)]
+    [InlineData(Key.B,ModifierKeys.Control|ModifierKeys.Shift,true,false,"RunSketch")]
+    [InlineData(Key.Y,ModifierKeys.Control,false,true,"Redo")]
     public void ContextAndExactModifiersPreventTypingConflicts(Key key,ModifierKeys mods,bool text,bool canvas,string? expected)
     {Assert.Equal(expected,ShortcutCatalog.Resolve(key,mods,text,canvas)?.Id);}
     [Fact]

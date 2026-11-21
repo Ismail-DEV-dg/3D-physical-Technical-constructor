@@ -37,6 +37,7 @@ public static class ShortcutCatalog
         Add("Check",Key.F5,0,"F5","Расчёты","Проверить схему (ERC)");
         Add("Calculate",Key.F6,0,"F6","Расчёты","Рассчитать цепь DC");
         Add("Calculator",Key.K,Ctrl,"Ctrl+K","Расчёты","Открыть калькулятор");
+        Add("RunSketch",Key.B,Ctrl|Shift,"Ctrl+Shift+B","Симуляция","Запустить, приостановить или продолжить скетч",text:true);
         Add("Theme",Key.T,Ctrl|Shift,"Ctrl+Shift+T","Вид","Переключить тему");
         Add("NextTab",Key.Tab,Ctrl,"Ctrl+Tab","Навигация","Следующая вкладка",text:true);
         Add("PreviousTab",Key.Tab,Ctrl|Shift,"Ctrl+Shift+Tab","Навигация","Предыдущая вкладка",text:true);

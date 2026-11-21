@@ -105,6 +105,23 @@ public sealed class SimulationSession
         Settle();
     });
 
+    internal void ScheduleSketchStep(long microseconds, Action run) => timeline.Schedule(microseconds, () =>
+    {
+        if (HasHalted) return;
+        run();
+        if (Circuit.IsDirty) Settle();
+    });
+
+    internal DigitalLevel ReadSketchPin(PinReference pin)
+    {
+        if (Circuit.IsDirty) Settle();
+        return Circuit.ReadDigital(pin, ModelTime);
+    }
+
+    internal void RejectSketch(CircuitEditor.Core.Code.CodeProblem problem) =>
+        Halt(new(problem.Code, problem.Message, ModelTime, IsError: true,
+            SketchLine: problem.Line, SketchColumn: problem.Column));
+
     private void SampleInstruments()
     {
         if (Circuit.IsDirty) Settle();

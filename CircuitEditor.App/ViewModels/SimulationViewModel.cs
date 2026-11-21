@@ -38,6 +38,13 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
     public bool IsRunning => playback.IsRunning;
     public bool CanStart => !IsRunning && !State.IsHalted && !project.InGesture;
     public bool CanStep => CanStart;
+    public bool CanToggleSketch => !project.InGesture;
+    private bool HasLiveSketch => IsSketchSession && HasSession && !State.IsHalted;
+    public bool IsSketchRunning => HasLiveSketch && IsRunning;
+    public string SketchPlaybackAction => IsSketchRunning ? "Пауза кода" :
+        HasLiveSketch ? "Продолжить код" : "Запустить код";
+    public bool CanStartCircuit => CanToggleSketch && (IsSketchSession || CanStart);
+    [ObservableProperty] private bool isSketchSession;
     public double Speed { get => playback.Speed; set { playback.Speed = value; OnPropertyChanged(); } }
     [ObservableProperty] private SimulationState state = new();
     [ObservableProperty] private bool showVoltage = true;
@@ -46,6 +53,7 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string status = "Сеанс остановлен";
     public event EventHandler<SimulationState>? FrameChanged;
     public event EventHandler? ConfigurationRequested;
+    public event EventHandler? SketchStarted;
 
     [RelayCommand] private void ShowConfiguration() => ConfigurationRequested?.Invoke(this, EventArgs.Empty);
 
@@ -55,6 +63,31 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
         if (HasSession) playback.Resume();
         else Begin(true);
         NotifyPlayback();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanToggleSketch))]
+    private void ToggleSketch()
+    {
+        if (HasLiveSketch)
+        {
+            if (IsSketchRunning) Pause();
+            else Start();
+            return;
+        }
+        if (HasSession) Reset();
+        IsSketchSession = true;
+        project.Wiring.Exit();
+        playback.StartSketch(project.Model, project.Model.Sketch);
+        BeginPresentation();
+        NotifyPlayback();
+        SketchStarted?.Invoke(this, EventArgs.Empty);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanStartCircuit))]
+    private void StartCircuit()
+    {
+        if (IsSketchSession) Reset();
+        Start();
     }
 
     [RelayCommand(CanExecute = nameof(IsRunning))]
@@ -76,6 +109,7 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
     private void Reset()
     {
         playback.Stop();
+        IsSketchSession = false;
         pulse.Stop();
         project.IsSimulationActive = false;
         RuntimeInputs = null;
@@ -87,6 +121,11 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
     {
         project.Wiring.Exit();
         playback.Start(project.Model, Scenario.Configuration(), run);
+        BeginPresentation();
+    }
+
+    private void BeginPresentation()
+    {
         Instruments.BeginSession();
         project.IsSimulationActive = true;
         UpdateRuntimeInputs();
@@ -99,6 +138,10 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
         OnPropertyChanged(nameof(CanConfigure));
         OnPropertyChanged(nameof(IsRunning));
         StartCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(IsSketchRunning));
+        OnPropertyChanged(nameof(SketchPlaybackAction));
+        ToggleSketchCommand.NotifyCanExecuteChanged();
+        StartCircuitCommand.NotifyCanExecuteChanged();
         PauseCommand.NotifyCanExecuteChanged();
         StepCommand.NotifyCanExecuteChanged();
         ResetCommand.NotifyCanExecuteChanged();
@@ -109,8 +152,9 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
     private void UpdateStatus()
     {
         var seconds = State.Microseconds / 1_000_000d;
+        var mode = IsSketchSession ? "Код" : "Схема";
         Status = State.Failure ?? (!HasSession ? "Сеанс остановлен" :
-            $"{(IsRunning ? "Симуляция" : "Пауза")} · {seconds:0.000} с");
+            $"{mode} · {(IsRunning ? "выполняется" : "пауза")} · {seconds:0.000} с");
     }
 
     private void OnFrame(object? sender, EventArgs e)
@@ -119,6 +163,7 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
         SetFrame(frame);
         if (frame.IsHalted)
         {
+            pulse.Stop();
             project.IsSimulationActive = false;
             NotifyPlayback();
         }

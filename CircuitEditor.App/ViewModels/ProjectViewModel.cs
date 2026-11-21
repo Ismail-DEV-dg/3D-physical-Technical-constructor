@@ -239,6 +239,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     private void Committed()
     {
         Model.SetSimulation(new());
+        Wiring.InvalidatePaths();
         Connectivity.Rebuild();
         ModelCommitted?.Invoke(this, EventArgs.Empty);
         OnPropertyChanged(nameof(Connectivity));
