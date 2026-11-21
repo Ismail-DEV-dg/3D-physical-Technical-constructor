@@ -39,7 +39,7 @@
      <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="application">
       <StackPanel>
        <TextBlock Text="Руководство по редактору" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
-       <TextBlock Text="Макет, перемычки, симуляция, приборы и экспорт." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+       <TextBlock Text="Макет, симуляция, конструктор микросхем и экспорт." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
       </StackPanel>
      </Button>
      <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="nano">

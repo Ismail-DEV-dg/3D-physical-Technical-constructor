@@ -42,6 +42,34 @@ public sealed class GuideTests
     }
 
     [Fact]
+    public void ChipGuideIsSearchableAndDiagnosticsOpenTheRelevantChapter()
+    {
+        var errors = new JsonErrorHelpRepository();
+        var catalog = new JsonGuideRepository(new JsonComponentLibraryRepository()).Load().Value!;
+        var help = new ErrorHelpViewModel(new ErrorDocumentationService(errors), new TestDiagnosticServices(), catalog);
+
+        help.OpenSection("application");
+        help.Guide.Search = "74HC595 защёлка";
+        Assert.Equal("chip-sequential", Assert.Single(help.Guide.Chapters).Id);
+        help.Guide.Search = "Excel .chip";
+        Assert.Equal("chip-files", Assert.Single(help.Guide.Chapters).Id);
+
+        foreach (var (code, chapter) in new[]
+        {
+            ("CHIP_UNPOWERED", "chip-nand"), ("CHIP_POWER", "chip-nand"),
+            ("CHIP_OUTPUT_CURRENT", "chip-nand"), ("CHIP_OSCILLATION", "chip-editor")
+        })
+        {
+            help.SelectCode(code);
+            help.OpenRelatedCommand.Execute("application");
+            Assert.Equal(chapter, help.Guide.Chapter?.Id);
+            help.BackCommand.Execute(null);
+            Assert.Equal(code, help.Selected?.Code);
+        }
+    }
+
+
+    [Fact]
     public void ErrorOpensRelatedBoardChapterAndBackReturnsToTheSameError()
     {
         var errors = new JsonErrorHelpRepository();
