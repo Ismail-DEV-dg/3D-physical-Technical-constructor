@@ -17,8 +17,12 @@ public sealed partial class SceneViewport : HelixViewport3D
     private ThreeDViewModel? workspace;
     private ScenePreparation? preparation;
     private CancellationTokenSource? pending;
+    private PreparedScene? applied;
     private SceneBounds bounds;
+    internal event EventHandler? SceneApplied;
+    private const double MinimumLabelHeight = 8;
     private bool initialized;
+    private bool labelsReadable = true;
     private Guid? hovered;
 
     public SceneViewport()
@@ -39,6 +43,8 @@ public sealed partial class SceneViewport : HelixViewport3D
         Unloaded += (_, _) => Disconnect();
         IsVisibleChanged += (_, _) => { if (IsVisible) Connect(); else Disconnect(); };
         DataContextChanged += (_, _) => { Disconnect(); Connect(); };
+        CameraChanged += (_, _) => EnsureLabelScale();
+        SizeChanged += (_, _) => EnsureLabelScale();
         ContextMenuOpening += (_, args) => args.Handled = true;
     }
 
@@ -64,6 +70,13 @@ public sealed partial class SceneViewport : HelixViewport3D
     {
         var vm = workspace;
         if (vm is null) return;
+        ReleaseInteraction();
+        ClearFrames();
+        if (vm.Simulation is { } sim)
+        {
+            sim.FrameChanged -= QueueFrame;
+            sim.PropertyChanged -= SimulationChanged;
+        }
         pending?.Cancel();
         pending = null;
         vm.SetActive(false);
@@ -84,10 +97,12 @@ public sealed partial class SceneViewport : HelixViewport3D
         pending = request;
         try
         {
-            var prepared = await Task.Run(() => renderer.Build(vm.Build(snapshot, request.Token), request.Token), request.Token);
+            var previous = applied;
+            var prepared = await Task.Run(() => renderer.Build(vm.Build(snapshot, request.Token), request.Token, previous), request.Token);
             if (pending != request) return;
             Apply(prepared);
             vm.Notice = "";
+            SceneApplied?.Invoke(this, EventArgs.Empty);
         }
         catch (OperationCanceledException) when (request.IsCancellationRequested) { }
         catch (Exception failure) when (failure is not OutOfMemoryException)
@@ -100,18 +115,25 @@ public sealed partial class SceneViewport : HelixViewport3D
     private void Apply(PreparedScene prepared)
     {
         ClearFrames();
-        foreach (var previous in nodes.Values) Unregister(previous);
-        nodes.Clear();
-        sceneRoot.Children.Clear();
-        sceneRoot.Content = prepared.Lights;
+        applied = prepared;
+        var remaining = prepared.Nodes.Select(item => item.Node.Id).ToHashSet();
+        foreach (var old in nodes.Values.Where(item => !remaining.Contains(item.Node.Id)).ToArray())
+            Remove(old);
+        if (!ReferenceEquals(sceneRoot.Content, prepared.Lights)) sceneRoot.Content = prepared.Lights;
         bounds = prepared.Bounds;
         foreach (var item in prepared.Nodes)
         {
+            if (nodes.TryGetValue(item.Node.Id, out var previous))
+            {
+                if (ReferenceEquals(previous.Source, item)) continue;
+                Remove(previous);
+            }
             SceneVisualNode visual = new(item);
             nodes.Add(item.Node.Id, visual);
             foreach (var part in visual.Body.Children) picks.Set(part, item.Node.Id);
         }
         UpdateLayers();
+        QueueFrame(this, workspace?.Simulation?.State ?? new());
         if (!initialized && nodes.Count > 0 && Camera is ProjectionCamera camera)
         {
             SceneCamera.Apply(camera, bounds, SceneCameraView.Initial, Aspect, false);
@@ -119,8 +141,12 @@ public sealed partial class SceneViewport : HelixViewport3D
         }
     }
 
-    private void Unregister(SceneVisualNode old)
+    private void Remove(SceneVisualNode old)
     {
+        nodes.Remove(old.Node.Id);
+        Attach(old.Body, false);
+        Attach(old.Labels, false);
+        Attach(old.Outline, false);
         foreach (var part in old.Body.Children) picks.Remove(part);
     }
 
@@ -144,25 +170,31 @@ public sealed partial class SceneViewport : HelixViewport3D
         {
             var show = vm.Layers.Shows(visual.Node.Layer);
             Attach(visual.Body, show);
-            Attach(visual.Labels, show && vm.Layers.Labels && visual.Labels.Children.Count != 0);
+            Attach(visual.Labels, show && labelsReadable && vm.Layers.Labels && visual.Labels.Children.Count != 0);
             Attach(visual.Outline, show && vm.SelectedId == visual.Node.Id && visual.Node.Layer != SceneLayer.Wire);
             if (visual.Node.Layer == SceneLayer.Wire)
-                ((ModelVisual3D)visual.Body.Children[0]).Content =
-                    vm.SelectedId == visual.Node.Id ? visual.Source.Outline : visual.Source.Parts[0].Model;
+                visual.SelectWire(vm.SelectedId == visual.Node.Id);
         }
+    }
+
+    private void EnsureLabelScale()
+    {
+        if (workspace is null || Camera is not PerspectiveCamera camera) return;
+        const double labelHeightMm = 3;
+        var visibleHeight = 2 * camera.LookDirection.Length * Math.Tan(camera.FieldOfView * Math.PI / 360);
+        var readable = visibleHeight > 0 && labelHeightMm * ActualWidth / visibleHeight >= MinimumLabelHeight;
+        if (readable == labelsReadable) return;
+        labelsReadable = readable;
+        UpdateLayers();
     }
 
     private void Attach(ModelVisual3D visual, bool visible)
     {
-        var attached = visual.GetValue(AttachedProperty) is true;
+        var attached = ReferenceEquals(System.Windows.Media.VisualTreeHelper.GetParent(visual), sceneRoot);
         if (visible == attached) return;
         if (visible) sceneRoot.Children.Add(visual);
         else sceneRoot.Children.Remove(visual);
-        visual.SetValue(AttachedProperty, visible);
     }
-
-    private static readonly DependencyProperty AttachedProperty = DependencyProperty.RegisterAttached(
-        "Attached", typeof(bool), typeof(SceneViewport), new PropertyMetadata(false));
 
     protected override void OnPreviewMouseDown(MouseButtonEventArgs args)
     {
@@ -208,7 +240,7 @@ public sealed partial class SceneViewport : HelixViewport3D
 
     protected override void OnMouseLeave(MouseEventArgs args)
     {
-        click.Cancel();
+        if (interacting is null) click.Cancel();
         SetHover(null);
         base.OnMouseLeave(args);
     }

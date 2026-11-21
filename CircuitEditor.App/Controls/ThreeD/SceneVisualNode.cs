@@ -14,12 +14,13 @@ internal sealed class SceneVisualNode
         Body = new() { Transform = source.Transform };
         Labels = new() { Transform = source.Transform };
         Outline = new() { Transform = source.Transform, Content = source.Outline };
+        foreach (var label in source.Labels) Labels.Children.Add(new ModelVisual3D { Content = label.Model });
         foreach (var part in source.Parts)
         {
             var visual = new ModelVisual3D { Content = part.Model };
             if (part.Role != "" && part.Role != SceneMeshes.Label && part.Role != "mark")
                 animated.Add(part.Role, visual);
-            (part.Role == SceneMeshes.Label ? Labels : Body).Children.Add(visual);
+            Body.Children.Add(visual);
         }
         if (source.Node.Layer == SceneLayer.Wire) wireModel = source.Parts[0].Model;
     }

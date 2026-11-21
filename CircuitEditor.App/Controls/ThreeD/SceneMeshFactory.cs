@@ -26,8 +26,6 @@ internal sealed class SceneMeshFactory : ISceneMeshFactory
                     !PassiveMeshes.Draw(m, node) && !DeviceMeshes.Draw(m, node))
                     m.Box(b, z, h, node.Profile.Material);
                 Leads(m, node);
-                m.Text(new(b.X, b.Y - 3.5, Math.Max(8, b.Width), 3), z + h + node.Profile.DetailHeight,
-                    node.Label + (node.Family == "unknown" ? " " + node.Name : ""), "#66C8DF");
                 break;
         }
         cancellationToken.ThrowIfCancellationRequested();

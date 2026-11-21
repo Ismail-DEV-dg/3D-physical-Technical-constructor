@@ -12,7 +12,7 @@ namespace CircuitEditor.App;
 public static class Program
 {
     [STAThread]
-    public static void Main()
+    public static void Main(string[] args)
     {
         var app = new App();
         app.InitializeComponent();
@@ -28,6 +28,7 @@ public static class Program
         registrations.AddSingleton<ISceneCatalogRepository, JsonSceneCatalogRepository>();
         registrations.AddSingleton<CircuitEditor.Core.Scene.ISceneBuilder, CircuitEditor.Core.Scene.SceneBuilder>();
         registrations.AddSingleton<Controls.ThreeD.ISceneMeshFactory, Controls.ThreeD.SceneMeshFactory>();
+        registrations.AddSingleton<ISceneBenchmark, Controls.ThreeD.SceneBenchmark>();
         registrations.AddSingleton<ILogicFamilyRepository, JsonLogicFamilyRepository>();
         registrations.AddSingleton<IChipCsvRepository, FileChipCsvRepository>();
         registrations.AddSingleton<IChipRepository, JsonChipRepository>();
@@ -99,17 +100,22 @@ public static class Program
         using var services = registrations.BuildServiceProvider(
             new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
 
-        app.DispatcherUnhandledException += (_, args) =>
+        app.DispatcherUnhandledException += (_, failure) =>
         {
-            if (args.Exception is OutOfMemoryException)
+            if (failure.Exception is OutOfMemoryException)
                 return;
 
             services.GetRequiredService<MainViewModel>().StatusMessage =
                 "Операция не выполнена. Подробности записаны в журнал.";
-            services.GetRequiredService<IErrorLogRepository>().TryAppend(args.Exception.ToString());
-            args.Handled = true;
+            services.GetRequiredService<IErrorLogRepository>().TryAppend(failure.Exception.ToString());
+            failure.Handled = true;
         };
         app.Resources[typeof(Controls.ThreeD.ISceneMeshFactory)] = services.GetRequiredService<Controls.ThreeD.ISceneMeshFactory>();
+        if (args is ["--benchmark-3d", var report])
+        {
+            app.Run(services.GetRequiredService<ISceneBenchmark>().CreateWindow(report));
+            return;
+        }
         var main = services.GetRequiredService<MainWindow>();
         var session = services.GetRequiredService<ProjectSessionViewModel>();
         main.ContentRendered += (_, _) => session.Initialize();

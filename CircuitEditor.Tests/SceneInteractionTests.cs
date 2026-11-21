@@ -6,6 +6,23 @@ namespace CircuitEditor.Tests;
 public sealed class SceneInteractionTests
 {
     [Fact]
+    public void HiddenWorkspaceDoesNotRequestBuildsOrCaptureTheProject()
+    {
+        using var environment = new Stage4TestEnvironment();
+        var workspace = new App.ViewModels.ThreeDViewModel(environment.Project);
+        var invalidations = 0;
+        workspace.SceneInvalidated += (_, _) => invalidations++;
+        Assert.Null(workspace.Capture());
+        workspace.SetActive(true);
+        Assert.Equal(1, invalidations);
+        Assert.NotNull(workspace.Capture());
+        workspace.SetActive(false);
+        environment.Project.ReplaceProject(BreadboardTestData.Create());
+        Assert.Equal(1, invalidations);
+        Assert.Null(workspace.Capture());
+    }
+
+    [Fact]
     public void DragThatReturnsToMouseDownPointDoesNotSelect()
     {
         var click = new SceneClick();
@@ -16,7 +33,7 @@ public sealed class SceneInteractionTests
         Assert.True(click.Release(12, 4));
     }
 
-    [Fact]
+[Fact]
     public void PickingUsesVisualIdentityAndCanForgetDetachedObjects()
     {
         ScenePickIndex<object> index = new();
