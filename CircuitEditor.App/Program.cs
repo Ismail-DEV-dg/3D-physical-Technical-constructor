@@ -27,6 +27,7 @@ public static class Program
         registrations.AddSingleton<IFootprintRepository, JsonFootprintRepository>();
         registrations.AddSingleton<ISceneCatalogRepository, JsonSceneCatalogRepository>();
         registrations.AddSingleton<CircuitEditor.Core.Scene.ISceneBuilder, CircuitEditor.Core.Scene.SceneBuilder>();
+        registrations.AddSingleton<Controls.ThreeD.ISceneMeshFactory, Controls.ThreeD.SceneMeshFactory>();
         registrations.AddSingleton<ILogicFamilyRepository, JsonLogicFamilyRepository>();
         registrations.AddSingleton<IChipCsvRepository, FileChipCsvRepository>();
         registrations.AddSingleton<IChipRepository, JsonChipRepository>();
