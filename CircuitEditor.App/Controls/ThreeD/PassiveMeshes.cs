@@ -41,7 +41,15 @@ internal static class PassiveMeshes
             case "led":
             case "rgb-led":
                 m.Disc(x, y, z, h * .18, d, "#56616C");
-                m.Dome(b, z + h * .12, h * .88, n.Family == "led" ? n.Color ?? color : color, "lens");
+                if (n.Family == "led") m.Dome(b, z + h * .12, h * .88, n.Color ?? color, "lens");
+                else
+                {
+                    m.Dome(b, z + h * .12, h * .88, "#83D2E1F0");
+                    const double channelWidth = .22;
+                    m.Dome(BoardMeshes.Relative(b, .13, .32, channelWidth, .36), z + h * .24, h * .44, "#873F40", "rgb-r");
+                    m.Dome(BoardMeshes.Relative(b, .39, .32, channelWidth, .36), z + h * .24, h * .44, "#396B42", "rgb-g");
+                    m.Dome(BoardMeshes.Relative(b, .65, .32, channelWidth, .36), z + h * .24, h * .44, "#375B81", "rgb-b");
+                }
                 return true;
             case "photoresistor":
                 m.Disc(x, y, z, h, d, color);

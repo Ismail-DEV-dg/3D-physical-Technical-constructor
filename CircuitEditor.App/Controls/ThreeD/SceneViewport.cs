@@ -27,6 +27,8 @@ public sealed partial class SceneViewport : HelixViewport3D
         PanGesture = new MouseGesture(MouseAction.MiddleClick);
         RotateGesture2 = new MouseGesture(MouseAction.None);
         PanGesture2 = new MouseGesture(MouseAction.None);
+        ZoomGesture = new MouseGesture(MouseAction.None);
+        ZoomGesture2 = new MouseGesture(MouseAction.None);
         IsHeadLightEnabled = false;
         ShowCoordinateSystem = false;
         ShowViewCube = false;
@@ -50,6 +52,11 @@ public sealed partial class SceneViewport : HelixViewport3D
         vm.CameraRequested += MoveCamera;
         vm.SelectionChanged += SelectionChanged;
         vm.PropertyChanged += LayersChanged;
+        if (vm.Simulation is { } sim)
+        {
+            sim.FrameChanged += QueueFrame;
+            sim.PropertyChanged += SimulationChanged;
+        }
         vm.SetActive(true);
     }
 
@@ -92,6 +99,7 @@ public sealed partial class SceneViewport : HelixViewport3D
 
     private void Apply(PreparedScene prepared)
     {
+        ClearFrames();
         foreach (var previous in nodes.Values) Unregister(previous);
         nodes.Clear();
         sceneRoot.Children.Clear();
@@ -162,6 +170,7 @@ public sealed partial class SceneViewport : HelixViewport3D
         {
             var at = args.GetPosition(viewport);
             click.Begin(at.X, at.Y);
+            if (BeginSimulationInteraction(at)) args.Handled = true;
         }
         else click.Cancel();
         base.OnPreviewMouseDown(args);
@@ -172,10 +181,12 @@ public sealed partial class SceneViewport : HelixViewport3D
         if (Viewport is { } viewport && args.ChangedButton == MouseButton.Left)
         {
             var at = args.GetPosition(viewport);
+            ReleaseInteraction();
             if (click.Release(at.X, at.Y))
             {
                 var node = Find(at);
                 workspace?.Pick(node?.Id, node?.Layer);
+                if (node?.Family == "switch" && workspace?.Simulation is { HasSession: true } sim) sim.Switch(node.Id);
             }
         }
         base.OnPreviewMouseUp(args);
@@ -187,6 +198,7 @@ public sealed partial class SceneViewport : HelixViewport3D
         {
             var at = args.GetPosition(viewport);
             click.Move(at.X, at.Y);
+            if (args.LeftButton == MouseButtonState.Pressed) MoveKnob(at);
             if (args.LeftButton == MouseButtonState.Released && args.RightButton == MouseButtonState.Released &&
                 args.MiddleButton == MouseButtonState.Released) SetHover(Find(at));
             else SetHover(null);

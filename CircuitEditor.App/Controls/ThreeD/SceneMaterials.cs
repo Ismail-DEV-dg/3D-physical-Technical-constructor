@@ -12,6 +12,29 @@ internal static class SceneMaterials
     private const double Margin = 3;
     private static readonly ConcurrentDictionary<string, Material> Solids = new(StringComparer.OrdinalIgnoreCase);
 
+    private static readonly ConcurrentDictionary<(string Base, string Color), Material[]> Emission = new();
+
+    public static Material Glow(string body, string color, int brightness) =>
+        Emission.GetOrAdd((body, color), key =>
+        {
+            var baseMaterial = Solid(key.Base);
+            var shade = Brush(key.Color).Color;
+            var levels = new Material[Core.Scene.SceneSignalStyle.BrightnessLevels];
+            levels[0] = baseMaterial;
+            for (var i = 1; i < levels.Length; i++)
+            {
+                var tint = shade;
+                tint.A = (byte)Math.Round(255d * i / (levels.Length - 1));
+                var brush = new SolidColorBrush(tint);
+                var material = new MaterialGroup();
+                material.Children.Add(baseMaterial);
+                material.Children.Add(new EmissiveMaterial(brush));
+                material.Freeze();
+                levels[i] = material;
+            }
+            return levels;
+        })[brightness];
+
     public static Material Solid(string color) => Solids.GetOrAdd(color, key =>
     {
         DiffuseMaterial material = new(Brush(key));

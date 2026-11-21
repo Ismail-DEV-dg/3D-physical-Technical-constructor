@@ -5,6 +5,9 @@ namespace CircuitEditor.App.Controls.ThreeD;
 
 internal sealed class SceneVisualNode
 {
+    private readonly Dictionary<string, ModelVisual3D> animated = new(StringComparer.Ordinal);
+    private GeometryModel3D? wireModel;
+
     public SceneVisualNode(PreparedSceneNode source)
     {
         Source = source;
@@ -12,7 +15,13 @@ internal sealed class SceneVisualNode
         Labels = new() { Transform = source.Transform };
         Outline = new() { Transform = source.Transform, Content = source.Outline };
         foreach (var part in source.Parts)
-            (part.Role == SceneMeshes.Label ? Labels : Body).Children.Add(new ModelVisual3D { Content = part.Model });
+        {
+            var visual = new ModelVisual3D { Content = part.Model };
+            if (part.Role != "" && part.Role != SceneMeshes.Label && part.Role != "mark")
+                animated.Add(part.Role, visual);
+            (part.Role == SceneMeshes.Label ? Labels : Body).Children.Add(visual);
+        }
+        if (source.Node.Layer == SceneLayer.Wire) wireModel = source.Parts[0].Model;
     }
 
     public PreparedSceneNode Source { get; }
@@ -20,4 +29,25 @@ internal sealed class SceneVisualNode
     public ModelVisual3D Body { get; }
     public ModelVisual3D Labels { get; }
     public ModelVisual3D Outline { get; }
+
+    public void React(SceneReaction value, bool selected)
+    {
+        if (!animated.TryGetValue(value.Role, out var visual)) return;
+        if (value.Role == "wire")
+        {
+            wireModel = value.Model;
+            SelectWire(selected);
+            return;
+        }
+        if (!ReferenceEquals(visual.Content, value.Model)) visual.Content = value.Model;
+        var transform = value.Transform ?? Transform3D.Identity;
+        if (!ReferenceEquals(visual.Transform, transform)) visual.Transform = transform;
+    }
+
+    public void SelectWire(bool selected)
+    {
+        if (!animated.TryGetValue("wire", out var wire)) return;
+        var value = selected ? Source.Outline : wireModel;
+        if (!ReferenceEquals(wire.Content, value)) wire.Content = value;
+    }
 }

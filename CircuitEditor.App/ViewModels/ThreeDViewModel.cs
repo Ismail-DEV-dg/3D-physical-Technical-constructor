@@ -6,7 +6,8 @@ using System.ComponentModel;
 
 namespace CircuitEditor.App.ViewModels;
 
-public sealed partial class ThreeDViewModel(ProjectViewModel? project = null, ISceneBuilder? builder = null)
+public sealed partial class ThreeDViewModel(ProjectViewModel? project = null, ISceneBuilder? builder = null,
+    SimulationViewModel? simulation = null)
     : WorkspaceViewModel(WorkspaceKind.ThreeD, "3D", "04", "Трёхмерный вид", "Просмотр макета под любым углом")
 {
     public event EventHandler? SceneInvalidated;
@@ -51,6 +52,8 @@ public sealed partial class ThreeDViewModel(ProjectViewModel? project = null, IS
             ? project.Components.FirstOrDefault(c => c.Model.Id == id) : null);
         SelectionChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    public SimulationViewModel? Simulation => simulation;
 
     public ProjectSnapshot? Capture() => active && project is not null ? new(project.Model) : null;
     public SceneModel Build(ProjectSnapshot snapshot, CancellationToken token) =>

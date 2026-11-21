@@ -61,14 +61,8 @@ internal static class SimulationDrawing
         }
     }
 
-    internal static Brush VoltageBrush(double volts)
-    {
-        if (volts < -.1) return PhysicalDrawing.Ink("#AF71FF");
-        if (volts < .2) return PhysicalDrawing.Ink("#72A8D0");
-        if (volts < 2.4) return PhysicalDrawing.Ink("#2FD4FF");
-        if (volts < 4.3) return PhysicalDrawing.Ink("#39FF88");
-        return PhysicalDrawing.Ink("#FF8D50");
-    }
+    internal static Brush VoltageBrush(double volts) =>
+        PhysicalDrawing.Ink(Core.Scene.SceneSignalStyle.VoltageColor(volts));
 
     internal static int Flow(DrawingContext dc, IReadOnlyList<LayoutPoint> points, double amps, long microseconds, int budget)
     {

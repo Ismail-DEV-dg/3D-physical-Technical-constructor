@@ -102,7 +102,8 @@ public sealed class SceneBuilder(ISceneCatalogRepository repository) : ISceneBui
             component.Reference, component.Definition.Name, component.Value, component.Color,
             family == "capacitor" ? component.CapacitorKind.ToString() : null, Tolerance: footprint?.TolerancePercent ?? 0,
             Knob: footprint?.RotaryControl is { } rotary ? new(rotary.X, rotary.Y) : null,
-            KnobRadius: footprint?.RotaryControl?.Radius ?? 0, Angle: component.PotentiometerAngle);
+            KnobRadius: footprint?.RotaryControl?.Radius ?? 0, Angle: component.PotentiometerAngle,
+            SwitchPosition: component.Inputs.Values.GetValueOrDefault(Inputs.ComponentInput.SwitchPosition));
     }
 
     private static double Surface(SceneProfile profile) => profile.Clearance + profile.Height;
