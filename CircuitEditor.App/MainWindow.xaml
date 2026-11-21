@@ -47,6 +47,7 @@
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Экспорт PNG…" Command="{Binding Exports.PngCommand}" ToolTip="{input:ShortcutHint Png}"/>
+                        <MenuItem Header="Экспорт 3D в OBJ…" Command="{Binding Exports.ObjCommand}"/>
                         <MenuItem Header="Экспорт SVG схемы…" Command="{Binding Exports.SvgCommand}" ToolTip="{input:ShortcutHint Svg}"/>
                         <MenuItem Header="Ведомость деталей CSV…" Command="{Binding Exports.BomCommand}" ToolTip="{input:ShortcutHint Bom}"/>
                         <Separator/><MenuItem Header="Выход" Command="{Binding CloseCommand}"/>

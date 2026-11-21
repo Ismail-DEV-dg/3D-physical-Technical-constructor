@@ -15,6 +15,10 @@
             <CheckBox Content="Подписи" IsChecked="{Binding ShowLabels}" Margin="0,0,10,4" VerticalAlignment="Center"/>
             <CheckBox Content="Платы" IsChecked="{Binding ShowBoards}" Margin="0,0,10,4" VerticalAlignment="Center"/>
             <CheckBox Content="Breadboard" IsChecked="{Binding ShowBreadboard}" Margin="0,0,0,4" VerticalAlignment="Center"/>
+            <Button Content="PNG…" Command="{Binding DataContext.Exports.PngCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                Margin="12,0,6,4" ToolTip="Снимок области 3D"/>
+            <Button Content="OBJ…" Command="{Binding DataContext.Exports.ObjCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                Margin="0,0,0,4" ToolTip="Геометрия и материалы видимой сцены"/>
         </WrapPanel>
         <views:SimulationToolbarView Grid.Row="1" DataContext="{Binding Simulation}"/>
         <threeD:SceneViewport Grid.Row="2" Background="{DynamicResource CanvasFieldBrush}"

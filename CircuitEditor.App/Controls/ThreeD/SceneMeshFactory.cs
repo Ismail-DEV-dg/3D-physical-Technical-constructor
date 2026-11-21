@@ -47,8 +47,13 @@ internal sealed class SceneMeshFactory : ISceneMeshFactory
             var shoulder = axial ? plane + node.Profile.Height / 2 : Math.Max(plane, .55);
             if (adjacent)
             {
-                var start = new ScenePoint(x, y, shoulder + node.Profile.Height / 4);
-                var wireColor = contact.Id switch { "1" => "#DF483D", "2" => "#434753", _ => "#CE9138" };
+                var source = node.Parts.GetValueOrDefault(node.Family == "servo" ? "case" : "cell", b);
+                var start = new ScenePoint(source.Right - .5, Math.Clamp(tip.Y, source.Y + 1, source.Bottom - 1),
+                    shoulder + node.Profile.Height / 4);
+                var wireColor = contact.Id switch
+                {
+                    "1" or "power" => "#DF483D", "2" or "ground" => "#434753", _ => "#CE9138"
+                };
                 m.Tube([start, new((start.X + tip.X) / 2, (start.Y + tip.Y) / 2, shoulder + 1), tip], .85, wireColor);
                 m.Disc(tip.X, tip.Y, tip.Z, .7, 1.05, SceneMeshes.Metal, sides: 6);
                 continue;

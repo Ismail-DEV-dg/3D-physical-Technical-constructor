@@ -28,6 +28,9 @@ public static class Program
         registrations.AddSingleton<ISceneCatalogRepository, JsonSceneCatalogRepository>();
         registrations.AddSingleton<CircuitEditor.Core.Scene.ISceneBuilder, CircuitEditor.Core.Scene.SceneBuilder>();
         registrations.AddSingleton<Controls.ThreeD.ISceneMeshFactory, Controls.ThreeD.SceneMeshFactory>();
+        registrations.AddSingleton<Controls.ThreeD.SceneExportAdapter>();
+        registrations.AddSingleton<IThreeDExportService>(provider => provider.GetRequiredService<Controls.ThreeD.SceneExportAdapter>());
+        registrations.AddSingleton<Controls.ThreeD.ISceneViewportRegistration>(provider => provider.GetRequiredService<Controls.ThreeD.SceneExportAdapter>());
         registrations.AddSingleton<ISceneBenchmark, Controls.ThreeD.SceneBenchmark>();
         registrations.AddSingleton<ILogicFamilyRepository, JsonLogicFamilyRepository>();
         registrations.AddSingleton<IChipCsvRepository, FileChipCsvRepository>();
@@ -111,6 +114,8 @@ public static class Program
             failure.Handled = true;
         };
         app.Resources[typeof(Controls.ThreeD.ISceneMeshFactory)] = services.GetRequiredService<Controls.ThreeD.ISceneMeshFactory>();
+        app.Resources[typeof(Controls.ThreeD.ISceneViewportRegistration)] =
+            services.GetRequiredService<Controls.ThreeD.ISceneViewportRegistration>();
         if (args is ["--benchmark-3d", var report])
         {
             app.Run(services.GetRequiredService<ISceneBenchmark>().CreateWindow(report));

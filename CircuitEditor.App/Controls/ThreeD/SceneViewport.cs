@@ -8,12 +8,14 @@ using HelixToolkit.Wpf;
 
 namespace CircuitEditor.App.Controls.ThreeD;
 
-public sealed partial class SceneViewport : HelixViewport3D
+public sealed class SceneViewport : HelixViewport3D
 {
     private readonly ScenePickIndex<Visual3D> picks = new();
     private readonly Dictionary<Guid, SceneVisualNode> nodes = [];
     private readonly ModelVisual3D sceneRoot = new();
     private readonly SceneClick click = new();
+    private readonly SceneViewportSimulation playback;
+    private readonly SceneHover hover;
     private ThreeDViewModel? workspace;
     private ScenePreparation? preparation;
     private CancellationTokenSource? pending;
@@ -21,12 +23,17 @@ public sealed partial class SceneViewport : HelixViewport3D
     private SceneBounds bounds;
     internal event EventHandler? SceneApplied;
     private const double MinimumLabelHeight = 8;
+    internal bool HasScene => applied is not null && IsVisible;
+    private ISceneViewportRegistration? exportTarget;
     private bool initialized;
     private bool labelsReadable = true;
-    private Guid? hovered;
+    internal ThreeDViewModel? Workspace => workspace;
+    internal IReadOnlyDictionary<Guid, SceneVisualNode> SceneNodes => nodes;
 
     public SceneViewport()
     {
+        playback = new(this);
+        hover = new(this);
         RotateGesture = new MouseGesture(MouseAction.RightClick);
         PanGesture = new MouseGesture(MouseAction.MiddleClick);
         RotateGesture2 = new MouseGesture(MouseAction.None);
@@ -37,7 +44,6 @@ public sealed partial class SceneViewport : HelixViewport3D
         ShowCoordinateSystem = false;
         ShowViewCube = false;
         ModelUpDirection = new(0, 0, 1);
-        ToolTip = new System.Windows.Controls.ToolTip { Visibility = Visibility.Collapsed };
         Children.Add(sceneRoot);
         Loaded += (_, _) => Connect();
         Unloaded += (_, _) => Disconnect();
@@ -54,14 +60,16 @@ public sealed partial class SceneViewport : HelixViewport3D
         if (TryFindResource(typeof(ISceneMeshFactory)) is not ISceneMeshFactory factory) return;
         preparation ??= new(factory);
         workspace = vm;
+        exportTarget = TryFindResource(typeof(ISceneViewportRegistration)) as ISceneViewportRegistration;
+        exportTarget?.Attach(this);
         vm.SceneInvalidated += Rebuild;
         vm.CameraRequested += MoveCamera;
         vm.SelectionChanged += SelectionChanged;
         vm.PropertyChanged += LayersChanged;
         if (vm.Simulation is { } sim)
         {
-            sim.FrameChanged += QueueFrame;
-            sim.PropertyChanged += SimulationChanged;
+            sim.FrameChanged += playback.QueueFrame;
+            sim.PropertyChanged += playback.SimulationChanged;
         }
         vm.SetActive(true);
     }
@@ -70,12 +78,12 @@ public sealed partial class SceneViewport : HelixViewport3D
     {
         var vm = workspace;
         if (vm is null) return;
-        ReleaseInteraction();
-        ClearFrames();
+        playback.ReleaseInteraction();
+        playback.ClearFrames();
         if (vm.Simulation is { } sim)
         {
-            sim.FrameChanged -= QueueFrame;
-            sim.PropertyChanged -= SimulationChanged;
+            sim.FrameChanged -= playback.QueueFrame;
+            sim.PropertyChanged -= playback.SimulationChanged;
         }
         pending?.Cancel();
         pending = null;
@@ -84,14 +92,21 @@ public sealed partial class SceneViewport : HelixViewport3D
         vm.CameraRequested -= MoveCamera;
         vm.SelectionChanged -= SelectionChanged;
         vm.PropertyChanged -= LayersChanged;
+        exportTarget?.Detach(this);
+        exportTarget = null;
         workspace = null;
         click.Cancel();
         SetHover(null);
     }
 
-    private async void Rebuild(object? sender, EventArgs args)
+    private void Rebuild(object? sender, EventArgs args)
     {
-        if (workspace is not { } vm || vm.Capture() is not { } snapshot || preparation is not { } renderer) return;
+        if (workspace?.Capture() is { } snapshot) Prepare(snapshot);
+    }
+
+    internal async void Prepare(CircuitEditor.Core.History.ProjectSnapshot snapshot)
+    {
+        if (workspace is not { } vm || preparation is not { } renderer) return;
         pending?.Cancel();
         using CancellationTokenSource request = new();
         pending = request;
@@ -114,7 +129,7 @@ public sealed partial class SceneViewport : HelixViewport3D
 
     private void Apply(PreparedScene prepared)
     {
-        ClearFrames();
+        playback.ClearFrames();
         applied = prepared;
         var remaining = prepared.Nodes.Select(item => item.Node.Id).ToHashSet();
         foreach (var old in nodes.Values.Where(item => !remaining.Contains(item.Node.Id)).ToArray())
@@ -133,7 +148,7 @@ public sealed partial class SceneViewport : HelixViewport3D
             foreach (var part in visual.Body.Children) picks.Set(part, item.Node.Id);
         }
         UpdateLayers();
-        QueueFrame(this, workspace?.Simulation?.State ?? new());
+        playback.QueueFrame(this, workspace?.Simulation?.State ?? new());
         if (!initialized && nodes.Count > 0 && Camera is ProjectionCamera camera)
         {
             SceneCamera.Apply(camera, bounds, SceneCameraView.Initial, Aspect, false);
@@ -166,14 +181,15 @@ public sealed partial class SceneViewport : HelixViewport3D
     private void UpdateLayers()
     {
         if (workspace is not { } vm) return;
+        var selection = vm.SelectedId;
         foreach (var visual in nodes.Values)
         {
             var show = vm.Layers.Shows(visual.Node.Layer);
             Attach(visual.Body, show);
             Attach(visual.Labels, show && labelsReadable && vm.Layers.Labels && visual.Labels.Children.Count != 0);
-            Attach(visual.Outline, show && vm.SelectedId == visual.Node.Id && visual.Node.Layer != SceneLayer.Wire);
+            Attach(visual.Outline, show && selection == visual.Node.Id && visual.Node.Layer != SceneLayer.Wire);
             if (visual.Node.Layer == SceneLayer.Wire)
-                visual.SelectWire(vm.SelectedId == visual.Node.Id);
+                visual.SelectWire(selection == visual.Node.Id);
         }
     }
 
@@ -202,7 +218,7 @@ public sealed partial class SceneViewport : HelixViewport3D
         {
             var at = args.GetPosition(viewport);
             click.Begin(at.X, at.Y);
-            if (BeginSimulationInteraction(at)) args.Handled = true;
+            if (playback.BeginInteraction(at)) args.Handled = true;
         }
         else click.Cancel();
         base.OnPreviewMouseDown(args);
@@ -213,7 +229,7 @@ public sealed partial class SceneViewport : HelixViewport3D
         if (Viewport is { } viewport && args.ChangedButton == MouseButton.Left)
         {
             var at = args.GetPosition(viewport);
-            ReleaseInteraction();
+            playback.ReleaseInteraction();
             if (click.Release(at.X, at.Y))
             {
                 var node = Find(at);
@@ -230,7 +246,7 @@ public sealed partial class SceneViewport : HelixViewport3D
         {
             var at = args.GetPosition(viewport);
             click.Move(at.X, at.Y);
-            if (args.LeftButton == MouseButtonState.Pressed) MoveKnob(at);
+            if (args.LeftButton == MouseButtonState.Pressed) playback.MoveKnob(at);
             if (args.LeftButton == MouseButtonState.Released && args.RightButton == MouseButtonState.Released &&
                 args.MiddleButton == MouseButtonState.Released) SetHover(Find(at));
             else SetHover(null);
@@ -240,12 +256,18 @@ public sealed partial class SceneViewport : HelixViewport3D
 
     protected override void OnMouseLeave(MouseEventArgs args)
     {
-        if (interacting is null) click.Cancel();
+        if (!playback.IsInteracting) click.Cancel();
         SetHover(null);
         base.OnMouseLeave(args);
     }
 
-    private SceneNode? Find(Point at)
+    protected override void OnLostMouseCapture(MouseEventArgs args)
+    {
+        playback.ReleaseInteraction();
+        base.OnLostMouseCapture(args);
+    }
+
+    internal SceneNode? Find(Point at)
     {
         if (Viewport is null) return null;
         foreach (var hit in Viewport3DHelper.FindHits(Viewport, at))
@@ -254,14 +276,5 @@ public sealed partial class SceneViewport : HelixViewport3D
         return null;
     }
 
-    private void SetHover(SceneNode? node)
-    {
-        if (hovered == node?.Id) return;
-        hovered = node?.Id;
-        var tooltip = (System.Windows.Controls.ToolTip)ToolTip;
-        tooltip.IsOpen = false;
-        tooltip.Visibility = node is null ? Visibility.Collapsed : Visibility.Visible;
-        tooltip.Content = node is null ? null : string.Join(" · ",
-            new[] { node.Label, node.Name, node.Value, node.Color }.Where(value => !string.IsNullOrWhiteSpace(value)));
-    }
+    private void SetHover(SceneNode? node) => hover.Observe(node);
 }

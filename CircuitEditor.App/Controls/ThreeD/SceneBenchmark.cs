@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using CircuitEditor.App.Services;
 using CircuitEditor.App.ViewModels;
+using CircuitEditor.Core.History;
 using CircuitEditor.Core.Repositories;
 
 namespace CircuitEditor.App.Controls.ThreeD;
@@ -48,15 +49,6 @@ internal sealed class SceneBenchmark(IComponentLibraryRepository components, IFo
     {
         project.ReplaceProject(SceneBenchmarkDesign.Create(components, footprints, breadboards));
         var viewport = new SceneViewport { DataContext = viewModel };
-        var initial = await MeasureUpdate(viewport, () => stage.Children.Add(viewport), token);
-        var change = await MeasureUpdate(viewport, () =>
-        {
-            var node = project.Model.Circuit.Components.Last(c => c.Definition.Id == "resistor");
-            if (!node.TryUpdateProperties("330 Ω", null, null, out var error))
-                throw new InvalidOperationException(error);
-            project.Refresh();
-        }, token);
-
         var litFrames = 0;
         var peakVoltageWires = 0;
         void Observe(object? sender, Core.Simulation.SimulationState frame)
@@ -66,9 +58,21 @@ internal sealed class SceneBenchmark(IComponentLibraryRepository components, IFo
         }
         simulation.FrameChanged += Observe;
         double fps;
+        double initial;
+        double change;
         try
         {
-            if (runSimulation) simulation.StartCommand.Execute(null);
+            if (runSimulation) await StartSimulation(token);
+            initial = await MeasureUpdate(viewport, () => stage.Children.Add(viewport), token);
+            change = await MeasureUpdate(viewport, () =>
+            {
+                // Mutate only the copy used for rendering. The running session keeps its own design.
+                var copy = new ProjectSnapshot(project.Model).Restore();
+                var resistor = copy.Circuit.Components.Last(c => c.Definition.Id == "resistor");
+                if (!resistor.TryUpdateProperties("330 Ω", null, null, out var error))
+                    throw new InvalidOperationException(error);
+                viewport.Prepare(new ProjectSnapshot(copy));
+            }, token);
             fps = await SceneRotationMeasurement.Measure(viewport, token);
         }
         finally { simulation.FrameChanged -= Observe; }
@@ -81,6 +85,23 @@ internal sealed class SceneBenchmark(IComponentLibraryRepository components, IFo
             RenderCapability.Tier >> 16, initial, change, fps, modelTime, litFrames, peakVoltageWires);
         stage.Children.Remove(viewport);
         return result;
+    }
+
+    private async Task StartSimulation(CancellationToken token)
+    {
+        TaskCompletionSource ready = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        void Started(object? sender, Core.Simulation.SimulationState frame)
+        {
+            if (frame.IsHalted) ready.TrySetException(new InvalidOperationException(frame.Failure));
+            else if (frame.Microseconds > 0) ready.TrySetResult();
+        }
+        simulation.FrameChanged += Started;
+        try
+        {
+            simulation.StartCommand.Execute(null);
+            await ready.Task.WaitAsync(TimeSpan.FromSeconds(15), token);
+        }
+        finally { simulation.FrameChanged -= Started; }
     }
 
     private static async Task<double> MeasureUpdate(SceneViewport viewport, Action trigger, CancellationToken token)

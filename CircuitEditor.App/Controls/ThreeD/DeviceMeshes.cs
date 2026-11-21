@@ -34,7 +34,7 @@ internal static class DeviceMeshes
                 var knobD = n.KnobRadius > 0 ? n.KnobRadius * 2 : d * .72;
                 m.Disc(knob.X, knob.Y, z, h, d, color);
                 m.Disc(knob.X, knob.Y, t, detail, knobD, "#20232C");
-                m.Box(new(knob.X + .1, knob.Y - .25, knobD * .42, .5), t + detail, .12,
+                m.Box(new(knob.X - .25, knob.Y - knobD * .42, .5, knobD * .42), t + detail, .12,
                     "#E3E7E8", "knob", new(knob.X, -knob.Y, t));
                 break;
             case "servo":
@@ -96,6 +96,7 @@ internal static class DeviceMeshes
         var x = shaft.X + shaft.Width / 2;
         var y = shaft.Y + shaft.Height / 2;
         m.Box(casing, z, h, n.Profile.Material);
+        m.Box(n.Parts.GetValueOrDefault("connector"), z, d * .42, "#242631");
         foreach (var side in new[] { "left-ear", "right-ear" })
             m.Box(n.Parts.GetValueOrDefault(side), z + h * .42, h * .1, "#4387B3");
         m.Disc(x, y, top, d * .5, Math.Min(shaft.Width, shaft.Height), "#DBDCD7");
