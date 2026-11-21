@@ -109,6 +109,7 @@ public static class Program
             services.GetRequiredService<IErrorLogRepository>().TryAppend(args.Exception.ToString());
             args.Handled = true;
         };
+        app.Resources[typeof(Controls.ThreeD.ISceneMeshFactory)] = services.GetRequiredService<Controls.ThreeD.ISceneMeshFactory>();
         var main = services.GetRequiredService<MainWindow>();
         var session = services.GetRequiredService<ProjectSessionViewModel>();
         main.ContentRendered += (_, _) => session.Initialize();

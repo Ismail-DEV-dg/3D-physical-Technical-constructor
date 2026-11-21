@@ -44,6 +44,7 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
             OnPropertyChanged();
         }
     }
+    public void SelectForInspection(Guid? id) { if (selectedId != id) { selectedId = id; Refresh(); } }
     public void Refresh() { OnPropertyChanged(nameof(Selected)); OnPropertyChanged(nameof(HasSelection)); OnPropertyChanged(nameof(Color)); }
     public bool Handle(CanvasInput input, LayoutPoint point)
     {
