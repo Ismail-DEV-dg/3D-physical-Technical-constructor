@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="assets/branding/logo-horizontal.png" width="460" alt="Circuit Editor">
+</p>
+
+
 # Circuit Editor
 
 Десктопный редактор электрических схем для Arduino Uno, Nano и ESP32 с учебной симуляцией и 3D-просмотром.
@@ -124,7 +129,7 @@ dotnet test CircuitEditor.sln -c Release
 ## Документация
 
 - [Руководство пользователя и пять примеров](docs/user-guide.md)
-- [Архитектура](docs/architecture.md) и [UML](docs/uml/README.md)
+- [Архитектура](docs/architecture.md), [UML](docs/uml/README.md) и [фирменный стиль](docs/branding.md)
 - [Форматы .circ и .chip](docs/file-formats.md)
 - [Модель симуляции](docs/simulation-model.md) и [производительность](docs/stage-10-performance.md)
 - [Электрические расчёты](docs/stage5.md), [редактор кода](docs/stage6-code-editor.md) и [конструктор DIP](docs/stage-8-chips.md)
@@ -133,4 +138,4 @@ dotnet test CircuitEditor.sln -c Release
 
 ## Лицензия
 
-Copyright © 2026 Abduselimov Ismail. [MIT](LICENSE) · [Лицензии зависимостей](THIRD-PARTY-NOTICES.md)
+Copyright © 2026 Abduselimov Ismail. Проект и оригинальный логотип распространяются по [MIT](LICENSE) · [Лицензии зависимостей](THIRD-PARTY-NOTICES.md)

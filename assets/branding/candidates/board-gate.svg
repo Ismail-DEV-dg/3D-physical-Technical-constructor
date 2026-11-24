@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" role="img" aria-label="Circuit Editor">
+<rect x="0.7" y="0.7" width="126.6" height="126.6" rx="26" fill="#0A0E17" stroke="#334260" stroke-width="1.8"/>
+<path d="M32 43 H60 Q86 43 92 64 Q86 85 60 85 H32" stroke="#00E5FF" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22 57 H47 M22 72 H47 M96 64 H109" stroke="#8B5CFF" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M62 20 V30 M62 98 V108" stroke="#8B5CFF" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="109" cy="64" r="8" fill="#39FF88"/>
+
+</svg>

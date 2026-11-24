@@ -94,6 +94,7 @@
 | Схемы примеров, JSON-каталоги, сценарии, геометрия, SVG-текстуры и определения учебных микросхем в репозитории | Формат .circ 4, библиотека 1, профили из репозитория | [MIT проекта](LICENSE). Изделия и выводы описаны справочными данными; готовые внешние модели не включены. |
 | Segoe UI | Установленная Windows | Системный шрифт, приложение его не распространяет. |
 | .NET 8 и WPF для автономной поставки | 8.0.31 в проверенной поставке; патч выбирает SDK | .NET Foundation, MIT и уведомления об отдельных компонентах [dotnet/runtime](https://github.com/dotnet/runtime), [dotnet/wpf](https://github.com/dotnet/wpf). Доставляемые runtime-пакеты сохраняют исходные LICENSE и THIRD-PARTY-NOTICES. |
+| BrandingGenerator | .NET 8/WPF из SDK | Сторонних NuGet-пакетов нет. Оригинальные изображения распространяются по [MIT проекта](LICENSE). Segoe UI используется из Windows при отрисовке и не распространяется как файл шрифта. |
 | Roslyn из SDK | Версия установленного SDK | [MIT](https://github.com/dotnet/roslyn/blob/main/License.txt), используется только отдельным генератором UML. Пакета Roslyn Scripting в приложении нет. |
 | Mermaid CLI | 12.2.0, отдельная утилита генерации изображений | [MIT](https://github.com/mermaid-js/mermaid-cli/blob/master/LICENSE), не является зависимостью поставки приложения. |
 

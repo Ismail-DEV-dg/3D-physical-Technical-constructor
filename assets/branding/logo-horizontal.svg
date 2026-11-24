@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 147" width="640" height="147" role="img" aria-label="Circuit Editor">
+<rect width="640" height="147" rx="26" fill="#0A0E17"/>
+<g transform="translate(16 16) scale(0.9)"><rect x="0.7" y="0.7" width="126.6" height="126.6" rx="26" fill="#0A0E17" stroke="#334260" stroke-width="1.8"/>
+<path d="M94 36 H55 L35 56 V74 L53 92 H82" stroke="#00E5FF" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M102 60 H83 L67 76 H55" stroke="#8B5CFF" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M51 20 V26 M72 20 V26 M20 53 H25 M20 74 H25 M55 102 V108 M75 102 V108" stroke="#8B5CFF" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="94" cy="36" r="7" fill="#00E5FF"/>
+<circle cx="102" cy="60" r="6" fill="#8B5CFF"/>
+<circle cx="82" cy="92" r="8" fill="#39FF88"/>
+</g>
+<text x="153" y="88" font-family="Segoe UI, sans-serif" font-size="48" font-weight="700" fill="#EAF2FF">CIRCUIT <tspan fill="#00E5FF">/</tspan> EDITOR</text>
+</svg>
