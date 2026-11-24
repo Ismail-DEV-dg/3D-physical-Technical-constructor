@@ -32,6 +32,7 @@ public static class Program
         registrations.AddSingleton<IThreeDExportService>(provider => provider.GetRequiredService<Controls.ThreeD.SceneExportAdapter>());
         registrations.AddSingleton<Controls.ThreeD.ISceneViewportRegistration>(provider => provider.GetRequiredService<Controls.ThreeD.SceneExportAdapter>());
         registrations.AddSingleton<ISceneBenchmark, Controls.ThreeD.SceneBenchmark>();
+        registrations.AddSingleton<IStage10Benchmark, Controls.ThreeD.Stage10Benchmark>();
         registrations.AddSingleton<ILogicFamilyRepository, JsonLogicFamilyRepository>();
         registrations.AddSingleton<IChipCsvRepository, FileChipCsvRepository>();
         registrations.AddSingleton<IChipRepository, JsonChipRepository>();
@@ -116,6 +117,11 @@ public static class Program
         app.Resources[typeof(Controls.ThreeD.ISceneMeshFactory)] = services.GetRequiredService<Controls.ThreeD.ISceneMeshFactory>();
         app.Resources[typeof(Controls.ThreeD.ISceneViewportRegistration)] =
             services.GetRequiredService<Controls.ThreeD.ISceneViewportRegistration>();
+        if (args is ["--benchmark-stage10", var benchmark])
+        {
+            app.Run(services.GetRequiredService<IStage10Benchmark>().CreateWindow(benchmark));
+            return;
+        }
         if (args is ["--benchmark-3d", var report])
         {
             app.Run(services.GetRequiredService<ISceneBenchmark>().CreateWindow(report));
