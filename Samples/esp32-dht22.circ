@@ -1,0 +1,194 @@
+{
+  "sketch": {
+    "text": "#include \u003CDHT.h\u003E\nDHT sensor(4, DHT22);\nvoid setup() { Serial.begin(115200); sensor.begin(); }\nvoid loop() { Serial.println(sensor.readTemperature()); Serial.println(sensor.readHumidity()); delay(2000); }",
+    "board": "Esp32",
+    "name": "Example",
+    "controllerComponentId": "869a1e25-b4a3-4301-9a6d-5788d5b4ad84",
+    "isValid": true
+  },
+  "simulationSetup": {
+    "scenario": {
+      "templateId": "serial",
+      "pins": {},
+      "numbers": {
+        "periodMs": 500
+      },
+      "targetId": "a4a60438-82ae-4fbd-8afc-880fbf19e8b8",
+      "text": "DHT22"
+    },
+    "instruments": {}
+  },
+  "schemaVersion": 4,
+  "libraryVersion": "1",
+  "components": [
+    {
+      "id": "869a1e25-b4a3-4301-9a6d-5788d5b4ad84",
+      "definitionId": "esp32-devkit",
+      "footprintId": "esp32-doit-v1-30",
+      "reference": "U1",
+      "value": "ESP32-WROOM"
+    },
+    {
+      "id": "a4a60438-82ae-4fbd-8afc-880fbf19e8b8",
+      "definitionId": "dht22",
+      "footprintId": "dht22-sip4",
+      "reference": "S1",
+      "value": "DHT22",
+      "inputs": {
+        "values": {
+          "Temperature": 25,
+          "Humidity": 50
+        }
+      }
+    },
+    {
+      "id": "cefc7bbd-f078-478b-837b-26289b4f4c90",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R1",
+      "value": "10 k\u03A9"
+    }
+  ],
+  "embeddedChips": [],
+  "counters": {
+    "U": 1,
+    "S": 1,
+    "R": 1
+  },
+  "mockup": {
+    "869a1e25-b4a3-4301-9a6d-5788d5b4ad84": {
+      "x": 8,
+      "y": 10,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "a4a60438-82ae-4fbd-8afc-880fbf19e8b8": {
+      "x": 65,
+      "y": 14,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "cefc7bbd-f078-478b-837b-26289b4f4c90": {
+      "x": 59,
+      "y": 32,
+      "rotation": 0,
+      "spanHoles": 0
+    }
+  },
+  "schematic": {
+    "869a1e25-b4a3-4301-9a6d-5788d5b4ad84": {
+      "x": 32,
+      "y": 50,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "a4a60438-82ae-4fbd-8afc-880fbf19e8b8": {
+      "x": 260,
+      "y": 70,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "cefc7bbd-f078-478b-837b-26289b4f4c90": {
+      "x": 236,
+      "y": 160,
+      "rotation": 0,
+      "spanHoles": 0
+    }
+  },
+  "breadboards": [
+    {
+      "id": "00000006-1020-4300-8000-000000000001",
+      "definitionId": "breadboard-half-400",
+      "x": 175,
+      "y": 14,
+      "rotation": 0
+    }
+  ],
+  "bindings": [],
+  "wires": [
+    {
+      "id": "00000001-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "869a1e25-b4a3-4301-9a6d-5788d5b4ad84",
+        "terminalId": "16"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "a4a60438-82ae-4fbd-8afc-880fbf19e8b8",
+        "terminalId": "1"
+      },
+      "color": "#FF3B5C",
+      "controlPoints": []
+    },
+    {
+      "id": "00000002-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "869a1e25-b4a3-4301-9a6d-5788d5b4ad84",
+        "terminalId": "14"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "a4a60438-82ae-4fbd-8afc-880fbf19e8b8",
+        "terminalId": "4"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "00000003-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "869a1e25-b4a3-4301-9a6d-5788d5b4ad84",
+        "terminalId": "20"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "a4a60438-82ae-4fbd-8afc-880fbf19e8b8",
+        "terminalId": "2"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000004-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "869a1e25-b4a3-4301-9a6d-5788d5b4ad84",
+        "terminalId": "16"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "cefc7bbd-f078-478b-837b-26289b4f4c90",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000005-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "cefc7bbd-f078-478b-837b-26289b4f4c90",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "a4a60438-82ae-4fbd-8afc-880fbf19e8b8",
+        "terminalId": "2"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    }
+  ],
+  "view": {
+    "active": "Mockup",
+    "mockupZoom": 0.83,
+    "mockupX": 30,
+    "mockupY": 0,
+    "schematicZoom": 1,
+    "schematicX": 40,
+    "schematicY": 40
+  }
+}

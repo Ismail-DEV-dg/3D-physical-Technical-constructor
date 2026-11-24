@@ -1,0 +1,162 @@
+{
+  "sketch": {
+    "text": "void setup() { pinMode(13, OUTPUT); }\nvoid loop() { digitalWrite(13, HIGH); delay(250); digitalWrite(13, LOW); delay(250); }",
+    "board": "Uno",
+    "name": "Example",
+    "controllerComponentId": "9814fb79-5e2e-46cf-bb8e-d2684943f198",
+    "isValid": true
+  },
+  "simulationSetup": {
+    "scenario": {
+      "templateId": "blink",
+      "pins": {
+        "LED_PIN": {
+          "componentId": "9814fb79-5e2e-46cf-bb8e-d2684943f198",
+          "pinId": "D13"
+        }
+      },
+      "numbers": {
+        "periodMs": 500
+      }
+    },
+    "instruments": {}
+  },
+  "schemaVersion": 4,
+  "libraryVersion": "1",
+  "components": [
+    {
+      "id": "9814fb79-5e2e-46cf-bb8e-d2684943f198",
+      "definitionId": "arduino-uno",
+      "footprintId": "arduino-uno-r3",
+      "reference": "U1",
+      "value": "ATmega328P"
+    },
+    {
+      "id": "198672a4-d43a-45b5-a2ad-bca600f162e0",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R1",
+      "value": "1 k\u03A9"
+    },
+    {
+      "id": "938e75d0-e8ee-48dc-99d3-12285311216d",
+      "definitionId": "led",
+      "footprintId": "led-5mm",
+      "reference": "LED1",
+      "value": "Red LED",
+      "color": "#FF3B5C"
+    }
+  ],
+  "embeddedChips": [],
+  "counters": {
+    "U": 1,
+    "R": 1,
+    "LED": 1
+  },
+  "mockup": {
+    "9814fb79-5e2e-46cf-bb8e-d2684943f198": {
+      "x": 8,
+      "y": 10,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "198672a4-d43a-45b5-a2ad-bca600f162e0": {
+      "x": 20,
+      "y": 46,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "938e75d0-e8ee-48dc-99d3-12285311216d": {
+      "x": 23,
+      "y": 56,
+      "rotation": 0,
+      "spanHoles": 0
+    }
+  },
+  "schematic": {
+    "9814fb79-5e2e-46cf-bb8e-d2684943f198": {
+      "x": 32,
+      "y": 50,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "198672a4-d43a-45b5-a2ad-bca600f162e0": {
+      "x": 80,
+      "y": 230,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "938e75d0-e8ee-48dc-99d3-12285311216d": {
+      "x": 92,
+      "y": 280,
+      "rotation": 0,
+      "spanHoles": 0
+    }
+  },
+  "breadboards": [
+    {
+      "id": "00000004-1020-4300-8000-000000000001",
+      "definitionId": "breadboard-half-400",
+      "x": 175,
+      "y": 14,
+      "rotation": 0
+    }
+  ],
+  "bindings": [],
+  "wires": [
+    {
+      "id": "00000001-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "9814fb79-5e2e-46cf-bb8e-d2684943f198",
+        "terminalId": "D13"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "198672a4-d43a-45b5-a2ad-bca600f162e0",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000002-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "198672a4-d43a-45b5-a2ad-bca600f162e0",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "938e75d0-e8ee-48dc-99d3-12285311216d",
+        "terminalId": "anode"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000003-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "938e75d0-e8ee-48dc-99d3-12285311216d",
+        "terminalId": "cathode"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "9814fb79-5e2e-46cf-bb8e-d2684943f198",
+        "terminalId": "GND"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    }
+  ],
+  "view": {
+    "active": "Mockup",
+    "mockupZoom": 0.83,
+    "mockupX": 30,
+    "mockupY": 0,
+    "schematicZoom": 1,
+    "schematicX": 40,
+    "schematicY": 40
+  }
+}

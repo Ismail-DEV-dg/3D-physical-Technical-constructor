@@ -1,0 +1,1562 @@
+{
+  "sketch": {
+    "text": "// \u041E\u0431\u0449\u0438\u0439 \u0442\u0430\u043A\u0442 SRCLK/RCLK \u043D\u0430 D13. \u041D\u0430\u0436\u043C\u0438\u0442\u0435 RESET \u043F\u0435\u0440\u0435\u0434 \u0434\u0435\u043C\u043E\u043D\u0441\u0442\u0440\u0430\u0446\u0438\u0435\u0439.\nvoid setup() { pinMode(13, OUTPUT); }\nvoid loop() { digitalWrite(13, HIGH); delay(50); digitalWrite(13, LOW); delay(50); }",
+    "board": "Uno",
+    "name": "Example",
+    "controllerComponentId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+    "isValid": true
+  },
+  "simulationSetup": {
+    "scenario": {
+      "templateId": "blink",
+      "pins": {
+        "LED_PIN": {
+          "componentId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+          "pinId": "D13"
+        }
+      },
+      "numbers": {
+        "periodMs": 100
+      }
+    },
+    "instruments": {}
+  },
+  "schemaVersion": 4,
+  "libraryVersion": "1",
+  "components": [
+    {
+      "id": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+      "definitionId": "arduino-uno",
+      "footprintId": "arduino-uno-r3",
+      "reference": "U1",
+      "value": "ATmega328P"
+    },
+    {
+      "id": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+      "definitionId": "chip:d3a42008-0000-4000-8000-000000000012:1",
+      "footprintId": "chip:d3a42008-0000-4000-8000-000000000012:1",
+      "reference": "U2",
+      "value": "DIP-16",
+      "chipId": "d3a42008-0000-4000-8000-000000000012",
+      "definitionVersion": 1
+    },
+    {
+      "id": "4a3e2049-15ed-4215-8e1f-1245b4d281a3",
+      "definitionId": "chip:ca8f6cdb-b360-48c0-9454-8bfa44ad7ee5:1",
+      "footprintId": "chip:ca8f6cdb-b360-48c0-9454-8bfa44ad7ee5:1",
+      "reference": "U3",
+      "value": "DIP-8",
+      "chipId": "ca8f6cdb-b360-48c0-9454-8bfa44ad7ee5",
+      "definitionVersion": 1
+    },
+    {
+      "id": "a6e6eeb3-d25f-48a4-9433-7e20e35d550f",
+      "definitionId": "button",
+      "footprintId": "button-tactile-6mm",
+      "reference": "SW1",
+      "value": "Momentary NO",
+      "inputs": {
+        "values": {
+          "ButtonPressed": 0
+        }
+      }
+    },
+    {
+      "id": "79c95518-5590-4f7b-b3b0-18e1fc3ec3f6",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R1",
+      "value": "10 k\u03A9"
+    },
+    {
+      "id": "7ea7bffa-172c-432c-8539-594e1898a3b2",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R2",
+      "value": "1 k\u03A9"
+    },
+    {
+      "id": "0bc3eb5d-41ce-45ca-95af-8a7b01d09247",
+      "definitionId": "led",
+      "footprintId": "led-5mm",
+      "reference": "LED1",
+      "value": "Red LED",
+      "color": "#FF3B5C"
+    },
+    {
+      "id": "90386c50-8628-4706-abff-2e60d571af47",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R3",
+      "value": "1 k\u03A9"
+    },
+    {
+      "id": "30740da2-1f03-43e4-a087-e45023be932a",
+      "definitionId": "led",
+      "footprintId": "led-5mm",
+      "reference": "LED2",
+      "value": "Red LED",
+      "color": "#FF3B5C"
+    },
+    {
+      "id": "e8ab1465-55a3-439b-ab8f-82569e2fcd46",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R4",
+      "value": "1 k\u03A9"
+    },
+    {
+      "id": "cda1b9e0-9a1a-41bf-b198-770675905bf6",
+      "definitionId": "led",
+      "footprintId": "led-5mm",
+      "reference": "LED3",
+      "value": "Red LED",
+      "color": "#FF3B5C"
+    },
+    {
+      "id": "026d6ed7-9571-45d9-af2f-9d192c951b58",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R5",
+      "value": "1 k\u03A9"
+    },
+    {
+      "id": "dcdba2a7-a8b6-437d-a323-2c76ef5f75f5",
+      "definitionId": "led",
+      "footprintId": "led-5mm",
+      "reference": "LED4",
+      "value": "Red LED",
+      "color": "#FF3B5C"
+    },
+    {
+      "id": "7b65530f-c5ee-45e2-a629-dc61fc68cc51",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R6",
+      "value": "1 k\u03A9"
+    },
+    {
+      "id": "2c5e5a4b-60ab-42e8-b35b-6b9aec30cc3b",
+      "definitionId": "led",
+      "footprintId": "led-5mm",
+      "reference": "LED5",
+      "value": "Red LED",
+      "color": "#FF3B5C"
+    },
+    {
+      "id": "3d177a97-8593-4685-a7a5-b17aaa93c113",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R7",
+      "value": "1 k\u03A9"
+    },
+    {
+      "id": "8743d49c-edb0-4abb-a2d4-883a47d6aa31",
+      "definitionId": "led",
+      "footprintId": "led-5mm",
+      "reference": "LED6",
+      "value": "Red LED",
+      "color": "#FF3B5C"
+    },
+    {
+      "id": "9fda75fd-70ec-4a5c-974a-73c548cd1a09",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R8",
+      "value": "1 k\u03A9"
+    },
+    {
+      "id": "e07e60fc-6a12-4977-a1d3-cc82fbb3a14c",
+      "definitionId": "led",
+      "footprintId": "led-5mm",
+      "reference": "LED7",
+      "value": "Red LED",
+      "color": "#FF3B5C"
+    },
+    {
+      "id": "ff673e4c-d3cd-4b68-a36d-111ef7af5d89",
+      "definitionId": "resistor",
+      "footprintId": "resistor-axial",
+      "reference": "R9",
+      "value": "1 k\u03A9"
+    },
+    {
+      "id": "01a15026-112b-423d-8a17-ae56a24ffe84",
+      "definitionId": "led",
+      "footprintId": "led-5mm",
+      "reference": "LED8",
+      "value": "Red LED",
+      "color": "#FF3B5C"
+    }
+  ],
+  "embeddedChips": [
+    {
+      "id": "d3a42008-0000-4000-8000-000000000012",
+      "definitionVersion": 1,
+      "name": "74HC595",
+      "description": "\u0426\u0438\u0444\u0440\u043E\u0432\u0430\u044F \u0440\u0430\u0441\u043F\u0438\u043D\u043E\u0432\u043A\u0430 74HC595. \u0420\u0435\u0433\u0438\u0441\u0442\u0440 \u0441\u0434\u0432\u0438\u0433\u0430 (SRCLK) \u0438 \u043E\u0442\u0434\u0435\u043B\u044C\u043D\u0430\u044F \u0437\u0430\u0449\u0451\u043B\u043A\u0430 (RCLK), \u0430\u0441\u0438\u043D\u0445\u0440\u043E\u043D\u043D\u044B\u0439 SRCLR#, OE# \u0443\u043F\u0440\u0430\u0432\u043B\u044F\u0435\u0442 \u0442\u043E\u043B\u044C\u043A\u043E QA\u2013QH, QH\u0027 \u043E\u0441\u0442\u0430\u0451\u0442\u0441\u044F \u0430\u043A\u0442\u0438\u0432\u043D\u044B\u043C. \u0421\u043E\u0432\u043F\u0430\u0434\u0430\u044E\u0449\u0438\u0435 \u0444\u0440\u043E\u043D\u0442\u044B \u043F\u0435\u0440\u0435\u043D\u043E\u0441\u044F\u0442 \u043F\u0440\u0435\u0436\u043D\u0435\u0435 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u0435 \u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0430. Setup/hold \u0438 \u043F\u0435\u0440\u0435\u0445\u043E\u0434\u043D\u044B\u0435 \u044D\u043B\u0435\u043A\u0442\u0440\u0438\u0447\u0435\u0441\u043A\u0438\u0435 \u043F\u0440\u043E\u0446\u0435\u0441\u0441\u044B \u043D\u0435 \u043C\u043E\u0434\u0435\u043B\u0438\u0440\u0443\u044E\u0442\u0441\u044F.",
+      "package": "DIP-16",
+      "family": "hc",
+      "pins": [
+        {
+          "number": 1,
+          "name": "QB",
+          "type": "Output",
+          "description": "",
+          "isUnused": false,
+          "enablePin": 13,
+          "enableLow": true
+        },
+        {
+          "number": 2,
+          "name": "QC",
+          "type": "Output",
+          "description": "",
+          "isUnused": false,
+          "enablePin": 13,
+          "enableLow": true
+        },
+        {
+          "number": 3,
+          "name": "QD",
+          "type": "Output",
+          "description": "",
+          "isUnused": false,
+          "enablePin": 13,
+          "enableLow": true
+        },
+        {
+          "number": 4,
+          "name": "QE",
+          "type": "Output",
+          "description": "",
+          "isUnused": false,
+          "enablePin": 13,
+          "enableLow": true
+        },
+        {
+          "number": 5,
+          "name": "QF",
+          "type": "Output",
+          "description": "",
+          "isUnused": false,
+          "enablePin": 13,
+          "enableLow": true
+        },
+        {
+          "number": 6,
+          "name": "QG",
+          "type": "Output",
+          "description": "",
+          "isUnused": false,
+          "enablePin": 13,
+          "enableLow": true
+        },
+        {
+          "number": 7,
+          "name": "QH",
+          "type": "Output",
+          "description": "",
+          "isUnused": false,
+          "enablePin": 13,
+          "enableLow": true
+        },
+        {
+          "number": 8,
+          "name": "GND",
+          "type": "Gnd",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 9,
+          "name": "QH\u0027",
+          "type": "Output",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 10,
+          "name": "SRCLR#",
+          "type": "Input",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 11,
+          "name": "SRCLK",
+          "type": "Input",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 12,
+          "name": "RCLK",
+          "type": "Input",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 13,
+          "name": "OE#",
+          "type": "Input",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 14,
+          "name": "SER",
+          "type": "Input",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 15,
+          "name": "QA",
+          "type": "Output",
+          "description": "",
+          "isUnused": false,
+          "enablePin": 13,
+          "enableLow": true
+        },
+        {
+          "number": 16,
+          "name": "VCC",
+          "type": "Vcc",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        }
+      ],
+      "behavior": {
+        "kind": "graph",
+        "gates": [
+          {
+            "id": 1,
+            "kind": "Not",
+            "inputs": [
+              {
+                "pin": 10
+              }
+            ]
+          },
+          {
+            "id": 2,
+            "kind": "D",
+            "inputs": [
+              {
+                "pin": 14
+              },
+              {
+                "pin": 11
+              }
+            ],
+            "clear": {
+              "gate": 1
+            }
+          },
+          {
+            "id": 10,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 2
+              },
+              {
+                "pin": 12
+              }
+            ]
+          },
+          {
+            "id": 3,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 2
+              },
+              {
+                "pin": 11
+              }
+            ],
+            "clear": {
+              "gate": 1
+            }
+          },
+          {
+            "id": 11,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 3
+              },
+              {
+                "pin": 12
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 3
+              },
+              {
+                "pin": 11
+              }
+            ],
+            "clear": {
+              "gate": 1
+            }
+          },
+          {
+            "id": 12,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 4
+              },
+              {
+                "pin": 12
+              }
+            ]
+          },
+          {
+            "id": 5,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 4
+              },
+              {
+                "pin": 11
+              }
+            ],
+            "clear": {
+              "gate": 1
+            }
+          },
+          {
+            "id": 13,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 5
+              },
+              {
+                "pin": 12
+              }
+            ]
+          },
+          {
+            "id": 6,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 5
+              },
+              {
+                "pin": 11
+              }
+            ],
+            "clear": {
+              "gate": 1
+            }
+          },
+          {
+            "id": 14,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 6
+              },
+              {
+                "pin": 12
+              }
+            ]
+          },
+          {
+            "id": 7,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 6
+              },
+              {
+                "pin": 11
+              }
+            ],
+            "clear": {
+              "gate": 1
+            }
+          },
+          {
+            "id": 15,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 7
+              },
+              {
+                "pin": 12
+              }
+            ]
+          },
+          {
+            "id": 8,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 7
+              },
+              {
+                "pin": 11
+              }
+            ],
+            "clear": {
+              "gate": 1
+            }
+          },
+          {
+            "id": 16,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 8
+              },
+              {
+                "pin": 12
+              }
+            ]
+          },
+          {
+            "id": 9,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 8
+              },
+              {
+                "pin": 11
+              }
+            ],
+            "clear": {
+              "gate": 1
+            }
+          },
+          {
+            "id": 17,
+            "kind": "D",
+            "inputs": [
+              {
+                "gate": 9
+              },
+              {
+                "pin": 12
+              }
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "pin": 15,
+            "source": {
+              "gate": 10
+            }
+          },
+          {
+            "pin": 1,
+            "source": {
+              "gate": 11
+            }
+          },
+          {
+            "pin": 2,
+            "source": {
+              "gate": 12
+            }
+          },
+          {
+            "pin": 3,
+            "source": {
+              "gate": 13
+            }
+          },
+          {
+            "pin": 4,
+            "source": {
+              "gate": 14
+            }
+          },
+          {
+            "pin": 5,
+            "source": {
+              "gate": 15
+            }
+          },
+          {
+            "pin": 6,
+            "source": {
+              "gate": 16
+            }
+          },
+          {
+            "pin": 7,
+            "source": {
+              "gate": 17
+            }
+          },
+          {
+            "pin": 9,
+            "source": {
+              "gate": 9
+            }
+          }
+        ]
+      },
+      "propagationDelayUs": 0
+    },
+    {
+      "id": "ca8f6cdb-b360-48c0-9454-8bfa44ad7ee5",
+      "definitionVersion": 1,
+      "name": "HC NOT",
+      "description": "\u0423\u0447\u0435\u0431\u043D\u044B\u0439 \u0438\u043D\u0432\u0435\u0440\u0442\u043E\u0440 \u043E\u0431\u0440\u0430\u0442\u043D\u043E\u0439 \u0441\u0432\u044F\u0437\u0438, DIP-8, \u043D\u0435 \u043F\u043E\u0432\u0442\u043E\u0440\u044F\u0435\u0442 \u0440\u0430\u0441\u043F\u0438\u043D\u043E\u0432\u043A\u0443 \u0441\u0435\u0440\u0438\u0439\u043D\u043E\u0439 \u0434\u0435\u0442\u0430\u043B\u0438.",
+      "package": "DIP-8",
+      "family": "hc",
+      "pins": [
+        {
+          "number": 1,
+          "name": "A",
+          "type": "Input",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 2,
+          "name": "Y",
+          "type": "Output",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 4,
+          "name": "GND",
+          "type": "Gnd",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 8,
+          "name": "VCC",
+          "type": "Vcc",
+          "description": "",
+          "isUnused": false,
+          "enableLow": true
+        },
+        {
+          "number": 3,
+          "name": "NC3",
+          "type": "Input",
+          "description": "",
+          "isUnused": true,
+          "enableLow": true
+        },
+        {
+          "number": 5,
+          "name": "NC5",
+          "type": "Input",
+          "description": "",
+          "isUnused": true,
+          "enableLow": true
+        },
+        {
+          "number": 6,
+          "name": "NC6",
+          "type": "Input",
+          "description": "",
+          "isUnused": true,
+          "enableLow": true
+        },
+        {
+          "number": 7,
+          "name": "NC7",
+          "type": "Input",
+          "description": "",
+          "isUnused": true,
+          "enableLow": true
+        }
+      ],
+      "behavior": {
+        "kind": "graph",
+        "gates": [
+          {
+            "id": 1,
+            "kind": "Not",
+            "inputs": [
+              {
+                "pin": 1
+              }
+            ]
+          }
+        ],
+        "outputs": [
+          {
+            "pin": 2,
+            "source": {
+              "gate": 1
+            }
+          }
+        ]
+      },
+      "propagationDelayUs": 0
+    }
+  ],
+  "counters": {
+    "U": 3,
+    "SW": 1,
+    "R": 9,
+    "LED": 8
+  },
+  "mockup": {
+    "f749c6e9-a9bc-4b40-ba27-36d117cbff16": {
+      "x": 8,
+      "y": 6,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf": {
+      "x": 92,
+      "y": 12,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "4a3e2049-15ed-4215-8e1f-1245b4d281a3": {
+      "x": 124,
+      "y": 12,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "a6e6eeb3-d25f-48a4-9433-7e20e35d550f": {
+      "x": 22,
+      "y": 47,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "79c95518-5590-4f7b-b3b0-18e1fc3ec3f6": {
+      "x": 27,
+      "y": 59,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "7ea7bffa-172c-432c-8539-594e1898a3b2": {
+      "x": 25,
+      "y": 73,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "0bc3eb5d-41ce-45ca-95af-8a7b01d09247": {
+      "x": 28,
+      "y": 83,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "90386c50-8628-4706-abff-2e60d571af47": {
+      "x": 41,
+      "y": 73,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "30740da2-1f03-43e4-a087-e45023be932a": {
+      "x": 44,
+      "y": 83,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "e8ab1465-55a3-439b-ab8f-82569e2fcd46": {
+      "x": 57,
+      "y": 73,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "cda1b9e0-9a1a-41bf-b198-770675905bf6": {
+      "x": 60,
+      "y": 83,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "026d6ed7-9571-45d9-af2f-9d192c951b58": {
+      "x": 73,
+      "y": 73,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "dcdba2a7-a8b6-437d-a323-2c76ef5f75f5": {
+      "x": 76,
+      "y": 83,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "7b65530f-c5ee-45e2-a629-dc61fc68cc51": {
+      "x": 89,
+      "y": 73,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "2c5e5a4b-60ab-42e8-b35b-6b9aec30cc3b": {
+      "x": 92,
+      "y": 83,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "3d177a97-8593-4685-a7a5-b17aaa93c113": {
+      "x": 105,
+      "y": 73,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "8743d49c-edb0-4abb-a2d4-883a47d6aa31": {
+      "x": 108,
+      "y": 83,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "9fda75fd-70ec-4a5c-974a-73c548cd1a09": {
+      "x": 121,
+      "y": 73,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "e07e60fc-6a12-4977-a1d3-cc82fbb3a14c": {
+      "x": 124,
+      "y": 83,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "ff673e4c-d3cd-4b68-a36d-111ef7af5d89": {
+      "x": 137,
+      "y": 73,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "01a15026-112b-423d-8a17-ae56a24ffe84": {
+      "x": 140,
+      "y": 83,
+      "rotation": 0,
+      "spanHoles": 0
+    }
+  },
+  "schematic": {
+    "f749c6e9-a9bc-4b40-ba27-36d117cbff16": {
+      "x": 32,
+      "y": 30,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf": {
+      "x": 368,
+      "y": 60,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "4a3e2049-15ed-4215-8e1f-1245b4d281a3": {
+      "x": 496,
+      "y": 60,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "a6e6eeb3-d25f-48a4-9433-7e20e35d550f": {
+      "x": 88,
+      "y": 235,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "79c95518-5590-4f7b-b3b0-18e1fc3ec3f6": {
+      "x": 108,
+      "y": 295,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "7ea7bffa-172c-432c-8539-594e1898a3b2": {
+      "x": 100,
+      "y": 365,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "0bc3eb5d-41ce-45ca-95af-8a7b01d09247": {
+      "x": 112,
+      "y": 415,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "90386c50-8628-4706-abff-2e60d571af47": {
+      "x": 164,
+      "y": 365,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "30740da2-1f03-43e4-a087-e45023be932a": {
+      "x": 176,
+      "y": 415,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "e8ab1465-55a3-439b-ab8f-82569e2fcd46": {
+      "x": 228,
+      "y": 365,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "cda1b9e0-9a1a-41bf-b198-770675905bf6": {
+      "x": 240,
+      "y": 415,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "026d6ed7-9571-45d9-af2f-9d192c951b58": {
+      "x": 292,
+      "y": 365,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "dcdba2a7-a8b6-437d-a323-2c76ef5f75f5": {
+      "x": 304,
+      "y": 415,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "7b65530f-c5ee-45e2-a629-dc61fc68cc51": {
+      "x": 356,
+      "y": 365,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "2c5e5a4b-60ab-42e8-b35b-6b9aec30cc3b": {
+      "x": 368,
+      "y": 415,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "3d177a97-8593-4685-a7a5-b17aaa93c113": {
+      "x": 420,
+      "y": 365,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "8743d49c-edb0-4abb-a2d4-883a47d6aa31": {
+      "x": 432,
+      "y": 415,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "9fda75fd-70ec-4a5c-974a-73c548cd1a09": {
+      "x": 484,
+      "y": 365,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "e07e60fc-6a12-4977-a1d3-cc82fbb3a14c": {
+      "x": 496,
+      "y": 415,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "ff673e4c-d3cd-4b68-a36d-111ef7af5d89": {
+      "x": 548,
+      "y": 365,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "01a15026-112b-423d-8a17-ae56a24ffe84": {
+      "x": 560,
+      "y": 415,
+      "rotation": 0,
+      "spanHoles": 0
+    }
+  },
+  "breadboards": [
+    {
+      "id": "00000026-1020-4300-8000-000000000001",
+      "definitionId": "breadboard-half-400",
+      "x": 175,
+      "y": 14,
+      "rotation": 0
+    }
+  ],
+  "bindings": [],
+  "wires": [
+    {
+      "id": "00000001-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "5V"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "16"
+      },
+      "color": "#FF3B5C",
+      "controlPoints": []
+    },
+    {
+      "id": "00000002-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "8"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "00000003-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "5V"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "4a3e2049-15ed-4215-8e1f-1245b4d281a3",
+        "terminalId": "8"
+      },
+      "color": "#FF3B5C",
+      "controlPoints": []
+    },
+    {
+      "id": "00000004-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "4a3e2049-15ed-4215-8e1f-1245b4d281a3",
+        "terminalId": "4"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "00000005-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "13"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "00000006-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "D13"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "11"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000007-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "D13"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "12"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000008-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "9"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "4a3e2049-15ed-4215-8e1f-1245b4d281a3",
+        "terminalId": "1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000009-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "4a3e2049-15ed-4215-8e1f-1245b4d281a3",
+        "terminalId": "2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "14"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "0000000a-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "a6e6eeb3-d25f-48a4-9433-7e20e35d550f",
+        "terminalId": "2a"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "0000000b-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "5V"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "79c95518-5590-4f7b-b3b0-18e1fc3ec3f6",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "0000000c-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "a6e6eeb3-d25f-48a4-9433-7e20e35d550f",
+        "terminalId": "1a"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "10"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "0000000d-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "79c95518-5590-4f7b-b3b0-18e1fc3ec3f6",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "10"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "0000000e-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "15"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "7ea7bffa-172c-432c-8539-594e1898a3b2",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "0000000f-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7ea7bffa-172c-432c-8539-594e1898a3b2",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "0bc3eb5d-41ce-45ca-95af-8a7b01d09247",
+        "terminalId": "anode"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000010-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "0bc3eb5d-41ce-45ca-95af-8a7b01d09247",
+        "terminalId": "cathode"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "00000011-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "1"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "90386c50-8628-4706-abff-2e60d571af47",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000012-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "90386c50-8628-4706-abff-2e60d571af47",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "30740da2-1f03-43e4-a087-e45023be932a",
+        "terminalId": "anode"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000013-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "30740da2-1f03-43e4-a087-e45023be932a",
+        "terminalId": "cathode"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "00000014-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "e8ab1465-55a3-439b-ab8f-82569e2fcd46",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000015-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "e8ab1465-55a3-439b-ab8f-82569e2fcd46",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "cda1b9e0-9a1a-41bf-b198-770675905bf6",
+        "terminalId": "anode"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000016-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "cda1b9e0-9a1a-41bf-b198-770675905bf6",
+        "terminalId": "cathode"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "00000017-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "3"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "026d6ed7-9571-45d9-af2f-9d192c951b58",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000018-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "026d6ed7-9571-45d9-af2f-9d192c951b58",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "dcdba2a7-a8b6-437d-a323-2c76ef5f75f5",
+        "terminalId": "anode"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000019-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "dcdba2a7-a8b6-437d-a323-2c76ef5f75f5",
+        "terminalId": "cathode"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "0000001a-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "4"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "7b65530f-c5ee-45e2-a629-dc61fc68cc51",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "0000001b-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7b65530f-c5ee-45e2-a629-dc61fc68cc51",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "2c5e5a4b-60ab-42e8-b35b-6b9aec30cc3b",
+        "terminalId": "anode"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "0000001c-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "2c5e5a4b-60ab-42e8-b35b-6b9aec30cc3b",
+        "terminalId": "cathode"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "0000001d-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "5"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "3d177a97-8593-4685-a7a5-b17aaa93c113",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "0000001e-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "3d177a97-8593-4685-a7a5-b17aaa93c113",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "8743d49c-edb0-4abb-a2d4-883a47d6aa31",
+        "terminalId": "anode"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "0000001f-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "8743d49c-edb0-4abb-a2d4-883a47d6aa31",
+        "terminalId": "cathode"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "00000020-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "6"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "9fda75fd-70ec-4a5c-974a-73c548cd1a09",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000021-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "9fda75fd-70ec-4a5c-974a-73c548cd1a09",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "e07e60fc-6a12-4977-a1d3-cc82fbb3a14c",
+        "terminalId": "anode"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000022-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "e07e60fc-6a12-4977-a1d3-cc82fbb3a14c",
+        "terminalId": "cathode"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "00000023-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "7ba7ee19-9ab2-42dd-99d6-0f6badd390cf",
+        "terminalId": "7"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "ff673e4c-d3cd-4b68-a36d-111ef7af5d89",
+        "terminalId": "lead-1"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000024-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "ff673e4c-d3cd-4b68-a36d-111ef7af5d89",
+        "terminalId": "lead-2"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "01a15026-112b-423d-8a17-ae56a24ffe84",
+        "terminalId": "anode"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000025-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "01a15026-112b-423d-8a17-ae56a24ffe84",
+        "terminalId": "cathode"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "f749c6e9-a9bc-4b40-ba27-36d117cbff16",
+        "terminalId": "GND"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    }
+  ],
+  "view": {
+    "active": "Mockup",
+    "mockupZoom": 0.83,
+    "mockupX": 30,
+    "mockupY": 0,
+    "schematicZoom": 1,
+    "schematicX": 40,
+    "schematicY": 40
+  }
+}

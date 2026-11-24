@@ -1,0 +1,152 @@
+{
+  "sketch": {
+    "text": "#include \u003CWire.h\u003E\n#include \u003CLiquidCrystal_I2C.h\u003E\nLiquidCrystal_I2C lcd(0x27, 16, 2);\nvoid setup() { lcd.init(); lcd.backlight(); lcd.print(\u0022Circuit Editor\u0022); }\nvoid loop() {}",
+    "board": "Uno",
+    "name": "Example",
+    "controllerComponentId": "28b85ee0-cab4-4c0d-a44b-85b4e4cfa2d9",
+    "isValid": true
+  },
+  "simulationSetup": {
+    "scenario": {
+      "templateId": "display",
+      "pins": {},
+      "numbers": {},
+      "targetId": "5d750f35-3255-4a83-a7a6-03efc6d33b11",
+      "text": "Circuit Editor"
+    },
+    "instruments": {}
+  },
+  "schemaVersion": 4,
+  "libraryVersion": "1",
+  "components": [
+    {
+      "id": "28b85ee0-cab4-4c0d-a44b-85b4e4cfa2d9",
+      "definitionId": "arduino-uno",
+      "footprintId": "arduino-uno-r3",
+      "reference": "U1",
+      "value": "ATmega328P"
+    },
+    {
+      "id": "5d750f35-3255-4a83-a7a6-03efc6d33b11",
+      "definitionId": "lcd1602-i2c",
+      "footprintId": "lcd1602-pcf8574-80x36",
+      "reference": "LCD1",
+      "value": "16 \u00D7 2 I2C",
+      "i2cAddress": "0x27"
+    }
+  ],
+  "embeddedChips": [],
+  "counters": {
+    "U": 1,
+    "LCD": 1
+  },
+  "mockup": {
+    "28b85ee0-cab4-4c0d-a44b-85b4e4cfa2d9": {
+      "x": 8,
+      "y": 10,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "5d750f35-3255-4a83-a7a6-03efc6d33b11": {
+      "x": 96,
+      "y": 12,
+      "rotation": 0,
+      "spanHoles": 0
+    }
+  },
+  "schematic": {
+    "28b85ee0-cab4-4c0d-a44b-85b4e4cfa2d9": {
+      "x": 32,
+      "y": 50,
+      "rotation": 0,
+      "spanHoles": 0
+    },
+    "5d750f35-3255-4a83-a7a6-03efc6d33b11": {
+      "x": 384,
+      "y": 60,
+      "rotation": 0,
+      "spanHoles": 0
+    }
+  },
+  "breadboards": [
+    {
+      "id": "00000005-1020-4300-8000-000000000001",
+      "definitionId": "breadboard-half-400",
+      "x": 175,
+      "y": 14,
+      "rotation": 0
+    }
+  ],
+  "bindings": [],
+  "wires": [
+    {
+      "id": "00000001-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "28b85ee0-cab4-4c0d-a44b-85b4e4cfa2d9",
+        "terminalId": "5V"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "5d750f35-3255-4a83-a7a6-03efc6d33b11",
+        "terminalId": "2"
+      },
+      "color": "#FF3B5C",
+      "controlPoints": []
+    },
+    {
+      "id": "00000002-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "28b85ee0-cab4-4c0d-a44b-85b4e4cfa2d9",
+        "terminalId": "GND"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "5d750f35-3255-4a83-a7a6-03efc6d33b11",
+        "terminalId": "1"
+      },
+      "color": "#202530",
+      "controlPoints": []
+    },
+    {
+      "id": "00000003-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "28b85ee0-cab4-4c0d-a44b-85b4e4cfa2d9",
+        "terminalId": "SDA"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "5d750f35-3255-4a83-a7a6-03efc6d33b11",
+        "terminalId": "3"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    },
+    {
+      "id": "00000004-1020-4300-8000-000000000001",
+      "start": {
+        "kind": "ComponentContact",
+        "ownerId": "28b85ee0-cab4-4c0d-a44b-85b4e4cfa2d9",
+        "terminalId": "SCL"
+      },
+      "end": {
+        "kind": "ComponentContact",
+        "ownerId": "5d750f35-3255-4a83-a7a6-03efc6d33b11",
+        "terminalId": "4"
+      },
+      "color": "#307EFF",
+      "controlPoints": []
+    }
+  ],
+  "view": {
+    "active": "Mockup",
+    "mockupZoom": 0.83,
+    "mockupX": 30,
+    "mockupY": 0,
+    "schematicZoom": 1,
+    "schematicX": 40,
+    "schematicY": 40
+  }
+}

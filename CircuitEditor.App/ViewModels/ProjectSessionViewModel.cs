@@ -22,13 +22,16 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
     private readonly IProjectChipVersionSelector? chipVersions;
     private readonly IReadOnlyDictionary<string, Core.Chips.LogicFamilyProfile>? logicFamilies;
     private string? path;
+    private readonly IProjectSampleRepository? samples;
     private readonly Core.Services.IComponentInsertionService insertion;
     public ProjectSessionViewModel(ProjectViewModel project, BreadboardViewModel mockup, SchematicViewModel schematic,
         INavigationService navigation, IProjectRepository repository, IRecentProjectsRepository recent, IDialogService dialogs,
         IAutosaveService autosave, IBreadboardRepository boards, Core.Services.IComponentInsertionService insertion,
-        ILogicFamilyRepository? families = null, IProjectChipVersionSelector? chipVersions = null)
+        ILogicFamilyRepository? families = null, IProjectChipVersionSelector? chipVersions = null, IProjectSampleRepository? samples = null)
     {
         this.insertion=insertion;
+        this.samples = samples;
+        Samples = samples?.Load().Select(sample => new ProjectSampleViewModel(sample, OpenSampleCommand)).ToArray() ?? [];
         this.chipVersions = chipVersions;
         logicFamilies = families?.Load().Value;
         this.project=project; this.mockup=mockup; this.schematic=schematic; this.navigation=navigation;
@@ -36,6 +39,7 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
         foreach (var file in recent.Load()) RecentFiles.Add(new RecentProjectViewModel(file,OpenRecentCommand));
         project.PropertyChanged += OnProjectChanged;
     }
+    public IReadOnlyList<ProjectSampleViewModel> Samples { get; }
     public ObservableCollection<RecentProjectViewModel> RecentFiles { get; } = [];
     public string Title => $"{(project.IsDirty ? "* " : "")}{(path is null ? "Новый проект" : Path.GetFileName(path))} — Circuit Editor";
     public ProjectDocument Capture() => ProjectDocument.Capture(project.Model, new ProjectViewState(
@@ -91,6 +95,17 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
     private void Open() { if (!Guard()) return; var file = dialogs.OpenProject(); if (file is not null) OpenPath(file); }
     [RelayCommand]
     private void OpenRecent(string? file) { if (file is not null && Guard()) OpenPath(file); }
+    [RelayCommand]
+    private void OpenSample(ProjectSample? sample)
+    {
+        if (samples is null || sample is null || !Samples.Any(item => item.Sample == sample) || !Guard() || !Load(samples.PathFor(sample))) return;
+        path = null;
+        repository.ClearRecovery();
+        project.History.MarkUnsaved();
+        project.StatusMessage = sample.Description;
+        OnPropertyChanged(nameof(Title));
+    }
+
     private void OpenPath(string file)
     {
         if (!Load(file)) return;
@@ -131,6 +146,11 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
         if (project.InGesture) { ReportError("Завершите текущий жест перед сохранением."); return false; }
         var target = forceDialog || path is null ? dialogs.SaveFile("Circuit Editor (*.circ)|*.circ", ".circ", path is null ? null : Path.GetFileName(path)) : path;
         if (target is null) return false;
+        if (samples?.IsOriginal(target) == true)
+        {
+            ReportError("Пример защищён. Сохраните копию в другой папке.");
+            return false;
+        }
         var error = repository.Save(target, Capture());
         if (error is not null) { ReportError(error); return false; }
         path = target; project.MarkSaved(); Remember(target); repository.ClearRecovery();

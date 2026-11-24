@@ -63,6 +63,7 @@ public static class Program
         registrations.AddSingleton<IComponentInsertionService, ComponentInsertionService>();
         registrations.AddSingleton<ITextMeasurer, WpfTextMeasurer>();
         registrations.AddSingleton<IComponentLayoutCalculator, ComponentLayoutCalculator>();
+        registrations.AddSingleton<IProjectSampleRepository, JsonProjectSampleRepository>();
         registrations.AddSingleton<IProjectRepository, JsonProjectRepository>();
         registrations.AddSingleton<CircuitEditor.Core.Documents.IProjectMigration, CircuitEditor.Infrastructure.Documents.ProjectMigrationV1ToV2>();
         registrations.AddSingleton<CircuitEditor.Core.Documents.IProjectMigration, CircuitEditor.Infrastructure.Documents.ProjectMigrationV2ToV3>();

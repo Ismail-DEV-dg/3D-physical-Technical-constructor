@@ -39,6 +39,14 @@
                         <MenuItem Header="Открыть…" Command="{Binding Session.OpenCommand}" ToolTip="{input:ShortcutHint Open}"/>
                         <MenuItem Header="Сохранить" Command="{Binding Session.SaveCommand}" ToolTip="{input:ShortcutHint Save}"/>
                         <MenuItem Header="Сохранить как…" Command="{Binding Session.SaveAsCommand}" ToolTip="{input:ShortcutHint SaveAs}"/>
+                        <MenuItem Header="Примеры" ItemsSource="{Binding Session.Samples}">
+                            <MenuItem.ItemContainerStyle><Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                <Setter Property="Header" Value="{Binding Title}"/>
+                                <Setter Property="ToolTip" Value="{Binding Description}"/>
+                                <Setter Property="Command" Value="{Binding OpenCommand}"/>
+                                <Setter Property="CommandParameter" Value="{Binding Sample}"/>
+                            </Style></MenuItem.ItemContainerStyle>
+                        </MenuItem>
                         <MenuItem Header="Последние файлы" ItemsSource="{Binding Session.RecentFiles}">
                             <MenuItem.ItemContainerStyle><Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="{Binding Path}"/><Setter Property="Command" Value="{Binding OpenCommand}"/>
