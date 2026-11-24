@@ -1,3 +1,4 @@
+using System.Windows.Threading;
 using CircuitEditor.App.Services;
 using CircuitEditor.App.ViewModels;
 using CircuitEditor.Core.Code;
@@ -18,20 +19,56 @@ public sealed class CodeWorkspaceTests
         Assert.Contains(vm.Completions,c=>c.Text=="LED1_PIN");Assert.Contains(vm.Completions,c=>c.Text=="pinMode");
     }
     [Fact]
-    public async Task DebounceDropsOutdatedAnalysisEvenIfWorkerIgnoresCancellation()
+    public void DebounceDropsOutdatedAnalysisEvenIfWorkerIgnoresCancellation() =>
+        StaRunner.Run(RunDebounceScenarioOnDispatcher);
+
+    private static void RunDebounceScenarioOnDispatcher()
     {
-        using var e=new ElectricalTestCircuit();e.Add("arduino-uno");var service=new TestCodeAnalysisService();
-        using var vm=new CodeViewModel(e.Project,analysisService:service);
-        vm.Text="first";var first=vm.AnalysisTask;
-        await Task.Delay(450);Assert.Single(service.Requests);
-        vm.Text="second";var second=vm.AnalysisTask;
-        await Task.Delay(450);Assert.Equal(2,service.Requests.Count);
-        service.Requests[1].Completion.SetResult([new("latest",2)]);await second;
-        service.Requests[0].Completion.SetResult([new("outdated",1)]);await first;
-        Assert.Single(vm.ProblemsPanel.Items);Assert.Equal("latest",vm.ProblemsPanel.Items[0].Problem.Message);Assert.False(vm.IsAnalyzing);
-        vm.Text="rapid 1";vm.Text="rapid 2";vm.Text="rapid 3";
-        await Task.Delay(450);Assert.Equal(3,service.Requests.Count);Assert.Equal("rapid 3",service.Requests[2].Sketch.Text);
-        service.Requests[2].Completion.SetResult([]);await vm.AnalysisTask;
+        var dispatcher = Dispatcher.CurrentDispatcher;
+        var scenario = dispatcher.InvokeAsync(VerifyDebounceAsync).Task.Unwrap();
+        _ = scenario.ContinueWith(_ => dispatcher.BeginInvokeShutdown(DispatcherPriority.Normal), TaskScheduler.Default);
+        Dispatcher.Run();
+        scenario.GetAwaiter().GetResult();
+    }
+
+    private static async Task VerifyDebounceAsync()
+    {
+        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        using var design = new ElectricalTestCircuit();
+        design.Add("arduino-uno");
+        var service = new TestCodeAnalysisService();
+        using var vm = new CodeViewModel(design.Project, analysisService: service);
+
+        vm.Text = "first";
+        var firstTask = vm.AnalysisTask;
+        var first = await service.NextRequestAsync(timeout.Token);
+        Assert.Equal("first", first.Sketch.Text);
+
+        vm.Text = "second";
+        var secondTask = vm.AnalysisTask;
+        var second = await service.NextRequestAsync(timeout.Token);
+        Assert.Equal("second", second.Sketch.Text);
+
+        second.Completion.SetResult([new("latest", 2)]);
+        await secondTask.WaitAsync(timeout.Token);
+        first.Completion.SetResult([new("outdated", 1)]);
+        await firstTask.WaitAsync(timeout.Token);
+        Assert.Equal("latest", Assert.Single(vm.ProblemsPanel.Items).Problem.Message);
+        Assert.False(vm.IsAnalyzing);
+
+        // All edits run in one dispatcher turn, so analysis cannot begin between them.
+        vm.Text = "rapid 1";
+        var skippedFirst = vm.AnalysisTask;
+        vm.Text = "rapid 2";
+        var skippedSecond = vm.AnalysisTask;
+        vm.Text = "rapid 3";
+        var latestTask = vm.AnalysisTask;
+
+        var latest = await service.NextRequestAsync(timeout.Token);
+        Assert.Equal("rapid 3", latest.Sketch.Text);
+        latest.Completion.SetResult([]);
+        await Task.WhenAll(skippedFirst, skippedSecond, latestTask).WaitAsync(timeout.Token);
+        Assert.False(service.HasPendingRequests);
     }
     [Fact]
     public async Task RealAnalysisUsesSnapshotAndTextOnlyChangesDoNotInvalidateDc()
