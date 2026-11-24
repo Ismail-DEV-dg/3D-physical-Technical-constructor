@@ -1,13 +1,13 @@
 using System.Windows;
-using CircuitEditor.App.ViewModels;
 using CircuitEditor.Core.Repositories;
 
 namespace CircuitEditor.App.Services;
 
-internal sealed class ApplicationErrorService(IErrorLogRepository log, IDialogService dialogs,
-    ProjectSessionViewModel session) : IApplicationErrorService
+internal sealed class ApplicationErrorService(IErrorLogRepository log, IDialogService dialogs) : IApplicationErrorService
 {
     private int reporting;
+    private Func<bool>? saveRecoveryCopy;
+    public void SetRecoveryAction(Func<bool> saveCopy) => saveRecoveryCopy = saveCopy;
 
     public void Report(Exception error)
     {
@@ -21,7 +21,7 @@ internal sealed class ApplicationErrorService(IErrorLogRepository log, IDialogSe
         {
             try
             {
-                if (dialogs.OfferCrashCopy(written) && session.SaveRecoveryCopy())
+                if (saveRecoveryCopy is { } save && dialogs.OfferCrashCopy(written) && save())
                     app.Shutdown();
             }
             finally { Volatile.Write(ref reporting, 0); }

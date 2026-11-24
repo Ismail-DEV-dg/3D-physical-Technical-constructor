@@ -150,6 +150,7 @@ public static class Program
         }
         var main = services.GetRequiredService<MainWindow>();
         var session = services.GetRequiredService<ProjectSessionViewModel>();
+        services.GetRequiredService<IApplicationErrorService>().SetRecoveryAction(session.SaveRecoveryCopy);
         main.ContentRendered += (_, _) => session.Initialize();
         main.Closing += (_, args) => args.Cancel = !session.RequestClose();
         app.Run(main);

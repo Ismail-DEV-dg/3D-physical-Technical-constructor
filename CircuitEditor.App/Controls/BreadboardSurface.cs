@@ -17,6 +17,7 @@ public sealed class BreadboardSurface : FrameworkElement
     internal string? HoveredContact=>hover.ActiveKey;
     private const double MinimumCullingPaddingMm = 6;
     private readonly ComponentDrawingCache components = new();
+    private readonly ComponentGeometryCache geometry = new();
     private readonly BreadboardDrawingCache breadboard = new();
     private readonly WireDrawingCache wires = new();
     private readonly ToolTip tip = new() { Placement = PlacementMode.MousePoint, IsHitTestVisible = false, Focusable = false };
@@ -57,32 +58,31 @@ public sealed class BreadboardSurface : FrameworkElement
         dc.DrawRectangle(Background, null, new Rect(RenderSize));
         var scale = scene.Zoom * PhysicalSettings.PixelsPerMillimeter;
         dc.PushTransform(new MatrixTransform(scale, 0, 0, scale, scene.OffsetX, scene.OffsetY));
-        var viewport = new Rect(RenderSize);
+        var viewport = new Core.Layout.LayoutRect(-scene.OffsetX / scale, -scene.OffsetY / scale,
+            RenderSize.Width / scale, RenderSize.Height / scale);
         var pitch = scene.Board?.Definition.HolePitch ?? PhysicalSettings.FreeGridMm;
         if (scene.Board is { } board)
             breadboard.Draw(dc, board, scene);
         foreach (var item in scene.Project.Components)
         {
             var pose = scene.PlacementOf(item);
-            var bounds = ContactGeometry.Bounds(item.Footprint, pose, pitch);
-            var visibleBounds = new Rect((pose.X + bounds.X) * scale + scene.OffsetX,
-                (pose.Y + bounds.Y) * scale + scene.OffsetY, bounds.Width * scale, bounds.Height * scale);
+            var drawing = geometry.Get(item.Footprint, pose, pitch);
+            var bounds = drawing.Bounds;
             // Include lead rings and the selected reference above the body, at every rotation.
             var padding = Math.Max(MinimumCullingPaddingMm,
-                item.IsSelected ? item.Reference.Length * RealComponentDrawing.ReferenceFontSizeMm : 0) * scale;
-            visibleBounds.Inflate(padding, padding);
-            if (!viewport.IntersectsWith(visibleBounds)) continue;
-            dc.PushTransform(new TranslateTransform(pose.X, pose.Y));
-            dc.PushTransform(new RotateTransform(pose.Rotation));
+                item.IsSelected ? item.Reference.Length * RealComponentDrawing.ReferenceFontSizeMm : 0);
+            if (!viewport.Intersects(new(bounds.X - padding, bounds.Y - padding,
+                bounds.Width + 2 * padding, bounds.Height + 2 * padding))) continue;
+            dc.PushTransform(drawing.Transform);
             dc.DrawDrawing(components.Get(item, pose, pitch));
             var signal = Simulation?.Components.GetValueOrDefault(item.Model.Id);
             SimulationDrawing.Component(dc, item, signal);
             RealComponentDrawing.DrawSelection(dc, item, pose, pitch,
                 scene.Preview is { Success: false } && item.IsSelected, signal?.Angle);
-            dc.Pop(); dc.Pop();
+            dc.Pop();
         }
         WireDrawing.Draw(dc, scene, simulation: Simulation, showVoltage: ShowVoltage, showCurrent: ShowCurrent, cache: wires,
-            viewport: new(-scene.OffsetX / scale, -scene.OffsetY / scale, RenderSize.Width / scale, RenderSize.Height / scale));
+            viewport: viewport);
         AnalysisDrawing.Draw(dc,scene.Project,true);
         VoltageDrawing.Draw(dc,scene.Project,true);
         dc.Pop(); dc.Pop();

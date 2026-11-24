@@ -100,6 +100,8 @@ internal sealed class Stage10Benchmark(IComponentLibraryRepository library, IFoo
         var x = mockup.OffsetX + (placement.X + 15) * scale;
         var y = mockup.OffsetY + (placement.Y + 18) * scale;
         mockup.InputCommand.Execute(new(CanvasAction.Down, x, y));
+        mockup.InputCommand.Execute(new(CanvasAction.Move, x + 5, y));
+        if (!project.InGesture) throw new InvalidOperationException("Стенд не начал жест перемещения.");
         return seconds =>
         {
             mockup.InputCommand.Execute(new(CanvasAction.Move, x + Math.Sin(seconds * 4) * 18, y));
@@ -147,17 +149,24 @@ internal sealed class Stage10Benchmark(IComponentLibraryRepository library, IFoo
             if (args is not RenderingEventArgs render || render.RenderingTime == prior) return;
             if (prior != TimeSpan.MinValue) frames.Add((render.RenderingTime - prior).TotalMilliseconds);
             prior = render.RenderingTime;
-            if (input is not null)
+            if (time.Elapsed.TotalSeconds >= seconds) ready.TrySetResult();
+        }
+        // Drive mouse input separately from rendering, as WPF does for a real pointer.
+        DispatcherTimer? pointer = null;
+        if (input is not null)
+        {
+            pointer = new DispatcherTimer(DispatcherPriority.Input) { Interval = TimeSpan.FromMilliseconds(9) };
+            pointer.Tick += (_, _) =>
             {
                 var start = Stopwatch.GetTimestamp();
                 input(time.Elapsed.TotalSeconds);
                 delays.Add(Stopwatch.GetElapsedTime(start).TotalMilliseconds);
-            }
-            if (time.Elapsed.TotalSeconds >= seconds) ready.TrySetResult();
+            };
+            pointer.Start();
         }
         CompositionTarget.Rendering += Frame;
         try { await ready.Task.WaitAsync(TimeSpan.FromSeconds(15)); }
-        finally { CompositionTarget.Rendering -= Frame; }
+        finally { pointer?.Stop(); CompositionTarget.Rendering -= Frame; }
         delays.Sort();
         return (1000 / frames.Average(), delays.Count == 0 ? 0 : delays[(int)Math.Ceiling(delays.Count * .95) - 1]);
     }
