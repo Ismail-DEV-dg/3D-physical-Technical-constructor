@@ -7,7 +7,7 @@ using CircuitEditor.Simulation.Engine;
 
 namespace CircuitEditor.App.Services;
 
-public sealed class SimulationPlayback(ISimulationSessionFactory factory) : ISimulationPlayback, IDisposable
+public sealed class SimulationPlayback(ISimulationSessionFactory factory, IApplicationErrorService? failures = null) : ISimulationPlayback, IDisposable
 {
     private const int FrameMilliseconds = 33;
     private const int SlowFrameMilliseconds = 100;
@@ -52,10 +52,11 @@ public sealed class SimulationPlayback(ISimulationSessionFactory factory) : ISim
                 await Play(session, playback, token).ConfigureAwait(false);
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { }
-            catch (Exception error) when (error is ArgumentException or InvalidOperationException or KeyNotFoundException or ArithmeticException)
+            catch (Exception error) when (error is not OutOfMemoryException)
             {
                 var time = session?.ModelTime ?? 0;
-                var message = $"Не удалось продолжить симуляцию. {error.Message}";
+                const string message = "Не удалось продолжить симуляцию.";
+                failures?.Report(error);
                 playback.Publish(new(time, true, message) { Diagnostics = [new("SIM_RUNTIME", message, time, IsError: true)] });
             }
         });

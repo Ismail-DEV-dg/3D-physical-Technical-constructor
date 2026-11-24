@@ -41,6 +41,7 @@ public static class Program
         registrations.AddSingleton<IProjectChipVersionSelector, ProjectChipVersionSelector>();
         registrations.AddSingleton<CircuitEditor.Core.Chips.IChipEvaluator, CircuitEditor.Core.Chips.ChipEvaluator>();
         registrations.AddSingleton<IErrorLogRepository, ErrorLogRepository>();
+        registrations.AddSingleton<IApplicationErrorService, ApplicationErrorService>();
         registrations.AddSingleton<IClipboardService, ClipboardService>();
         registrations.AddSingleton<IErrorHelpRepository, JsonErrorHelpRepository>();
         registrations.AddSingleton<IGuideRepository, JsonGuideRepository>();
@@ -105,16 +106,35 @@ public static class Program
         using var services = registrations.BuildServiceProvider(
             new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
 
+        var failures = services.GetRequiredService<IApplicationErrorService>();
         app.DispatcherUnhandledException += (_, failure) =>
         {
-            if (failure.Exception is OutOfMemoryException)
-                return;
-
-            services.GetRequiredService<MainViewModel>().StatusMessage =
-                "Операция не выполнена. Подробности записаны в журнал.";
-            services.GetRequiredService<IErrorLogRepository>().TryAppend(failure.Exception.ToString());
+            if (failure.Exception is OutOfMemoryException) return;
+            failures.Report(failure.Exception);
             failure.Handled = true;
         };
+        void Unobserved(object? sender, UnobservedTaskExceptionEventArgs failure)
+        {
+            failures.Report(failure.Exception);
+            failure.SetObserved();
+        }
+        void Fatal(object sender, UnhandledExceptionEventArgs failure)
+        {
+            if (failure.ExceptionObject is Exception error && error is not OutOfMemoryException)
+                services.GetRequiredService<IErrorLogRepository>().TryAppend(error);
+        }
+        TaskScheduler.UnobservedTaskException += Unobserved;
+        AppDomain.CurrentDomain.UnhandledException += Fatal;
+        try { Run(app, services, args); }
+        finally
+        {
+            TaskScheduler.UnobservedTaskException -= Unobserved;
+            AppDomain.CurrentDomain.UnhandledException -= Fatal;
+        }
+    }
+
+    private static void Run(App app, IServiceProvider services, string[] args)
+    {
         app.Resources[typeof(Controls.ThreeD.ISceneMeshFactory)] = services.GetRequiredService<Controls.ThreeD.ISceneMeshFactory>();
         app.Resources[typeof(Controls.ThreeD.ISceneViewportRegistration)] =
             services.GetRequiredService<Controls.ThreeD.ISceneViewportRegistration>();

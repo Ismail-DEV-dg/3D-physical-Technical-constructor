@@ -5,6 +5,12 @@ using CircuitEditor.App.Views;
 namespace CircuitEditor.App.Services;
 public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpService? help=null,IErrorDocumentationService? documentation=null) : IDialogService
 {
+    public bool OfferCrashCopy(bool journalWritten) =>
+        Choose("Произошла ошибка",
+            "Операция прервана. Вы можете продолжить работу или сохранить отдельную копию и закрыть программу. " +
+            (journalWritten ? "Диагностика записана в журнал." : "Журнал сейчас недоступен."),
+            "Продолжить", "Сохранить копию проекта и закрыть") == "Сохранить копию проекта и закрыть";
+
     public void ShowError(string message) => Choose("Ошибка", message, "ОК");
     public void ShowWarning(string message) => Choose("Предупреждение", message, "ОК");
     public string? OpenProject() => OpenFile("Circuit Editor (*.circ)|*.circ");

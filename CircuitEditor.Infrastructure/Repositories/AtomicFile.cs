@@ -12,7 +12,7 @@ internal static class AtomicFile
             { stream.Write(data); stream.Flush(true); }
             File.Move(temporary, full, true); return null;
         }
-        catch (Exception e) when (JsonProjectRepository.IsDataError(e)) { return "Не удалось записать файл: " + e.Message; }
+        catch (Exception e) when (JsonProjectRepository.IsDataError(e)) { return "Не удалось записать файл: " + FileFailure.Describe(e); }
         finally { if (temporary is not null) { try { File.Delete(temporary); } catch (IOException) { } catch (UnauthorizedAccessException) { } } }
     }
 }

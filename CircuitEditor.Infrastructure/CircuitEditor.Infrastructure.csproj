@@ -15,4 +15,7 @@
     <EmbeddedResource Include="Data\*.json" />
     <EmbeddedResource Include="Data\Chips\*.json" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="CircuitEditor.Tests" />
+  </ItemGroup>
 </Project>

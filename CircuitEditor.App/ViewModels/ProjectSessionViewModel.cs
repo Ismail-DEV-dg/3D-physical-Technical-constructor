@@ -22,6 +22,7 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
     private readonly IProjectChipVersionSelector? chipVersions;
     private readonly IReadOnlyDictionary<string, Core.Chips.LogicFamilyProfile>? logicFamilies;
     private string? path;
+    private bool exitWithCopy;
     private readonly IProjectSampleRepository? samples;
     private readonly Core.Services.IComponentInsertionService insertion;
     public ProjectSessionViewModel(ProjectViewModel project, BreadboardViewModel mockup, SchematicViewModel schematic,
@@ -66,9 +67,30 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
     }
     public bool RequestClose()
     {
-        if (!Guard()) return false;
+        if (!exitWithCopy && !Guard()) return false;
         repository.ClearRecovery(); return true;
     }
+    public bool SaveRecoveryCopy()
+    {
+        if (project.InGesture)
+        {
+            mockup.InputCommand.Execute(new(Interaction.CanvasAction.Cancel));
+            schematic.InputCommand.Execute(new(Interaction.CanvasAction.Cancel));
+        }
+        var target = dialogs.SaveFile("Circuit Editor (*.circ)|*.circ", ".circ", "Копия проекта");
+        if (target is null) return false;
+        if (SamePath(target, path) || SamePath(target, repository.RecoveryPath) || samples?.IsOriginal(target) == true)
+        {
+            ReportError("Выберите другой файл для отдельной копии проекта.");
+            return false;
+        }
+        if (repository.Save(target, Capture()) is { } error) { ReportError(error); return false; }
+        return exitWithCopy = true;
+    }
+
+    private static bool SamePath(string first, string? second) => second is not null &&
+        string.Equals(Path.GetFullPath(first), Path.GetFullPath(second), StringComparison.OrdinalIgnoreCase);
+
     private bool Guard()
     {
         if (project.InGesture)

@@ -42,12 +42,12 @@ public sealed class JsonProjectRepository(IEnumerable<IProjectMigration> migrati
                     : null
             };
         }
-        catch (Exception e) when (IsDataError(e)) { return new(null, "Не удалось открыть проект: " + e.Message); }
+        catch (Exception e) when (IsDataError(e)) { return new(null, "Не удалось открыть проект: " + FileFailure.Describe(e)); }
     }
     public string? Save(string path, ProjectDocument document)
     {
         try { return AtomicFile.Write(path, JsonSerializer.SerializeToUtf8Bytes(document, Options)); }
-        catch (Exception e) when (IsDataError(e)) { return "Не удалось сохранить проект: " + e.Message; }
+        catch (Exception e) when (IsDataError(e)) { return "Не удалось сохранить проект: " + FileFailure.Describe(e); }
     }
     public void ClearRecovery() { try { File.Delete(RecoveryPath); } catch (Exception e) when (IsDataError(e)) { } }
     internal static bool IsDataError(Exception e) => e is IOException or UnauthorizedAccessException or JsonException

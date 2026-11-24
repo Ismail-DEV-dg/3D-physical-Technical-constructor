@@ -1,8 +1,8 @@
 namespace CircuitEditor.Core.Repositories;
 
-/// <summary>Хранилище диагностических сообщений приложения.</summary>
+/// <summary>Хранилище обезличенной диагностики приложения.</summary>
 public interface IErrorLogRepository
 {
-    /// <summary>Записывает сообщение без вторичного исключения при ошибке файловой системы.</summary>
-    bool TryAppend(string message);
+    /// <summary>Записывает тип исключения и методы без сообщения, входных данных и путей.</summary>
+    bool TryAppend(Exception error);
 }

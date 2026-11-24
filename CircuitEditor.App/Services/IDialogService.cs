@@ -2,6 +2,7 @@ namespace CircuitEditor.App.Services;
 public interface IDialogService
 {
     void ShowError(string message);
+    bool OfferCrashCopy(bool journalWritten) => false;
     void ShowWarning(string message);
     string? OpenProject();
     string? OpenFile(string filter) => null;

@@ -33,7 +33,7 @@ public sealed class JsonChipRepository(ILogicFamilyRepository profiles, IEnumera
         }
         catch (Exception error) when (JsonProjectRepository.IsDataError(error))
         {
-            return new(null, "Не удалось прочитать библиотеку микросхем: " + error.Message);
+            return new(null, "Не удалось прочитать библиотеку микросхем: " + FileFailure.Describe(error));
         }
     }
 
@@ -60,7 +60,7 @@ public sealed class JsonChipRepository(ILogicFamilyRepository profiles, IEnumera
         }
         catch (Exception error) when (JsonProjectRepository.IsDataError(error))
         {
-            return new(null, "Не удалось загрузить .chip: " + error.Message);
+            return new(null, "Не удалось загрузить .chip: " + FileFailure.Describe(error));
         }
     }
 
@@ -76,7 +76,7 @@ public sealed class JsonChipRepository(ILogicFamilyRepository profiles, IEnumera
         }
         catch (Exception error) when (JsonProjectRepository.IsDataError(error))
         {
-            return "Не удалось сохранить .chip: " + error.Message;
+            return "Не удалось сохранить .chip: " + FileFailure.Describe(error);
         }
     }
 
@@ -105,7 +105,7 @@ public sealed class JsonChipRepository(ILogicFamilyRepository profiles, IEnumera
             }
             catch (Exception error) when (JsonProjectRepository.IsDataError(error))
             {
-                return "Не удалось удалить микросхему: " + error.Message;
+                return "Не удалось удалить микросхему: " + FileFailure.Describe(error);
             }
         }
     }
