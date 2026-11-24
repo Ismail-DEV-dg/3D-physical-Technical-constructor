@@ -1,6 +1,18 @@
 # Публикация Circuit Editor для Windows x64
 
-Из корня репозитория на Windows с .NET 8 SDK. Для новой поставки используйте пустую выходную папку.
+Из корня репозитория на Windows с .NET 8 SDK и Inno Setup 6:
+
+```powershell
+.\installer\build-installer.ps1
+```
+
+Основной файл релиза — `start/setup.exe`. Он устанавливает Circuit Editor и при необходимости разворачивает встроенный .NET Desktop Runtime 8 x64. Подробности и проверка описаны в [installer/README.md](installer/README.md).
+
+В GitHub откройте **Releases → Draft a new release**, укажите версию, вставьте [описание релиза](docs/release-notes.md) и приложите `setup.exe` и, при необходимости, переносимый `CircuitEditor-win-x64.zip`. Обе поставки игнорируются Git.
+
+## Переносимый ZIP
+
+Для новой сборки используйте пустую папку публикации. ZIP включает собственную копию .NET и распаковывается целиком.
 
 ```powershell
 $work = Join-Path $env:TEMP 'CircuitEditor-work/final'
@@ -11,7 +23,3 @@ if ($LASTEXITCODE -ne 0) { throw 'Публикация не собрана.' }
 Compress-Archive -LiteralPath artifacts/CircuitEditor-win-x64 `
   -DestinationPath artifacts/CircuitEditor-win-x64.zip
 ```
-
-Результат — `artifacts/CircuitEditor-win-x64/CircuitEditor.App.exe` и архив `artifacts/CircuitEditor-win-x64.zip`. До загрузки распакуйте архив отдельно, откройте EXE, выберите **Файл → Примеры → Uno · мигающий светодиод** и нажмите **Старт схемы**.
-
-В GitHub откройте **Releases → Draft a new release**, выберите версию, скопируйте описание из [docs/release-notes.md](docs/release-notes.md) и приложите ZIP одним файлом. Папка публикации и архив игнорируются Git.
