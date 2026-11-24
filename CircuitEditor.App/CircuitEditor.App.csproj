@@ -24,9 +24,20 @@
     <Resource Include="Resources\Fonts\*.ttf" />
     <Content Include="Resources\Fonts\*.ttf" Link="Fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Resource Include="Resources\Code\*.xshd" />
+    <Content Include="..\CircuitEditor.Infrastructure\Data\**\*.json" Link="Data\%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="..\CircuitEditor.Infrastructure\Library\**\*.json" Link="Library\%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\LICENSE;..\THIRD-PARTY-NOTICES.md" Link="%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\licenses\**\*.*" Link="licenses\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
+  <Target Name="PublishHighlightingSources" AfterTargets="ComputeFilesToPublish">
+    <ItemGroup>
+      <HighlightingSource Include="Resources/Code/*.xshd" />
+      <ResolvedFileToPublish Include="@(HighlightingSource)">
+        <RelativePath>Code/%(HighlightingSource.Filename)%(HighlightingSource.Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
   <Target Name="IncludeRuntimeLicenses" AfterTargets="ComputeFilesToPublish" Condition="'$(SelfContained)' == 'true'">
     <ItemGroup>
       <DesktopRuntimePack Include="@(ResolvedRuntimePack)" Condition="'%(ResolvedRuntimePack.NuGetPackageId)' == 'Microsoft.NETCore.App.Runtime.$(RuntimeIdentifier)' Or '%(ResolvedRuntimePack.NuGetPackageId)' == 'Microsoft.WindowsDesktop.App.Runtime.$(RuntimeIdentifier)'" />
