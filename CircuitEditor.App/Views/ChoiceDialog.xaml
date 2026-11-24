@@ -4,16 +4,25 @@
  Title="{Binding Title}" SizeToContent="WidthAndHeight" MinWidth="440" MaxWidth="620" ResizeMode="NoResize"
  WindowStyle="None" WindowStartupLocation="CenterOwner" Background="{DynamicResource BackgroundBrush}"
  Foreground="{DynamicResource TextBrush}" FontFamily="{StaticResource UiFont}">
- <Border Style="{StaticResource Panel}" Padding="24"><StackPanel>
+ <Window.InputBindings><KeyBinding Key="Escape" Command="{Binding DismissCommand}"/></Window.InputBindings>
+ <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}">
+ <Border Style="{StaticResource Panel}" Padding="24"><StackPanel FocusManager.IsFocusScope="True" FocusManager.FocusedElement="{Binding ElementName=MessageText}">
  <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="18"/>
- <TextBox Text="{Binding Message,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" MaxWidth="520" MaxHeight="330" VerticalScrollBarVisibility="Auto" Margin="0,18" ToolTip="Можно выделить текст и скопировать Ctrl+C"/>
+ <TextBox x:Name="MessageText" Text="{Binding Message,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" MaxWidth="520" MaxHeight="330" VerticalScrollBarVisibility="Auto" Margin="0,18" ToolTip="Можно выделить текст и скопировать Ctrl+C"/>
  <WrapPanel Margin="0,0,0,12">
   <WrapPanel.Style><Style TargetType="WrapPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsDiagnostic}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></WrapPanel.Style>
   <Button Content="Скопировать сообщение" Command="{Binding CopyCommand}" Padding="9,6" Margin="0,0,8,0"/><Button Content="Как исправить…" Command="{Binding HelpCommand}" Padding="9,6"/>
  </WrapPanel>
  <TextBlock Text="{Binding Feedback}" FontSize="10" Foreground="{DynamicResource AccentBrush}" Margin="0,0,0,6"/>
- <ItemsControl ItemsSource="{Binding Choices}"><ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
- <ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding}" Margin="0,0,10,0"
- Command="{Binding DataContext.ChooseCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}"/></DataTemplate></ItemsControl.ItemTemplate>
- </ItemsControl></StackPanel></Border>
+ <ItemsControl ItemsSource="{Binding Choices}"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+ <ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding}" Margin="0,0,10,8"
+ Command="{Binding DataContext.ChooseCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}">
+  <Button.Style><Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+   <Style.Triggers>
+    <DataTrigger Binding="{Binding}" Value="ОК"><Setter Property="IsDefault" Value="True"/></DataTrigger>
+    <DataTrigger Binding="{Binding}" Value="Продолжить"><Setter Property="IsDefault" Value="True"/></DataTrigger>
+   </Style.Triggers>
+  </Style></Button.Style>
+ </Button></DataTemplate></ItemsControl.ItemTemplate>
+ </ItemsControl></StackPanel></Border></ScrollViewer>
 </Window>

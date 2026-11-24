@@ -13,6 +13,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private readonly ICalculatorService? calculator;
     private readonly IShortcutGuideService? shortcutGuide;
     private readonly IErrorHelpService? errorHelp;
+    private readonly IDialogService? dialogs;
 
     [ObservableProperty]
     private string statusMessage = "Готово к работе";
@@ -28,9 +29,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private IReadOnlyList<PaletteItemViewModel> library = [];
 
     public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window, ProjectSessionViewModel? session = null, ExportViewModel? exports = null, ProjectAnalysisViewModel? analysis = null, ICalculatorService? calculator = null, IShortcutGuideService? shortcutGuide = null,
-        IClipboardService? clipboard=null,IErrorDocumentationService? documentation=null,IErrorHelpService? errorHelp=null, SimulationViewModel? simulation = null)
+        IClipboardService? clipboard=null,IErrorDocumentationService? documentation=null,IErrorHelpService? errorHelp=null, SimulationViewModel? simulation = null, IDialogService? dialogs = null)
     {
         Simulation = simulation;
+        this.dialogs = dialogs;
         if (Simulation is not null)
         {
             Simulation.ConfigurationRequested += OpenSimulationPanel;
@@ -196,7 +198,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void ShortcutHelp()=>shortcutGuide?.Show();
     [RelayCommand]
-    private void About() => StatusMessage = "Circuit Editor • Arduino / ESP32 • Курсовой проект • Этап 6";
+    private void About() => dialogs?.ShowAbout();
 
     [RelayCommand]
     private void Minimize() => window.Minimize();

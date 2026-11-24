@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
- xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:services="clr-namespace:CircuitEditor.App.Services">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="InputStyles.xaml"/>
         <ResourceDictionary Source="DockStyles.xaml"/>
@@ -8,7 +9,7 @@
     </ResourceDictionary.MergedDictionaries>
 
     <FontFamily x:Key="UiFont">Segoe UI</FontFamily>
-    <FontFamily x:Key="MonoFont">pack://application:,,,/CircuitEditor.App;component/Resources/Fonts/#JetBrains Mono</FontFamily>
+    <x:Static x:Key="MonoFont" Member="services:WpfTextMeasurer.LabelFont"/>
     <Style TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
         <Setter Property="FontFamily" Value="{StaticResource UiFont}"/>

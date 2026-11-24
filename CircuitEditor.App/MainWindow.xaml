@@ -10,6 +10,14 @@
  WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" ResizeMode="CanResize"
  Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextBrush}"
  FontFamily="{StaticResource UiFont}" FontSize="12">
+    <Window.Resources>
+        <Style x:Key="ExampleItem" TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+            <Setter Property="Header" Value="{Binding Title}"/>
+            <Setter Property="ToolTip" Value="{Binding Description}"/>
+            <Setter Property="Command" Value="{Binding OpenCommand}"/>
+            <Setter Property="CommandParameter" Value="{Binding Sample}"/>
+        </Style>
+    </Window.Resources>
     <shell:WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="46" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </shell:WindowChrome.WindowChrome>
@@ -39,14 +47,7 @@
                         <MenuItem Header="Открыть…" Command="{Binding Session.OpenCommand}" ToolTip="{input:ShortcutHint Open}"/>
                         <MenuItem Header="Сохранить" Command="{Binding Session.SaveCommand}" ToolTip="{input:ShortcutHint Save}"/>
                         <MenuItem Header="Сохранить как…" Command="{Binding Session.SaveAsCommand}" ToolTip="{input:ShortcutHint SaveAs}"/>
-                        <MenuItem Header="Примеры" ItemsSource="{Binding Session.Samples}">
-                            <MenuItem.ItemContainerStyle><Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
-                                <Setter Property="Header" Value="{Binding Title}"/>
-                                <Setter Property="ToolTip" Value="{Binding Description}"/>
-                                <Setter Property="Command" Value="{Binding OpenCommand}"/>
-                                <Setter Property="CommandParameter" Value="{Binding Sample}"/>
-                            </Style></MenuItem.ItemContainerStyle>
-                        </MenuItem>
+                        <MenuItem Header="Примеры" ItemsSource="{Binding Session.Samples}" ItemContainerStyle="{StaticResource ExampleItem}"/>
                         <MenuItem Header="Последние файлы" ItemsSource="{Binding Session.RecentFiles}">
                             <MenuItem.ItemContainerStyle><Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="{Binding Path}"/><Setter Property="Command" Value="{Binding OpenCommand}"/>
@@ -95,6 +96,7 @@
                     </MenuItem>
                     <MenuItem Header="_Справка">
                         <MenuItem Header="Документация…" Command="{Binding DocumentationCommand}"/>
+                        <MenuItem Header="Учебные примеры" ItemsSource="{Binding Session.Samples}" ItemContainerStyle="{StaticResource ExampleItem}"/>
                         <Separator/>
                         <MenuItem Header="Горячие клавиши…" InputGestureText="F1" Command="{Binding ShortcutHelpCommand}"/>
                         <MenuItem Header="Показать все компоненты" Command="{Binding ShowAllComponentsCommand}"/>

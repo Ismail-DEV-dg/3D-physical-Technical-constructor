@@ -10,7 +10,7 @@ public sealed class WpfTextMeasurer : ITextMeasurer
 {
     public const double InkPadding = 1;
     public static FontFamily LabelFont { get; } = new(
-        new Uri(PackUriHelper.Create(new Uri("application:///")), "CircuitEditor.App;component/"), "./Resources/Fonts/#JetBrains Mono");
+        PackUriHelper.Create(new Uri("application:///")), "/CircuitEditor.App;component/Resources/Fonts/#JetBrains Mono");
     public static FormattedText Format(string text, double size, Brush brush, double pixelsPerDip = 1) =>
         new(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
             new Typeface(LabelFont, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),

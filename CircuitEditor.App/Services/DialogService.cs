@@ -28,7 +28,7 @@ public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpSe
     {
         string? result = null;
         var window = new ChoiceDialog { Owner = Application.Current.MainWindow };
-        window.DataContext = new ChoiceDialogViewModel(title, message, choices, choice => { result = choice; window.DialogResult = true; },clipboard,help,documentation);
+        window.DataContext = new ChoiceDialogViewModel(title, message, choices, choice => { result = choice; window.DialogResult = true; },clipboard,help,documentation, () => window.DialogResult = false);
         window.ShowDialog(); return result;
     }
     public SaveDecision ConfirmUnsaved() => Choose("Несохранённый проект", "Сохранить изменения перед продолжением?", "Сохранить", "Не сохранять", "Отмена") switch
@@ -39,6 +39,13 @@ public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpSe
         Choose("Версия микросхемы", $"«{name}»: встроенная ревизия {embeddedRevision}, локальная {localRevision}. Копии различаются. Какую использовать?",
             "Использовать встроенную", "Обновить из библиотеки") == "Обновить из библиотеки";
     public bool ConfirmRecovery() => Choose("Восстановление", "Найдено автосохранение после незавершённого сеанса. Восстановить проект?", "Восстановить", "Пропустить") == "Восстановить";
-    public double? ChooseExportScale() => Choose("Экспорт PNG", "Масштаб изображения относительно 100% вида. Экспортируется весь проект.", "1×", "2×", "4×", "Отмена") switch
+    public void ShowAbout() => Choose("О программе", AboutInformation.Describe(), "ОК");
+
+    public double? ChooseExportScale() => ChooseExportScale(false);
+
+    public double? ChooseExportScale(bool isThreeD) => Choose("Экспорт PNG", isThreeD
+        ? "Экспортируется вид 3D с текущей камерой и видимыми слоями. Выберите масштаб PNG."
+        : "Экспортируется весь проект в активном представлении. Выберите масштаб PNG.",
+        "1×", "2×", "4×", "Отмена") switch
     { "1×" => 1, "2×" => 2, "4×" => 4, _ => null };
 }

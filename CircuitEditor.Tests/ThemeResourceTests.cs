@@ -41,8 +41,10 @@ public sealed class ThemeResourceTests
                 Assert.Contains(style.Setters.Cast<Setter>(), setter => setter.Property == Control.TemplateProperty);
             }
             var font = Assert.IsType<FontFamily>(resources["MonoFont"]);
-            Assert.Contains(font.GetTypefaces(), face => face.TryGetGlyphTypeface(out var glyphs)
-                && glyphs.CharacterToGlyphMap.ContainsKey('А'));
+            var face = new Typeface(font, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
+            Assert.True(face.TryGetGlyphTypeface(out var glyphs), font.Source);
+            Assert.Contains("JetBrains Mono", glyphs.FamilyNames.Values);
+            Assert.Contains('А', glyphs.CharacterToGlyphMap.Keys);
             VerifyAllSymbolsRender(resources);
             MockupPresentationChecks.Run(resources);
             BatchAPresentationChecks.Run(resources);
@@ -60,6 +62,7 @@ public sealed class ThemeResourceTests
             DiagnosticsPresentationChecks.Run(resources);
             SimulationPresentationChecks.Run(resources);
             ChipPresentationChecks.Run(resources);
+            DialogLayoutChecks.Run(resources);
             application.Shutdown();
         });
     }

@@ -13,7 +13,7 @@ public sealed partial class ExportViewModel(ProjectViewModel project, INavigatio
         var kind = navigation.Current.Kind;
         if (kind is not (WorkspaceKind.Mockup or WorkspaceKind.Schematic or WorkspaceKind.ThreeD))
         { Report("Для PNG выберите Макет, Схему или 3D.", ""); return; }
-        var scale = dialogs.ChooseExportScale(); if (scale is null) return;
+        var scale = dialogs.ChooseExportScale(kind == WorkspaceKind.ThreeD); if (scale is null) return;
         var file = dialogs.SaveFile("PNG (*.png)|*.png",".png"); if (file is null) return;
         var error = kind == WorkspaceKind.ThreeD
             ? threeD is null ? "Экспорт 3D недоступен." : threeD.ExportPng(file, scale.Value)
