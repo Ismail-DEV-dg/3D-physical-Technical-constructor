@@ -5,3 +5,6 @@ TestResults/
 *.user
 *.suo
 *.tmp
+/artifacts/
+/publish/
+**/node_modules/

@@ -121,6 +121,7 @@ dotnet publish CircuitEditor.App -c Release -r win-x64 --self-contained true -o 
 - [Модель симуляции](docs/simulation-model.md) и [ограничения](docs/limitations.md)
 - [Тестирование](docs/testing.md) и [производительность](docs/stage-10-performance.md)
 - [Сценарий защиты и вопросы комиссии](docs/defense.md)
+- [Итоговый аудит и проверка поставки](docs/stage-10-audit.md)
 
 - [Карта проекта и правила разработки](AGENTS.md#карта-проекта)
 - [История этапов и проверок](docs/status-history.md)

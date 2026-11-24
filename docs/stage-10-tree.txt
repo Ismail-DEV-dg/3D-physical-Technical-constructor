@@ -1,0 +1,185 @@
+CircuitEditor.sln
+├── CircuitEditor.Core/
+│   ├── Breadboards/
+│   ├── Chips/
+│   ├── Code/
+│   ├── Diagnostics/
+│   ├── Documents/
+│   ├── Electronics/
+│   ├── Export/
+│   ├── Geometry/
+│   ├── History/
+│   ├── Inputs/
+│   ├── Layout/
+│   ├── Models/
+│   ├── Netlist/
+│   ├── Physical/
+│   ├── Placement/
+│   ├── Quantities/
+│   ├── Repositories/
+│   ├── Resistance/
+│   ├── Scene/
+│   ├── Services/
+│   ├── Simulation/
+│   ├── Validation/
+│   ├── Wiring/
+│   └── CircuitEditor.Core.csproj
+├── CircuitEditor.Infrastructure/
+│   ├── Data/
+│   ├── Documents/
+│   ├── Library/
+│   ├── Repositories/
+│   └── CircuitEditor.Infrastructure.csproj
+├── CircuitEditor.Simulation/
+│   ├── Components/
+│   ├── Engine/
+│   ├── Gpio/
+│   ├── Instruments/
+│   ├── Scenarios/
+│   ├── Sketches/
+│   ├── Timing/
+│   └── CircuitEditor.Simulation.csproj
+├── CircuitEditor.App/
+│   ├── Controls/
+│   ├── Converters/
+│   ├── Interaction/
+│   ├── Resources/
+│   ├── Services/
+│   ├── ViewModels/
+│   ├── Views/
+│   └── CircuitEditor.App.csproj
+├── CircuitEditor.Tests/
+│   └── CircuitEditor.Tests.csproj
+├── Samples/
+├── docs/
+│   ├── uml/
+├── licenses/
+├── tools/
+│   ├── UmlGenerator/
+└── README.md, AGENTS.md, LICENSE, THIRD-PARTY-NOTICES.md
+
+Файлы этапа 10. Все исходники и изображения UML перечислены в docs/uml/README.md.
+  .gitignore
+  AGENTS.md
+  CircuitEditor.App/CircuitEditor.App.csproj
+  CircuitEditor.App/Controls/BreadboardSurface.cs
+  CircuitEditor.App/Controls/ComponentDrawingGeometry.cs
+  CircuitEditor.App/Controls/ComponentGeometryCache.cs
+  CircuitEditor.App/Controls/ThreeD/Stage10Benchmark.cs
+  CircuitEditor.App/MainWindow.xaml
+  CircuitEditor.App/Program.cs
+  CircuitEditor.App/Resources/Styles.xaml
+  CircuitEditor.App/Services/AboutInformation.cs
+  CircuitEditor.App/Services/ApplicationErrorService.cs
+  CircuitEditor.App/Services/DialogService.cs
+  CircuitEditor.App/Services/IApplicationErrorService.cs
+  CircuitEditor.App/Services/IDialogService.cs
+  CircuitEditor.App/Services/IStage10Benchmark.cs
+  CircuitEditor.App/Services/SimulationPlayback.cs
+  CircuitEditor.App/Services/WpfTextMeasurer.cs
+  CircuitEditor.App/ViewModels/ChoiceDialogViewModel.cs
+  CircuitEditor.App/ViewModels/ExportViewModel.cs
+  CircuitEditor.App/ViewModels/MainViewModel.cs
+  CircuitEditor.App/ViewModels/ProjectSampleViewModel.cs
+  CircuitEditor.App/ViewModels/ProjectSessionViewModel.cs
+  CircuitEditor.App/Views/ChoiceDialog.xaml
+  CircuitEditor.Core/Documents/ProjectSample.cs
+  CircuitEditor.Core/Repositories/IErrorLogRepository.cs
+  CircuitEditor.Core/Repositories/IInstallationLicenseRepository.cs
+  CircuitEditor.Core/Repositories/IProjectSampleRepository.cs
+  CircuitEditor.Infrastructure/CircuitEditor.Infrastructure.csproj
+  CircuitEditor.Infrastructure/Repositories/AtomicFile.cs
+  CircuitEditor.Infrastructure/Repositories/ErrorLogRepository.cs
+  CircuitEditor.Infrastructure/Repositories/FileFailure.cs
+  CircuitEditor.Infrastructure/Repositories/FileInstallationLicenseRepository.cs
+  CircuitEditor.Infrastructure/Repositories/JsonChipRepository.cs
+  CircuitEditor.Infrastructure/Repositories/JsonProjectRepository.cs
+  CircuitEditor.Infrastructure/Repositories/JsonProjectSampleRepository.cs
+  CircuitEditor.Tests/DialogLayoutChecks.cs
+  CircuitEditor.Tests/ProjectSampleTests.cs
+  CircuitEditor.Tests/StorageFailureTests.cs
+  CircuitEditor.Tests/ThemeResourceTests.cs
+  Directory.Build.props
+  docs/architecture.md
+  docs/defense.md
+  docs/diagnostics-and-ku-audit.md
+  docs/diagrams.md
+  docs/file-formats.md
+  docs/limitations.md
+  docs/simulation-model.md
+  docs/stage-10-audit.md
+  docs/stage-10-performance.md
+  docs/status-history.md
+  docs/testing.md
+  docs/ui-audit.md
+  docs/uml/activity-chip.mmd
+  docs/uml/README.md
+  docs/uml/sequence-erc.mmd
+  docs/uml/sequence-open.mmd
+  docs/uml/sequence-simulation.mmd
+  docs/uml/sequence-sketch.mmd
+  docs/uml/state-simulation.mmd
+  docs/uml/use-cases.mmd
+  docs/user-guide.md
+  LICENSE
+  licenses/Apache-2.0.txt
+  licenses/AvalonEdit-MIT.txt
+  licenses/CommunityToolkit-MIT.txt
+  licenses/CommunityToolkit-ThirdPartyNotices.txt
+  licenses/DotNet-MIT.txt
+  licenses/DotNet-ThirdPartyNotices.txt
+  licenses/HelixToolkit-MIT.txt
+  licenses/JetBrainsMono-OFL-1.1.txt
+  licenses/Microsoft-NET-Library-Notices.txt
+  licenses/Microsoft-NET-Library-Terms.txt
+  licenses/xunit-abstractions-notice.txt
+  README.md
+  Samples/decoder.circ
+  Samples/esp32-dht22.circ
+  Samples/i2c-lcd.circ
+  Samples/index.json
+  Samples/shift-register.circ
+  Samples/uno-blink.circ
+  THIRD-PARTY-NOTICES.md
+  tools/UmlGenerator/DiagramWriter.cs
+  tools/UmlGenerator/Program.cs
+  tools/UmlGenerator/SourceCatalog.cs
+  tools/UmlGenerator/SourceType.cs
+  tools/UmlGenerator/UmlGenerator.csproj
+  docs/stage-10-tree.txt
+
+Статистика отдельного обновления 3D перед этапом 10
+commit e099ebbe253135575ea3e03fb4fbe5901429b7db
+
+    Обновить текстуры и геометрию компонентов в 3D
+
+ AGENTS.md                                                 |   1 +
+ CircuitEditor.App/Controls/ArduinoUnoDrawing.cs           |   2 +-
+ CircuitEditor.App/Controls/BoardDetailDrawing.cs          |   4 +-
+ CircuitEditor.App/Controls/ChipPackageDrawing.cs          |   6 +--
+ CircuitEditor.App/Controls/Lcd1602Drawing.cs              |   7 ++-
+ CircuitEditor.App/Controls/MiscComponentDrawing.cs        |   7 ++-
+ CircuitEditor.App/Controls/OledDrawing.cs                 |   4 +-
+ CircuitEditor.App/Controls/PassiveBodyDrawing.cs          |  19 ++++----
+ CircuitEditor.App/Controls/PhysicalDrawing.cs             |  14 ++++--
+ CircuitEditor.App/Controls/SevenSegmentDrawing.cs         |  19 +++++---
+ CircuitEditor.App/Controls/ThreeD/BoardMeshes.cs          |  67 +++++++--------------------
+ CircuitEditor.App/Controls/ThreeD/ControllerMeshes.cs     |  88 ++++++++++++++++++++++++++++++++++++
+ CircuitEditor.App/Controls/ThreeD/DeviceMeshes.cs         | 107 +++++++++++++++++++++++++++++---------------
+ CircuitEditor.App/Controls/ThreeD/DisplayMeshes.cs        |  81 ++++++++++++++++++++++++---------
+ CircuitEditor.App/Controls/ThreeD/PassiveMeshes.cs        | 106 ++++++++++++++++++++++++++-----------------
+ CircuitEditor.App/Controls/ThreeD/SceneBeveledBox.cs      |  43 ++++++++++++++++++
+ CircuitEditor.App/Controls/ThreeD/SceneFinish.cs          |   3 ++
+ CircuitEditor.App/Controls/ThreeD/SceneMaterials.cs       |  24 ++++++++--
+ CircuitEditor.App/Controls/ThreeD/SceneMeshFactory.cs     |   4 +-
+ CircuitEditor.App/Controls/ThreeD/SceneMeshes.cs          |  96 ++++++++++++++++++++++++++++++++++-----
+ CircuitEditor.App/Controls/ThreeD/SceneReactionBuilder.cs |   3 +-
+ CircuitEditor.App/Controls/ThreeD/SceneSurfaceTexture.cs  |  39 ++++++++++++++++
+ CircuitEditor.App/Services/WpfTextMeasurer.cs             |   3 +-
+ CircuitEditor.Core/Scene/SceneBuilder.cs                  |   4 +-
+ CircuitEditor.Core/Scene/SceneGeometryKey.cs              |  13 +++++-
+ CircuitEditor.Core/Scene/SceneNode.cs                     |   5 ++-
+ CircuitEditor.Tests/SceneExportTests.cs                   |  27 +++++++++++
+ CircuitEditor.Tests/SceneMeshFactoryTests.cs              |  19 ++++++++
+ docs/stage-9-three-d.md                                   |   6 +++
+ 29 files changed, 621 insertions(+), 200 deletions(-)

@@ -27,4 +27,14 @@
     <Content Include="..\LICENSE;..\THIRD-PARTY-NOTICES.md" Link="%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\licenses\**\*.*" Link="licenses\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
+  <Target Name="IncludeRuntimeLicenses" AfterTargets="ComputeFilesToPublish" Condition="'$(SelfContained)' == 'true'">
+    <ItemGroup>
+      <DesktopRuntimePack Include="@(ResolvedRuntimePack)" Condition="'%(ResolvedRuntimePack.NuGetPackageId)' == 'Microsoft.NETCore.App.Runtime.$(RuntimeIdentifier)' Or '%(ResolvedRuntimePack.NuGetPackageId)' == 'Microsoft.WindowsDesktop.App.Runtime.$(RuntimeIdentifier)'" />
+      <RuntimeNotice Include="@(DesktopRuntimePack->'%(PackageDirectory)/LICENSE');@(DesktopRuntimePack->'%(PackageDirectory)/LICENSE.TXT');@(DesktopRuntimePack->'%(PackageDirectory)/THIRD-PARTY-NOTICES.TXT')" />
+      <ResolvedFileToPublish Include="@(RuntimeNotice)" Condition="Exists('%(RuntimeNotice.Identity)')">
+        <RelativePath>licenses/runtime/%(RuntimeNotice.NuGetPackageId)/%(RuntimeNotice.Filename)%(RuntimeNotice.Extension)</RelativePath>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </ResolvedFileToPublish>
+    </ItemGroup>
+  </Target>
 </Project>
