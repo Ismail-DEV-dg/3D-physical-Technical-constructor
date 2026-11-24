@@ -133,4 +133,4 @@ dotnet test CircuitEditor.sln -c Release
 
 ## Лицензия
 
-Copyright © 2026 Abduseliov Ismail. [MIT](LICENSE) · [Лицензии зависимостей](THIRD-PARTY-NOTICES.md)
+Copyright © 2026 Abduselimov Ismail. [MIT](LICENSE) · [Лицензии зависимостей](THIRD-PARTY-NOTICES.md)

@@ -10,7 +10,7 @@
 AppId={{CBF69278-6CC9-451F-9878-15B33518F13C}
 AppName={#AppName}
 AppVersion={#AppVersion}
-AppPublisher=Abduseliov Ismail
+AppPublisher=Abduselimov Ismail
 VersionInfoVersion={#AppVersion}
 DefaultDirName={autopf}\CircuitEditor
 DefaultGroupName=Circuit Editor

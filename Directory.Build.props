@@ -1,8 +1,9 @@
 <Project>
   <PropertyGroup>
     <Version>1.0.0</Version>
-    <Authors>Abduseliov Ismail</Authors>
-    <Copyright>Copyright (c) 2026 Abduseliov Ismail</Copyright>
+    <Authors>Abduselimov Ismail</Authors>
+    <Company>$(Authors)</Company>
+    <Copyright>Copyright (c) 2026 Abduselimov Ismail</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <LangVersion>12.0</LangVersion>
     <Nullable>enable</Nullable>
