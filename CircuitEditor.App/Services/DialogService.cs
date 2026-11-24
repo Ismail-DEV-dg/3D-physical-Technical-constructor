@@ -1,9 +1,10 @@
 using System.Windows;
 using Microsoft.Win32;
+using CircuitEditor.Core.Repositories;
 using CircuitEditor.App.ViewModels;
 using CircuitEditor.App.Views;
 namespace CircuitEditor.App.Services;
-public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpService? help=null,IErrorDocumentationService? documentation=null) : IDialogService
+public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpService? help=null,IErrorDocumentationService? documentation=null, IInstallationLicenseRepository? license = null) : IDialogService
 {
     public bool OfferCrashCopy(bool journalWritten) =>
         Choose("Произошла ошибка",
@@ -39,7 +40,13 @@ public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpSe
         Choose("Версия микросхемы", $"«{name}»: встроенная ревизия {embeddedRevision}, локальная {localRevision}. Копии различаются. Какую использовать?",
             "Использовать встроенную", "Обновить из библиотеки") == "Обновить из библиотеки";
     public bool ConfirmRecovery() => Choose("Восстановление", "Найдено автосохранение после незавершённого сеанса. Восстановить проект?", "Восстановить", "Пропустить") == "Восстановить";
-    public void ShowAbout() => Choose("О программе", AboutInformation.Describe(), "ОК");
+    public void ShowAbout()
+    {
+        if (Choose("О программе", AboutInformation.Describe(), "ОК", "Открыть LICENSE…") != "Открыть LICENSE…") return;
+        var result = license?.Read();
+        if (result?.Value is { } text) Choose("Лицензия MIT", text, "ОК");
+        else ShowError(result?.Error ?? "Файл LICENSE недоступен.");
+    }
 
     public double? ChooseExportScale() => ChooseExportScale(false);
 

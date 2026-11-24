@@ -1,0 +1,116 @@
+classDiagram
+    direction LR
+    class T01["ChipPinEdit"]
+    T01 : +Description
+    T01 : +EnableIndex
+    T01 : +EnablePin
+    T01 : +Name
+    T01 : +Number
+    T01 : +ToPin()
+    class T02["ChipTruthEditorViewModel"]
+    T02 : +Rows
+    T02 : +Sections
+    class T03["ChipTruthRowEdit"]
+    T03 : +Inputs
+    T03 : +Outputs
+    class T04["ChipViewModel"]
+    T04 : +Bench
+    T04 : +Definition
+    T04 : +Documentation
+    T04 : +Families
+    T04 : +Graph
+    T04 : +IsGraph
+    class T05["ChoiceDialogViewModel"]
+    T05 : +Choices
+    T05 : +ChooseCommand
+    T05 : +CopyCommand
+    T05 : +DismissCommand
+    T05 : +HelpCommand
+    T05 : +IsDiagnostic
+    class T06["CodeProblemViewModel"]
+    T06 : +Problem
+    T06 : +Text
+    class T07["CodeProblemsViewModel"]
+    T07 : +Clear()
+    T07 : +Items
+    T07 : +NavigateRequested
+    T07 : +SetAnalysis()
+    T07 : +SetGeneration()
+    T07 : +Summary
+    class T08["CodeViewModel"]
+    T08 : +AnalysisTask
+    T08 : +Board
+    T08 : +Boards
+    T08 : +Completions
+    T08 : +ControllerHint
+    T08 : +ControllerId
+    class T09["ComponentInputViewModel"]
+    T09 : +Choices
+    T09 : +Definition
+    T09 : +DisplayValue
+    T09 : +IsChoice
+    T09 : +Value
+    class T10["ComponentInputsViewModel"]
+    T10 : +Parameters
+    class T11["ComponentViewModel"]
+    T11 : +AppearanceVersion
+    T11 : +Description
+    T11 : +ElectricalEditor
+    T11 : +Footprint
+    T11 : +HasImmediateProperties
+    T11 : +HasListedNominal
+    class T12["DiagnosticItemViewModel"]
+    T12 : +Article
+    T12 : +Caption
+    T12 : +Code
+    T12 : +Color
+    T12 : +CopyCommand
+    T12 : +FullText
+    class T13["DiagnosticsViewModel"]
+    T13 : +Dispose()
+    T13 : +IsEmpty
+    T13 : +Items
+    T13 : +Severities
+    T13 : +Sources
+    T13 : +Summary
+    class T14["DockPaneViewModel"]
+    T14 : +CollapseIfUnpinned()
+    T14 : +IsExpanded
+    T14 : +Reset()
+    T14 : +Title
+    class T15["ElectricalParameterViewModel"]
+    T15 : +Key
+    T15 : +Label
+    T15 : +Quantity
+    T15 : +TryValue()
+    class T16["ElectricalPropertiesViewModel"]
+    T16 : +Fields
+    class T17["ErcIssueViewModel"]
+    T17 : +Color
+    T17 : +Icon
+    T17 : +Issue
+    T17 : +Text
+    class T18["ErrorHelpViewModel"]
+    T18 : +ArticleText
+    T18 : +Articles
+    T18 : +CloseRequested
+    T18 : +CountSummary
+    T18 : +FocusSearchRequested
+    T18 : +Guide
+    class T19["ExportViewModel"]
+    class T20["GuideBrowserViewModel"]
+    T20 : +Chapters
+    T20 : +HasCode
+    T02 ..> T04
+    T02 ..> T03
+    T04 ..> T02
+    T04 ..> T01
+    T07 ..> T06
+    T08 ..> T07
+    T10 ..> T09
+    T11 ..> T16
+    T11 ..> T10
+    T13 ..> T08
+    T13 ..> T12
+    T16 ..> T15
+    T18 ..> T20

@@ -1,0 +1,76 @@
+classDiagram
+    direction LR
+    class T01["SketchStorageTests"]
+    T01 : +ArduinoNamesFollowFolderAndPrimaryFileRules()
+    T01 : +ExportCreatesMatchingArduinoFolderAndRejectsInvalidName()
+    T01 : +SketchRoundTripAutosaveAndCircuitUndoHaveIndependentHistories()
+    T01 : +VersionOneFileMigratesToEmptySketchWithoutChangingCircuit()
+    class T02["SmoothScrollPresentationChecks"]
+    class T03["StaRunner"]
+    T03 : +Run()
+    class T04["Stage4HistoryTests"]
+    T04 : +CopyPastesOnlyInternalWiresWithFreshIdsAndNoBoardBindings()
+    T04 : +EveryEditRestoresExactlyOnUndoAndRedo()
+    T04 : +HistoryIsBoundedAndBranchingInvalidatesSavedCheckpoint()
+    T04 : +OneGestureIncludesManySliderChangesAndEscRecordsNothing()
+    class T05["Stage4PresentationChecks"]
+    class T06["Stage4TestEnvironment"]
+    T06 : +Add()
+    T06 : +ChipVersionQuestions
+    T06 : +ChooseExportScale()
+    T06 : +ConfirmRecovery()
+    T06 : +ConfirmUnsaved()
+    T06 : +Decision
+    class T07["Stage5PresentationChecks"]
+    class T08["StorageFailureTests"]
+    T08 : +CrashCopyDoesNotReplaceActiveDocument()
+    T08 : +InvalidChipAndMissingLibraryFolderAreHandled()
+    T08 : +JournalRotatesAndExcludesInputAndPaths()
+    T08 : +LockedOrBrokenFileLeavesOpenProjectAndOriginalBytes()
+    T08 : +WindowsIoFailuresUsePlainMessages()
+    class T09["TestChipMigration"]
+    T09 : +FromVersion
+    T09 : +Migrate()
+    T09 : +ToVersion
+    class T10["TestCodeAnalysisService"]
+    T10 : +AnalyzeAsync()
+    T10 : +Requests
+    class T11["TestComboBox"]
+    T11 : +FinishSelection()
+    class T12["TestDebounceService"]
+    T12 : +Dispose()
+    T12 : +Flush()
+    T12 : +Pending
+    T12 : +Schedule()
+    class T13["TestDiagnosticServices"]
+    T13 : +Busy
+    T13 : +Copied
+    T13 : +OpenedCode
+    T13 : +Show()
+    T13 : +TryCopy()
+    class T14["TestOldProjectMigration"]
+    T14 : +FromVersion
+    T14 : +Migrate()
+    T14 : +ToVersion
+    class T15["TestProjectAutosave"]
+    T15 : +Dispose()
+    T15 : +Start()
+    class T16["TestProjectFactory"]
+    T16 : +Create()
+    T16 : +Mockup()
+    T16 : +Schematic()
+    class T17["TestSimulationPulse"]
+    T17 : +Start()
+    T17 : +Stop()
+    T17 : +Tick
+    T17 : +TickOnce()
+    class T18["TestTextMeasurer"]
+    T18 : +Measure()
+    class T19["TestThemeResources"]
+    T19 : +Applied
+    T19 : +Apply()
+    T19 : +FailOnApply
+    class T20["TestWindowService"]
+    T20 : +Close()
+    T20 : +Minimize()
+    T20 : +ToggleMaximize()

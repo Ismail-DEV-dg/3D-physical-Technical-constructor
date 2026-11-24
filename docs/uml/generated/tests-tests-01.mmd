@@ -1,0 +1,80 @@
+classDiagram
+    direction LR
+    class T01["AnalysisViewModelTests"]
+    T01 : +DebounceFiltersAndFocusUseCommittedModel()
+    class T02["BatchAFootprintTests"]
+    T02 : +AllContactsInsertWithoutShortingIndependentSignals()
+    T02 : +OccupiedLastContactRejectsWholeBatchInsertion()
+    T02 : +PhysicalPinNumbersMapToActualHeaders()
+    class T03["BatchAPresentationChecks"]
+    T03 : +Run()
+    class T04["BatchBFootprintTests"]
+    T04 : +AllAllowedAxialSpansInsertAndInvalidSpanKeepsOldBindings()
+    T04 : +BothCapacitorBodiesUseTheSamePhysicalLeads()
+    T04 : +ContactsInsertIntoIndependentGroupsAndOccupancyIsAtomic()
+    T04 : +MissingPartsOrInvalidKnobAreRejectedByRepository()
+    T04 : +ServoHasThreeCorrectCableContactsButCannotBeInserted()
+    class T05["BatchBPresentationChecks"]
+    T05 : +Run()
+    class T06["BatchBPropertiesTests"]
+    T06 : +CustomNominalsStayInListAndCapacitorStyleKeepsTheValue()
+    T06 : +MechanicalStopsAndPercentMappingAreConsistent()
+    T06 : +MouseTurnsKnobAtEveryBoardRotationAndCancelRestoresValue()
+    T06 : +NewPropertiesRoundTripAndInvalidChangesAreRejected()
+    T06 : +NominalSelectionUpdatesBothRepresentationsImmediately()
+    class T07["BatchCFootprintTests"]
+    T07 : +EveryNewComponentInsertsAtomicallyWithoutShortingSignals()
+    T07 : +FlexibleSensorsSupportEverySpanAndRejectOutOfRange()
+    T07 : +LibraryHasAll27RealModelsAndDhtNcIsPhysicallyExposedButNotConnected()
+    class T08["BatchCPresentationChecks"]
+    T08 : +Run()
+    class T09["BomTests"]
+    T09 : +SameNominalsGroupAndDifferentParametersRemainSeparateWithExcelEncoding()
+    class T10["BreadboardTestData"]
+    T10 : +Add()
+    T10 : +Create()
+    T10 : +Footprint()
+    class T11["BreadboardTopologyTests"]
+    T11 : +ConnectivityComesFromContactGroups()
+    T11 : +HalfBoardHas400UniqueHolesAnd64DataDefinedGroups()
+    T11 : +InvalidTopologyProducesDiagnostic()
+    class T12["CalculatorViewModelTests"]
+    T12 : +CalculatorUsesUnitsProfilesAndBothBandDirections()
+    T12 : +ChangingProjectInvalidatesResultsAndVoltageOverlay()
+    T12 : +SelectedLedParametersStaySelectableAndCanBeResetToAuto()
+    class T13["ChipDocumentationTests"]
+    T13 : +DocumentationIncludesAllFourNandSectionsWithAscendingPinOrder()
+    T13 : +DocumentsAssignNamesToSortedColumnsAndEscapeSeparators()
+    class T14["ChipEditorTests"]
+    T14 : +AppliesPinsAndKeepsEditorHistoryIndependent()
+    T14 : +GeneratesSortedColumnsEditsCellsAndRoundTripsCsv()
+    T14 : +WiresGraphAndUndoRestoresDisconnectedState()
+    class T15["ChipGraphTests"]
+    T15 : +BasicGatesMatchAllBinaryCombinations()
+    T15 : +DFlipFlopSamplesOnlyRisingEdgesAndSupportsMemoryFeedback()
+    T15 : +JkTogglesOnEdgeAndRsRetainsItsLevel()
+    T15 : +NotAndOrderedWiringPropagateUnknown()
+    T15 : +OpenCollectorReleasesHighAndBidirectionalDriverRespectsEnablePin()
+    T15 : +RejectsCombinationalLoopsDepthConflictsAndUnconnectedPorts()
+    class T16["ChipLibraryTests"]
+    T16 : +ChipContainerRoundTripsMigrationsAndRejectsUnknownVersions()
+    T16 : +LibraryRefreshesPaletteWithoutRestartAndProjectOwnsPlacedVersion()
+    class T17["ChipPresentationChecks"]
+    T17 : +Run()
+    class T18["ChipSimulationTests"]
+    T18 : +GpioClockLatchesOnItsRisingEdgeAfterExactDeterministicDelay()
+    T18 : +InputPulseShorterThanPropagationDelayDoesNotReachOutput()
+    T18 : +IsolatedBenchHasIndependentClockOutputsAndTruthVerification()
+    T18 : +LedToGroundIsSourcedAndUnpoweredOutputRemainsZ()
+    T18 : +LoadedTtlNandUsesSinkLimit()
+    class T19["ChipTemplateTests"]
+    T19 : +CombinationalTemplatesMatchEveryInput()
+    T19 : +CounterTemplateCountsAllSixteenStatesAndWraps()
+    T19 : +FlipFlopTemplateHasIndependentEdgesAndAsynchronousControls()
+    T19 : +Hc595SeparatesShiftAndLatchAndOeOnlyDisablesParallelOutputs()
+    T19 : +LogicTemplatesMatchGoldenTables()
+    class T20["ChipTruthTableTests"]
+    T20 : +DipInsertsAcrossTheChannelWithNumberedContacts()
+    T20 : +NandEvaluatesBinaryAndAmbiguousInputs()
+    T20 : +ProfilesDistinguishCurrentDirectionAndScaleCmosThresholds()
+    T20 : +ValidatesIncompleteConflictingAndUnorderedRows()

@@ -1,0 +1,17 @@
+sequenceDiagram
+    actor User as Пользователь
+    participant P as ProjectViewModel
+    participant A as ProjectAnalysisViewModel
+    participant N as INetlistBuilder
+    participant E as IErcService
+    participant R as IErcRule
+    P->>N: Build(project) после изменения
+    N-->>P: Netlist
+    User->>A: Проверить схему
+    A->>E: Check(project, netlist)
+    loop Зарегистрированные правила
+        E->>R: Check(context)
+        R-->>E: Диагностика
+    end
+    E-->>A: Список проблем
+    A-->>User: Строки диагностики и переход к компоненту

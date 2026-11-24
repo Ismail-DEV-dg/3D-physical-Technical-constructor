@@ -1,0 +1,70 @@
+classDiagram
+    direction LR
+    class T01["ActuatorBodyDrawing"]
+    T01 : +Buzzer()
+    T01 : +Relay()
+    class T02["AnalysisDrawing"]
+    class T03["ArduinoNanoDrawing"]
+    T03 : +Draw()
+    class T04["ArduinoUnoDrawing"]
+    T04 : +Draw()
+    class T05["BoardDetailDrawing"]
+    T05 : +Chip()
+    T05 : +ExternalPinLabel()
+    T05 : +Hole()
+    T05 : +Pad()
+    T05 : +Pcb()
+    T05 : +PinLabel()
+    class T06["BreadboardDrawing"]
+    T06 : +DrawBase()
+    class T07["BreadboardDrawingCache"]
+    T07 : +Clear()
+    T07 : +Draw()
+    class T08["BreadboardSurface"]
+    T08 : +Background
+    T08 : +BackgroundProperty
+    T08 : +GetPinToolTip()
+    T08 : +Revision
+    T08 : +RevisionProperty
+    T08 : +Scene
+    class T09["ChipFootprintPreview"]
+    T09 : +Definition
+    T09 : +DefinitionProperty
+    class T10["ChipGraphPreview"]
+    T10 : +Graph
+    T10 : +GraphProperty
+    class T11["ChipPackageDrawing"]
+    T11 : +Draw()
+    class T12["ComponentDrawingCache"]
+    T12 : +Clear()
+    T12 : +Get()
+    class T13["ComponentDrawingGeometry"]
+    T13 : +Bounds
+    T13 : +Footprint
+    T13 : +Pitch
+    T13 : +Rotation
+    T13 : +Transform
+    T13 : +X
+    class T14["ComponentGeometryCache"]
+    T14 : +Get()
+    class T15["DockPane"]
+    T15 : +IsBottom
+    T15 : +IsBottomProperty
+    T15 : +Pane
+    T15 : +PaneProperty
+    class T16["EnvironmentPassiveDrawing"]
+    T16 : +Draw()
+    class T17["Esp32Drawing"]
+    T17 : +Draw()
+    class T18["HumiditySensorDrawing"]
+    T18 : +Draw()
+    class T19["InstrumentTrace"]
+    T19 : +Kind
+    T19 : +KindProperty
+    T19 : +Signal
+    T19 : +SignalProperty
+    T19 : +Time
+    T19 : +TimeProperty
+    class T20["Lcd1602Drawing"]
+    T20 : +Draw()
+    T14 ..> T13

@@ -1,0 +1,103 @@
+classDiagram
+    direction LR
+    class T01["CircuitModelTests"]
+    T01 : +ComponentsHaveIndependentStateAndMonotonicReferences()
+    T01 : +FailedAdditionDoesNotConsumeReference()
+    T01 : +FourQuarterTurnsRestoreOrientationAndMovementRejectsNonFiniteCoordinates()
+    T01 : +HitTestAndMarqueeUseRotatedBounds()
+    T01 : +I2cAddressUsesSevenBitUnreservedRange()
+    T01 : +InvalidPropertiesLeaveComponentUnchanged()
+    class T02["CodeAnalyzerTests"]
+    T02 : +BothDirectionsOfCodeVersusCircuitAreReportedWithLines()
+    T02 : +CommentsStringsRawStringsAndOrdinaryNumbersDoNotBecomePinUses()
+    T02 : +Esp32InputOnlyOutputWarningComesFromTextAndBoardTable()
+    T02 : +GeneratedI2cInitialisationCountsImplicitAndExplicitBusPins()
+    T02 : +NumericAnalogNamedAliasesAndKnownInputRolesAreRecognized()
+    T02 : +ParenthesizedConstantsAreRecognizedButUnknownObjectMethodsAreNotAssumedToBeGpio()
+    class T03["CodeEditorPresentationChecks"]
+    class T04["CodeGeneratorTests"]
+    T04 : +BrokenOrDuplicateMarkersAreRejectedAtomically()
+    T04 : +I2cUsesActualConnectedPinsAndAddress()
+    T04 : +LedThroughResistorAndButtonHavePinsModesAndPreserveManualCode()
+    T04 : +RelayUsesAnExplicitNpnDriverAndWifiIsOnlyIncludedForActualEsp32Code()
+    T04 : +ServoRejectsNonPwmAndInputOnlyPins()
+    T04 : +SupportedModulesProduceExpectedFragments()
+    class T05["CodeWorkspacePresentationChecks"]
+    class T06["CodeWorkspaceTests"]
+    T06 : +CircuitChangesOnlyMarkCodeStaleAndEditorHistoryDoesNotEnterCircuitHistory()
+    T06 : +DebounceDropsOutdatedAnalysisEvenIfWorkerIgnoresCancellation()
+    T06 : +OutputIsBoundedAndClearable()
+    T06 : +RealAnalysisUsesSnapshotAndTextOnlyChangesDoNotInvalidateDc()
+    class T07["ComponentInputTests"]
+    T07 : +BatteryAcceptsExactlyRequestedVoltages()
+    T07 : +BinaryPropertiesOnlyAcceptTheirChoices()
+    T07 : +DatasheetRangesFormattingAndRejectionAreCentralized()
+    T07 : +InputsRoundTripStayIndependentAndDoNotRunSimulation()
+    T07 : +SensorEditingDoesNotInvalidateStaticDrawing()
+    class T08["ComponentInsertionTests"]
+    T08 : +EveryAllowedFlexibleSpanCanBeInserted()
+    T08 : +FailureOnSecondContactDoesNotReserveTheFirstFreeHole()
+    T08 : +FixedButtonBindsFourContactsToTwoElectricalPinsAcrossChannel()
+    T08 : +InvalidSpanIsRejectedAtomicallyAndPreservesExistingInsertion()
+    T08 : +MissingSecondHoleAndFreeMountedUnoDoNotInsert()
+    T08 : +OccupiedHoleAndMisalignmentRejectWholeInsertion()
+    class T09["ComponentLayoutTests"]
+    T09 : +ComponentIds
+    T09 : +EveryComponentHasDisjointUnclippedLabelsAndGridAlignedPins()
+    T09 : +GalleryContainsAllComponentsInDisjointCellsAndPreservesExistingItems()
+    T09 : +PinPitchIsIdenticalForAllComponentsAndTitlesAreAlwaysPresent()
+    class T10["ComponentLibraryTests"]
+    T10 : +ArduinoPinsIncludeAnalogPwmAndBusCapabilities()
+    T10 : +EmbeddedLibraryContainsEveryRequestedComponent()
+    T10 : +Esp32InputOnlyPinsArePreservedAndNotAssignedPwm()
+    T10 : +InvalidRecordsAreRejectedAtomically()
+    T10 : +JsonRoundTripPreservesPinsAndDefaults()
+    T10 : +MalformedLibraryReturnsErrorWithoutPartialData()
+    class T11["ConnectivityViewModelTests"]
+    T11 : +RebuildHappensAtCommitUndoRedoAndOpenButNotEachGestureFrame()
+    class T12["DcSolverTests"]
+    T12 : +ElectricalOverridesSurviveCopyHistoryAndFileRoundTrip()
+    T12 : +FloatingShortedAndUnsupportedCasesReturnDiagnostics()
+    T12 : +LedCurrentMatchesPiecewiseHandCalculationAndColorChange()
+    T12 : +NtcTemperatureAndOverloadWarningsAreComputed()
+    T12 : +PotentiometerExtremesAreIdealAndFinite()
+    T12 : +RgbChannelsUseTheirJsonProfilesAndCommonPolarity()
+    class T13["DiagnosticsAndPreparationTests"]
+    T13 : +AmbiguousOrBrokenSketchIsNotModified()
+    T13 : +AnalysisNeverLogsProblemCountsAndOutputDeduplicatesErrors()
+    T13 : +DialogAndUnifiedIssuesCanBeCopiedAndOpenMatchingDocumentation()
+    T13 : +HelpSearchCopyAndDirectArticleLinksWork()
+    T13 : +LedInDifferentNetsDoesNotGetShortWarning()
+    T13 : +PrepareManualSketchPreservesInstructionsAndSupportsGeneration()
+    class T14["DiagnosticsPresentationChecks"]
+    class T15["DialogLayoutChecks"]
+    T15 : +Run()
+    class T16["ElectricalTestCircuit"]
+    T16 : +Add()
+    T16 : +Check()
+    T16 : +Dispose()
+    T16 : +Environment
+    T16 : +Nets()
+    T16 : +Project
+    class T17["ElectronicsTests"]
+    T17 : +AnyTwoOhmQuantitiesDetermineSameResult()
+    T17 : +BadInputIsReportedAndUnitsAreParsed()
+    T17 : +BandsRoundTrip()
+    T17 : +LedSelectionRoundsUpAndHonorsColorData()
+    class T18["ErcRuleTests"]
+    T18 : +BatteryShort()
+    T18 : +DifferentSourcesOnSameBoard()
+    T18 : +EspGpioOvervoltage()
+    T18 : +GpioLedWithReturnResistorDoesNotRaiseMissingResistor()
+    T18 : +I2cConflictRequiresBothSharedLines()
+    T18 : +LedNeedsSeriesResistorNotParallelDecoration()
+    class T19["FileNotificationTests"]
+    T19 : +Create()
+    T19 : +DamagedFileAndFailedSaveHaveErrorDialogs()
+    T19 : +Export()
+    T19 : +ExportFailuresHaveErrorDialogs()
+    T19 : +ExportPng()
+    T19 : +ExportSchematic()
+    class T20["FootprintRepositoryTests"]
+    T20 : +All27FootprintsHaveMatchingElectricalContactsAndRoundTrip()
+    T20 : +InvalidFootprintsProduceDiagnostics()

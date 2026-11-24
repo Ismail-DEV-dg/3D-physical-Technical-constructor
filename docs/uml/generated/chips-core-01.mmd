@@ -1,0 +1,111 @@
+classDiagram
+    direction LR
+    class T01["ChipBehaviorDefinition"]
+    class T02["ChipContent"]
+    T02 : +Matches()
+    class T03["ChipDefinition"]
+    T03 : +Behavior
+    T03 : +ComponentId
+    T03 : +DefinitionVersion
+    T03 : +Description
+    T03 : +Family
+    T03 : +Id
+    class T04["ChipEvaluation"]
+    T04 : +Outputs
+    T04 : +Settled
+    T04 : +State
+    class T05["ChipEvaluator"]
+    T05 : +Compile()
+    class T06["ChipFileDocument"]
+    T06 : +CurrentSchemaVersion
+    T06 : +Definition
+    T06 : +SchemaVersion
+    class T07["ChipGate"]
+    T07 : +Clear
+    T07 : +HasMemory
+    T07 : +Id
+    T07 : +Inputs
+    T07 : +Kind
+    T07 : +Preset
+    class T08["ChipGateKind"]
+    <<enumeration>> T08
+    T08 : +And
+    T08 : +D
+    T08 : +Jk
+    T08 : +Nand
+    T08 : +Nor
+    T08 : +Not
+    class T09["ChipGateLogic"]
+    class T10["ChipGraph"]
+    T10 : +Gates
+    T10 : +Outputs
+    class T11["ChipGraphValidation"]
+    T11 : +MaximumGates
+    class T12["ChipLevel"]
+    <<enumeration>> T12
+    T12 : +High
+    T12 : +Low
+    T12 : +X
+    T12 : +Z
+    class T13["ChipMarkdown"]
+    T13 : +Pinout()
+    T13 : +Truth()
+    T13 : +TypeName()
+    class T14["ChipOutputLink"]
+    T14 : +Pin
+    T14 : +Source
+    class T15["ChipPackage"]
+    T15 : +Component()
+    T15 : +Footprint()
+    T15 : +PinCount()
+    T15 : +PinId()
+    T15 : +Renderer
+    T15 : +Supported
+    class T16["ChipPin"]
+    T16 : +Description
+    T16 : +Drives
+    T16 : +EnableLow
+    T16 : +EnablePin
+    T16 : +IsUnused
+    T16 : +Name
+    class T17["ChipPinType"]
+    <<enumeration>> T17
+    T17 : +Bidirectional
+    T17 : +Gnd
+    T17 : +Input
+    T17 : +OpenCollector
+    T17 : +Output
+    T17 : +Vcc
+    class T18["ChipSignal"]
+    T18 : +Constant
+    T18 : +Gate
+    T18 : +Pin
+    class T19["ChipState"]
+    T19 : +Clocks
+    T19 : +Empty
+    T19 : +Memory
+    class T20["ChipTruthCsv"]
+    T20 : +Format()
+    T20 : +Parse()
+    T02 ..> T03
+    T03 ..> T16
+    T03 ..> T01
+    T04 ..> T12
+    T04 ..> T19
+    T05 ..> T12
+    T05 ..> T19
+    T05 ..> T04
+    T05 ..> T03
+    T06 ..> T03
+    T07 ..> T08
+    T07 ..> T18
+    T10 --|> T01
+    T10 ..> T07
+    T10 ..> T14
+    T13 ..> T03
+    T13 ..> T17
+    T14 ..> T18
+    T15 ..> T03
+    T16 ..> T17
+    T18 ..> T12
+    T19 ..> T12

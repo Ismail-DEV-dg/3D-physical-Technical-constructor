@@ -1,0 +1,94 @@
+classDiagram
+    direction LR
+    class T01["ComponentSignal"]
+    T01 : +Active
+    T01 : +Angle
+    T01 : +Channels
+    T01 : +Intensity
+    T01 : +Measurements
+    T01 : +Segments
+    class T02["InstrumentKind"]
+    <<enumeration>> T02
+    T02 : +Logic
+    T02 : +Meter
+    T02 : +Scope
+    class T03["InstrumentLayout"]
+    T03 : +IsValid
+    T03 : +MaximumCoordinate
+    T03 : +Visible
+    T03 : +X
+    T03 : +Y
+    class T04["InstrumentSignal"]
+    T04 : +Amps
+    T04 : +History
+    T04 : +Volts
+    class T05["PinSignal"]
+    T05 : +Adc
+    T05 : +Level
+    T05 : +Voltage
+    class T06["ScenarioConfiguration"]
+    T06 : +IsValid
+    T06 : +MaximumTextLength
+    T06 : +Numbers
+    T06 : +Pins
+    T06 : +TargetId
+    T06 : +TemplateId
+    class T07["ScenarioTemplate"]
+    T07 : +Id
+    T07 : +Name
+    T07 : +Numbers
+    T07 : +Pins
+    T07 : +Target
+    T07 : +Text
+    class T08["SerialLine"]
+    T08 : +Microseconds
+    T08 : +Sequence
+    T08 : +Text
+    class T09["SimulationBoardProfile"]
+    T09 : +AbsoluteCurrentAmps
+    T09 : +AdcBits
+    T09 : +LogicVoltage
+    T09 : +OnboardLedPin
+    T09 : +OutputResistanceOhms
+    T09 : +PullupResistanceOhms
+    class T10["SimulationDiagnostic"]
+    T10 : +Code
+    T10 : +ComponentId
+    T10 : +HelpKey
+    T10 : +IsError
+    T10 : +Limit
+    T10 : +Measured
+    class T11["SimulationModelCatalog"]
+    T11 : +Boards
+    T11 : +Components
+    class T12["SimulationSetup"]
+    T12 : +Instruments
+    T12 : +IsValid
+    T12 : +Matches()
+    T12 : +Scenario
+    class T13["SimulationState"]
+    T13 : +Components
+    T13 : +Diagnostics
+    T13 : +Failure
+    T13 : +Instruments
+    T13 : +IsHalted
+    T13 : +Microseconds
+    class T14["TraceSample"]
+    T14 : +Levels
+    T14 : +Microseconds
+    T14 : +Voltages
+    class T15["WireSignal"]
+    T15 : +Current
+    T15 : +Voltage
+    T04 ..> T14
+    T11 ..> T09
+    T12 ..> T06
+    T12 ..> T02
+    T12 ..> T03
+    T13 ..> T01
+    T13 ..> T05
+    T13 ..> T15
+    T13 ..> T02
+    T13 ..> T04
+    T13 ..> T08
+    T13 ..> T10

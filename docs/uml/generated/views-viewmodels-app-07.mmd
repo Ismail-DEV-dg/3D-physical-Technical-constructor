@@ -1,0 +1,94 @@
+classDiagram
+    direction LR
+    class T01["SceneCameraView"]
+    <<enumeration>> T01
+    T01 : +Fit
+    T01 : +Front
+    T01 : +Initial
+    T01 : +Isometric
+    T01 : +Top
+    class T02["SchematicViewModel"]
+    T02 : +AddComponent()
+    T02 : +ComponentCount
+    T02 : +Components
+    T02 : +Dispose()
+    T02 : +Library
+    T02 : +MaximumZoom
+    class T03["ShortcutGuideViewModel"]
+    T03 : +CloseRequested
+    T03 : +Entries
+    class T04["SimulationControllerViewModel"]
+    T04 : +CanApply
+    T04 : +HasSession
+    T04 : +Modes
+    class T05["SimulationInstrumentsViewModel"]
+    T05 : +CancelPick()
+    T05 : +Dispose()
+    T05 : +Logic
+    T05 : +Meter
+    T05 : +Panels
+    T05 : +Scope
+    class T06["SimulationNumberViewModel"]
+    T06 : +Label
+    T06 : +Name
+    class T07["SimulationPinOption"]
+    T07 : +Name
+    T07 : +Reference
+    class T08["SimulationScenarioViewModel"]
+    T08 : +Dispose()
+    T08 : +ShowsTarget
+    T08 : +ShowsText
+    class T09["SimulationTargetOption"]
+    T09 : +Id
+    T09 : +Name
+    class T10["SimulationViewModel"]
+    T10 : +CanConfigure
+    T10 : +CanStart
+    T10 : +CanStartCircuit
+    T10 : +CanStep
+    T10 : +CanToggleSketch
+    T10 : +ConfigurationRequested
+    class T11["ThreeDViewModel"]
+    T11 : +Build()
+    T11 : +CameraRequested
+    T11 : +Capture()
+    T11 : +Layers
+    T11 : +Pick()
+    T11 : +SceneInvalidated
+    class T12["WireEditorViewModel"]
+    T12 : +Cancel()
+    T12 : +Color
+    T12 : +Colors
+    T12 : +DraggedEnd
+    T12 : +DraggedStart
+    T12 : +Exit()
+    class T13["WirePath"]
+    T13 : +Bounds
+    T13 : +Points
+    T13 : +Terminals
+    T13 : +WithEnds()
+    class T14["WorkspaceKind"]
+    <<enumeration>> T14
+    T14 : +Chip
+    T14 : +Code
+    T14 : +Mockup
+    T14 : +Schematic
+    T14 : +ThreeD
+    class T15["WorkspaceViewModel"]
+    T15 : +Description
+    T15 : +Heading
+    T15 : +Index
+    T15 : +Kind
+    T15 : +Title
+    class T16["WorkspaceViewport"]
+    class T17["AnalysisView"]
+    class T18["BreadboardView"]
+    class T19["CalculationResultsView"]
+    class T20["CalculatorWindow"]
+    T02 --|> T15
+    T10 ..> T08
+    T10 ..> T04
+    T10 ..> T05
+    T11 --|> T15
+    T11 ..> T10
+    T15 ..> T14

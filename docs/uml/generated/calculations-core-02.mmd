@@ -1,0 +1,26 @@
+classDiagram
+    direction LR
+    class T01["OhmCalculator"]
+    T01 : +Solve()
+    class T02["OhmValues"]
+    T02 : +Current
+    T02 : +Power
+    T02 : +Resistance
+    T02 : +Voltage
+    class T03["PowerSource"]
+    T03 : +ComponentId
+    T03 : +Negative
+    T03 : +Positive
+    T03 : +Voltage
+    class T04["PowerSourceDefinition"]
+    T04 : +FromBatteryProperty
+    T04 : +Ground
+    T04 : +Pin
+    T04 : +Voltage
+    class T05["QuantityFormatter"]
+    T05 : +Format()
+    T05 : +Resistance()
+    T05 : +TryParse()
+    class T06["VoltageDividerCalculator"]
+    T06 : +Calculate()
+    T01 ..> T02

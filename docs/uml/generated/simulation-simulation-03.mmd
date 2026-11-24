@@ -1,0 +1,92 @@
+classDiagram
+    direction LR
+    class T01["DigitalLevel"]
+    <<enumeration>> T01
+    T01 : +High
+    T01 : +Low
+    T01 : +X
+    T01 : +Z
+    class T02["GpioController"]
+    T02 : +Drive()
+    T02 : +Get()
+    T02 : +Id
+    T02 : +IsGpio()
+    T02 : +IsInputOnly()
+    T02 : +OutputAt()
+    class T03["GpioMode"]
+    <<enumeration>> T03
+    T03 : +Input
+    T03 : +InputPullup
+    T03 : +Output
+    T03 : +Pwm
+    class T04["GpioState"]
+    T04 : +AnalogOverride
+    T04 : +Duty
+    T04 : +High
+    T04 : +Mode
+    T04 : +PeriodMicroseconds
+    T04 : +Role
+    class T05["ChipBenchVerification"]
+    T05 : +Verify()
+    class T06["ChipTestBench"]
+    T06 : +ChannelCount
+    T06 : +Channels
+    T06 : +Inputs
+    T06 : +Outputs
+    T06 : +Pulse()
+    T06 : +SetInput()
+    class T07["ChipTestBenchFactory"]
+    T07 : +Create()
+    class T08["IChipTestBenchFactory"]
+    <<interface>> T08
+    class T09["IInstrument"]
+    <<interface>> T09
+    class T10["InstrumentChannels"]
+    class T11["InstrumentContext"]
+    T11 : +Current()
+    T11 : +Difference()
+    T11 : +Digital()
+    T11 : +Time
+    T11 : +Voltage()
+    class T12["LogicAnalyzer"]
+    T12 : +Kind
+    T12 : +Measure()
+    T12 : +Sample()
+    class T13["Multimeter"]
+    T13 : +Kind
+    T13 : +Measure()
+    class T14["Oscilloscope"]
+    T14 : +Kind
+    T14 : +Measure()
+    T14 : +Sample()
+    class T15["SessionInstruments"]
+    class T16["TraceHistory"]
+    T16 : +Add()
+    T16 : +Clear()
+    T16 : +DefaultCapacity
+    T16 : +Snapshot()
+    class T17["IScenarioRunner"]
+    <<interface>> T17
+    class T18["ScenarioRunner"]
+    T18 : +Start()
+    class T19["ISketchRunner"]
+    <<interface>> T19
+    class T20["SketchExecution"]
+    T20 : +Start()
+    T02 ..> T04
+    T02 ..> T01
+    T04 ..> T03
+    T05 ..> T08
+    T07 ..|> T08
+    T07 ..> T06
+    T12 ..|> T09
+    T12 ..> T11
+    T12 ..> T16
+    T13 ..|> T09
+    T13 ..> T11
+    T13 ..> T16
+    T14 ..|> T09
+    T14 ..> T11
+    T14 ..> T16
+    T15 ..> T09
+    T18 ..|> T17

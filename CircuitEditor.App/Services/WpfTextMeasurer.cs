@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.IO.Packaging;
 using System.Windows;
 using System.Windows.Media;
 using CircuitEditor.Core.Layout;
@@ -10,7 +9,7 @@ public sealed class WpfTextMeasurer : ITextMeasurer
 {
     public const double InkPadding = 1;
     public static FontFamily LabelFont { get; } = new(
-        PackUriHelper.Create(new Uri("application:///")), "/CircuitEditor.App;component/Resources/Fonts/#JetBrains Mono");
+        new Uri(AppContext.BaseDirectory), "./Fonts/#JetBrains Mono");
     public static FormattedText Format(string text, double size, Brush brush, double pixelsPerDip = 1) =>
         new(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
             new Typeface(LabelFont, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),

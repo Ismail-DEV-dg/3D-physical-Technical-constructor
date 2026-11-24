@@ -1,0 +1,20 @@
+classDiagram
+    direction LR
+    class T01["CppTokenScanner"]
+    T01 : +Scan()
+    class T02["ICodeAnalyzer"]
+    <<interface>> T02
+    class T03["ICodeGenerator"]
+    <<interface>> T03
+    class T04["PinUsageCollector"]
+    T04 : +Collect()
+    class T05["SketchDocument"]
+    T05 : +Board
+    T05 : +ControllerComponentId
+    T05 : +GeneratedCircuitSignature
+    T05 : +IsValid
+    T05 : +MaximumTextLength
+    T05 : +Name
+    class T06["SketchName"]
+    T06 : +IsValid()
+    T06 : +MaximumLength

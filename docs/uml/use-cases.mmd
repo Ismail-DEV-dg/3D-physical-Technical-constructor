@@ -1,0 +1,13 @@
+flowchart LR
+    User(["Пользователь"])
+    subgraph App["Circuit Editor"]
+        Build(["Собрать макет"])
+        Erc(["Проверить ERC"])
+        Dc(["Рассчитать DC"])
+        Sketch(["Написать или сгенерировать скетч"])
+        Sim(["Запустить сеанс, подключить приборы"])
+        Chip(["Создать и проверить микросхему"])
+        ThreeD(["Осмотреть сцену в 3D"])
+        Store(["Сохранить или экспортировать"])
+    end
+    User --> Build & Erc & Dc & Sketch & Sim & Chip & ThreeD & Store

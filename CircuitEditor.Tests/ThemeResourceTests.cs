@@ -92,7 +92,7 @@ public sealed class ThemeResourceTests
         Assert.Equal(800, bitmap.PixelWidth);
         var font = new Typeface(WpfTextMeasurer.LabelFont, FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
         Assert.True(font.TryGetGlyphTypeface(out var glyphs));
-        Assert.Contains("CircuitEditor.App;component/Resources/Fonts/", glyphs.FontUri.ToString());
+        Assert.EndsWith("/Fonts/JetBrainsMono-Regular.ttf", glyphs.FontUri.AbsolutePath, StringComparison.OrdinalIgnoreCase);
         Assert.Equal(4, "081l".Select(character => glyphs.CharacterToGlyphMap[character]).Distinct().Count());
         var esp = scene.Components.Single(item => item.Model.Definition.Id == "esp32-devkit");
         // Use an isolated scene so no other debug component can cover the pin.

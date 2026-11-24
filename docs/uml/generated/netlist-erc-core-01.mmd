@@ -1,0 +1,100 @@
+classDiagram
+    direction LR
+    class T01["INetlistBuilder"]
+    <<interface>> T01
+    class T02["Net"]
+    T02 : +Id
+    T02 : +Name
+    T02 : +Pins
+    T02 : +Terminals
+    class T03["NetTerminal"]
+    T03 : +Key
+    T03 : +Kind
+    T03 : +OwnerId
+    T03 : +TerminalId
+    class T04["Netlist"]
+    T04 : +Connected()
+    T04 : +Diagnostics
+    T04 : +Find()
+    T04 : +Nets
+    class T05["NetlistBuilder"]
+    T05 : +Build()
+    class T06["UnionFind"]
+    class T07["BatteryShortRule"]
+    T07 : +Check()
+    class T08["ChipSupplyRule"]
+    T08 : +Check()
+    class T09["DisconnectedSupplyRule"]
+    T09 : +Check()
+    class T10["ErcContext"]
+    T10 : +Catalog
+    T10 : +Issue()
+    T10 : +Nets
+    T10 : +Pin()
+    T10 : +Project
+    T10 : +Sources
+    class T11["ErcIssue"]
+    T11 : +Code
+    T11 : +Components
+    T11 : +Message
+    T11 : +Nets
+    T11 : +Pins
+    T11 : +Severity
+    class T12["ErcService"]
+    T12 : +Check()
+    class T13["ErcSeverity"]
+    <<enumeration>> T13
+    T13 : +Error
+    T13 : +Info
+    T13 : +Warning
+    class T14["EspOvervoltageRule"]
+    T14 : +Check()
+    T14 : +MaximumGpioVoltage
+    class T15["I2cAddressRule"]
+    T15 : +Check()
+    class T16["IErcRule"]
+    <<interface>> T16
+    class T17["IErcService"]
+    <<interface>> T17
+    class T18["LedResistorRule"]
+    T18 : +Check()
+    class T19["LedShortRule"]
+    T19 : +Check()
+    class T20["PinDirectionRule"]
+    T20 : +Check()
+    T02 ..> T03
+    T04 ..> T02
+    T05 ..|> T01
+    T05 ..> T04
+    T07 ..|> T16
+    T07 ..> T11
+    T07 ..> T10
+    T08 ..|> T16
+    T08 ..> T11
+    T08 ..> T10
+    T09 ..|> T16
+    T09 ..> T11
+    T09 ..> T10
+    T10 ..> T04
+    T10 ..> T11
+    T10 ..> T13
+    T11 ..> T13
+    T12 ..|> T17
+    T12 ..> T16
+    T12 ..> T11
+    T12 ..> T04
+    T14 ..|> T16
+    T14 ..> T11
+    T14 ..> T10
+    T15 ..|> T16
+    T15 ..> T11
+    T15 ..> T10
+    T18 ..|> T16
+    T18 ..> T11
+    T18 ..> T10
+    T19 ..|> T16
+    T19 ..> T11
+    T19 ..> T10
+    T20 ..|> T16
+    T20 ..> T11
+    T20 ..> T10

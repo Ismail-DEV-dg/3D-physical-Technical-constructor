@@ -1,0 +1,15 @@
+stateDiagram-v2
+    [*] --> Idle
+    state "Остановлен" as Idle
+    state "Работает" as Running
+    state "Пауза" as Paused
+    state "Ошибка сеанса" as Halted
+    Idle --> Running: Старт схемы или скетча
+    Running --> Paused: Пауза
+    Paused --> Paused: Шаг
+    Paused --> Running: Продолжить
+    Running --> Halted: Диагностика остановки
+    Paused --> Halted: Ошибка шага
+    Running --> Idle: Стоп
+    Paused --> Idle: Стоп
+    Halted --> Idle: Сброс

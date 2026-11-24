@@ -1,0 +1,105 @@
+classDiagram
+    direction LR
+    class T01["BreadboardDefinition"]
+    T01 : +AreConnected()
+    T01 : +Groups
+    T01 : +Height
+    T01 : +HolePitch
+    T01 : +Holes
+    T01 : +Id
+    class T02["BreadboardGeometry"]
+    T02 : +Contains()
+    T02 : +Local()
+    T02 : +World()
+    class T03["BreadboardHole"]
+    T03 : +GroupId
+    T03 : +Id
+    T03 : +Position
+    class T04["BreadboardInstance"]
+    T04 : +Definition
+    T04 : +Id
+    T04 : +Rotation
+    T04 : +X
+    T04 : +Y
+    class T05["ContactBinding"]
+    T05 : +BoardId
+    T05 : +ComponentId
+    T05 : +ContactId
+    T05 : +HoleId
+    class T06["ContactGroup"]
+    T06 : +HoleIds
+    T06 : +Id
+    class T07["CommandHistory"]
+    T07 : +CanRedo
+    T07 : +CanUndo
+    T07 : +Capacity
+    T07 : +Changed
+    T07 : +Clear()
+    T07 : +Count
+    class T08["IEditCommand"]
+    <<interface>> T08
+    class T09["ProjectEditCommand"]
+    T09 : +Execute()
+    T09 : +Name
+    T09 : +Undo()
+    class T10["ProjectSnapshot"]
+    T10 : +Copy()
+    T10 : +Matches()
+    T10 : +Restore()
+    class T11["SelectionClipboard"]
+    T11 : +Paste()
+    class T12["ComponentLayout"]
+    T12 : +AllLabels
+    T12 : +Body
+    T12 : +Height
+    T12 : +PinPitch
+    T12 : +Pins
+    T12 : +Symbol
+    class T13["ComponentLayoutCalculator"]
+    T13 : +Calculate()
+    class T14["ComponentLayoutStyle"]
+    T14 : +BodyPadding
+    T14 : +FontSize
+    T14 : +LeadLength
+    T14 : +PinTextClearance
+    T14 : +RowGap
+    T14 : +SymbolGap
+    class T15["IComponentLayoutCalculator"]
+    <<interface>> T15
+    class T16["ITextMeasurer"]
+    <<interface>> T16
+    class T17["LayoutPoint"]
+    T17 : +X
+    T17 : +Y
+    class T18["LayoutRect"]
+    T18 : +Bottom
+    T18 : +Contains()
+    T18 : +Height
+    T18 : +Intersects()
+    T18 : +Right
+    T18 : +Width
+    class T19["LayoutText"]
+    T19 : +Bounds
+    T19 : +FontSize
+    T19 : +Text
+    class T20["LayoutTransform"]
+    T20 : +ToLocal()
+    T20 : +ToWorld()
+    T01 ..> T03
+    T01 ..> T06
+    T02 ..> T17
+    T02 ..> T04
+    T03 ..> T17
+    T04 ..> T01
+    T07 ..> T08
+    T09 ..|> T08
+    T09 ..> T10
+    T12 ..> T18
+    T12 ..> T19
+    T13 ..|> T15
+    T13 ..> T16
+    T13 ..> T12
+    T18 ..> T17
+    T19 ..> T18
+    T20 ..> T17
+    T20 ..> T12

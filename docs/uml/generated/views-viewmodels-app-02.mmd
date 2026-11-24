@@ -1,0 +1,55 @@
+classDiagram
+    direction LR
+    class T01["MiscComponentDrawing"]
+    T01 : +Battery()
+    T01 : +Switch()
+    class T02["NpnDrawing"]
+    T02 : +Draw()
+    class T03["OledDrawing"]
+    T03 : +Draw()
+    class T04["PassiveBodyDrawing"]
+    T04 : +Capacitor()
+    T04 : +Diode()
+    T04 : +Inductor()
+    class T05["PhysicalContactHover"]
+    class T06["PhysicalDrawing"]
+    T06 : +Contact()
+    T06 : +Ink()
+    T06 : +Lead()
+    T06 : +Metal
+    T06 : +Rect()
+    T06 : +Text()
+    class T07["PhysicalPinToolTips"]
+    T07 : +Find()
+    class T08["PinHoverOverlay"]
+    class T09["PotentiometerDrawing"]
+    T09 : +DrawBase()
+    T09 : +DrawKnob()
+    class T10["ProjectDrawing"]
+    class T11["ProximitySensorDrawing"]
+    T11 : +Pir()
+    T11 : +Ultrasound()
+    class T12["RealComponentDrawing"]
+    T12 : +DrawBody()
+    T12 : +DrawSelection()
+    T12 : +ReferenceFontSizeMm
+    class T13["RgbLedDrawing"]
+    T13 : +Draw()
+    class T14["SchematicConnectionsDrawing"]
+    class T15["SchematicSurface"]
+    T15 : +Background
+    T15 : +BackgroundProperty
+    T15 : +GetPinToolTip()
+    T15 : +Revision
+    T15 : +RevisionProperty
+    T15 : +Scene
+    class T16["SensorPinDrawing"]
+    T16 : +Draw()
+    T16 : +StraightLeads()
+    class T17["ServoDrawing"]
+    T17 : +Draw()
+    class T18["SevenSegmentDrawing"]
+    T18 : +Draw()
+    class T19["SimulationDrawing"]
+    class T20["SymbolDrawing"]
+    T20 : +Draw()

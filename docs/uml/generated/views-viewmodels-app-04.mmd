@@ -1,0 +1,97 @@
+classDiagram
+    direction LR
+    class T01["ScrollMotionState"]
+    class T02["SelectionRefreshBehavior"]
+    T02 : +EnabledProperty
+    T02 : +GetEnabled()
+    T02 : +SetEnabled()
+    class T03["ShortcutBinding"]
+    T03 : +AllowText
+    T03 : +CanvasOnly
+    T03 : +Description
+    T03 : +Group
+    T03 : +Id
+    T03 : +Key
+    class T04["ShortcutCatalog"]
+    T04 : +Bindings
+    T04 : +Hint()
+    T04 : +Resolve()
+    class T05["ShortcutCommands"]
+    T05 : +Execute()
+    class T06["ShortcutHintExtension"]
+    T06 : +ProvideValue()
+    class T07["SmoothScrollBehavior"]
+    T07 : +EnabledProperty
+    T07 : +GetEnabled()
+    T07 : +SetEnabled()
+    class T08["BoardInteractionViewModel"]
+    T08 : +Handle()
+    T08 : +Selected
+    class T09["BreadboardViewModel"]
+    T09 : +Board
+    T09 : +BoardInteraction
+    T09 : +CanAdjustSpan
+    T09 : +Dispose()
+    T09 : +Hit()
+    T09 : +PlacementOf()
+    class T10["CalculationResultsViewModel"]
+    T10 : +EmptyMessage
+    T10 : +Entries
+    T10 : +HasEntries
+    T10 : +Invalidate()
+    T10 : +IsStale
+    T10 : +Result
+    class T11["CalculationRowViewModel"]
+    T11 : +Category
+    T11 : +Detail
+    T11 : +Title
+    T11 : +Value
+    class T12["CalculatorViewModel"]
+    T12 : +BandCounts
+    T12 : +Bands
+    T12 : +CloseRequested
+    T12 : +Colors
+    T12 : +LoadSelectedLed()
+    T12 : +Profiles
+    class T13["ChipBenchPinViewModel"]
+    T13 : +Label
+    T13 : +Number
+    T13 : +Toggle
+    T13 : +Value
+    class T14["ChipBenchViewModel"]
+    T14 : +ChannelLabel
+    T14 : +ClockPins
+    T14 : +Inputs
+    T14 : +IsActive
+    T14 : +Outputs
+    T14 : +PageCount
+    class T15["ChipDocumentationViewModel"]
+    class T16["ChipDraftHistory"]
+    T16 : +CanRedo
+    T16 : +CanUndo
+    T16 : +Clear()
+    T16 : +Rebase()
+    T16 : +Record()
+    T16 : +Redo()
+    class T17["ChipEditorDefaults"]
+    T17 : +Create()
+    T17 : +Unused()
+    class T18["ChipEditorText"]
+    T18 : +Numbers()
+    T18 : +ParseNumber()
+    T18 : +ParseSignal()
+    T18 : +Signal()
+    class T19["ChipGraphEditorViewModel"]
+    T19 : +GateKinds
+    T19 : +Gates
+    T19 : +Graph
+    T19 : +Links
+    T19 : +PortGuide
+    class T20["ChipLibraryViewModel"]
+    T20 : +Saved
+    T20 : +Templates
+    T04 ..> T03
+    T08 ..> T09
+    T09 ..> T08
+    T10 ..> T11
+    T14 ..> T13

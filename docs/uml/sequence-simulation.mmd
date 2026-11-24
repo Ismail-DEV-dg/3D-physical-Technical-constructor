@@ -1,0 +1,18 @@
+sequenceDiagram
+    participant UI as SimulationViewModel
+    participant P as SimulationPlayback
+    participant S as SimulationSession
+    participant E as SimulationEngine
+    participant C as SimulationCircuit
+    UI->>P: Запуск по снимку проекта
+    P->>S: Создать сеанс
+    loop Модельные шаги
+        P->>S: Advance(token)
+        S->>E: Step(token)
+        E->>S: Запустить обработчики событий по времени и номеру
+        S->>C: Решить изменившуюся цепь и обновить сигналы
+    end
+    P->>S: Observe()
+    S-->>P: SimulationState
+    UI->>P: TakeFrame()
+    P-->>UI: Последний доступный снимок

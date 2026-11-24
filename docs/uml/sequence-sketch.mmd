@@ -1,0 +1,15 @@
+sequenceDiagram
+    actor User as Пользователь
+    participant V as CodeViewModel
+    participant G as ArduinoCodeGenerator
+    participant T as ICodeTemplateRepository
+    User->>V: Сгенерировать или обновить
+    V->>G: Проект, Netlist, плата и текущий текст
+    G->>T: Загрузить шаблоны
+    T-->>G: JSON-шаблоны
+    G->>G: Разрешить GPIO и проверить секции auto
+    alt Секции корректны
+        G-->>V: Обновлённые секции и диагностика
+    else Секции отсутствуют или повреждены
+        G-->>V: Диагностика, текущий текст сохранён
+    end

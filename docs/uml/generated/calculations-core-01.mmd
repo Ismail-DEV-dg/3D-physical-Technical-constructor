@@ -1,0 +1,100 @@
+classDiagram
+    direction LR
+    class T01["BandResistance"]
+    T01 : +Ohms
+    T01 : +TolerancePercent
+    class T02["CalculationResult"]
+    T02 : +Error
+    T02 : +Value
+    class T03["ComponentElectricalState"]
+    T03 : +IsValid()
+    T03 : +Parameters
+    T03 : +PinRoles
+    T03 : +Role()
+    class T04["DcAssembly"]
+    T04 : +Branches
+    T04 : +Diagnostics
+    T04 : +HasErrors
+    T04 : +Unsupported
+    class T05["DcBranch"]
+    T05 : +A
+    T05 : +B
+    T05 : +ComponentId
+    T05 : +Kind
+    T05 : +MaximumCurrent
+    T05 : +Name
+    class T06["DcBranchResult"]
+    T06 : +A
+    T06 : +B
+    T06 : +ComponentId
+    T06 : +Current
+    T06 : +Limit
+    T06 : +Name
+    class T07["DcCircuitAssembler"]
+    T07 : +Assemble()
+    class T08["DcIslandSolver"]
+    class T09["DcMatrixCache"]
+    T09 : +BuildCount
+    T09 : +Clear()
+    class T10["DcResult"]
+    T10 : +Branches
+    T10 : +Diagnostics
+    T10 : +IterationLimitReached
+    T10 : +References
+    T10 : +Success
+    T10 : +UnsupportedComponents
+    class T11["DcSolver"]
+    T11 : +Solve()
+    class T12["ElectricalCatalog"]
+    T12 : +Components
+    T12 : +Find()
+    T12 : +Led()
+    T12 : +LedProfiles
+    T12 : +SchemaVersion
+    class T13["ElectricalDefinition"]
+    T13 : +Beta
+    T13 : +ChannelProfiles
+    T13 : +ComponentId
+    T13 : +DarkResistance
+    T13 : +LightResistance
+    T13 : +Links
+    class T14["ElectricalLink"]
+    T14 : +Input
+    T14 : +Pins
+    T14 : +Value
+    class T15["ElectricalParameters"]
+    T15 : +Led()
+    class T16["IDcSolver"]
+    <<interface>> T16
+    class T17["LedProfile"]
+    T17 : +Color
+    T17 : +DynamicResistance
+    T17 : +Id
+    T17 : +MaximumCurrent
+    T17 : +Name
+    T17 : +ToString()
+    class T18["LedResistorCalculator"]
+    T18 : +Calculate()
+    class T19["LedResistorResult"]
+    T19 : +Current
+    T19 : +Power
+    T19 : +Resistance
+    T19 : +Vf
+    class T20["LinearSystemSolver"]
+    T20 : +Solve()
+    T04 ..> T05
+    T07 ..> T04
+    T07 ..> T12
+    T10 ..> T06
+    T11 ..|> T16
+    T11 ..> T10
+    T11 ..> T05
+    T11 ..> T09
+    T12 ..> T13
+    T12 ..> T17
+    T13 ..> T14
+    T15 ..> T17
+    T15 ..> T12
+    T18 ..> T02
+    T18 ..> T19
+    T18 ..> T17

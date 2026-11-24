@@ -1,0 +1,48 @@
+classDiagram
+    direction LR
+    class T01["RotaryControlDefinition"]
+    T01 : +Radius
+    T01 : +X
+    T01 : +Y
+    class T02["ComponentPlacement"]
+    T02 : +Copy()
+    T02 : +FullRotation
+    T02 : +MoveTo()
+    T02 : +Rotate()
+    T02 : +Rotation
+    T02 : +RotationStep
+    class T03["RepresentationKind"]
+    <<enumeration>> T03
+    T03 : +Mockup
+    T03 : +Schematic
+    class T04["ViewLayout"]
+    T04 : +Get()
+    T04 : +Kind
+    T04 : +Placements
+    T04 : +Remove()
+    T04 : +Set()
+    class T05["WireCurve"]
+    T05 : +FindInsertionIndex()
+    T05 : +Sample()
+    T05 : +SegmentsPerSpan
+    class T06["WireEndpoint"]
+    T06 : +ComponentId
+    T06 : +Contact()
+    T06 : +Hole()
+    T06 : +Kind
+    T06 : +OwnerId
+    T06 : +TerminalId
+    class T07["WireEndpointKind"]
+    <<enumeration>> T07
+    T07 : +BreadboardHole
+    T07 : +ComponentContact
+    class T08["WireGeometry"]
+    T08 : +Nearest()
+    T08 : +Resolve()
+    T08 : +Validate()
+    class T09["WirePalette"]
+    T09 : +Colors
+    T04 ..> T03
+    T04 ..> T02
+    T06 ..> T07
+    T08 ..> T06

@@ -13,6 +13,8 @@ internal static class AboutInformation
         return $"""
             Circuit Editor {version}
             Редактор электрических схем для Arduino и ESP32.
+            Лицензия проекта · MIT
+            {application.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright}
 
             Основные зависимости:
             AvalonEdit {Version(typeof(TextEditor))} · MIT

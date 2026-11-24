@@ -1,0 +1,104 @@
+classDiagram
+    direction LR
+    class T01["ISceneBuilder"]
+    <<interface>> T01
+    class T02["SceneBounds"]
+    T02 : +From()
+    T02 : +Max
+    T02 : +Min
+    class T03["SceneBuilder"]
+    T03 : +Build()
+    class T04["SceneCatalog"]
+    T04 : +Breadboard
+    T04 : +Fallback
+    T04 : +Profiles
+    T04 : +Wire
+    class T05["SceneContact"]
+    T05 : +BoardId
+    T05 : +HoleId
+    T05 : +Id
+    T05 : +Position
+    class T06["SceneGeometryKey"]
+    T06 : +Of()
+    class T07["SceneLayer"]
+    <<enumeration>> T07
+    T07 : +Board
+    T07 : +Breadboard
+    T07 : +Component
+    T07 : +Label
+    T07 : +Wire
+    class T08["SceneLayerVisibility"]
+    T08 : +Boards
+    T08 : +Breadboard
+    T08 : +Labels
+    T08 : +Shows()
+    T08 : +Wires
+    class T09["SceneModel"]
+    T09 : +Bounds
+    T09 : +Empty
+    T09 : +Nodes
+    class T10["SceneNode"]
+    T10 : +Angle
+    T10 : +Body
+    T10 : +Bounds
+    T10 : +Breadboard
+    T10 : +Color
+    T10 : +Contacts
+    class T11["ScenePickIndex"]
+    T11 : +Find()
+    T11 : +Remove()
+    T11 : +Set()
+    class T12["ScenePoint"]
+    T12 : +X
+    T12 : +Y
+    T12 : +Z
+    class T13["ScenePose"]
+    T13 : +Local()
+    T13 : +Origin
+    T13 : +Rotation
+    T13 : +World()
+    class T14["SceneProfile"]
+    T14 : +Clearance
+    T14 : +DetailHeight
+    T14 : +Height
+    T14 : +Material
+    T14 : +Shape
+    class T15["SceneShape"]
+    <<enumeration>> T15
+    T15 : +Axial
+    T15 : +Board
+    T15 : +Box
+    T15 : +Cylinder
+    T15 : +Dome
+    T15 : +Tube
+    class T16["SceneSignalStyle"]
+    T16 : +Brightness()
+    T16 : +BrightnessLevels
+    T16 : +VoltageColor()
+    class T17["SceneWirePath"]
+    T17 : +Create()
+    class T18["SceneWireProfile"]
+    T18 : +MaximumRise
+    T18 : +MinimumRise
+    T18 : +Radius
+    T18 : +RisePerMillimeter
+    T02 ..> T12
+    T03 ..|> T01
+    T03 ..> T09
+    T04 ..> T14
+    T04 ..> T18
+    T05 ..> T12
+    T06 ..> T10
+    T08 ..> T07
+    T09 ..> T10
+    T09 ..> T02
+    T10 ..> T07
+    T10 ..> T14
+    T10 ..> T13
+    T10 ..> T02
+    T10 ..> T05
+    T10 ..> T12
+    T13 ..> T12
+    T14 ..> T15
+    T17 ..> T12
+    T17 ..> T18

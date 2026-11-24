@@ -1,0 +1,100 @@
+classDiagram
+    direction LR
+    class T01["DiagnosticArticle"]
+    T01 : +ApplicationGuideId
+    T01 : +Cause
+    T01 : +Code
+    T01 : +ComponentGuideId
+    T01 : +Fix
+    T01 : +Keywords
+    class T02["GuideBoard"]
+    T02 : +Title
+    T02 : +Values
+    class T03["GuideChapter"]
+    T03 : +BoardNotes
+    T03 : +Code
+    T03 : +Id
+    T03 : +Instructions
+    T03 : +Title
+    class T04["GuideLibrary"]
+    T04 : +Application
+    T04 : +Boards
+    T04 : +Chapters()
+    T04 : +Components
+    class T05["BomExportService"]
+    T05 : +Create()
+    T05 : +Export()
+    class T06["IBomExportService"]
+    <<interface>> T06
+    class T07["DiagramGeometry"]
+    T07 : +Contains()
+    T07 : +GridSize
+    T07 : +Intersects()
+    T07 : +Snap()
+    class T08["ComponentInput"]
+    <<enumeration>> T08
+    T08 : +BatteryVoltage
+    T08 : +ButtonPressed
+    T08 : +Distance
+    T08 : +Humidity
+    T08 : +Illuminance
+    T08 : +Motion
+    class T09["ComponentInputDefinitions"]
+    T09 : +ChangesAppearance()
+    T09 : +Defaults()
+    T09 : +For()
+    T09 : +IsValid()
+    class T10["ComponentInputs"]
+    T10 : +Values
+    class T11["InputDefinition"]
+    T11 : +ChoiceLabels
+    T11 : +Choices
+    T11 : +Default
+    T11 : +Format()
+    T11 : +Input
+    T11 : +IsValid()
+    class T12["PassiveNominals"]
+    T12 : +Format()
+    T12 : +GetValues()
+    T12 : +MaximumMicrohenries
+    T12 : +MaximumPicofarads
+    T12 : +Minimum
+    T12 : +TryParse()
+    class T13["PassiveQuantity"]
+    <<enumeration>> T13
+    T13 : +Capacitance
+    T13 : +Inductance
+    class T14["ResistanceFormatter"]
+    T14 : +Format()
+    T14 : +TryParse()
+    class T15["ResistorSeries"]
+    T15 : +GetValues()
+    T15 : +MaximumOhms
+    T15 : +MinimumOhms
+    class T16["ResistorSeriesKind"]
+    <<enumeration>> T16
+    T16 : +E12
+    T16 : +E24
+    T16 : +E96
+    class T17["ComponentInsertionService"]
+    T17 : +Insert()
+    T17 : +Preview()
+    class T18["IComponentInsertionService"]
+    <<interface>> T18
+    class T19["InsertionResult"]
+    T19 : +Bindings
+    T19 : +Error
+    T19 : +Placement
+    T19 : +Success
+    T04 ..> T02
+    T04 ..> T03
+    T05 ..|> T06
+    T09 ..> T11
+    T09 ..> T10
+    T09 ..> T08
+    T10 ..> T08
+    T11 ..> T08
+    T12 ..> T13
+    T15 ..> T16
+    T17 ..|> T18
+    T17 ..> T19

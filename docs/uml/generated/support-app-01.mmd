@@ -1,0 +1,56 @@
+classDiagram
+    direction LR
+    class T01["App"]
+    class T02["PaneLimitConverter"]
+    T02 : +Convert()
+    T02 : +ConvertBack()
+    class T03["PaneSizeConverter"]
+    T03 : +Convert()
+    T03 : +ConvertBack()
+    class T04["MainWindow"]
+    class T05["Program"]
+    T05 : +Main()
+    class T06["AboutInformation"]
+    T06 : +Describe()
+    class T07["ApplicationErrorService"]
+    T07 : +Report()
+    T07 : +SetRecoveryAction()
+    class T08["AutosaveService"]
+    T08 : +Dispose()
+    T08 : +Start()
+    class T09["CalculatorService"]
+    T09 : +Show()
+    class T10["ChipPinoutRenderer"]
+    T10 : +Render()
+    class T11["ClipboardService"]
+    T11 : +TryCopy()
+    class T12["CodeAnalysisService"]
+    T12 : +AnalyzeAsync()
+    class T13["DebounceService"]
+    T13 : +Dispose()
+    T13 : +Schedule()
+    class T14["DialogService"]
+    T14 : +ChooseExportScale()
+    T14 : +ConfirmDeleteChip()
+    T14 : +ConfirmRecovery()
+    T14 : +ConfirmUnsaved()
+    T14 : +OfferCrashCopy()
+    T14 : +OpenFile()
+    class T15["ErrorDocumentationService"]
+    T15 : +Articles
+    T15 : +Resolve()
+    class T16["ErrorHelpService"]
+    T16 : +Show()
+    T16 : +ShowSection()
+    class T17["IApplicationErrorService"]
+    <<interface>> T17
+    class T18["IAutosaveService"]
+    <<interface>> T18
+    class T19["ICalculatorService"]
+    <<interface>> T19
+    class T20["IChipPinoutRenderer"]
+    <<interface>> T20
+    T07 ..|> T17
+    T08 ..|> T18
+    T09 ..|> T19
+    T10 ..|> T20

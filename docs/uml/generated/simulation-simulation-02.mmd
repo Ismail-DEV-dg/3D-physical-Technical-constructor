@@ -1,0 +1,80 @@
+classDiagram
+    direction LR
+    class T01["RelayBehavior"]
+    T01 : +Branches()
+    T01 : +ComponentType
+    T01 : +Observe()
+    T01 : +Update()
+    class T02["RgbLedBehavior"]
+    T02 : +ComponentType
+    T02 : +Observe()
+    class T03["SensorBehavior"]
+    T03 : +ComponentType
+    T03 : +Observe()
+    class T04["ServoBehavior"]
+    T04 : +ComponentType
+    T04 : +Observe()
+    T04 : +Update()
+    class T05["SevenSegmentBehavior"]
+    T05 : +Branches()
+    T05 : +ComponentType
+    T05 : +Observe()
+    class T06["SwitchBehavior"]
+    class T07["UltrasonicBehavior"]
+    T07 : +Branches()
+    T07 : +ComponentType
+    T07 : +Observe()
+    T07 : +Update()
+    class T08["ISimulationDiagnostics"]
+    <<interface>> T08
+    class T09["ISimulationEngine"]
+    <<interface>> T09
+    class T10["ISimulationSessionFactory"]
+    <<interface>> T10
+    class T11["PinMeasurements"]
+    class T12["PwmAveraging"]
+    class T13["PwmPhase"]
+    T13 : +At
+    T13 : +Fraction
+    T13 : +State
+    T13 : +Weight
+    class T14["PwmPhasePlan"]
+    class T15["SimulationCircuit"]
+    T15 : +Average
+    T15 : +ChipOutput()
+    T15 : +Controllers
+    T15 : +GpioBranchName()
+    T15 : +InvalidateParameters()
+    T15 : +IsDirty
+    class T16["SimulationDiagnostics"]
+    T16 : +InvalidPin()
+    T16 : +Read()
+    class T17["SimulationEngine"]
+    T17 : +Clock
+    T17 : +EventsPerStep
+    T17 : +Halt()
+    T17 : +Reset()
+    T17 : +Schedule()
+    T17 : +State
+    class T18["SimulationSession"]
+    T18 : +Advance()
+    T18 : +AssignProbe()
+    T18 : +Circuit
+    T18 : +HasHalted
+    T18 : +ModelTime
+    T18 : +Observe()
+    class T19["SimulationSessionFactory"]
+    T19 : +Create()
+    T19 : +CreateForSketch()
+    class T20["WireMeasurements"]
+    T06 --|> T03
+    T16 ..|> T08
+    T16 ..> T15
+    T17 ..|> T09
+    T18 ..> T15
+    T18 ..> T09
+    T18 ..> T08
+    T19 ..|> T10
+    T19 ..> T08
+    T19 ..> T09
+    T19 ..> T18

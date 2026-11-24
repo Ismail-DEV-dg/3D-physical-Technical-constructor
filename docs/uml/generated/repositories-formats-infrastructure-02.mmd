@@ -1,0 +1,48 @@
+classDiagram
+    direction LR
+    class T01["JsonChipRepository"]
+    T01 : +Delete()
+    T01 : +Export()
+    T01 : +List()
+    T01 : +Load()
+    T01 : +Store()
+    class T02["JsonChipTemplateRepository"]
+    T02 : +Load()
+    class T03["JsonCodeCompletionRepository"]
+    T03 : +Load()
+    class T04["JsonCodeTemplateRepository"]
+    T04 : +Load()
+    class T05["JsonComponentLibraryRepository"]
+    T05 : +Load()
+    T05 : +Read()
+    class T06["JsonElectricalLibraryRepository"]
+    T06 : +Load()
+    class T07["JsonErrorHelpRepository"]
+    T07 : +Load()
+    class T08["JsonFootprintRepository"]
+    T08 : +Load()
+    T08 : +Read()
+    class T09["JsonGuideRepository"]
+    T09 : +Load()
+    class T10["JsonLogicFamilyRepository"]
+    T10 : +Load()
+    class T11["JsonProjectRepository"]
+    T11 : +ClearRecovery()
+    T11 : +HasRecovery
+    T11 : +Load()
+    T11 : +Options
+    T11 : +RecoveryPath
+    T11 : +Save()
+    class T12["JsonProjectSampleRepository"]
+    T12 : +IsOriginal()
+    T12 : +Load()
+    T12 : +PathFor()
+    class T13["JsonRecentProjectsRepository"]
+    T13 : +Add()
+    T13 : +Load()
+    class T14["JsonScenarioRepository"]
+    T14 : +Load()
+    class T15["JsonSceneCatalogRepository"]
+    T15 : +Load()
+    class T16["JsonSimulationModelRepository"]
+    T16 : +Load()

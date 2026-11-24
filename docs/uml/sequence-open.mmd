@@ -1,0 +1,20 @@
+sequenceDiagram
+    actor User as Пользователь
+    participant V as ProjectSessionViewModel
+    participant R as JsonProjectRepository
+    participant M as IProjectMigration
+    participant P as ProjectDocumentResolver
+    User->>V: Открыть .circ
+    V->>R: Load(path)
+    loop Последовательные миграции
+        R->>M: Migrate(json)
+        M-->>R: JSON следующей версии
+    end
+    R-->>V: ProjectDocument или ошибка
+    V->>P: Resolve(document, library, footprints, board)
+    alt Документ корректен
+        P-->>V: Новый CircuitProject
+        V->>V: Заменить активный проект
+    else Ошибка проверки
+        V-->>User: Диалог, активный проект сохранён
+    end

@@ -1,0 +1,59 @@
+classDiagram
+    direction LR
+    class T01["ImageExportService"]
+    T01 : +ExportPng()
+    class T02["NavigationService"]
+    T02 : +Current
+    T02 : +Navigate()
+    T02 : +Workspaces
+    class T03["ProjectChipVersionSelector"]
+    T03 : +Resolve()
+    class T04["SaveDecision"]
+    <<enumeration>> T04
+    T04 : +Cancel
+    T04 : +Discard
+    T04 : +Save
+    class T05["ShortcutGuideService"]
+    T05 : +Show()
+    class T06["SimulationPlayback"]
+    T06 : +Dispose()
+    T06 : +HasSession
+    T06 : +IsRunning
+    T06 : +Pause()
+    T06 : +Resume()
+    T06 : +Send()
+    class T07["SimulationPlaybackRun"]
+    class T08["SimulationRegistration"]
+    class T09["SimulationUiPulse"]
+    T09 : +Start()
+    T09 : +Stop()
+    T09 : +Tick
+    class T10["SvgExportService"]
+    T10 : +ExportSchematic()
+    class T11["ThemeKind"]
+    <<enumeration>> T11
+    T11 : +LightTech
+    T11 : +NeonDark
+    class T12["ThemeService"]
+    T12 : +CurrentTheme
+    T12 : +ErrorMessage
+    T12 : +SetTheme()
+    class T13["UserChipLibraryService"]
+    T13 : +Changed
+    T13 : +ComponentFor()
+    T13 : +Definitions
+    T13 : +Palette
+    T13 : +Refresh()
+    class T14["WindowService"]
+    T14 : +Close()
+    T14 : +Minimize()
+    T14 : +ToggleMaximize()
+    class T15["WpfTextMeasurer"]
+    T15 : +Format()
+    T15 : +InkPadding
+    T15 : +LabelFont
+    T15 : +Measure()
+    class T16["WpfThemeResources"]
+    T16 : +Apply()
+    T12 ..> T11
+    T16 ..> T11

@@ -1,0 +1,68 @@
+classDiagram
+    direction LR
+    class T01["BreadboardData"]
+    T01 : +DefinitionId
+    T01 : +Id
+    T01 : +Rotation
+    T01 : +X
+    T01 : +Y
+    class T02["ComponentData"]
+    T02 : +CapacitorKind
+    T02 : +ChipId
+    T02 : +Color
+    T02 : +DefinitionId
+    T02 : +DefinitionVersion
+    T02 : +Electrical
+    class T03["IProjectMigration"]
+    <<interface>> T03
+    class T04["ProjectChipDefinitions"]
+    T04 : +Replace()
+    class T05["ProjectDocument"]
+    T05 : +Bindings
+    T05 : +Breadboards
+    T05 : +Capture()
+    T05 : +Components
+    T05 : +Counters
+    T05 : +CurrentLibraryVersion
+    class T06["ProjectDocumentResolver"]
+    T06 : +Resolve()
+    class T07["ProjectSample"]
+    T07 : +Description
+    T07 : +File
+    T07 : +Title
+    class T08["ProjectViewState"]
+    T08 : +Active
+    T08 : +MaximumZoom
+    T08 : +MinimumZoom
+    T08 : +MockupX
+    T08 : +MockupY
+    T08 : +MockupZoom
+    class T09["IBreadboardRepository"]
+    <<interface>> T09
+    class T10["IChipCsvRepository"]
+    <<interface>> T10
+    class T11["IChipMigration"]
+    <<interface>> T11
+    class T12["IChipRepository"]
+    <<interface>> T12
+    class T13["IChipTemplateRepository"]
+    <<interface>> T13
+    class T14["ICodeCompletionRepository"]
+    <<interface>> T14
+    class T15["ICodeTemplateRepository"]
+    <<interface>> T15
+    class T16["IComponentLibraryRepository"]
+    <<interface>> T16
+    class T17["IElectricalLibraryRepository"]
+    <<interface>> T17
+    class T18["IErrorHelpRepository"]
+    <<interface>> T18
+    class T19["IErrorLogRepository"]
+    <<interface>> T19
+    class T20["IExportRepository"]
+    <<interface>> T20
+    T04 ..> T05
+    T05 ..> T02
+    T05 ..> T01
+    T05 ..> T08
+    T06 ..> T05

@@ -1,0 +1,112 @@
+classDiagram
+    direction LR
+    class T01["InputChoiceViewModel"]
+    T01 : +Text
+    T01 : +ToString()
+    T01 : +Value
+    class T02["InstrumentMove"]
+    T02 : +DeltaX
+    T02 : +DeltaY
+    T02 : +MaximumX
+    T02 : +MaximumY
+    class T03["InstrumentViewModel"]
+    T03 : +Channels
+    T03 : +HasTrace
+    T03 : +IsMeter
+    T03 : +IsScope
+    T03 : +Kind
+    T03 : +LayoutChanged
+    class T04["MainViewModel"]
+    T04 : +Analysis
+    T04 : +Code
+    T04 : +ComponentCount
+    T04 : +CoordinateUnit
+    T04 : +CursorX
+    T04 : +CursorY
+    class T05["MockupSimulationInput"]
+    class T06["OutputViewModel"]
+    T06 : +Append()
+    T06 : +Lines
+    T06 : +ReceiveSerial()
+    class T07["PaletteItemViewModel"]
+    T07 : +Category
+    T07 : +Definition
+    T07 : +Description
+    T07 : +Name
+    T07 : +Symbol
+    class T08["PanelLayoutViewModel"]
+    T08 : +Analysis
+    T08 : +Components
+    T08 : +Inspector
+    class T09["PassiveNominalEditorViewModel"]
+    T09 : +Caption
+    T09 : +Hint
+    T09 : +Options
+    T09 : +Quantity
+    class T10["PassiveNominalOption"]
+    T10 : +Quantity
+    T10 : +Text
+    T10 : +ToString()
+    T10 : +Value
+    class T11["PotentiometerEditorViewModel"]
+    T11 : +Angle
+    T11 : +Percent
+    T11 : +SetAngle()
+    class T12["ProjectAnalysisViewModel"]
+    T12 : +AllIssues
+    T12 : +CountSummary
+    T12 : +Dispose()
+    T12 : +ErrorCount
+    T12 : +FilteredIssues
+    T12 : +Filters
+    class T13["ProjectConnectivityViewModel"]
+    T13 : +BuildCount
+    T13 : +Netlist
+    T13 : +Rebuild()
+    class T14["ProjectSampleViewModel"]
+    T14 : +Description
+    T14 : +OpenCommand
+    T14 : +Sample
+    T14 : +Title
+    class T15["ProjectSessionViewModel"]
+    T15 : +Autosave()
+    T15 : +Capture()
+    T15 : +Dispose()
+    T15 : +Initialize()
+    T15 : +Load()
+    T15 : +RecentFiles
+    class T16["ProjectViewModel"]
+    T16 : +Add()
+    T16 : +Analysis
+    T16 : +BeginGesture()
+    T16 : +CanEdit
+    T16 : +CanRedo
+    T16 : +CanUndo
+    class T17["RecentProjectViewModel"]
+    T17 : +Name
+    T17 : +OpenCommand
+    T17 : +Path
+    class T18["ResistanceOption"]
+    T18 : +Ohms
+    T18 : +Text
+    T18 : +ToString()
+    class T19["ResistorEditorViewModel"]
+    T19 : +Options
+    T19 : +Series
+    class T20["ScenarioPinViewModel"]
+    T20 : +Name
+    T20 : +Options
+    T04 ..> T15
+    T04 ..> T12
+    T04 ..> T08
+    T04 ..> T07
+    T04 ..> T16
+    T09 ..> T10
+    T12 ..> T16
+    T13 ..> T16
+    T15 ..> T16
+    T15 ..> T14
+    T15 ..> T17
+    T16 ..> T12
+    T16 ..> T13
+    T19 ..> T18

@@ -1,0 +1,118 @@
+classDiagram
+    direction LR
+    class T01["BreadboardDefinition"]
+    T01 : +AreConnected()
+    T01 : +Groups
+    T01 : +Height
+    T01 : +HolePitch
+    T01 : +Holes
+    T01 : +Id
+    class T02["BreadboardHole"]
+    T02 : +GroupId
+    T02 : +Id
+    T02 : +Position
+    class T03["BreadboardInstance"]
+    T03 : +Definition
+    T03 : +Id
+    T03 : +Rotation
+    T03 : +X
+    T03 : +Y
+    class T04["ContactBinding"]
+    T04 : +BoardId
+    T04 : +ComponentId
+    T04 : +ContactId
+    T04 : +HoleId
+    class T05["Circuit"]
+    T05 : +AddComponent()
+    T05 : +Components
+    T05 : +Counters
+    T05 : +PutWire()
+    T05 : +RemoveComponent()
+    T05 : +RemoveWire()
+    class T06["CircuitProject"]
+    T06 : +AddComponent()
+    T06 : +Bindings
+    T06 : +Breadboards
+    T06 : +Chips
+    T06 : +Circuit
+    T06 : +Detach()
+    class T07["Component"]
+    T07 : +CapacitorKind
+    T07 : +Color
+    T07 : +Definition
+    T07 : +Electrical
+    T07 : +I2cAddress
+    T07 : +Id
+    class T08["ComponentDefinition"]
+    T08 : +Category
+    T08 : +DefaultColor
+    T08 : +DefaultI2cAddress
+    T08 : +DefaultValue
+    T08 : +Description
+    T08 : +Id
+    class T09["Pin"]
+    T09 : +Capabilities
+    T09 : +Id
+    T09 : +IsExposed
+    T09 : +IsInputOnly
+    T09 : +IsNoConnect
+    T09 : +Name
+    class T10["PinReference"]
+    T10 : +ComponentId
+    T10 : +PinId
+    class T11["Wire"]
+    T11 : +Color
+    T11 : +ControlPoints
+    T11 : +End
+    T11 : +Id
+    T11 : +Start
+    class T12["Netlist"]
+    T12 : +Connected()
+    T12 : +Diagnostics
+    T12 : +Find()
+    T12 : +Nets
+    class T13["FootprintDefinition"]
+    T13 : +AllowedRotations
+    T13 : +Body
+    T13 : +ComponentDefinitionId
+    T13 : +Contacts
+    T13 : +DefaultSpan
+    T13 : +Id
+    class T14["ComponentPlacement"]
+    T14 : +Copy()
+    T14 : +FullRotation
+    T14 : +MoveTo()
+    T14 : +Rotate()
+    T14 : +Rotation
+    T14 : +RotationStep
+    class T15["ViewLayout"]
+    T15 : +Get()
+    T15 : +Kind
+    T15 : +Placements
+    T15 : +Remove()
+    T15 : +Set()
+    class T16["WireEndpoint"]
+    T16 : +ComponentId
+    T16 : +Contact()
+    T16 : +Hole()
+    T16 : +Kind
+    T16 : +OwnerId
+    T16 : +TerminalId
+    T01 ..> T02
+    T03 ..> T01
+    T05 ..> T07
+    T05 ..> T11
+    T05 ..> T08
+    T06 ..> T05
+    T06 ..> T15
+    T06 ..> T03
+    T06 ..> T13
+    T06 ..> T04
+    T06 ..> T07
+    T06 ..> T08
+    T07 ..> T08
+    T08 ..> T09
+    T11 ..> T16
+    T11 ..> T10
+    T12 ..> T16
+    T15 ..> T14

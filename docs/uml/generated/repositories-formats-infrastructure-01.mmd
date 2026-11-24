@@ -1,0 +1,74 @@
+classDiagram
+    direction LR
+    class T01["BreadboardData"]
+    T01 : +Body
+    T01 : +Id
+    T01 : +Rails
+    T01 : +SchemaVersion
+    T01 : +TerminalBlocks
+    T01 : +Units
+    class T02["ColumnData"]
+    T02 : +Id
+    T02 : +X
+    class T03["FootprintCatalogData"]
+    T03 : +Footprints
+    T03 : +SchemaVersion
+    T03 : +Units
+    class T04["RailData"]
+    T04 : +Holes
+    T04 : +Id
+    T04 : +Segments
+    T04 : +X
+    class T05["RailSegmentData"]
+    T05 : +First
+    T05 : +Id
+    T05 : +Last
+    class T06["RowData"]
+    T06 : +Count
+    T06 : +First
+    T06 : +Pitch
+    T06 : +StartY
+    class T07["TerminalBlockData"]
+    T07 : +Columns
+    T07 : +Connectivity
+    T07 : +Id
+    T07 : +Rows
+    class T08["ProjectMigrationV1ToV2"]
+    T08 : +FromVersion
+    T08 : +Migrate()
+    T08 : +ToVersion
+    class T09["ProjectMigrationV2ToV3"]
+    T09 : +FromVersion
+    T09 : +Migrate()
+    T09 : +ToVersion
+    class T10["ProjectMigrationV3ToV4"]
+    T10 : +FromVersion
+    T10 : +Migrate()
+    T10 : +ToVersion
+    class T11["AtomicFile"]
+    class T12["CodeJsonReader"]
+    class T13["EmbeddedJson"]
+    T13 : +IsDataError()
+    T13 : +Open()
+    T13 : +Read()
+    class T14["ErrorLogRepository"]
+    T14 : +TryAppend()
+    class T15["FileChipCsvRepository"]
+    T15 : +Load()
+    class T16["FileExportRepository"]
+    T16 : +Write()
+    class T17["FileFailure"]
+    T17 : +Describe()
+    class T18["FileInstallationLicenseRepository"]
+    T18 : +Read()
+    class T19["FileSketchRepository"]
+    T19 : +Export()
+    class T20["JsonBreadboardRepository"]
+    T20 : +Load()
+    T20 : +Read()
+    T01 ..> T07
+    T01 ..> T04
+    T04 ..> T06
+    T04 ..> T05
+    T07 ..> T02
+    T07 ..> T06

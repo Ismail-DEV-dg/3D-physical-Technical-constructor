@@ -1,0 +1,107 @@
+classDiagram
+    direction LR
+    class T01["ArduinoCodeAnalyzer"]
+    T01 : +Analyze()
+    class T02["ArduinoCodeGenerator"]
+    T02 : +Generate()
+    class T03["AutoRegionInitializer"]
+    T03 : +Prepare()
+    class T04["AutoRegionUpdater"]
+    T04 : +Update()
+    class T05["BoardKind"]
+    <<enumeration>> T05
+    T05 : +Esp32
+    T05 : +Nano
+    T05 : +Uno
+    class T06["BoardPinDefinition"]
+    T06 : +Code
+    T06 : +Id
+    T06 : +IsAnalog
+    T06 : +IsExposed
+    T06 : +IsInputOnly
+    T06 : +Number
+    class T07["CodeBoardProfile"]
+    T07 : +BuiltinLedNumber
+    T07 : +ComponentId
+    T07 : +DefaultSclNumber
+    T07 : +DefaultSdaNumber
+    T07 : +Kind
+    T07 : +Pins
+    class T08["CodeCatalog"]
+    T08 : +Boards
+    T08 : +SchemaVersion
+    T08 : +Templates
+    class T09["CodeCircuitContext"]
+    T09 : +Controller
+    T09 : +Create()
+    T09 : +Nets
+    T09 : +Profile
+    T09 : +Project
+    class T10["CodeCircuitSignature"]
+    T10 : +Compute()
+    class T11["CodeCompletionItem"]
+    T11 : +Category
+    T11 : +Description
+    T11 : +PinArguments
+    T11 : +SetsMode
+    T11 : +Text
+    T11 : +Writes
+    class T12["CodeConnectionResolver"]
+    T12 : +ButtonHasGround()
+    T12 : +Find()
+    T12 : +FindRelayControl()
+    class T13["CodeGenerationResult"]
+    T13 : +CircuitSignature
+    T13 : +Problems
+    T13 : +Success
+    T13 : +Text
+    class T14["CodePinResolver"]
+    T14 : +Resolve()
+    class T15["CodePinUse"]
+    T15 : +Column
+    T15 : +Function
+    T15 : +Line
+    T15 : +Pin
+    T15 : +Writes
+    class T16["CodePreparationResult"]
+    T16 : +Message
+    T16 : +Success
+    T16 : +Text
+    class T17["CodeProblem"]
+    T17 : +Code
+    T17 : +Column
+    T17 : +Line
+    T17 : +Message
+    T17 : +Severity
+    class T18["CodeTemplate"]
+    T18 : +ComponentId
+    T18 : +Declarations
+    T18 : +Includes
+    T18 : +IsI2c
+    T18 : +Loop
+    T18 : +Notes
+    class T19["ComponentSignal"]
+    T19 : +Direction
+    T19 : +Pin
+    T19 : +Suffix
+    class T20["CppToken"]
+    T20 : +Column
+    T20 : +Line
+    T20 : +Offset
+    T20 : +Text
+    T01 ..> T17
+    T02 ..> T13
+    T03 ..> T16
+    T07 ..> T05
+    T07 ..> T06
+    T08 ..> T07
+    T08 ..> T18
+    T09 ..> T07
+    T09 ..> T08
+    T12 ..> T06
+    T12 ..> T09
+    T13 ..> T17
+    T14 ..> T06
+    T14 ..> T07
+    T15 ..> T06
+    T18 ..> T19

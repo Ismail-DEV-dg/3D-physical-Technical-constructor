@@ -1,0 +1,15 @@
+flowchart LR
+    CircuitEditor_App["CircuitEditor.App"]
+    CircuitEditor_App --> CircuitEditor_Core
+    CircuitEditor_App --> CircuitEditor_Infrastructure
+    CircuitEditor_App --> CircuitEditor_Simulation
+    CircuitEditor_Core["CircuitEditor.Core"]
+    CircuitEditor_Infrastructure["CircuitEditor.Infrastructure"]
+    CircuitEditor_Infrastructure --> CircuitEditor_Core
+    CircuitEditor_Simulation["CircuitEditor.Simulation"]
+    CircuitEditor_Simulation --> CircuitEditor_Core
+    CircuitEditor_Tests["CircuitEditor.Tests"]
+    CircuitEditor_Tests --> CircuitEditor_App
+    CircuitEditor_Tests --> CircuitEditor_Core
+    CircuitEditor_Tests --> CircuitEditor_Infrastructure
+    CircuitEditor_Tests --> CircuitEditor_Simulation

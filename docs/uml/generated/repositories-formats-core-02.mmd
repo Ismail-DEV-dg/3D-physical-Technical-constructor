@@ -1,0 +1,33 @@
+classDiagram
+    direction LR
+    class T01["IFootprintRepository"]
+    <<interface>> T01
+    class T02["IGuideRepository"]
+    <<interface>> T02
+    class T03["IInstallationLicenseRepository"]
+    <<interface>> T03
+    class T04["ILogicFamilyRepository"]
+    <<interface>> T04
+    class T05["IProjectRepository"]
+    <<interface>> T05
+    class T06["IProjectSampleRepository"]
+    <<interface>> T06
+    class T07["IRecentProjectsRepository"]
+    <<interface>> T07
+    class T08["IScenarioRepository"]
+    <<interface>> T08
+    class T09["ISceneCatalogRepository"]
+    <<interface>> T09
+    class T10["ISimulationModelRepository"]
+    <<interface>> T10
+    class T11["ISketchRepository"]
+    <<interface>> T11
+    class T12["LibraryLoadResult"]
+    T12 : +Components
+    T12 : +Error
+    T12 : +Success
+    class T13["RepositoryResult"]
+    T13 : +Error
+    T13 : +Success
+    T13 : +Value
+    T13 : +Warning

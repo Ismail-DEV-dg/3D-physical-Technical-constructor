@@ -1,0 +1,72 @@
+classDiagram
+    direction LR
+    class T01["BehaviorContext"]
+    T01 : +Branch()
+    T01 : +ChangeAt()
+    T01 : +Currents()
+    T01 : +Level()
+    T01 : +Now
+    T01 : +Parameter()
+    class T02["ButtonBehavior"]
+    class T03["BuzzerBehavior"]
+    T03 : +Branches()
+    T03 : +ComponentType
+    T03 : +Observe()
+    class T04["ChipBehavior"]
+    T04 : +Branches()
+    T04 : +ComponentType
+    T04 : +Diagnostics()
+    T04 : +Update()
+    class T05["ChipRuntime"]
+    class T06["ComponentMemory"]
+    T06 : +AlternateCollector
+    T06 : +Angle
+    T06 : +AngleUpdatedAt
+    T06 : +CollectorLimit
+    T06 : +Echo
+    T06 : +Level
+    class T07["Dht11Behavior"]
+    class T08["Dht22Behavior"]
+    class T09["DiodeBehavior"]
+    T09 : +Branches()
+    T09 : +ComponentType
+    class T10["DisplayBehavior"]
+    T10 : +ComponentType
+    T10 : +Observe()
+    class T11["I2cLcdBehavior"]
+    class T12["IComponentBehavior"]
+    <<interface>> T12
+    class T13["LcdBehavior"]
+    class T14["LdrBehavior"]
+    class T15["LedBehavior"]
+    T15 : +ComponentType
+    T15 : +Observe()
+    class T16["NpnBehavior"]
+    T16 : +Branches()
+    T16 : +ComponentType
+    T16 : +Update()
+    class T17["NtcBehavior"]
+    class T18["OledBehavior"]
+    class T19["PirBehavior"]
+    T19 : +Branches()
+    T19 : +ComponentType
+    T19 : +Observe()
+    T19 : +Update()
+    class T20["PotentiometerBehavior"]
+    T03 ..|> T12
+    T03 ..> T01
+    T04 ..|> T12
+    T04 ..> T01
+    T09 ..|> T12
+    T09 ..> T01
+    T10 ..|> T12
+    T10 ..> T01
+    T11 --|> T10
+    T13 --|> T10
+    T15 ..|> T12
+    T15 ..> T01
+    T16 ..|> T12
+    T16 ..> T01
+    T18 --|> T10
+    T19 ..|> T12
+    T19 ..> T01

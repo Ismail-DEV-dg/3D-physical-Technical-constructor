@@ -1,0 +1,54 @@
+classDiagram
+    direction LR
+    class T01["SceneMeshPart"]
+    T01 : +MaterialKey
+    T01 : +Model
+    T01 : +Pivot
+    T01 : +Role
+    class T02["SceneMeshes"]
+    T02 : +BevelWithArtwork()
+    T02 : +BeveledBox()
+    T02 : +Box()
+    T02 : +Center()
+    T02 : +Disc()
+    T02 : +DiscFace()
+    class T03["SceneObj"]
+    T03 : +Write()
+    class T04["ScenePng"]
+    T04 : +Capture()
+    class T05["ScenePreparation"]
+    T05 : +Build()
+    class T06["SceneReaction"]
+    T06 : +Model
+    T06 : +Node
+    T06 : +Role
+    T06 : +Transform
+    class T07["SceneReactionBuilder"]
+    T07 : +Build()
+    class T08["SceneRotationMeasurement"]
+    T08 : +Measure()
+    class T09["SceneSurfaceTexture"]
+    T09 : +ForRegion()
+    class T10["SceneViewport"]
+    class T11["SceneViewportSimulation"]
+    T11 : +BeginInteraction()
+    T11 : +ClearFrames()
+    T11 : +IsInteracting
+    T11 : +MoveKnob()
+    T11 : +QueueFrame()
+    T11 : +ReleaseInteraction()
+    class T12["SceneVisualNode"]
+    T12 : +Body
+    T12 : +Labels
+    T12 : +Node
+    T12 : +Outline
+    T12 : +React()
+    T12 : +SelectWire()
+    class T13["Stage10Benchmark"]
+    T13 : +CreateWindow()
+    T02 ..> T09
+    T02 ..> T01
+    T07 ..> T06
+    T08 ..> T10
+    T11 ..> T10
+    T12 ..> T06

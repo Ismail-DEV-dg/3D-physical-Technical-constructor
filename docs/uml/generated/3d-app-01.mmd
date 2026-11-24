@@ -1,0 +1,73 @@
+classDiagram
+    direction LR
+    class T01["BoardMeshes"]
+    T01 : +Breadboard()
+    T01 : +Draw()
+    T01 : +Relative()
+    class T02["ControllerMeshes"]
+    T02 : +Draw()
+    class T03["DeviceMeshes"]
+    T03 : +Draw()
+    class T04["DisplayMeshes"]
+    T04 : +Draw()
+    class T05["ISceneMeshFactory"]
+    <<interface>> T05
+    class T06["ISceneViewportRegistration"]
+    <<interface>> T06
+    class T07["PassiveMeshes"]
+    T07 : +Draw()
+    class T08["PreparedScene"]
+    T08 : +Bounds
+    T08 : +Lights
+    T08 : +Nodes
+    class T09["PreparedSceneNode"]
+    T09 : +GeometryKey
+    T09 : +Labels
+    T09 : +Node
+    T09 : +Outline
+    T09 : +Parts
+    T09 : +Transform
+    class T10["SceneBenchmark"]
+    T10 : +CreateWindow()
+    class T11["SceneBenchmarkDesign"]
+    T11 : +Create()
+    class T12["SceneBenchmarkResult"]
+    T12 : +Batched
+    T12 : +Components
+    T12 : +Height
+    T12 : +InitialMs
+    T12 : +LitFrames
+    T12 : +PeakVoltageWires
+    class T13["SceneBeveledBox"]
+    T13 : +Add()
+    class T14["SceneCamera"]
+    T14 : +Apply()
+    class T15["SceneClick"]
+    T15 : +Begin()
+    T15 : +Cancel()
+    T15 : +Move()
+    T15 : +Release()
+    class T16["SceneExportAdapter"]
+    T16 : +Attach()
+    T16 : +Detach()
+    T16 : +ExportObj()
+    T16 : +ExportPng()
+    class T17["SceneFinish"]
+    <<enumeration>> T17
+    T17 : +Gloss
+    T17 : +Matte
+    T17 : +Metal
+    class T18["SceneHover"]
+    T18 : +Observe()
+    class T19["SceneMaterials"]
+    T19 : +Brush()
+    T19 : +Finished()
+    T19 : +Glow()
+    T19 : +Solid()
+    T19 : +Texture()
+    class T20["SceneMeshFactory"]
+    T20 : +Build()
+    T08 ..> T09
+    T16 ..|> T06
+    T19 ..> T17
+    T20 ..|> T05

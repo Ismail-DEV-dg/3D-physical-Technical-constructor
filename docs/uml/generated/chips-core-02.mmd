@@ -1,0 +1,35 @@
+classDiagram
+    direction LR
+    class T01["ChipTruthLogic"]
+    T01 : +Evaluate()
+    T01 : +Patterns()
+    T01 : +Symbol()
+    class T02["ChipTruthSection"]
+    T02 : +Inputs
+    T02 : +MaximumInputs
+    T02 : +MaximumOutputs
+    T02 : +Outputs
+    T02 : +Rows
+    class T03["ChipTruthTable"]
+    T03 : +Sections
+    class T04["ChipValidator"]
+    T04 : +MaximumDelayUs
+    T04 : +Validate()
+    class T05["IChipEvaluator"]
+    <<interface>> T05
+    class T06["LogicFamilyProfile"]
+    T06 : +ExceedsCurrentLimit()
+    T06 : +InputHigh
+    T06 : +InputLow
+    T06 : +IsValid
+    T06 : +MaximumSupply
+    T06 : +MinimumSupply
+    class T07["LogicVoltage"]
+    T07 : +IsValid
+    T07 : +Resolve()
+    T07 : +SupplyFraction
+    T07 : +Value
+    T01 ..> T03
+    T03 ..> T02
+    T04 ..> T06
+    T06 ..> T07
