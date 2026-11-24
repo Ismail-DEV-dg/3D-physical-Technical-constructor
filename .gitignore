@@ -8,3 +8,5 @@ TestResults/
 /artifacts/
 /publish/
 **/node_modules/
+/start/*.exe
+/installer/.cache/
