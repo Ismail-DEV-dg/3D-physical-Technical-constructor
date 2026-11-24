@@ -115,11 +115,16 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Не удалось собрать публикацию Circuit Editor.' }
     Confirm-Payload $payload
 
-    $version = [Diagnostics.FileVersionInfo]::GetVersionInfo((Join-Path $payload 'CircuitEditor.App.dll')).ProductVersion -replace '\+.*$'
+    $metadata = [Diagnostics.FileVersionInfo]::GetVersionInfo((Join-Path $payload 'CircuitEditor.App.exe'))
+    $version = $metadata.ProductVersion -replace '\+.*$'
+    if (-not $metadata.CompanyName -or -not $metadata.LegalCopyright -or -not $metadata.ProductName -or -not $metadata.FileDescription) {
+        throw 'В опубликованном EXE не заполнены метаданные продукта, автора или описания.'
+    }
     if ($version -notmatch '^\d+\.\d+\.\d+(\.\d+)?$') { throw "Недопустимая версия приложения: $version" }
     $compiled = Join-Path $work 'output'
     & $compiler /Qp "/DAppVersion=$version" "/DPayloadDir=$payload" "/DRuntimeInstaller=$runtimeFile" `
-        "/DSetupOutput=$compiled" (Join-Path $PSScriptRoot 'CircuitEditor.iss')
+        "/DSetupOutput=$compiled" "/DAppAuthor=$($metadata.CompanyName)" "/DAppCopyrightText=$($metadata.LegalCopyright)" `
+        (Join-Path $PSScriptRoot 'CircuitEditor.iss')
     if ($LASTEXITCODE -ne 0) { throw 'Компилятор Inno Setup завершился с ошибкой.' }
 
     $target = Join-Path $repo 'start/setup.exe'

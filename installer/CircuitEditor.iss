@@ -10,7 +10,12 @@
 AppId={{CBF69278-6CC9-451F-9878-15B33518F13C}
 AppName={#AppName}
 AppVersion={#AppVersion}
-AppPublisher=Abduselimov Ismail
+AppPublisher={#AppAuthor}
+AppCopyright={#AppCopyrightText}
+VersionInfoCompany={#AppAuthor}
+VersionInfoCopyright={#AppCopyrightText}
+VersionInfoDescription=Circuit Editor Setup
+VersionInfoProductName={#AppName}
 VersionInfoVersion={#AppVersion}
 DefaultDirName={autopf}\CircuitEditor
 DefaultGroupName=Circuit Editor
@@ -23,6 +28,10 @@ DisableWelcomePage=no
 DisableDirPage=no
 DisableProgramGroupPage=no
 LicenseFile=..\LICENSE
+SetupIconFile=..\assets\branding\logo.ico
+WizardStyle=classic
+WizardImageFile=..\assets\branding\wizard-panel.bmp
+WizardSmallImageFile=..\assets\branding\wizard-icon.bmp
 CloseApplications=yes
 CloseApplicationsFilter=*.exe,*.dll
 RestartApplications=no
@@ -47,8 +56,8 @@ Source: "{#RuntimeInstaller}"; DestName: "{#RuntimeName}"; Flags: dontcopy
 Source: "{#PayloadDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
-Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"
-Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"; Tasks: desktopicon
+Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"; IconFilename: "{app}\{#AppExe}"
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; WorkingDir: "{app}"; IconFilename: "{app}\{#AppExe}"; Tasks: desktopicon
 
 [Run]
 Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; WorkingDir: "{app}"; Flags: nowait postinstall skipifsilent runasoriginaluser; Check: CanLaunchApp

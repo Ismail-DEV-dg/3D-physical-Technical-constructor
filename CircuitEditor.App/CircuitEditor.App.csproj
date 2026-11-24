@@ -8,6 +8,10 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <ApplicationIcon>..\assets\branding\logo.ico</ApplicationIcon>
+    <Product>Circuit Editor</Product>
+    <Description>Редактор электрических схем для Arduino и ESP32</Description>
+    <AssemblyTitle>$(Description)</AssemblyTitle>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -21,6 +25,8 @@
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <Content Include="..\Samples\*.*" Link="Samples\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Resource Include="..\assets\branding\logo.ico" Link="Branding\logo.ico" />
+    <Resource Include="..\assets\branding\logo-256.png" Link="Branding\logo-256.png" />
     <Resource Include="Resources\Fonts\*.ttf" />
     <Content Include="Resources\Fonts\*.ttf" Link="Fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Resource Include="Resources\Code\*.xshd" />

@@ -1,5 +1,6 @@
 <Window x:Class="CircuitEditor.App.Views.ChoiceDialog"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ Icon="pack://application:,,,/CircuitEditor.App;component/Branding/logo.ico"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  Title="{Binding Title}" SizeToContent="WidthAndHeight" MinWidth="440" MaxWidth="620" ResizeMode="NoResize"
  WindowStyle="None" WindowStartupLocation="CenterOwner" Background="{DynamicResource BackgroundBrush}"
@@ -7,7 +8,17 @@
  <Window.InputBindings><KeyBinding Key="Escape" Command="{Binding DismissCommand}"/></Window.InputBindings>
  <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}">
  <Border Style="{StaticResource Panel}" Padding="24"><StackPanel FocusManager.IsFocusScope="True" FocusManager.FocusedElement="{Binding ElementName=MessageText}">
- <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="18"/>
+ <StackPanel Orientation="Horizontal">
+  <Image Width="42" Height="42" Margin="0,0,12,0" Source="pack://application:,,,/CircuitEditor.App;component/Branding/logo-256.png">
+   <Image.Style><Style TargetType="Image">
+    <Setter Property="Visibility" Value="Collapsed"/>
+    <Style.Triggers><DataTrigger Binding="{Binding Title}" Value="О программе">
+     <Setter Property="Visibility" Value="Visible"/>
+    </DataTrigger></Style.Triggers>
+   </Style></Image.Style>
+  </Image>
+  <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="18" VerticalAlignment="Center"/>
+ </StackPanel>
  <TextBox x:Name="MessageText" Text="{Binding Message,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" MaxWidth="520" MaxHeight="330" VerticalScrollBarVisibility="Auto" Margin="0,18" ToolTip="Можно выделить текст и скопировать Ctrl+C"/>
  <WrapPanel Margin="0,0,0,12">
   <WrapPanel.Style><Style TargetType="WrapPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsDiagnostic}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></WrapPanel.Style>
