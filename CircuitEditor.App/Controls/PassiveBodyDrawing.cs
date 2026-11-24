@@ -8,11 +8,14 @@ namespace CircuitEditor.App.Controls;
 
 internal static class PassiveBodyDrawing
 {
-    public static void Capacitor(DrawingContext dc, ComponentViewModel item)
+    public static void Capacitor(DrawingContext dc, ComponentViewModel item) =>
+        Capacitor(dc, item.Footprint, item.Model.CapacitorKind, item.Model.Value);
+
+    internal static void Capacitor(DrawingContext dc, FootprintDefinition footprint, CapacitorKind kind, string value)
     {
-        var electrolytic = item.Model.CapacitorKind == CapacitorKind.Electrolytic;
-        var body = PhysicalDrawing.Rect(item.Footprint.Parts![electrolytic ? "electrolytic" : "ceramic"]);
-        foreach (var contact in item.Footprint.Contacts)
+        var electrolytic = kind == CapacitorKind.Electrolytic;
+        var body = PhysicalDrawing.Rect(footprint.Parts![electrolytic ? "electrolytic" : "ceramic"]);
+        foreach (var contact in footprint.Contacts)
             PhysicalDrawing.Lead(dc, new Point(contact.X, contact.Y), new Point(contact.X, body.Top + body.Height / 2));
         var center = new Point(body.Left + body.Width / 2, body.Top + body.Height / 2);
         if (electrolytic)
@@ -26,8 +29,8 @@ internal static class PassiveBodyDrawing
             dc.DrawRoundedRectangle(PhysicalDrawing.Ink("#D0D4D2"), null,
                 new Rect(body.Right - 1.3, center.Y - 1.3, .9, 3), .25, .25);
             PhysicalDrawing.Text(dc, "−", body.Right - 1.25, center.Y, 1.2, Brushes.Black);
-            BoardDetailDrawing.TextCentered(dc, item.Model.Value, center.X - .45, body.Bottom - 1.7, 1, Brushes.WhiteSmoke);
-            PhysicalDrawing.Text(dc, "+", item.Footprint.Contacts[0].X - 1.4, -.8, 1.5, Brushes.OrangeRed);
+            BoardDetailDrawing.TextCentered(dc, value, center.X - .45, body.Bottom - 1.7, 1, Brushes.WhiteSmoke);
+            PhysicalDrawing.Text(dc, "+", footprint.Contacts[0].X - 1.4, -.8, 1.5, Brushes.OrangeRed);
         }
         else
         {
@@ -35,9 +38,9 @@ internal static class PassiveBodyDrawing
                 PhysicalDrawing.Ink("#A3572F").Color, 70), new Pen(PhysicalDrawing.Ink("#7B4024"), .16), center, body.Width / 2, body.Height / 2);
             dc.DrawEllipse(new SolidColorBrush(Color.FromArgb(80, 255, 236, 185)), null,
                 new Point(center.X - 1.1, center.Y - 1.3), 1.1, .65);
-            BoardDetailDrawing.TextCentered(dc, item.Model.Value, center.X, center.Y + .4, 1.35, PhysicalDrawing.Ink("#3A231A"));
+            BoardDetailDrawing.TextCentered(dc, value, center.X, center.Y + .4, 1.35, PhysicalDrawing.Ink("#3A231A"));
         }
-        foreach (var contact in item.Footprint.Contacts) PhysicalDrawing.Contact(dc, new Point(contact.X, contact.Y));
+        foreach (var contact in footprint.Contacts) PhysicalDrawing.Contact(dc, new Point(contact.X, contact.Y));
     }
 
     public static void Inductor(DrawingContext dc, Rect body, string value)

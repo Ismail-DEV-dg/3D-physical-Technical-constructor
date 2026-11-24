@@ -12,12 +12,13 @@ internal static class SceneMaterials
     private const double Margin = 3;
     private static readonly ConcurrentDictionary<string, Material> Solids = new(StringComparer.OrdinalIgnoreCase);
 
-    private static readonly ConcurrentDictionary<(string Base, string Color), Material[]> Emission = new();
+    private static readonly ConcurrentDictionary<(string Color, SceneFinish Finish), Material> Finishes = new();
+    private static readonly ConcurrentDictionary<(string Base, string Color, SceneFinish Finish), Material[]> Emission = new();
 
-    public static Material Glow(string body, string color, int brightness) =>
-        Emission.GetOrAdd((body, color), key =>
+    public static Material Glow(string body, string color, int brightness, SceneFinish finish = SceneFinish.Matte) =>
+        Emission.GetOrAdd((body, color, finish), key =>
         {
-            var baseMaterial = Solid(key.Base);
+            var baseMaterial = Finished(key.Base, key.Finish);
             var shade = Brush(key.Color).Color;
             var levels = new Material[Core.Scene.SceneSignalStyle.BrightnessLevels];
             levels[0] = baseMaterial;
@@ -41,6 +42,21 @@ internal static class SceneMaterials
         material.Freeze();
         return material;
     });
+
+    public static Material Finished(string color, SceneFinish finish)
+    {
+        if (finish == SceneFinish.Matte) return Solid(color);
+        return Finishes.GetOrAdd((color, finish), key =>
+        {
+            var metal = key.Finish == SceneFinish.Metal;
+            var group = new MaterialGroup();
+            group.Children.Add(Solid(key.Color));
+            group.Children.Add(new SpecularMaterial(new SolidColorBrush(Color.FromArgb(metal ? (byte)138 : (byte)95, 240, 247, 255)),
+                metal ? 21 : 42));
+            group.Freeze();
+            return group;
+        });
+    }
 
     public static Material Texture(string value, string foreground, string background, double aspect)
     {

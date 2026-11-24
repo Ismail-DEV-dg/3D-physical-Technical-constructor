@@ -52,7 +52,8 @@ internal sealed class SceneReactionBuilder
     {
         var level = SceneSignalStyle.Brightness(intensity);
         return Get(n, p, level.ToString(), () => level == 0 ? p.Model :
-            SceneMeshes.Model(p.Model.Geometry, SceneMaterials.Glow(p.MaterialKey, color, level)));
+            SceneMeshes.Model(p.Model.Geometry, SceneMaterials.Glow(p.MaterialKey, color, level, p.Role == "lens" || p.Role.StartsWith("rgb-", StringComparison.Ordinal)
+                ? SceneFinish.Gloss : SceneFinish.Matte)));
     }
 
     private SceneReaction Wire(SceneNode n, SceneMeshPart p, double? voltage)

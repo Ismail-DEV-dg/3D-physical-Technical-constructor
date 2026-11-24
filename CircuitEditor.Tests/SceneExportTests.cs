@@ -51,6 +51,33 @@ public sealed class SceneExportTests
         });
     }
 
+    [Fact]
+    public void RenderedPanelShowsOnlyItsCroppedPartOfTheDrawing()
+    {
+        StaRunner.Run(() =>
+        {
+            var viewport = Viewport();
+            viewport.Children.RemoveAt(1);
+            var face = new SceneSurfaceTexture(new(-4, -4, 8, 8), dc =>
+            {
+                dc.DrawRectangle(Brushes.Red, null, new Rect(-4, -4, 4, 8));
+                dc.DrawRectangle(Brushes.DodgerBlue, null, new Rect(0, -4, 4, 8));
+            });
+            SceneMeshes meshes = new();
+            meshes.Face(new(0, -4, 4, 8), 2, face);
+            viewport.Children.Add(new ModelVisual3D { Content = Assert.Single(meshes.Finish()).Model });
+            using var stream = new MemoryStream(ScenePng.Capture(viewport, Brushes.Black, 1));
+            var frame = new PngBitmapDecoder(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad).Frames[0];
+            var bits = new FormatConvertedBitmap(frame, PixelFormats.Bgra32, null, 0);
+            byte[] color = new byte[4];
+            foreach (var x in new[] { 78, 87, 94 })
+            {
+                bits.CopyPixels(new Int32Rect(x, 50, 1, 1), color, 4, 0);
+                Assert.True(color[0] > 180 && color[2] < 70, $"Texture crop at {x}: B={color[0]}, R={color[2]}");
+            }
+        });
+    }
+
     private static Viewport3D Viewport()
     {
         var viewport = new Viewport3D

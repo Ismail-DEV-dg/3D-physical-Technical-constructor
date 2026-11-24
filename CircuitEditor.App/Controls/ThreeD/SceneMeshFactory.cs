@@ -24,7 +24,7 @@ internal sealed class SceneMeshFactory : ISceneMeshFactory
             default:
                 if (!BoardMeshes.Draw(m, node) && !DisplayMeshes.Draw(m, node) &&
                     !PassiveMeshes.Draw(m, node) && !DeviceMeshes.Draw(m, node))
-                    m.Box(b, z, h, node.Profile.Material);
+                    m.BeveledBox(b, z, h, node.Profile.Material);
                 Leads(m, node);
                 break;
         }
@@ -52,7 +52,7 @@ internal sealed class SceneMeshFactory : ISceneMeshFactory
                     shoulder + node.Profile.Height / 4);
                 var wireColor = contact.Id switch
                 {
-                    "1" or "power" => "#DF483D", "2" or "ground" => "#434753", _ => "#CE9138"
+                    "1" or "power" or "positive" => "#DF483D", "2" or "ground" or "negative" => "#434753", _ => "#CE9138"
                 };
                 m.Tube([start, new((start.X + tip.X) / 2, (start.Y + tip.Y) / 2, shoulder + 1), tip], .85, wireColor);
                 m.Disc(tip.X, tip.Y, tip.Z, .7, 1.05, SceneMeshes.Metal, sides: 6);

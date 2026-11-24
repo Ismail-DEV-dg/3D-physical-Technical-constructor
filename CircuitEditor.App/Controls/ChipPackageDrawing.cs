@@ -7,9 +7,9 @@ namespace CircuitEditor.App.Controls;
 
 internal static class ChipPackageDrawing
 {
-    private static readonly Brush Surface = PhysicalDrawing.Ink("#242934");
-    private static readonly Brush Edge = PhysicalDrawing.Ink("#05080D");
-    private static readonly Brush Legend = PhysicalDrawing.Ink("#DCE3ED");
+    private static readonly Brush Surface = PhysicalDrawing.Frozen(PhysicalDrawing.Ink("#242934"));
+    private static readonly Brush Edge = PhysicalDrawing.Frozen(PhysicalDrawing.Ink("#05080D"));
+    private static readonly Brush Legend = PhysicalDrawing.Frozen(PhysicalDrawing.Ink("#DCE3ED"));
 
     public static void Draw(DrawingContext dc, FootprintDefinition footprint, string label)
     {

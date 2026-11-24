@@ -16,11 +16,17 @@ internal static class PhysicalDrawing
         var formatted = WpfTextMeasurer.Format(text, mmSize, brush);
         dc.DrawText(formatted, new Point(right - formatted.WidthIncludingTrailingWhitespace, y));
     }
-    public static LinearGradientBrush Metal { get; } = new(Colors.Silver, Colors.WhiteSmoke, 90);
+    internal static T Frozen<T>(T value) where T : Freezable
+    {
+        value.Freeze();
+        return value;
+    }
+
+    public static LinearGradientBrush Metal { get; } = Frozen(new LinearGradientBrush(Colors.Silver, Colors.WhiteSmoke, 90));
     private const double LeadOutlineWidth = .65;
     private const double LeadMetalWidth = .43;
-    private static readonly Brush LeadOutline = Ink("#20252C");
-    private static readonly Brush LeadMetal = new LinearGradientBrush
+    private static readonly Brush LeadOutline = Frozen(Ink("#20252C"));
+    private static readonly Brush LeadMetal = Frozen(new LinearGradientBrush
     {
         StartPoint = new Point(0, 0), EndPoint = new Point(0, 1),
         GradientStops = new GradientStopCollection
@@ -28,7 +34,7 @@ internal static class PhysicalDrawing
             new(Ink("#3B424B").Color, 0), new(Ink("#A0A8B0").Color, .35),
             new(Ink("#505965").Color, .6), new(Ink("#303740").Color, 1)
         }
-    };
+    });
     public static void Lead(DrawingContext dc, Point from, Point to)
     {
         dc.DrawLine(new Pen(LeadOutline, LeadOutlineWidth), from, to);

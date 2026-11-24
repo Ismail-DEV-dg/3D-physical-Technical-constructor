@@ -70,7 +70,7 @@ public sealed class SceneBuilder(ISceneCatalogRepository repository) : ISceneBui
             new(hole.Position.X, hole.Position.Y, Surface(profile)))).ToImmutableArray();
         return new(board.Id, SceneLayer.Breadboard, "breadboard", profile, pose, body,
             Bounds(pose, body, profile, holes), holes, [], ImmutableDictionary<string, LayoutRect>.Empty,
-            Name: "Макетная плата");
+            Name: "Макетная плата", Breadboard: board.Definition);
     }
 
     private SceneNode Part(Component component, FootprintDefinition? footprint, ComponentPlacement at,
@@ -103,7 +103,7 @@ public sealed class SceneBuilder(ISceneCatalogRepository repository) : ISceneBui
             family == "capacitor" ? component.CapacitorKind.ToString() : null, Tolerance: footprint?.TolerancePercent ?? 0,
             Knob: footprint?.RotaryControl is { } rotary ? new(rotary.X, rotary.Y) : null,
             KnobRadius: footprint?.RotaryControl?.Radius ?? 0, Angle: component.PotentiometerAngle,
-            SwitchPosition: component.Inputs.Values.GetValueOrDefault(Inputs.ComponentInput.SwitchPosition));
+            SwitchPosition: component.Inputs.Values.GetValueOrDefault(Inputs.ComponentInput.SwitchPosition), Footprint: footprint);
     }
 
     private static double Surface(SceneProfile profile) => profile.Clearance + profile.Height;

@@ -25,10 +25,21 @@ public static class SceneGeometryKey
             Text(c.Id);
             Point(c.Position);
         }
+        if (node.Footprint is { } footprint)
+        {
+            Text(footprint.Id);
+            foreach (var contact in footprint.Contacts) Text(contact.ElectricalPinId);
+        }
+        if (node.Breadboard is { } board)
+        {
+            Text(board.Id);
+            key.Append(CultureInfo.InvariantCulture, $"{board.HolePitch:R}|");
+            foreach (var hole in board.Holes) Text(hole.GroupId);
+        }
         foreach (var pt in node.Path) Point(pt);
         Text(node.Color);
         Text(node.Variant);
-        if (node.Family is "axial-resistor" or "battery") Text(node.Value);
+        if (node.Family is "axial-resistor" or "battery" or "capacitor" or "inductor" or "potentiometer") Text(node.Value);
         if (node.Family is "dip-chip" or "unknown") Text(node.Name);
         key.Append(CultureInfo.InvariantCulture, $"{node.WireRadius:R}|{node.Tolerance:R}|{node.KnobRadius:R}|");
         if (node.Knob is { } knob) Point(new(knob.X, knob.Y, 0));

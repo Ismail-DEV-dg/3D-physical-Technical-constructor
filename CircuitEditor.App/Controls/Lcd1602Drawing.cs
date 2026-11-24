@@ -19,9 +19,9 @@ internal static class Lcd1602Drawing
         foreach (var x in new[] { body.Left + 2.5, body.Right - 2.5 })
             foreach (var y in new[] { body.Top + 2.5, body.Bottom - 2.5 })
                 BoardDetailDrawing.Hole(dc, new Point(x, y));
-        var frame = new Rect(body.Left + 5, body.Top + 8.2, body.Width - 10, 23);
+        var frame = FrameBounds(body);
         dc.DrawRoundedRectangle(PhysicalDrawing.Ink("#252E34"), new Pen(Brushes.Black, .25), frame, .6, .6);
-        var screen = new Rect(frame.Left + 2, frame.Top + 3.5, frame.Width - 4, 16);
+        var screen = ScreenBounds(frame);
         dc.DrawRectangle(new LinearGradientBrush(PhysicalDrawing.Ink("#304EC5").Color,
             PhysicalDrawing.Ink("#112D91").Color, 90), new Pen(Brushes.DimGray, .15), screen);
         DrawCharacterCells(dc, screen);
@@ -37,6 +37,9 @@ internal static class Lcd1602Drawing
             dc.Pop(); dc.Pop();
         }
     }
+
+    internal static Rect FrameBounds(Rect body) => new(body.Left + 5, body.Top + 8.2, body.Width - 10, 23);
+    internal static Rect ScreenBounds(Rect frame) => new(frame.Left + 2, frame.Top + 3.5, frame.Width - 4, 16);
 
     private static void DrawBackpack(DrawingContext dc, Rect body)
     {

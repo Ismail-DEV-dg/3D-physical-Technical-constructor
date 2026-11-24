@@ -45,10 +45,15 @@ internal static class MiscComponentDrawing
             PhysicalDrawing.Contact(dc, new Point(contact.X, contact.Y));
             BoardDetailDrawing.ExternalPinLabel(dc, contact.ElectricalPinId, contact.X + 2.2, contact.Y + (index == 0 ? -2 : 0));
         }
+        var voltage = ComponentInputDefinitions.For("battery")[0].Format(item.Model.Inputs.Values[ComponentInput.BatteryVoltage]);
+        BatteryFace(dc, cell, voltage);
+    }
+
+    internal static void BatteryFace(DrawingContext dc, Rect cell, string voltage)
+    {
         dc.DrawRoundedRectangle(new LinearGradientBrush(PhysicalDrawing.Ink("#343F4E").Color, PhysicalDrawing.Ink("#17202B").Color, 90),
             new Pen(Brushes.Black, .22), cell, .8, .8);
         dc.DrawRoundedRectangle(PhysicalDrawing.Metal, new Pen(Brushes.DimGray, .15), new Rect(cell.Right - 3, cell.Top, 3, cell.Height), .5, .5);
-        var voltage = ComponentInputDefinitions.For("battery")[0].Format(item.Model.Inputs.Values[ComponentInput.BatteryVoltage]);
         BoardDetailDrawing.TextCentered(dc, voltage, cell.Left + cell.Width / 2 - 1, cell.Top + 6, 3.5, Brushes.WhiteSmoke);
         PhysicalDrawing.Text(dc, "+", cell.Right - 6, cell.Top + 1, 2, Brushes.OrangeRed);
         PhysicalDrawing.Text(dc, "−", cell.Right - 6, cell.Bottom - 3.5, 2, Brushes.LightGray);

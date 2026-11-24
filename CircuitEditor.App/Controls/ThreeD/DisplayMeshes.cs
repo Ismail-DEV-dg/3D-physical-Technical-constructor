@@ -1,3 +1,5 @@
+using System.Windows;
+using System.Windows.Media;
 using CircuitEditor.Core.Layout;
 using CircuitEditor.Core.Scene;
 
@@ -7,37 +9,74 @@ internal static class DisplayMeshes
 {
     public static bool Draw(SceneMeshes m, SceneNode n)
     {
-        if (n.Family is not ("lcd1602" or "lcd1602-i2c" or "oled-ssd1306" or "seven-segment")) return false;
+        if (n.Family is not ("lcd1602" or "lcd1602-i2c" or "oled-ssd1306" or "seven-segment") ||
+            n.Footprint is not { } footprint) return false;
         var b = n.Body;
         var z = n.Profile.Clearance;
         var h = n.Profile.Height;
         var top = z + h;
         var detail = n.Profile.DetailHeight;
-        m.Box(b, z, h, n.Profile.Material);
-        if (n.Family == "seven-segment")
+        var body = PhysicalDrawing.Rect(b);
+        var oled = n.Family == "oled-ssd1306";
+        var segments = n.Family == "seven-segment";
+        m.BeveledBox(b, z, h, segments ? "#CFD3D6" : n.Profile.Material, bevel: .18);
+        Action<DrawingContext> paint = n.Family switch
         {
-            Segment(m, b, top, .23, .14, .54, .067, 0);
-            Segment(m, b, top, .75, .20, .09, .27, 1);
-            Segment(m, b, top, .75, .53, .09, .27, 2);
-            Segment(m, b, top, .23, .80, .54, .067, 3);
-            Segment(m, b, top, .16, .53, .09, .27, 4);
-            Segment(m, b, top, .16, .20, .09, .27, 5);
-            Segment(m, b, top, .23, .47, .54, .067, 6);
-            m.Disc(b.X + b.Width * .88, b.Y + b.Height * .84, top, .12, b.Width * .075, "#593440", "segment-7");
+            "seven-segment" => dc => SevenSegmentDrawing.Draw(dc, footprint),
+            "oled-ssd1306" => dc => OledDrawing.Draw(dc, footprint),
+            _ => dc => Lcd1602Drawing.Draw(dc, footprint)
+        };
+        var art = new SceneSurfaceTexture(b, paint);
+        m.Face(b, top, art);
+        if (segments)
+        {
+            DrawSegments(m, body, top);
             return true;
         }
-        var oled = n.Family == "oled-ssd1306";
-        var frame = BoardMeshes.Relative(b, .07, .22, .86, .67);
-        var glass = BoardMeshes.Relative(frame, .06, .12, .88, .74);
-        m.Box(frame, top, detail * .64, "#101824");
-        m.Box(glass, top + detail * .64, detail * .10, oled ? "#0B1628" : "#294A43");
-        m.Text(glass, top + detail * .74, "", "#B3FFF0", oled ? "#0B1628" : "#294A43", "screen");
-        if (n.Family == "lcd1602-i2c") m.Box(BoardMeshes.Relative(b, .12, .01, .28, .18), top, detail * .30, "#1A7257");
+
+        var frame = oled ? OledDrawing.GlassBounds(body) : Lcd1602Drawing.FrameBounds(body);
+        var frameTop = top + detail * .54;
+        m.BeveledBox(Rect(frame), top, frameTop - top, "#101923", corner: .45, bevel: .24);
+        m.Face(Rect(frame), frameTop, art);
+        var screen = Rect(oled ? frame : Lcd1602Drawing.ScreenBounds(frame));
+        // The separate screen uses the full UV square so its material can be replaced during playback.
+        m.Face(screen, frameTop + .045, art, "screen");
+        if (n.Family == "lcd1602-i2c")
+        {
+            LayoutRect adapter = new(b.X + 22, b.Y + .8, 39, 6.4);
+            m.BeveledBox(adapter, top, detail * .22, "#203A34", corner: .27, bevel: .11);
+            m.Face(adapter, top + detail * .22, art);
+        }
         foreach (var pin in n.Contacts)
-            m.Disc(pin.Position.X, pin.Position.Y, top, .25, 1.2, SceneMeshes.Gold, sides: 8);
+            if (!b.Contains(new LayoutPoint(pin.Position.X, pin.Position.Y)))
+                m.Disc(pin.Position.X, pin.Position.Y, pin.Position.Z, .22, 1.15, SceneMeshes.Gold, sides: 12);
         return true;
     }
 
-    private static void Segment(SceneMeshes m, LayoutRect b, double z, double x, double y, double w, double h, int i) =>
-        m.Box(BoardMeshes.Relative(b, x, y, w, h), z, .12, "#593440", $"segment-{i}");
+    private static void DrawSegments(SceneMeshes m, Rect body, double z)
+    {
+        var panel = SevenSegmentDrawing.FaceBounds(body);
+        var center = panel.Left + panel.Width / 2 - .5;
+        var top = panel.Top + 1;
+        var middle = panel.Top + panel.Height / 2;
+        var bottom = panel.Bottom - 1;
+        Horizontal(0, top);
+        Vertical(1, center + 3.1, true);
+        Vertical(2, center + 3.1, false);
+        Horizontal(3, bottom);
+        Vertical(4, center - 3.1, false);
+        Vertical(5, center - 3.1, true);
+        Horizontal(6, middle);
+        m.Disc(panel.Right - .8, bottom, z + .025, .06, 1.1, "#94434B", "segment-7");
+        void Horizontal(int bit, double y) => Polygon(bit, new(center - 2.5, y), new(center + 2.5, y));
+        void Vertical(int bit, double x, bool upper)
+        {
+            if (upper) Polygon(bit, new(x, top + .8), new(x - .25, middle - .8));
+            else Polygon(bit, new(x - .25, middle + .8), new(x - .5, bottom - .8));
+        }
+        void Polygon(int bit, Point a, Point b) => m.Plate(SevenSegmentDrawing.SegmentContour(a, b), z + .025, .06,
+            "#94434B", $"segment-{bit}");
+    }
+
+    private static LayoutRect Rect(Rect rect) => new(rect.X, rect.Y, rect.Width, rect.Height);
 }

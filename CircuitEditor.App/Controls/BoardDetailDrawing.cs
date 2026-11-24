@@ -8,8 +8,8 @@ namespace CircuitEditor.App.Controls;
 internal static class BoardDetailDrawing
 {
     public const double PinLabelSize = 1.85;
-    private static readonly Brush Gold = PhysicalDrawing.Ink("#BD9A52");
-    private static readonly Brush ChipBody = PhysicalDrawing.Ink("#202630");
+    private static readonly Brush Gold = PhysicalDrawing.Frozen(PhysicalDrawing.Ink("#BD9A52"));
+    private static readonly Brush ChipBody = PhysicalDrawing.Frozen(PhysicalDrawing.Ink("#202630"));
 
     public static void Pcb(DrawingContext dc, Rect bounds, string color)
     {

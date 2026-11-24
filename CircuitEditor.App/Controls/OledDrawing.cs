@@ -6,13 +6,15 @@ namespace CircuitEditor.App.Controls;
 
 internal static class OledDrawing
 {
+    internal static Rect GlassBounds(Rect body) => new(body.Left + 1, body.Top + 7, body.Width - 2, 17);
+
     public static void Draw(DrawingContext dc, FootprintDefinition footprint)
     {
         var body = PhysicalDrawing.Rect(footprint.Body);
         BoardDetailDrawing.Pcb(dc, body, "#205997");
         foreach (var x in new[] { body.Left + 2, body.Right - 2 })
             BoardDetailDrawing.Hole(dc, new Point(x, body.Bottom - 2), .9);
-        var glass = new Rect(body.Left + 1, body.Top + 7, body.Width - 2, 17);
+        var glass = GlassBounds(body);
         dc.DrawRoundedRectangle(PhysicalDrawing.Ink("#070D15"), new Pen(PhysicalDrawing.Ink("#667889"), .2), glass, .35, .35);
         dc.DrawRectangle(new LinearGradientBrush(Color.FromArgb(55, 100, 145, 165), Colors.Transparent, 70), null,
             new Rect(glass.Left + .4, glass.Top + .4, glass.Width - .8, glass.Height * .35));

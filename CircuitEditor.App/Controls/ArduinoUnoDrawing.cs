@@ -8,7 +8,7 @@ internal static class ArduinoUnoDrawing
     internal static readonly Point BuiltinLed = new(24, 9.5);
     private const double LabelSize=1.85;
     private const double HeaderHalfWidth=1.15;
-    private static readonly Brush Silk=PhysicalDrawing.Ink("#E4F4EA");
+    private static readonly Brush Silk=PhysicalDrawing.Frozen(PhysicalDrawing.Ink("#E4F4EA"));
     public static void Draw(DrawingContext dc,FootprintDefinition footprint)
     {
         var body=PhysicalDrawing.Rect(footprint.Body);
