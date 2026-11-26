@@ -12,18 +12,11 @@
      <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding ControllerId}" Value="{x:Null}"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
     </TextBlock>
    </Grid>
-   <Button Content="Обновить блоки кода" Command="{Binding GenerateCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Обновить только блоки &lt;auto&gt;; ручной код сохраняется"/>
-   <Button Content="Добавить маркеры" Command="{Binding PrepareMarkersCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Добавить пустые маркеры генератора в ручные setup/loop, сохранив инструкции">
-    <Button.Style><Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding NeedsPreparation}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></Button.Style>
-   </Button>
    <Button Content="Экспорт .ino" Command="{Binding ExportCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Экспортировать скетч в одноимённую папку"/>
-   <Button Content="Поиск" Command="{Binding FindCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Ctrl+F — поиск; Ctrl+H — замена; Ctrl+G — строка"/>
+   <Button Content="Поиск" Command="{Binding FindCommand}" Padding="9,7" Margin="0,0,6,4" ToolTip="Найти текст в скетче"/>
   </WrapPanel>
   </Border>
-  <StackPanel Grid.Row="1" Margin="12,7,12,0"><TextBlock Text="{Binding OperationMessage}" FontSize="10" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" Margin="0,0,0,5"/>
-  <TextBlock Text="{Binding StaleMessage}" FontSize="10" TextWrapping="Wrap" Margin="0,0,0,6">
-   <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Foreground" Value="{DynamicResource MutedBrush}"/><Style.Triggers><DataTrigger Binding="{Binding IsStale}" Value="True"><Setter Property="Foreground" Value="{DynamicResource RedBrush}"/></DataTrigger></Style.Triggers></Style></TextBlock.Style>
-  </TextBlock></StackPanel>
+  <TextBlock Grid.Row="1" Text="{Binding OperationMessage}" Margin="12,4" TextWrapping="Wrap" Foreground="{DynamicResource AccentBrush}"/>
   <Border Grid.Row="2" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="5" Padding="6" Background="{DynamicResource PanelBrush}" Margin="12,0,12,8">
    <Border.Style><Style TargetType="Border"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsFindOpen}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></Border.Style>
    <StackPanel>
@@ -52,7 +45,7 @@
   <Border Grid.Row="4" Margin="12,0,12,0" Background="{DynamicResource WorkSurfaceBrush}" BorderBrush="{DynamicResource SubtleLineBrush}" BorderThickness="1" CornerRadius="8" ClipToBounds="True">
    <avalon:TextEditor x:Name="Editor" input:CodeEditorBehavior.Model="{Binding}" Background="{DynamicResource WorkSurfaceBrush}" Foreground="{DynamicResource TextBrush}"
      FontFamily="{StaticResource MonoFont}" FontSize="{Binding EditorFontSize}" ShowLineNumbers="True" LineNumbersForeground="{DynamicResource MutedBrush}"
-     HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="14,10" ToolTip="Ctrl+Space — дополнение; Ctrl+колесо — масштаб; Ctrl+F/H/G — поиск/замена/строка"/>
+     HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Padding="14,10" />
   </Border>
   <DockPanel Grid.Row="5" Margin="14,0" LastChildFill="False">
    <TextBlock DockPanel.Dock="Left" Text="Arduino C++" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center"/>

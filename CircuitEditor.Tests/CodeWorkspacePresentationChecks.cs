@@ -25,7 +25,7 @@ internal static class CodeWorkspacePresentationChecks
         e.Wire(board,"D2",button,"1");e.Wire(button,"2",board,"GND");e.Project.Refresh();
         var templates=new JsonCodeTemplateRepository();var api=new JsonCodeCompletionRepository();var themes=new ThemeService(new WpfThemeResources(resources));
         var worker=new CodeAnalysisService(new ArduinoCodeAnalyzer(api,templates),new Core.Netlist.NetlistBuilder(new JsonElectricalLibraryRepository()));
-        using var code=new CodeViewModel(e.Project,new ArduinoCodeGenerator(templates),api,templates,themes,analysisService:worker);
+        using var code=new CodeViewModel(e.Project,api,templates,themes,analysisService:worker);
         var nav=new NavigationService(e.Environment.Mockup,e.Environment.Schematic,new ChipViewModel(),code);
         using var main=new MainViewModel(nav,themes,new TestWindowService(),e.Environment.Session);
         var window=new CircuitEditor.App.MainWindow {DataContext=main,Left=-10000,Top=-10000,ShowInTaskbar=false};
@@ -36,8 +36,8 @@ internal static class CodeWorkspacePresentationChecks
             main.SelectedWorkspace=code;window.Show();window.UpdateLayout();window.Dispatcher.Invoke(()=>{},DispatcherPriority.Loaded);
             var view=Find<CodeView>(window).Single();var editor=(TextEditor)view.FindName("Editor");
             code.ControllerId=board.Model.Id;
-            code.GenerateCommand.Execute(null);window.UpdateLayout();Assert.Equal(0,main.Panels.ToolTabIndex);
-            Assert.Contains("#define LED1_PIN 9",editor.Text);var count=e.Project.History.Count;
+            code.Text="void setup() {\n  pinMode(9, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(9, HIGH);\n}\n";window.UpdateLayout();
+            Assert.Contains("pinMode(9, OUTPUT);",editor.Text);var count=e.Project.History.Count;
             editor.Document.Insert(editor.Document.TextLength,"\n// manual extension\nvoid testPin() { digitalWrite(8,HIGH); }\n");
             Assert.Equal(board.Model.Id,code.ControllerId);
             window.UpdateLayout();Assert.Equal(count,e.Project.History.Count);Assert.True(main.UndoActiveCommand.CanExecute(null));

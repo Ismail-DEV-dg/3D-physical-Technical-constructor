@@ -18,6 +18,7 @@ internal sealed class EditorSearchController(TextEditor editor,CodeViewModel mod
         }
         else if(action=="FocusEditor")editor.Focus();
         else if(action=="FindNext")FindNext();
+        else if(action=="FindPrevious")FindNext(backwards:true);
         else if(action=="ReplaceOne")ReplaceOne();
         else if(action=="ReplaceAll")ReplaceAll();
         else if(action=="GoLine")
@@ -32,13 +33,16 @@ internal sealed class EditorSearchController(TextEditor editor,CodeViewModel mod
         line=Math.Clamp(line,1,editor.Document.LineCount);var target=editor.Document.GetLineByNumber(line);
         editor.CaretOffset=target.Offset+Math.Clamp(column-1,0,target.Length);editor.ScrollTo(line,column);editor.Focus();
     }
-    internal bool FindNext()
+    internal bool FindNext(bool backwards=false)
     {
         if(string.IsNullOrEmpty(model.SearchText)){model.SearchMessage="Введите текст поиска.";return false;}
         var comparison=model.MatchCase?StringComparison.Ordinal:StringComparison.OrdinalIgnoreCase;
-        var start=Math.Min(editor.SelectionStart+editor.SelectionLength,editor.Text.Length);
-        var index=editor.Text.IndexOf(model.SearchText,start,comparison);
-        if(index<0)index=editor.Text.IndexOf(model.SearchText,comparison);
+        var text=editor.Text;
+        var start=Math.Min(editor.SelectionStart+editor.SelectionLength,text.Length);
+        var index=backwards
+            ? text.AsSpan(0,editor.SelectionStart).LastIndexOf(model.SearchText,comparison)
+            : text.IndexOf(model.SearchText,start,comparison);
+        if(index<0)index=backwards?text.LastIndexOf(model.SearchText,comparison):text.IndexOf(model.SearchText,comparison);
         if(index<0){model.SearchMessage="Совпадений нет.";return false;}
         editor.Select(index,model.SearchText.Length);editor.ScrollToLine(editor.Document.GetLineByOffset(index).LineNumber);
         model.SearchMessage="Совпадение найдено.";return true;

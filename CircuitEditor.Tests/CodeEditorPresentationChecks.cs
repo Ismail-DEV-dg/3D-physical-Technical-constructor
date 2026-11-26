@@ -16,7 +16,7 @@ internal static class CodeEditorPresentationChecks
         Application.Current.Resources.MergedDictionaries.Add(resources);
         using var e=new ElectricalTestCircuit();e.Add("arduino-uno");
         var themes=new ThemeService(new WpfThemeResources(resources));
-        using var vm=new CodeViewModel(e.Project,new ArduinoCodeGenerator(new JsonCodeTemplateRepository()),new JsonCodeCompletionRepository(),new JsonCodeTemplateRepository(),themes);
+        using var vm=new CodeViewModel(e.Project,new JsonCodeCompletionRepository(),new JsonCodeTemplateRepository(),themes);
         var view=new CodeView {DataContext=vm};var window=new Window {Content=view,Width=950,Height=650,Left=-10000,Top=-10000,ShowInTaskbar=false};
         try
         {
@@ -29,7 +29,7 @@ internal static class CodeEditorPresentationChecks
         Assert.StartsWith("beta beta",vm.Text);editor.Undo();Assert.StartsWith("alpha alpha",vm.Text);
         editor.CaretOffset=0;vm.EditorActionCommand.Execute("FindNext");Assert.Equal("alpha",editor.SelectedText);
         vm.GoToText="3";vm.EditorActionCommand.Execute("GoLine");Assert.Equal(3,vm.CursorLine);
-        vm.GenerateCommand.Execute(null);Assert.Contains("void setup()",vm.Text); // Existing manual code without markers is preserved.
+        vm.EnsureEntryPoints();Assert.Contains("void setup()",vm.Text);Assert.Contains("void loop()",vm.Text);
         vm.Text="";editor.CaretOffset=0;editor.Focus();
         Type(editor,"(");Assert.Equal("()",vm.Text);Assert.Equal(1,editor.CaretOffset);
         Type(editor,")");Assert.Equal("()",vm.Text);Assert.Equal(2,editor.CaretOffset);
@@ -39,6 +39,26 @@ internal static class CodeEditorPresentationChecks
         Assert.False(EditorTypingController.IsCode("// comment",10));Assert.False(EditorTypingController.IsCode("\"string",7));
         Assert.Single(EditorFoldingController.Ranges("void f() {\n const char* s=\"}\"; // }\n}\n"));
         Assert.Empty(EditorFoldingController.Ranges("// {\n// }"));
+        vm.Text = "first\r\nsecond\r\nthird";
+        editor.Select(7, 0);
+        vm.EditorActionCommand.Execute("DuplicateLine");
+        Assert.Equal("first\r\nsecond\r\nsecond\r\nthird", vm.Text);
+        Assert.Equal(3, editor.TextArea.Caret.Line);
+        editor.Undo();
+        Assert.Equal("first\r\nsecond\r\nthird", vm.Text);
+        editor.Select(0, 15);
+        vm.EditorActionCommand.Execute("MoveLineDown");
+        Assert.Equal("third\r\nfirst\r\nsecond", vm.Text);
+        Assert.Equal("first\r\nsecond", editor.SelectedText);
+        vm.EditorActionCommand.Execute("MoveLineUp");
+        Assert.Equal("first\r\nsecond\r\nthird", vm.Text);
+        editor.Select(7, 8);
+        vm.EditorActionCommand.Execute("ToggleComment");
+        Assert.Equal("first\r\n// second\r\nthird", vm.Text);
+        vm.EditorActionCommand.Execute("ToggleComment");
+        Assert.Equal("first\r\nsecond\r\nthird", vm.Text);
+        vm.EditorActionCommand.Execute("DeleteLine");
+        Assert.Equal("first\r\nthird", vm.Text);
         var document=editor.Document;
         window.Content=null;window.UpdateLayout();window.Content=new CodeView {DataContext=vm};window.UpdateLayout();
         window.Dispatcher.Invoke(()=>{},System.Windows.Threading.DispatcherPriority.Loaded);
@@ -46,7 +66,7 @@ internal static class CodeEditorPresentationChecks
         var oldColor=second.SyntaxHighlighting.GetNamedColor("Keyword").Foreground.GetColor(null);
         themes.SetTheme(ThemeKind.LightTech);Assert.NotEqual(oldColor,second.SyntaxHighlighting.GetNamedColor("Keyword").Foreground.GetColor(null));
         e.Project.ReplaceProject(new Core.Models.CircuitProject(footprints:e.Project.Model.Footprints,breadboards:e.Project.Model.Breadboards));
-        Assert.Empty(vm.Text);Assert.Empty(second.Text);Assert.False(second.CanUndo);
+        Assert.Equal(SketchDocument.StarterText, vm.Text);Assert.Equal(vm.Text,second.Text);Assert.False(second.CanUndo);
         }
         finally {themes.SetTheme(ThemeKind.NeonDark);window.Close();Application.Current.Resources.MergedDictionaries.Remove(resources);}
     }

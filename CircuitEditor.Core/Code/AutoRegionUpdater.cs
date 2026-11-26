@@ -7,7 +7,7 @@ public static class AutoRegionUpdater
     /// <summary>Заменяет три известные секции либо создаёт новый пустой каркас.</summary>
     public static string Update(string text, IReadOnlyDictionary<string,string> sections)
     {
-        if(string.IsNullOrWhiteSpace(text))text="// <auto>\n// section: globals\n// </auto>\n\nvoid setup() {\n  // <auto>\n  // section: setup\n  // </auto>\n}\n\nvoid loop() {\n  // <auto>\n  // section: loop\n  // </auto>\n}\n";
+        if(string.IsNullOrWhiteSpace(text)||text==SketchDocument.StarterText)text="// <auto>\n// section: globals\n// </auto>\n\nvoid setup() {\n  // <auto>\n  // section: setup\n  // </auto>\n}\n\nvoid loop() {\n  // <auto>\n  // section: loop\n  // </auto>\n}\n";
         var matches=Regions.Matches(text);
         if(matches.Count!=sections.Count || matches.Select(m=>m.Groups["name"].Value).Distinct().Count()!=sections.Count
             || matches.Any(m=>!sections.ContainsKey(m.Groups["name"].Value))
@@ -15,7 +15,7 @@ public static class AutoRegionUpdater
             || Regex.Matches(text,@"(?m)^[ \t]*// </auto>[ \t]*\r?$").Count!=sections.Count)
             throw new ArgumentException(text.Contains("<auto>",StringComparison.Ordinal)||text.Contains("</auto>",StringComparison.Ordinal)
                 ? "Повреждены секции <auto>: нужны ровно три пары с section: globals/setup/loop. Ручной код не изменён. Способ исправления — в справке по ошибке."
-                : "Ручной скетч ещё не подготовлен для генератора: нет секций <auto>. Нажмите «Подготовить» во вкладке «Код», затем «Обновить». Ваши инструкции сохранятся.");
+                : "Ручной скетч не содержит секций <auto>. Ручной код не изменён.");
         return Regions.Replace(text,m=>
         {
             var body=m.Groups["body"];var newline=m.Value.Contains("\r\n",StringComparison.Ordinal)?"\r\n":"\n";

@@ -77,6 +77,7 @@ public sealed partial class SimulationViewModel : ObservableObject, IDisposable
         if (HasSession) Reset();
         IsSketchSession = true;
         project.Wiring.Exit();
+        project.UpdateSketch(project.Model.Sketch.WithEntryPoints());
         playback.StartSketch(project.Model, project.Model.Sketch);
         BeginPresentation();
         NotifyPlayback();

@@ -9,7 +9,7 @@ public sealed class ShortcutTests
     public void BindingsAreUniqueAndAllHaveHelpText()
     {
         Assert.True(ShortcutCatalog.Bindings.Count>=35);
-        Assert.Equal(ShortcutCatalog.Bindings.Count,ShortcutCatalog.Bindings.Select(b=>(b.Key,b.Modifiers)).Distinct().Count());
+        Assert.Equal(ShortcutCatalog.Bindings.Count,ShortcutCatalog.Bindings.Select(b=>(b.Key,b.Modifiers,b.CodeOnly,b.CanvasOnly)).Distinct().Count());
         Assert.All(ShortcutCatalog.Bindings,b=>{Assert.NotEmpty(b.Keys);Assert.NotEmpty(b.Description);Assert.Contains(b.Keys,ShortcutCatalog.Hint(b.Id));});
     }
     [Theory]
@@ -31,6 +31,47 @@ public sealed class ShortcutTests
     {
         var vm=new ShortcutGuideViewModel();vm.Search="breadboard";Assert.Contains(vm.Entries,e=>e.Description.Contains("breadboard"));
         vm.Search="Ctrl+Shift+S";Assert.Single(vm.Entries);Assert.Equal("SaveAs",vm.Entries[0].Id);
+    }
+    [Fact]
+    public void ShortcutChangesPersistAndRejectCollisionsInTheSameContext()
+    {
+        var repository = new TestShortcutSettingsRepository();
+        var settings = new ShortcutSettings(repository);
+        ShortcutBinding Duplicate(ShortcutSettings source) => source.Bindings.Single(binding => binding.Id == "CodeDuplicateLine");
+        Assert.Contains("уже назначено", settings.Assign(Duplicate(settings), Key.G, ModifierKeys.Control));
+        Assert.Null(settings.Assign(Duplicate(settings), Key.D, ModifierKeys.Control | ModifierKeys.Alt));
+        Assert.Contains("Ctrl+Alt+D", settings["CodeDuplicateLine"]);
+        var reopened = new ShortcutSettings(repository);
+        Assert.Equal(ModifierKeys.Control | ModifierKeys.Alt, Duplicate(reopened).Modifiers);
+        repository.Error = "Не удалось сохранить";
+        Assert.Equal(repository.Error, reopened.Restore(Duplicate(reopened)));
+        Assert.Equal(ModifierKeys.Control | ModifierKeys.Alt, Duplicate(reopened).Modifiers);
+        repository.Error = null;
+        Assert.Null(reopened.RestoreAll());
+        Assert.Equal(ModifierKeys.Control, Duplicate(new ShortcutSettings(repository)).Modifiers);
+    }
+
+    [Fact]
+    public void IdenticalKeysForCanvasAndCodeHaveSeparateMeaning()
+    {
+        var bindings = new ShortcutSettings().Bindings;
+        var sameGesture = bindings.Where(binding => binding.Key == Key.D && binding.Modifiers == ModifierKeys.Control).ToArray();
+        Assert.Equal("Duplicate", Assert.Single(sameGesture, b => b.MatchesContext(false, true, false, false)).Id);
+        Assert.Equal("CodeDuplicateLine", Assert.Single(sameGesture, b => b.MatchesContext(true, false, true, true)).Id);
+        Assert.DoesNotContain(sameGesture, b => b.MatchesContext(true, false, true, false));
+    }
+
+    [Fact]
+    public void SavedShortcutsCanReuseAKeyVacatedByALaterAction()
+    {
+        var repository = new TestShortcutSettingsRepository();
+        var settings = new ShortcutSettings(repository);
+        ShortcutBinding Get(IShortcutSettings source, string id) => source.Bindings.Single(binding => binding.Id == id);
+        Assert.Null(settings.Assign(Get(settings, "Save"), Key.F10, ModifierKeys.Control));
+        Assert.Null(settings.Assign(Get(settings, "New"), Key.S, ModifierKeys.Control));
+        var reopened = new ShortcutSettings(repository);
+        Assert.Equal(Key.S, Get(reopened, "New").Key);
+        Assert.Equal(Key.F10, Get(reopened, "Save").Key);
     }
     [Fact]
     public void CommandsToggleModeDuplicateFitAndPreserveGesture()

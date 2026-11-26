@@ -1,6 +1,7 @@
 <Window x:Class="CircuitEditor.App.Views.ShortcutGuideWindow"
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Icon="pack://application:,,,/CircuitEditor.App;component/Branding/logo.ico"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:input="clr-namespace:CircuitEditor.App.Interaction"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
  UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display"
  Title="Горячие клавиши" Width="850" Height="700" MinWidth="700" MinHeight="480" WindowStartupLocation="CenterOwner"
@@ -16,9 +17,20 @@
  <Button DockPanel.Dock="Right" Content="×" AutomationProperties.Name="Закрыть" Style="{DynamicResource CloseCaptionButton}" Command="{Binding CloseCommand}" shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Закрыть · Esc"/>
  <TextBlock Text="Горячие клавиши" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
  </DockPanel>
- <TextBlock Grid.Row="1" Text="Клавиши холста работают, когда он в фокусе: сначала нажмите на него. В полях ввода обычные Ctrl+A/C/V/Z редактируют текст. Перед другой операцией завершите жест или нажмите Esc. Буквенные клавиши указаны по латинской раскладке (физические позиции)." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" FontSize="12" Margin="0,0,0,12"/>
- <TextBox Grid.Row="2" x:Name="HelpSearch" Text="{Binding Search,UpdateSourceTrigger=PropertyChanged}" ToolTip="Поиск по действию, категории или сочетанию" AutomationProperties.Name="Поиск горячих клавиш"/>
- <ListBox Grid.Row="3" ItemsSource="{Binding Source={StaticResource GroupedShortcuts}}" Margin="0,12" HorizontalContentAlignment="Stretch">
+ <TextBlock Grid.Row="1" Text="Выберите действие в списке, щёлкните по полю внизу и нажмите новое сочетание. Оно сохранится сразу. Под названием действия указано, где оно работает." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" FontSize="12" Margin="0,0,0,12"/>
+ <Grid Grid.Row="2">
+  <TextBox x:Name="HelpSearch" Text="{Binding Search,UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Поиск горячих клавиш"/>
+  <TextBlock Text="Введите действие или сочетание, например Ctrl+D" IsHitTestVisible="False" VerticalAlignment="Center"
+             Foreground="{DynamicResource MutedBrush}" Margin="12,0">
+   <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers>
+    <MultiDataTrigger><MultiDataTrigger.Conditions>
+     <Condition Binding="{Binding Search}" Value=""/>
+     <Condition Binding="{Binding IsKeyboardFocused, ElementName=HelpSearch}" Value="False"/>
+    </MultiDataTrigger.Conditions><Setter Property="Visibility" Value="Visible"/></MultiDataTrigger>
+   </Style.Triggers></Style></TextBlock.Style>
+  </TextBlock>
+ </Grid>
+ <ListBox Grid.Row="3" ItemsSource="{Binding Source={StaticResource GroupedShortcuts}}" SelectedItem="{Binding Selected}" Margin="0,12" HorizontalContentAlignment="Stretch">
  <ListBox.GroupStyle><GroupStyle><GroupStyle.HeaderTemplate><DataTemplate><TextBlock Text="{Binding Name}" Foreground="{DynamicResource MutedBrush}" Margin="6,12,0,6" FontWeight="SemiBold"/></DataTemplate></GroupStyle.HeaderTemplate></GroupStyle></ListBox.GroupStyle>
  <ListBox.ItemTemplate><DataTemplate><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
  <Border Background="{DynamicResource RaisedBrush}" BorderBrush="{DynamicResource SubtleLineBrush}" BorderThickness="1" CornerRadius="4" Padding="6,3" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0">
@@ -26,6 +38,15 @@
  </Border>
  <StackPanel Grid.Column="1"><TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="13"/><TextBlock Text="{Binding Scope}" TextWrapping="Wrap" Style="{StaticResource MutedText}" Margin="0,4,0,0"/></StackPanel>
  </Grid></DataTemplate></ListBox.ItemTemplate></ListBox>
- <TextBlock Grid.Row="4" Text="F1 — открыть эту справку · W — перемычка · V / Esc — перемещение" TextWrapping="Wrap" Style="{StaticResource MutedText}"/>
+ <StackPanel Grid.Row="4">
+  <TextBlock Text="{Binding Selected.Description}" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,0,0,5"/>
+  <WrapPanel>
+   <TextBox Margin="0,0,8,4" Width="190" IsReadOnly="True" IsEnabled="{Binding CanChange}" Text="Введите новое сочетание"
+            AutomationProperties.Name="Новое сочетание клавиш" input:ShortcutCapture.Enabled="True"/>
+   <Button Margin="0,0,8,4" Content="Сбросить выбранное" Command="{Binding ResetCommand}"/>
+   <Button Margin="0,0,0,4" Content="Сбросить все" Command="{Binding ResetAllCommand}"/>
+  </WrapPanel>
+  <TextBlock Text="{Binding Feedback}" TextWrapping="Wrap" Foreground="{DynamicResource AccentBrush}" MinHeight="18"/>
+ </StackPanel>
  </Grid></Border>
 </Window>

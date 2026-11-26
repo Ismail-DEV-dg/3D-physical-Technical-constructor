@@ -101,7 +101,7 @@
     <Grid Margin="0,0,0,8">
      <TextBox x:Name="PaletteSearch" Text="{Binding PaletteFilter,UpdateSourceTrigger=PropertyChanged}"
               MinHeight="32" FontFamily="{StaticResource UiFont}" FontSize="12" Padding="28,6,29,6"
-              VerticalContentAlignment="Center" ToolTip="Поиск по названию или категории · Ctrl+F" AutomationProperties.Name="Поиск компонентов"/>
+              VerticalContentAlignment="Center" ToolTip="Поиск по названию или категории" AutomationProperties.Name="Поиск компонентов"/>
      <Path Data="M8,4 A4,4 0 1 1 0,4 A4,4 0 1 1 8,4 M7,7 L11,11" Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.3"
            Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" IsHitTestVisible="False"/>
      <TextBlock Text="Найти компонент…" IsHitTestVisible="False" Margin="28,0,5,0" VerticalAlignment="Center"
@@ -152,7 +152,7 @@
       </ListBox.ItemContainerStyle>
       <ListBox.ItemTemplate>
        <DataTemplate>
-        <Grid ToolTip="{Binding Description, StringFormat={}{0}&#10;Перетащите на холст · Ctrl+F — поиск · F1 — горячие клавиши}">
+        <Grid ToolTip="{Binding Description, StringFormat={}{0}&#10;Перетащите на холст}">
          <Grid.ColumnDefinitions><ColumnDefinition Width="62"/><ColumnDefinition/></Grid.ColumnDefinitions>
          <Border Width="52" Height="40" HorizontalAlignment="Left" CornerRadius="6" Padding="2"
                  BorderBrush="{DynamicResource SubtleLineBrush}" BorderThickness="1" Background="{DynamicResource RaisedBrush}">

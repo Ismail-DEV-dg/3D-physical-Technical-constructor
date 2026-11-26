@@ -8,14 +8,14 @@ namespace CircuitEditor.Tests;
 public sealed class CodeWorkspaceTests
 {
     [Fact]
-    public void CircuitChangesOnlyMarkCodeStaleAndEditorHistoryDoesNotEnterCircuitHistory()
+    public void CircuitChangesPreserveCodeAndEditorHistoryDoesNotEnterCircuitHistory()
     {
         using var e=new ElectricalTestCircuit();var board=e.Add("arduino-uno");var led=e.Add("led");e.Wire(board,"D9",led,"A");e.Project.Refresh();
-        using var vm=new CodeViewModel(e.Project,new ArduinoCodeGenerator(new JsonCodeTemplateRepository()),new JsonCodeCompletionRepository(),new JsonCodeTemplateRepository());
-        vm.GenerateCommand.Execute(null);var original=vm.Text;Assert.False(vm.IsStale);Assert.Contains("millis()",original);
+        using var vm=new CodeViewModel(e.Project,new JsonCodeCompletionRepository(),new JsonCodeTemplateRepository());
+        Assert.Equal(SketchDocument.StarterText, vm.Text);
         var count=e.Project.History.Count;vm.Text+="\n// manual";Assert.Equal(count,e.Project.History.Count);Assert.True(e.Project.IsDirty);
-        board.MockupPlacement.MoveTo(200,300);e.Project.Refresh();Assert.False(vm.IsStale);
-        var before=vm.Text;e.Add("button");Assert.True(vm.IsStale);Assert.Equal(before,vm.Text);
+        board.MockupPlacement.MoveTo(200,300);e.Project.Refresh();
+        var before=vm.Text;e.Add("button");Assert.Equal(before,vm.Text);
         Assert.Contains(vm.Completions,c=>c.Text=="LED1_PIN");Assert.Contains(vm.Completions,c=>c.Text=="pinMode");
     }
     [Fact]

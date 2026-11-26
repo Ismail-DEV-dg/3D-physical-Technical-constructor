@@ -20,7 +20,7 @@
 - Монтаж с breadboard, перемычками и 27 компонентами, включая Uno, Nano и ESP32.
 - Условная схема с общей электрической моделью и независимым размещением символов.
 - ERC, статический DC-расчёт и калькулятор номиналов.
-- AvalonEdit с подсветкой Arduino, автодополнением, генерацией и анализом скетча.
+- AvalonEdit с подсветкой Arduino, автодополнением, поиском, дублированием и перемещением строк. Горячие клавиши можно переназначать.
 - Учебное выполнение GPIO-скетчей, встроенные сценарии и ручное управление выводами.
 - Мультиметр, осциллограф, логический анализатор и виртуальный Serial.
 - Редактор цифровых DIP-микросхем с 12 шаблонами, таблицами, графами и испытательным стендом.
@@ -31,7 +31,7 @@
 
 1. В разделе **Releases** скачайте `setup.exe` и пройдите мастер. При отсутствии .NET Desktop Runtime 8 x64 мастер предложит установить его офлайн.
 2. Если SmartScreen показывает предупреждение, проверьте источник файла. Для доверенного файла выберите **Подробнее → Выполнить в любом случае**. Установщик приложения не подписан сертификатом.
-3. Запустите Circuit Editor и выберите **Файл → Примеры → Uno · мигающий светодиод**. Нажмите **Старт схемы**. Для выполнения самого скетча сначала остановите сценарий, затем нажмите **Запустить код** или `Ctrl+Shift+B`.
+3. Запустите Circuit Editor и выберите **Справка → Учебные примеры → Uno · мигающий светодиод**. Откройте **Код**, чтобы увидеть `setup()` и `loop()`. Нажмите **Запустить**. Чтобы проверить готовый сценарий отдельно, остановите код и выберите **Макет → Параметры симуляции → Старт схемы**.
 
 **Переносимый вариант** — `CircuitEditor-win-x64.zip`. Распакуйте архив целиком и откройте `CircuitEditor.App.exe`. Среда .NET входит в архив.
 
@@ -103,7 +103,7 @@ C# 12, .NET 8, WPF, CommunityToolkit.Mvvm, Microsoft.Extensions.DependencyInject
 | Путь | Назначение |
 | --- | --- |
 | [CircuitEditor.App](CircuitEditor.App/CircuitEditor.App.csproj) | WPF, ViewModel, темы и регистрация зависимостей |
-| [CircuitEditor.Core](CircuitEditor.Core/CircuitEditor.Core.csproj) | Электрическая модель, проверки, расчёты и генерация кода |
+| [CircuitEditor.Core](CircuitEditor.Core/CircuitEditor.Core.csproj) | Электрическая модель, проверки, расчёты и анализ скетчей |
 | [CircuitEditor.Infrastructure](CircuitEditor.Infrastructure/CircuitEditor.Infrastructure.csproj) | Каталоги, репозитории и миграции |
 | [CircuitEditor.Simulation](CircuitEditor.Simulation/CircuitEditor.Simulation.csproj) | События, GPIO, сценарии, поведения и приборы |
 | [CircuitEditor.Tests](CircuitEditor.Tests/CircuitEditor.Tests.csproj) | Автоматические проверки |
@@ -126,7 +126,7 @@ dotnet test CircuitEditor.sln -c Release
 
 ## Документация
 
-- [Руководство пользователя и пять примеров](docs/user-guide.md)
+- [Руководство для начинающих и девять примеров](docs/user-guide.md)
 - [Архитектура](docs/architecture.md), [UML](docs/uml/README.md) и [фирменный стиль](docs/branding.md)
 - [Форматы .circ и .chip](docs/file-formats.md)
 - [Модель симуляции](docs/simulation-model.md) и [производительность](docs/stage-10-performance.md)

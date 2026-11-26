@@ -189,9 +189,17 @@ internal static class PanelPresentationChecks
             view.UpdateLayout();
             Capture(view, capture);
         }
-        Seek(3.825);
-        Assert.InRange(intro.Opacity, .1, .9);
         Seek(4.00);
+        phase = aurora.Phase;
+        Seek(5.14);
+        Assert.Equal(Visibility.Visible, intro.Visibility);
+        Assert.Equal(1, intro.Opacity);
+        Assert.Equal(.64, glow.Opacity, 6);
+        Assert.True(aurora.Phase > phase);
+        Seek(5.325);
+        Assert.InRange(intro.Opacity, .1, .9);
+        Assert.Equal(1.6225 * 5.325 / 5.5, aurora.Phase, 6);
+        Seek(5.50);
         Assert.Equal(Visibility.Collapsed, intro.Visibility);
         storyboard.Remove(view);
     }

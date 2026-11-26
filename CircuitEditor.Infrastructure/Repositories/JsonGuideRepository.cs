@@ -16,6 +16,7 @@ public sealed class JsonGuideRepository(IComponentLibraryRepository components) 
             {
                 Boards = navigation.Boards,
                 Application = navigation.Application,
+                Lessons = CodeJsonReader.Read<GuideChapter[]>("guides-lessons.json"),
                 Components = Enumerable.Range(1, ComponentVolumes)
                     .SelectMany(volume => CodeJsonReader.Read<GuideChapter[]>($"guides-components-{volume}.json")).ToArray()
             };

@@ -1,3 +1,4 @@
+using CircuitEditor.Core.Inputs;
 using CircuitEditor.Simulation.Engine;
 using CircuitEditor.Simulation.Gpio;
 
@@ -53,6 +54,18 @@ internal sealed class SketchExecution(SketchProgram program, SimulationSession s
                     break;
                 case SketchOperation.Jump:
                     instruction = command.Target;
+                    break;
+                case SketchOperation.DisplayText:
+                    session.WriteSketchDisplay(command.Device, command.Text);
+                    break;
+                case SketchOperation.DisplayClear:
+                    session.WriteSketchDisplay(command.Device, null);
+                    break;
+                case SketchOperation.SerialLine:
+                    session.AppendSerial(command.Text);
+                    break;
+                case SketchOperation.SerialDht:
+                    session.PrintSketchSensor(command.Device, (ComponentInput)command.Value);
                     break;
                 default:
                     Apply(command);

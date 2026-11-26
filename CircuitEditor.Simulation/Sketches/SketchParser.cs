@@ -1,4 +1,5 @@
 using CircuitEditor.Core.Code;
+using CircuitEditor.Simulation.Engine;
 using CircuitEditor.Simulation.Gpio;
 
 namespace CircuitEditor.Simulation.Sketches;
@@ -19,13 +20,15 @@ internal sealed class SketchParser
     private readonly CodeBoardProfile profile;
     private readonly CancellationToken cancellation;
     private readonly CppToken end;
+    private readonly SketchPeripheralParser peripherals;
     private int cursor;
 
-    public SketchParser(string text, CodeBoardProfile profile, CancellationToken cancellation)
+    public SketchParser(string text, CodeBoardProfile profile, CancellationToken cancellation, SimulationSession session, Guid controller)
     {
         this.profile = profile;
         this.cancellation = cancellation;
         expressions = new(Take, Expect, Next, Pin, symbols);
+        peripherals = new(session.Circuit, controller, profile.Kind, Next, Expect, Identifier, Pin, Number);
         if (text.Length > MaximumSourceLength)
             throw new SketchSyntaxException(new("", 0, 1, 1), "Для учебного запуска скетч должен занимать не более 131 072 символов.");
         tokens = CppTokenScanner.Scan(text, includeLiterals: true);
@@ -42,6 +45,7 @@ internal sealed class SketchParser
         {
             cancellation.ThrowIfCancellationRequested();
             if (Take("#")) { Directive(); continue; }
+            if (peripherals.IsDeclaration(Current.Text)) { peripherals.Declare(Next()); continue; }
             if (!Take("void")) { Declare(); continue; }
             var function = Next();
             if (function.Text is not ("setup" or "loop") ||
@@ -80,12 +84,21 @@ internal sealed class SketchParser
         {
             if (Take("<"))
             {
-                if (Current.Line == line && Take("Arduino") && Take(".") && Take("h") && Take(">") &&
-                    (AtEnd || Current.Line != line)) return;
+                if (Current.Line == line)
+                {
+                    var header = Next();
+                    if (SketchPeripheralParser.IsSupportedHeader(header.Text) && Take(".") && Take("h") && Take(">") &&
+                        (AtEnd || Current.Line != line)) return;
+                }
             }
-            else if (Current.Line == line && Take("\"Arduino.h\"") && (AtEnd || Current.Line != line)) return;
+            else if (Current.Line == line && Current.Text.StartsWith('"') && Current.Text.EndsWith(".h\"", StringComparison.Ordinal) &&
+                SketchPeripheralParser.IsSupportedHeader(Current.Text[1..^3]))
+            {
+                Next();
+                if (AtEnd || Current.Line != line) return;
+            }
         }
-        throw Error(directive, "Для запуска поддерживаются #define и подключение Arduino.h. Внешние библиотеки требуют Arduino IDE.");
+        throw Error(directive, "Для учебного запуска доступны Arduino.h и команды из примеров LCD I²C и DHT. Для других библиотек используйте Arduino IDE.");
     }
 
     private void Declare(bool inside = false)
@@ -125,6 +138,12 @@ internal sealed class SketchParser
 
         if (Current.Text is "static" or "const" or "constexpr") { Declare(inside: true); return; }
         var command = Next();
+        if (Take("."))
+        {
+            if (peripherals.ParseCall(command) is { } peripheral) body.Add(peripheral);
+            Expect(";");
+            return;
+        }
         if (Take("="))
         {
             var slot = symbols.WritableSlot(command);

@@ -180,6 +180,7 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
             ReportError("Пример защищён. Сохраните копию в другой папке.");
             return false;
         }
+        project.UpdateSketch(project.Model.Sketch.WithEntryPoints());
         var error = repository.Save(target, Capture());
         if (error is not null) { ReportError(error); return false; }
         path = target; project.MarkSaved(); Remember(target); repository.ClearRecovery();

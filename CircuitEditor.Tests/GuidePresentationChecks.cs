@@ -21,16 +21,25 @@ internal static class GuidePresentationChecks
         {
             view.Show();
             view.UpdateLayout();
-            Assert.Equal(5, Controls<Button>(view).Count(button => button.IsVisible && button.Command == model.OpenSectionCommand));
-
-            var nano = Controls<Button>(view).Single(button => (string?)button.CommandParameter == "nano" &&
-                button.Command == model.OpenSectionCommand);
+            Assert.Contains(Controls<Button>(view), button => button.IsVisible && Equals(button.CommandParameter, "lessons"));
+            var nano = Controls<Button>(view).Single(button => Equals(button.Content, "Nano") && button.Command == model.OpenSectionCommand);
             nano.Command.Execute(nano.CommandParameter);
             view.UpdateLayout();
             var browser = Assert.IsType<GuideBrowserView>(view.FindName("GuideBrowser"));
             Assert.True(browser.IsVisible);
             Assert.Equal(28, Controls<ListBox>(browser).Single().Items.Count);
             Assert.Contains(Controls<TextBox>(browser), field => field.IsVisible && field.Text.Contains("void setup()"));
+
+            var lessons = Controls<Button>(view).First(button => Equals(button.Content, "Уроки с кодом"));
+            lessons.Command.Execute(lessons.CommandParameter);
+            view.UpdateLayout();
+            Assert.Equal("uno-blink", model.Guide.Chapter?.Id);
+            var next = Controls<Button>(browser).Single(button => button.Command == model.Guide.NextCommand);
+            next.Command.Execute(null);
+            Assert.Equal("uno-button", model.Guide.Chapter?.Id);
+            var previous = Controls<Button>(browser).Single(button => button.Command == model.Guide.PreviousCommand);
+            previous.Command.Execute(null);
+            Assert.Equal("uno-blink", model.Guide.Chapter?.Id);
 
             model.BackCommand.Execute(null);
             view.UpdateLayout();

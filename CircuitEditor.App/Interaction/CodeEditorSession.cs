@@ -16,6 +16,7 @@ internal sealed class CodeEditorSession : IDisposable
     private readonly EditorTypingController typing;
     private readonly EditorCompletionController completion;
     private readonly EditorSearchController search;
+    private readonly EditorLineCommands lines;
     private bool syncing;
     private UndoStack undo;
     private readonly KeyBinding redoBinding=new(ApplicationCommands.Redo,Key.Z,ModifierKeys.Control|ModifierKeys.Shift);
@@ -25,7 +26,7 @@ internal sealed class CodeEditorSession : IDisposable
         editor.Options.IndentationSize=IndentationSize;editor.Options.ConvertTabsToSpaces=true;
         editor.Options.HighlightCurrentLine=true;
         editor.TextArea.IndentationStrategy=new CSharpIndentationStrategy(editor.Options);
-        folding=new(editor);typing=new(editor,model);completion=new(editor,model);search=new(editor,model);
+        folding=new(editor);typing=new(editor,model);completion=new(editor,model);search=new(editor,model);lines=new(editor,model);
         EditorHighlighting.Apply(editor);editor.CaretOffset=Math.Min(state.CaretOffset,editor.Document.TextLength);
         editor.TextChanged+=TextChanged;editor.TextArea.Caret.PositionChanged+=CaretChanged;editor.PreviewMouseWheel+=Wheel;
         model.PropertyChanged+=ModelChanged;model.EditorActionRequested+=ActionRequested;
@@ -59,9 +60,21 @@ internal sealed class CodeEditorSession : IDisposable
     {state.CaretOffset=editor.CaretOffset;model.CursorLine=editor.TextArea.Caret.Line;model.CursorColumn=editor.TextArea.Caret.Column;}
     private void ActionRequested(object? sender,string action)
     {
-        if(action=="Undo")editor.Undo();else if(action=="Redo")editor.Redo();
-        else if(action=="Copy")editor.Copy();else if(action=="Paste")editor.Paste();
-        else {if(action=="FocusEditor")completion.Dismiss();search.Handle(action);}
+        switch (action)
+        {
+            case "Undo": editor.Undo(); break;
+            case "Redo": editor.Redo(); break;
+            case "Copy": editor.Copy(); break;
+            case "Paste": editor.Paste(); break;
+            case "Completion": completion.Open(true); break;
+            case "DuplicateLine": completion.Dismiss(); lines.Duplicate(); break;
+            case "MoveLineUp": completion.Dismiss(); lines.Move(-1); break;
+            case "MoveLineDown": completion.Dismiss(); lines.Move(1); break;
+            case "DeleteLine": completion.Dismiss(); lines.Delete(); break;
+            case "ToggleComment": completion.Dismiss(); lines.ToggleComment(); break;
+            case "FocusEditor": completion.Dismiss(); search.Handle(action); break;
+            default: search.Handle(action); break;
+        }
     }
     private void UndoChanged(object? sender,PropertyChangedEventArgs e){model.CanUndo=editor.CanUndo;model.CanRedo=editor.CanRedo;}
     private void Wheel(object sender,MouseWheelEventArgs e)

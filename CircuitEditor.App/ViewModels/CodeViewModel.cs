@@ -8,7 +8,6 @@ namespace CircuitEditor.App.ViewModels;
 public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
 {
     private readonly ProjectViewModel? project;
-    private readonly ICodeGenerator? generator;
     private readonly IThemeService? themes;
     private readonly ISketchRepository? sketches;
     private readonly IDialogService? dialogs;
@@ -20,16 +19,12 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
     private const int AnalysisDelayMilliseconds=350;
     private SketchDocument detached=new();
     private SketchDocument observed=new();
-    private int signatureBuild=-1;
-    private BoardKind signatureBoard;
-    private Guid? signatureController;
-    private string? currentSignature;
-    public CodeViewModel(ProjectViewModel? project=null,ICodeGenerator? generator=null,ICodeCompletionRepository? completion=null,
+    public CodeViewModel(ProjectViewModel? project=null,ICodeCompletionRepository? completion=null,
         ICodeTemplateRepository? templates=null,IThemeService? themes=null,ISketchRepository? sketches=null,IDialogService? dialogs=null,
         ICodeAnalysisService? analysisService=null,IClipboardService? clipboard=null)
         :base(WorkspaceKind.Code,"Код","05","Arduino / ESP32","Редактор скетчей Arduino с учебным запуском GPIO.")
     {
-        this.project=project;this.generator=generator;this.themes=themes;this.sketches=sketches;this.dialogs=dialogs;
+        this.project=project;this.themes=themes;this.sketches=sketches;this.dialogs=dialogs;
         Output=new(clipboard);
         this.analysisService=analysisService;ProblemsPanel.NavigateRequested+=NavigateToProblem;
         observed=Sketch;
@@ -54,20 +49,6 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
     public BoardKind Board {get=>Sketch.Board;set{if(value!=Board)Update(Sketch with {Board=value,ControllerComponentId=null});}}
     public Guid? ControllerId {get=>Sketch.ControllerComponentId;set{if(value!=ControllerId)Update(Sketch with {ControllerComponentId=value});}}
     public string SketchName {get=>Sketch.Name;set{if(!string.IsNullOrWhiteSpace(value)&&value!=SketchName)Update(Sketch with {Name=value});}}
-    public bool IsStale
-    {
-        get
-        {
-            if(project is null||Sketch.GeneratedCircuitSignature is not { } signature)return false;
-            if(signatureBuild!=project.Connectivity.BuildCount||signatureBoard!=Board||signatureController!=ControllerId)
-            {
-                signatureBuild=project.Connectivity.BuildCount;signatureBoard=Board;signatureController=ControllerId;
-                currentSignature=CodeCircuitSignature.Compute(project.Model,project.Connectivity.Netlist,Sketch);
-            }
-            return signature!=currentSignature;
-        }
-    }
-    public string StaleMessage=>IsStale?"Код устарел — схема или плата изменились":"Управляемые секции обновляются только по команде";
     public IReadOnlyList<CodeCompletionItem> Completions=>api.Concat((project?.Model.Circuit.Components??[]).SelectMany(c=>new[] {
         new CodeCompletionItem(c.Reference,"Компонент схемы: "+c.Definition.Name,"Project",[]),
         new CodeCompletionItem(c.Reference.ToUpperInvariant()+"_PIN","Имя пина компонента; требуется соответствующее объявление.","Project",[])}))
@@ -94,16 +75,8 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
     public int RequestedColumn {get;private set;}=1;
     public event EventHandler<string>? EditorActionRequested;
     public event EventHandler? ShowCodeRequested;
-    public event EventHandler<int>? ToolsRequested;
     public void RevealProblem(CodeProblem problem)=>NavigateToProblem(this,problem);
     [ObservableProperty] private string operationMessage="";
-    public bool NeedsPreparation=>!string.IsNullOrWhiteSpace(Text)&&!Text.Contains("<auto>",StringComparison.Ordinal);
-    [RelayCommand] private void PrepareMarkers()
-    {
-        var result=AutoRegionInitializer.Prepare(Text);OperationMessage=result.Message;
-        if(result.Success){Text=result.Text;ProblemsPanel.SetGeneration([]);}
-        else {ProblemsPanel.SetGeneration([new(result.Message,Code:"CODE_AUTO_MARKERS")]);ToolsRequested?.Invoke(this,0);}
-    }
     private void NavigateToProblem(object? sender,CodeProblem value)
     {
         RequestedLine=value.Line;RequestedColumn=value.Column;
@@ -114,40 +87,28 @@ public sealed partial class CodeViewModel : WorkspaceViewModel, IDisposable
     [RelayCommand] private void GoTo(){IsFindOpen=false;IsReplaceOpen=false;IsGoToOpen=true;SearchMessage="";EditorActionRequested?.Invoke(this,"FocusLine");}
     [RelayCommand] private void CloseSearch(){IsFindOpen=false;IsReplaceOpen=false;IsGoToOpen=false;EditorActionRequested?.Invoke(this,"FocusEditor");}
     [RelayCommand] private void EditorAction(string action)=>EditorActionRequested?.Invoke(this,action);
-    [RelayCommand] private void Generate()
-    {
-        if(project is null||generator is null)return;
-        if(project.InGesture){Output.Append("Завершите текущий жест перед генерацией.");return;}
-        var result=generator.Generate(project.Model,project.Connectivity.Netlist,Sketch);
-        ProblemsPanel.SetGeneration(result.Problems);ToolsRequested?.Invoke(this,0);
-        if(!result.Success)
-        {
-            var message=string.Join("\n",result.Problems.Select(p=>$"[{p.Code}] {p.Message}"));
-            if(result.Problems.Any(p=>p.Severity=="Error"))dialogs?.ShowError(message);else dialogs?.ShowWarning(message);
-            Output.Append(message);return;
-        }
-        Update(Sketch with {Text=result.Text,GeneratedCircuitSignature=result.CircuitSignature});OperationMessage="Скетч обновлён. Ручной код вне секций сохранён.";
-    }
     [RelayCommand] private void Export()
     {
         var path=dialogs?.SaveFile("Arduino sketch (*.ino)|*.ino",".ino",SketchName+".ino");if(path is null||sketches is null)return;
+        EnsureEntryPoints();
         var result=sketches.Export(path,Text);if(result.Error is { } error)dialogs?.ShowError(error);else OperationMessage="Экспортировано: "+result.Value;
     }
+    internal void EnsureEntryPoints() => Update(Sketch.WithEntryPoints());
     private void Update(SketchDocument sketch)
     {if(project is null){detached=sketch;NotifySketch();}else project.UpdateSketch(sketch);}
     private void SketchChanged(object? sender,EventArgs e){NotifySketch();ScheduleAnalysis();}
-    private void CircuitChanged(object? sender,EventArgs e){OnPropertyChanged(nameof(IsStale));OnPropertyChanged(nameof(StaleMessage));OnPropertyChanged(nameof(Controllers));OnPropertyChanged(nameof(ControllerHint));OnPropertyChanged(nameof(Completions));ProblemsPanel.Clear();ScheduleAnalysis();}
+    private void CircuitChanged(object? sender,EventArgs e){OnPropertyChanged(nameof(Controllers));OnPropertyChanged(nameof(ControllerHint));OnPropertyChanged(nameof(Completions));ProblemsPanel.Clear();ScheduleAnalysis();}
     private void Replaced(object? sender,EventArgs e){DocumentVersion++;NavigationVersion=0;ProblemsPanel.Clear();NotifySketch();ScheduleAnalysis();}
     private void ThemeChanged(object? sender,PropertyChangedEventArgs e)=>ThemeVersion++;
     private void NotifySketch()
     {
         var previous=observed;observed=Sketch;
-        if(previous.Text!=observed.Text){OnPropertyChanged(nameof(Text));OnPropertyChanged(nameof(NeedsPreparation));}
+        if(previous.Text!=observed.Text)OnPropertyChanged(nameof(Text));
         if(previous.Name!=observed.Name)OnPropertyChanged(nameof(SketchName));
         if(previous.Board!=observed.Board)
         {OnPropertyChanged(nameof(Board));OnPropertyChanged(nameof(Controllers));OnPropertyChanged(nameof(ControllerHint));}
         if(previous.ControllerComponentId!=observed.ControllerComponentId)OnPropertyChanged(nameof(ControllerId));
-        OnPropertyChanged(nameof(IsStale));OnPropertyChanged(nameof(StaleMessage));OnPropertyChanged(nameof(Completions));
+        OnPropertyChanged(nameof(Completions));
     }
     private void ScheduleAnalysis()
     {

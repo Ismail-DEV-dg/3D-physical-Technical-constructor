@@ -4,7 +4,7 @@
 
 | Проект | Назначение |
 |---|---|
-| Core | Модели и форматы, физическая геометрия, netlist, ERC, узловой DC-расчёт, история, генерация кода и контракты репозиториев. |
+| Core | Модели и форматы, физическая геометрия, netlist, ERC, узловой DC-расчёт, история, анализ скетчей и контракты репозиториев. |
 | Infrastructure | File/JSON-реализации, каталоги компонентов и учебных проектов, атомарная запись, миграции, журнал. |
 | Simulation | Виртуальные часы, очередь событий, GPIO, модели компонентов, приборы и учебное выполнение скетча. Зависит от Core. |
 | App | WPF, AvalonEdit, ViewModel и регистрация сервисов. Зависит от Core, Infrastructure, Simulation. |
@@ -26,6 +26,6 @@
 - ICodeGenerator, ICodeAnalyzer — шаблоны скетчей по netlist и ограниченный анализ GPIO.
 - ISimulationClock, ISimulationEngine, IComponentBehavior, IInstrument — время, события, поведения и измерения.
 - IChipEvaluator, IChipRepository, IChipTemplateRepository — таблицы/графы, библиотека и шаблоны.
-- IProjectSampleRepository, IErrorLogRepository, IExportRepository — каталог примеров, обезличенный журнал и запись экспорта.
+- IProjectSampleRepository, IErrorLogRepository, IExportRepository — каталог примеров, обезличенный журнал и запись экспорта. IShortcutSettingsRepository хранит переназначения клавиш отдельно от проекта.
 
 Диаграммы зависимостей, классов и взаимодействий собраны в [разделе UML](uml/README.md).

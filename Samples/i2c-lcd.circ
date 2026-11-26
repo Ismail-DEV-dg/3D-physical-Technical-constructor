@@ -1,8 +1,8 @@
 {
   "sketch": {
-    "text": "#include \u003CWire.h\u003E\n#include \u003CLiquidCrystal_I2C.h\u003E\nLiquidCrystal_I2C lcd(0x27, 16, 2);\nvoid setup() { lcd.init(); lcd.backlight(); lcd.print(\u0022Circuit Editor\u0022); }\nvoid loop() {}",
+    "text": "#include <Wire.h>\n#include <LiquidCrystal_I2C.h>\n\nLiquidCrystal_I2C lcd(0x27, 16, 2);\n\nvoid setup() {\n  lcd.init();\n  lcd.backlight();\n  lcd.print(\"Circuit Editor\");\n}\n\nvoid loop() {\n}\n",
     "board": "Uno",
-    "name": "Example",
+    "name": "Uno_LCD",
     "controllerComponentId": "28b85ee0-cab4-4c0d-a44b-85b4e4cfa2d9",
     "isValid": true
   },

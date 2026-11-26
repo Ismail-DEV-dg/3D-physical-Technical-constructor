@@ -34,7 +34,7 @@ public sealed class DiagnosticsAndPreparationTests
         var services=new TestDiagnosticServices();var documentation=new ErrorDocumentationService(new JsonErrorHelpRepository());
         Assert.True(new JsonErrorHelpRepository().Load().Success);
         var vm=new ErrorHelpViewModel(documentation,services);vm.SelectCode("CODE_AUTO_MARKERS");
-        Assert.Contains("Подготовить",vm.ArticleText);vm.CopyCommand.Execute(null);Assert.Contains("<auto>",services.Copied!);
+        Assert.Contains("старых проектах",vm.ArticleText);vm.CopyCommand.Execute(null);Assert.Contains("<auto>",services.Copied!);
         vm.Search="[Код] [Error] [CODE_AUTO_MARKERS] Произвольный текст скопированного сообщения";Assert.Single(vm.Articles);
         vm.Search="маркеры аута";Assert.Single(vm.Articles);Assert.Equal("CODE_AUTO_MARKERS",vm.Selected!.Code);
         vm.Search="A15";Assert.Single(vm.Articles);Assert.Equal("LED_SHORT",vm.Selected!.Code);
@@ -50,9 +50,9 @@ public sealed class DiagnosticsAndPreparationTests
         var dialog=new ChoiceDialogViewModel("Предупреждение",message,["ОК"],_=>{},services,services,documentation);
         dialog.CopyCommand.Execute(null);Assert.Equal(message,services.Copied);dialog.HelpCommand.Execute(null);Assert.Equal("CODE_AUTO_MARKERS",services.OpenedCode);
         using var e=new ElectricalTestCircuit();using var code=new CodeViewModel(e.Project);
-        code.ProblemsPanel.SetGeneration([new(message,Code:"CODE_AUTO_MARKERS")]);
+        code.ProblemsPanel.SetAnalysis([new(message,Code:"CODE_AUTO_MARKERS")]);
         using var issues=new DiagnosticsViewModel(null,code,services,documentation,services);
-        var row=Assert.Single(issues.Items);Assert.Contains("Подготовить",row.Article.Fix);
+        var row=Assert.Single(issues.Items);Assert.Contains("функций setup() или loop()",row.Article.Fix);
         row.CopyCommand.Execute(null);Assert.Contains("CODE_AUTO_MARKERS",services.Copied!);
         row.HelpCommand.Execute(null);Assert.Equal("CODE_AUTO_MARKERS",services.OpenedCode);
         issues.Search="auto";issues.Source="Код";issues.Severity="Предупреждения";Assert.Single(issues.Items);

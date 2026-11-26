@@ -6,10 +6,14 @@ public static class ShortcutCatalog
     private static IReadOnlyList<ShortcutBinding> Build()
     {
         var list=new List<ShortcutBinding>();
-        void Add(string id,Key key,ModifierKeys mods,string keys,string group,string description,bool canvas=false,bool text=false)=>list.Add(new(id,key,mods,keys,group,description,canvas,text));
+        void Add(string id,Key key,ModifierKeys mods,string keys,string group,string description,bool canvas=false,bool text=false,bool outsideCode=false)=>
+            list.Add(new(id,key,mods,keys,group,description,canvas,text,OutsideCode:outsideCode));
+        void Code(string id,Key key,ModifierKeys mods,string keys,string description,bool editorOnly=false)=>
+            list.Add(new(id,key,mods,keys,"Код",description,CodeOnly:true,EditorOnly:editorOnly));
         const ModifierKeys Ctrl=ModifierKeys.Control,Shift=ModifierKeys.Shift,Alt=ModifierKeys.Alt;
         Add("Help",Key.F1,0,"F1","Справка","Список горячих клавиш",text:true);
-        Add("Search",Key.F,Ctrl,"Ctrl+F","Навигация","Поиск компонента в палитре",text:true);
+        Add("Search",Key.F,Ctrl,"Ctrl+F","Навигация","Поиск компонента в палитре",text:true,outsideCode:true);
+        Add("Documentation",Key.F1,Shift,"Shift+F1","Справка","Открыть документацию");
         Add("New",Key.N,Ctrl,"Ctrl+N","Проект","Создать проект",text:true);
         Add("Open",Key.O,Ctrl,"Ctrl+O","Проект","Открыть проект",text:true);
         Add("Save",Key.S,Ctrl,"Ctrl+S","Проект","Сохранить",text:true);
@@ -29,6 +33,9 @@ public static class ShortcutCatalog
         Add("Note",Key.T,0,"T","Холст","Добавить текст на макет",true);
         Add("Measure",Key.M,0,"M","Холст","Включить или выключить линейку на макете",true);
         Add("WireLabels",Key.L,0,"L","Холст","Показать или скрыть подписи контактов на макете",true);
+        Add("Grid",Key.G,0,"G","Холст","Показать или скрыть сетку макета",true);
+        Add("InspectNet",Key.I,0,"I","Холст","Включить или выключить подсветку узла на макете",true);
+        Add("FocusSelection",Key.F,0,"F","Холст","Приблизить выделенные детали на макете",true);
         Add("Reset",Key.D0,0,"0","Вид","Сбросить вид и масштаб до 100%",true);
         Add("ZoomIn",Key.OemPlus,0,"=","Вид","Увеличить масштаб вокруг центра холста",true);
         Add("ZoomIn",Key.OemPlus,Shift,"+","Вид","Увеличить масштаб",true);
@@ -39,6 +46,7 @@ public static class ShortcutCatalog
         Add("Calculate",Key.F6,0,"F6","Расчёты","Рассчитать цепь DC");
         Add("Calculator",Key.K,Ctrl,"Ctrl+K","Расчёты","Открыть калькулятор");
         Add("RunSketch",Key.B,Ctrl|Shift,"Ctrl+Shift+B","Симуляция","Запустить, приостановить или продолжить скетч",text:true);
+        Add("SimulationPanel",Key.I,Ctrl|Shift,"Ctrl+Shift+I","Симуляция","Открыть панель симуляции",text:true);
         Add("Theme",Key.T,Ctrl|Shift,"Ctrl+Shift+T","Вид","Переключить тему");
         Add("NextTab",Key.Tab,Ctrl,"Ctrl+Tab","Навигация","Следующая вкладка",text:true);
         Add("PreviousTab",Key.Tab,Ctrl|Shift,"Ctrl+Shift+Tab","Навигация","Предыдущая вкладка",text:true);
@@ -46,9 +54,21 @@ public static class ShortcutCatalog
         Add("Png",Key.P,Ctrl|Alt,"Ctrl+Alt+P","Экспорт","Экспорт PNG активного вида");
         Add("Svg",Key.S,Ctrl|Alt,"Ctrl+Alt+S","Экспорт","Экспорт SVG схемы");
         Add("Bom",Key.B,Ctrl|Alt,"Ctrl+Alt+B","Экспорт","Экспорт ведомости CSV");
+        Code("CodeFind",Key.F,Ctrl,"Ctrl+F","Найти текст");
+        Code("CodeReplace",Key.H,Ctrl,"Ctrl+H","Найти и заменить текст");
+        Code("CodeLine",Key.G,Ctrl,"Ctrl+G","Перейти к строке");
+        Code("CodeFindNext",Key.F3,0,"F3","Найти следующее совпадение");
+        Code("CodeFindPrevious",Key.F3,Shift,"Shift+F3","Найти предыдущее совпадение");
+        Code("CodeCompletion",Key.Space,Ctrl,"Ctrl+Space","Вызвать подсказки",true);
+        Code("CodeDuplicateLine",Key.D,Ctrl,"Ctrl+D","Дублировать строку или выделенный блок строк",true);
+        Code("CodeMoveLineUp",Key.Up,Alt,"Alt+↑","Переместить строки вверх",true);
+        Code("CodeMoveLineDown",Key.Down,Alt,"Alt+↓","Переместить строки вниз",true);
+        Code("CodeDeleteLine",Key.K,Ctrl|Shift,"Ctrl+Shift+K","Удалить текущую или выделенные строки",true);
+        Code("CodeToggleComment",Key.OemQuestion,Ctrl,"Ctrl+/","Добавить или снять комментарий //",true);
         return list.AsReadOnly();
     }
-    public static ShortcutBinding? Resolve(Key key,ModifierKeys modifiers,bool editingText,bool canvasFocused)=>Bindings.FirstOrDefault(b=>b.Key==key&&b.Modifiers==modifiers&&(!editingText||b.AllowText)&&(!b.CanvasOnly||canvasFocused));
+    public static ShortcutBinding? Resolve(Key key,ModifierKeys modifiers,bool editingText,bool canvasFocused)=>
+        Bindings.FirstOrDefault(b=>b.Key==key&&b.Modifiers==modifiers&&b.MatchesContext(editingText,canvasFocused,false,false));
     public static string Hint(string id)
     {var items=Bindings.Where(b=>b.Id==id).ToArray();return items.Length==0 ? "" : items[0].Description+" · "+string.Join(" / ",items.Select(b=>b.Keys))+(items[0].CanvasOnly?" (на холсте)":"");}
 }

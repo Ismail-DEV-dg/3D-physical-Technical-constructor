@@ -41,6 +41,7 @@ public sealed partial class ErrorHelpViewModel : ObservableObject
         "uno" => "Пособие по Arduino Uno",
         "esp32" => "Пособие по ESP32 DevKit",
         "application" => "Руководство по Circuit Editor",
+        "lessons" => "Первые уроки Arduino",
         _ => "Справка Circuit Editor"
     };
 

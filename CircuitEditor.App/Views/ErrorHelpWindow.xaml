@@ -17,7 +17,7 @@
  <shell:WindowChrome.WindowChrome><shell:WindowChrome CaptionHeight="39" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></shell:WindowChrome.WindowChrome>
  <Window.InputBindings><KeyBinding Key="Escape" Command="{Binding BackCommand}"/><KeyBinding Key="F" Modifiers="Control" Command="{Binding FocusSearchCommand}"/></Window.InputBindings>
  <Border Style="{StaticResource Panel}" Padding="14,0,14,14" Background="{DynamicResource ChromeBrush}"><Grid>
-  <Grid.RowDefinitions><RowDefinition Height="42"/><RowDefinition/></Grid.RowDefinitions>
+  <Grid.RowDefinitions><RowDefinition Height="42"/><RowDefinition Height="Auto"/><RowDefinition/></Grid.RowDefinitions>
   <DockPanel>
    <Button DockPanel.Dock="Right" Content="×" Command="{Binding CloseCommand}" Style="{DynamicResource CloseCaptionButton}" AutomationProperties.Name="Закрыть" shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Закрыть"/>
    <Button DockPanel.Dock="Left" Content="‹ Назад" Command="{Binding BackCommand}" Margin="0,0,12,5" Padding="10,4"
@@ -28,7 +28,16 @@
    </Button>
    <TextBlock Text="{Binding Heading}" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center" TextWrapping="Wrap"/>
   </DockPanel>
-  <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="{Binding IsHome, Converter={StaticResource VisibleIf}}">
+  <WrapPanel Grid.Row="1" Margin="0,0,0,6">
+   <Button Content="Оглавление" Command="{Binding OpenSectionCommand}" CommandParameter="home" Margin="0,0,5,4"/>
+   <Button Content="Первые шаги" Command="{Binding OpenSectionCommand}" CommandParameter="application" Margin="0,0,5,4"/>
+   <Button Content="Уроки с кодом" Command="{Binding OpenSectionCommand}" CommandParameter="lessons" Margin="0,0,5,4"/>
+   <Button Content="Uno" Command="{Binding OpenSectionCommand}" CommandParameter="uno" Margin="0,0,5,4"/>
+   <Button Content="Nano" Command="{Binding OpenSectionCommand}" CommandParameter="nano" Margin="0,0,5,4"/>
+   <Button Content="ESP32" Command="{Binding OpenSectionCommand}" CommandParameter="esp32" Margin="0,0,5,4"/>
+   <Button Content="Ошибки" Command="{Binding OpenSectionCommand}" CommandParameter="errors" Margin="0,0,0,4"/>
+  </WrapPanel>
+  <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Visibility="{Binding IsHome, Converter={StaticResource VisibleIf}}">
    <StackPanel Margin="0,18,5,0">
     <DockPanel>
      <Border DockPanel.Dock="Left" Width="235" Style="{StaticResource Panel}" Background="{DynamicResource PanelBrush}" Margin="0,0,16,0" Padding="16">
@@ -38,16 +47,22 @@
       </StackPanel>
      </Border>
      <StackPanel>
+     <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="application">
+      <StackPanel>
+       <TextBlock Text="Начать с первого проекта" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
+       <TextBlock Text="Откройте готовую схему, запустите код, измените паузу и сохраните свою копию." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+      </StackPanel>
+     </Button>
+     <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="lessons">
+      <StackPanel>
+       <TextBlock Text="Уроки с кодом" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
+       <TextBlock Text="Светодиод, кнопка, яркость и таймер. Для каждого урока есть скетч и подсказки для проверки." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+      </StackPanel>
+     </Button>
      <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="errors">
       <StackPanel>
        <TextBlock Text="Ошибки и исправления" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
-       <TextBlock Text="Причины сообщений и шаги для проверки соединений." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
-      </StackPanel>
-     </Button>
-     <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="application">
-      <StackPanel>
-       <TextBlock Text="Руководство по редактору" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
-       <TextBlock Text="Макет, симуляция, конструктор микросхем и экспорт." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+       <TextBlock Text="Найдите сообщение из редактора по коду или словам из текста." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
       </StackPanel>
      </Button>
      <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="nano">
@@ -72,13 +87,13 @@
     <TextBlock Text="{Binding LibraryError}" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap"/>
    </StackPanel>
   </ScrollViewer>
-  <views:GuideBrowserView Grid.Row="1" x:Name="GuideBrowser" DataContext="{Binding Guide}"
+  <views:GuideBrowserView Grid.Row="2" x:Name="GuideBrowser" DataContext="{Binding Guide}"
    Visibility="{Binding DataContext.IsGuide, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource VisibleIf}}"/>
-  <Grid Grid.Row="1" Visibility="{Binding IsErrors, Converter={StaticResource VisibleIf}}">
+  <Grid Grid.Row="2" Visibility="{Binding IsErrors, Converter={StaticResource VisibleIf}}">
    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
    <Grid Margin="0,8,0,12">
     <TextBox x:Name="ErrorSearch" Text="{Binding Search,UpdateSourceTrigger=PropertyChanged}" ToolTip="Ctrl+F · поиск по коду, причине, исправлению и компоненту"/>
-    <TextBlock Text="Поиск: маркеры, LED, GPIO34, код ошибки…" Margin="12,0" VerticalAlignment="Center" IsHitTestVisible="False" Foreground="{DynamicResource MutedBrush}" FontSize="11">
+    <TextBlock Text="Поиск: светодиод, GPIO34, код ошибки…" Margin="12,0" VerticalAlignment="Center" IsHitTestVisible="False" Foreground="{DynamicResource MutedBrush}" FontSize="11">
      <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers>
       <DataTrigger Binding="{Binding Search}" Value=""><Setter Property="Visibility" Value="Visible"/></DataTrigger>
      </Style.Triggers></Style></TextBlock.Style>

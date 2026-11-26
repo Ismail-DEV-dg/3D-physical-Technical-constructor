@@ -29,9 +29,10 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     private IReadOnlyList<PaletteItemViewModel> library = [];
 
     public MainViewModel(INavigationService navigation, IThemeService themes, IWindowService window, ProjectSessionViewModel? session = null, ExportViewModel? exports = null, ProjectAnalysisViewModel? analysis = null, ICalculatorService? calculator = null, IShortcutGuideService? shortcutGuide = null,
-        IClipboardService? clipboard=null,IErrorDocumentationService? documentation=null,IErrorHelpService? errorHelp=null, SimulationViewModel? simulation = null, IDialogService? dialogs = null)
+        IClipboardService? clipboard=null,IErrorDocumentationService? documentation=null,IErrorHelpService? errorHelp=null, SimulationViewModel? simulation = null, IDialogService? dialogs = null, IShortcutSettings? shortcutSettings = null)
     {
         Simulation = simulation;
+        Shortcuts = shortcutSettings ?? new ShortcutSettings();
         this.dialogs = dialogs;
         if (Simulation is not null)
         {
@@ -56,7 +57,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         Mockup.PropertyChanged += OnSchematicChanged;
         Project.PropertyChanged += OnProjectChanged;
         navigation.PropertyChanged += OnNavigationChanged;
-        Code.ShowCodeRequested+=OnShowCode;Code.ToolsRequested+=OnCodeTools;Code.PropertyChanged+=OnCodeChanged;
+        Code.ShowCodeRequested+=OnShowCode;Code.PropertyChanged+=OnCodeChanged;
         Diagnostics=new(analysis,Code,clipboard,documentation,errorHelp,Simulation,Project);
         if (Simulation is not null) Simulation.FrameChanged += OnSimulationFrame;
         themes.PropertyChanged += OnThemeChanged;
@@ -65,6 +66,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     }
 
     public SimulationViewModel? Simulation { get; }
+    public IShortcutSettings Shortcuts { get; }
     public ProjectAnalysisViewModel? Analysis { get; }
     public PanelLayoutViewModel Panels { get; } = new();
     public DiagnosticsViewModel Diagnostics {get;}
@@ -235,6 +237,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     {
         if (args.PropertyName == nameof(INavigationService.Current))
         {
+            if (SelectedWorkspace.Kind == WorkspaceKind.Code) Code.EnsureEntryPoints();
             OnPropertyChanged(nameof(SelectedWorkspace));
             OnPropertyChanged(nameof(IsMockup));
             OnPropertyChanged(nameof(IsCanvas));
@@ -263,7 +266,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
             Simulation.SketchStarted -= ObserveSketch;
             Simulation.FrameChanged -= OnSimulationFrame;
         }
-        Code.ShowCodeRequested-=OnShowCode;Code.ToolsRequested-=OnCodeTools;Code.PropertyChanged-=OnCodeChanged;
+        Code.ShowCodeRequested-=OnShowCode;Code.PropertyChanged-=OnCodeChanged;
         if (Analysis is not null) Analysis.InspectRequested -= OnInspectRequested;
         navigation.PropertyChanged -= OnNavigationChanged;
         themes.PropertyChanged -= OnThemeChanged;

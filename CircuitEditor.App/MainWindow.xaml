@@ -64,14 +64,14 @@
                         <MenuItem Header="Отменить" Command="{Binding UndoActiveCommand}" ToolTip="{input:ShortcutHint Undo}"/>
                         <MenuItem Header="Повторить" Command="{Binding RedoActiveCommand}" ToolTip="{input:ShortcutHint Redo}"/>
                         <Separator/>
-                        <MenuItem Header="Копировать · Ctrl+C" Command="{Binding CopyActiveCommand}" ToolTip="{input:ShortcutHint Copy}"/>
-                        <MenuItem Header="Вставить · Ctrl+V" Command="{Binding PasteActiveCommand}" ToolTip="{input:ShortcutHint Paste}"/>
+                        <MenuItem Header="Копировать" Command="{Binding CopyActiveCommand}" ToolTip="{input:ShortcutHint Copy}"/>
+                        <MenuItem Header="Вставить" Command="{Binding PasteActiveCommand}" ToolTip="{input:ShortcutHint Paste}"/>
                     </MenuItem>
                     <MenuItem Header="_Вид">
-                        <MenuItem Header="Макет · Ctrl+0" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Mockup}"/>
-                        <MenuItem Header="Схема  ·  Ctrl+1" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Schematic}"/>
-                        <MenuItem Header="Микросхема  ·  Ctrl+3" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Chip}"/>
-                        <MenuItem Header="Код  ·  Ctrl+2" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Code}"/>
+                        <MenuItem Header="Макет" ToolTip="{input:ShortcutHint Tab0}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Mockup}"/>
+                        <MenuItem Header="Схема" ToolTip="{input:ShortcutHint Tab1}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Schematic}"/>
+                        <MenuItem Header="Микросхема" ToolTip="{input:ShortcutHint Tab3}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Chip}"/>
+                        <MenuItem Header="Код" ToolTip="{input:ShortcutHint Tab2}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Code}"/>
                         <Separator/>
                         <MenuItem Header="Панели">
                             <MenuItem Header="Компоненты" Command="{Binding Panels.Components.ShowCommand}"/>
@@ -88,13 +88,13 @@
                         <MenuItem Header="Калькулятор…" Command="{Binding CalculatorCommand}" ToolTip="{input:ShortcutHint Calculator}"/>
                         <MenuItem Header="Рассчитать цепь" Command="{Binding Analysis.CalculateCommand}" ToolTip="{input:ShortcutHint Calculate}"/>
                         <MenuItem Header="Проверить соединения" Command="{Binding Analysis.CheckCommand}" ToolTip="{input:ShortcutHint Check}"/>
-                        <MenuItem Header="{Binding Simulation.SketchPlaybackAction}" Command="{Binding Simulation.ToggleSketchCommand}" InputGestureText="Ctrl+Shift+B"/>
+                        <MenuItem Header="{Binding Simulation.SketchPlaybackAction}" Command="{Binding Simulation.ToggleSketchCommand}" ToolTip="{input:ShortcutHint RunSketch}"/>
                     </MenuItem>
                     <MenuItem Header="_Справка">
                         <MenuItem Header="Документация…" Command="{Binding DocumentationCommand}"/>
                         <MenuItem Header="Учебные примеры" ItemsSource="{Binding Session.Samples}" ItemContainerStyle="{StaticResource ExampleItem}"/>
                         <Separator/>
-                        <MenuItem Header="Горячие клавиши…" InputGestureText="F1" Command="{Binding ShortcutHelpCommand}"/>
+                        <MenuItem Header="Горячие клавиши…" ToolTip="{input:ShortcutHint Help}" Command="{Binding ShortcutHelpCommand}"/>
                         <MenuItem Header="Показать все компоненты" Command="{Binding ShowAllComponentsCommand}"/>
                         <MenuItem Header="О программе" Command="{Binding AboutCommand}"/>
                     </MenuItem>

@@ -65,7 +65,6 @@ public static class Program
         registrations.AddSingleton<ISketchRepository, FileSketchRepository>();
         registrations.AddSingleton<ICodeCompletionRepository, JsonCodeCompletionRepository>();
         registrations.AddSingleton<ICodeTemplateRepository, JsonCodeTemplateRepository>();
-        registrations.AddSingleton<CircuitEditor.Core.Code.ICodeGenerator, CircuitEditor.Core.Code.ArduinoCodeGenerator>();
         registrations.AddSingleton<CircuitEditor.Core.Code.ICodeAnalyzer, CircuitEditor.Core.Code.ArduinoCodeAnalyzer>();
         registrations.AddSingleton<ICodeAnalysisService, CodeAnalysisService>();
         registrations.AddSingleton<IRecentProjectsRepository, JsonRecentProjectsRepository>();
@@ -80,6 +79,8 @@ public static class Program
         registrations.AddSingleton<ExportViewModel>();
         registrations.AddSingleton<CircuitEditor.Core.Electronics.IDcSolver, CircuitEditor.Core.Electronics.DcSolver>();
         registrations.AddSingleton<IShortcutGuideService, ShortcutGuideService>();
+        registrations.AddSingleton<IShortcutSettingsRepository, JsonShortcutSettingsRepository>();
+        registrations.AddSingleton<IShortcutSettings, ShortcutSettings>();
         registrations.AddSingleton<ICalculatorService, CalculatorService>();
         registrations.AddSingleton<CalculatorViewModel>();
         registrations.AddSingleton<IDebounceService, DebounceService>();
@@ -97,6 +98,7 @@ public static class Program
         });
         using var services = registrations.BuildServiceProvider(
             new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
+        app.Resources["ShortcutSettings"] = services.GetRequiredService<IShortcutSettings>();
 
         var failures = services.GetRequiredService<IApplicationErrorService>();
         app.DispatcherUnhandledException += (_, failure) =>

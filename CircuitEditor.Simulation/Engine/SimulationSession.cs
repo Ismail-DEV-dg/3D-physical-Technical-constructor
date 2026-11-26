@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Globalization;
 using CircuitEditor.Core.Electronics;
 using CircuitEditor.Core.Inputs;
 using CircuitEditor.Core.Models;
@@ -118,6 +119,24 @@ public sealed class SimulationSession
         return Circuit.ReadDigital(pin, ModelTime);
     }
 
+    internal void WriteSketchDisplay(Guid id, string? text)
+    {
+        if (Circuit.Project.Circuit.Components.FirstOrDefault(part => part.Id == id) is not { } display) return;
+        if (text is null) { context.SetText(id, ""); return; }
+        var limit = (int)(context.Parameter(display, "columns") * context.Parameter(display, "rows"));
+        var existing = context.For(display).Text ?? "";
+        context.SetText(id, existing + text[..Math.Min(text.Length, Math.Max(0, limit - existing.Length))]);
+    }
+
+    internal void PrintSketchSensor(Guid id, ComponentInput input)
+    {
+        if (Circuit.IsDirty) Settle();
+        var sensor = Circuit.Project.Circuit.Components.FirstOrDefault(part => part.Id == id);
+        var text = sensor is not null && context.Powered(sensor) && sensor.Inputs.Values.TryGetValue(input, out var value)
+            ? value.ToString("G", CultureInfo.InvariantCulture) : "NaN";
+        AppendSerial(text);
+    }
+
     internal void RejectSketch(CircuitEditor.Core.Code.CodeProblem problem) =>
         Halt(new(problem.Code, problem.Message, ModelTime, IsError: true,
             SketchLine: problem.Line, SketchColumn: problem.Column));
@@ -159,7 +178,7 @@ public sealed class SimulationSession
         return true;
     }
 
-    private void AppendSerial(string line)
+    internal void AppendSerial(string line)
     {
         if (serial.Count == SerialBufferLimit) serial.Dequeue();
         serial.Enqueue(new(++serialSequence, clock.Microseconds, line));

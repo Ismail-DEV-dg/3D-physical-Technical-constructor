@@ -1,8 +1,8 @@
 {
   "sketch": {
-    "text": "#include \u003CDHT.h\u003E\nDHT sensor(4, DHT22);\nvoid setup() { Serial.begin(115200); sensor.begin(); }\nvoid loop() { Serial.println(sensor.readTemperature()); Serial.println(sensor.readHumidity()); delay(2000); }",
+    "text": "#include <DHT.h>\n\nDHT sensor(4, DHT22);\n\nvoid setup() {\n  Serial.begin(115200);\n  sensor.begin();\n}\n\nvoid loop() {\n  Serial.println(\"DHT22: Temperature\");\n  Serial.println(sensor.readTemperature());\n  Serial.println(\"DHT22: Humidity\");\n  Serial.println(sensor.readHumidity());\n  delay(2000);\n}\n",
     "board": "Esp32",
-    "name": "Example",
+    "name": "ESP32_DHT22",
     "controllerComponentId": "869a1e25-b4a3-4301-9a6d-5788d5b4ad84",
     "isValid": true
   },

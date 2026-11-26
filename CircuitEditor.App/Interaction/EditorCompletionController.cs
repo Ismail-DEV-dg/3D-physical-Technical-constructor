@@ -12,9 +12,7 @@ internal sealed class EditorCompletionController : IDisposable
     private readonly CodeViewModel model;
     private CompletionWindow? popup;
     internal EditorCompletionController(TextEditor editor,CodeViewModel model)
-    {this.editor=editor;this.model=model;editor.TextArea.TextEntered+=Entered;editor.TextArea.TextEntering+=Entering;editor.PreviewKeyDown+=KeyDown;}
-    private void KeyDown(object sender,KeyEventArgs e)
-    {if(e.Key==Key.Space&&Keyboard.Modifiers==ModifierKeys.Control){Open(true);e.Handled=true;}}
+    {this.editor=editor;this.model=model;editor.TextArea.TextEntered+=Entered;editor.TextArea.TextEntering+=Entering;}
     private void Entering(object? sender,TextCompositionEventArgs e)
     {if(!e.Handled&&popup is not null&&e.Text.Length>0&&!char.IsLetterOrDigit(e.Text[0])&&e.Text[0]!='_')popup.CompletionList.RequestInsertion(e);}
     private void Entered(object? sender,TextCompositionEventArgs e)
@@ -44,5 +42,5 @@ internal sealed class EditorCompletionController : IDisposable
     private void Closed(object? sender,EventArgs e){if(popup is not null)popup.Closed-=Closed;popup=null;}
     internal void Dismiss()=>popup?.Close();
     public void Dispose()
-    {editor.TextArea.TextEntered-=Entered;editor.TextArea.TextEntering-=Entering;editor.PreviewKeyDown-=KeyDown;popup?.Close();}
+    {editor.TextArea.TextEntered-=Entered;editor.TextArea.TextEntering-=Entering;popup?.Close();}
 }

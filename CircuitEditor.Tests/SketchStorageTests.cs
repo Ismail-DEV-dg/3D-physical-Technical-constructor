@@ -18,14 +18,14 @@ public sealed class SketchStorageTests
         var path=Path.Combine(e.Folder,"v1.circ");File.WriteAllText(path,node.ToJsonString());
         var result=new JsonProjectRepository([new ProjectMigrationV1ToV2(),new ProjectMigrationV2ToV3(),new ProjectMigrationV3ToV4()]).Load(path);
         Assert.True(result.Success,result.Error);Assert.Equal(ProjectDocument.CurrentSchemaVersion,result.Value!.SchemaVersion);
-        Assert.Equal(new SketchDocument(),result.Value.Sketch);Assert.Equal(original.Components,result.Value.Components);
+        Assert.Equal(new SketchDocument(""),result.Value.Sketch);Assert.Equal(original.Components,result.Value.Components);
         Assert.Equal(original.Wires,result.Value.Wires);
     }
     [Fact]
     public void SketchRoundTripAutosaveAndCircuitUndoHaveIndependentHistories()
     {
         using var e=new Stage4TestEnvironment();var p=e.Project;
-        var sketch=new SketchDocument("void setup() {}",BoardKind.Esp32,"Demo");
+        var sketch=new SketchDocument("void setup() {}\nvoid loop() {}",BoardKind.Esp32,"Demo");
         p.UpdateSketch(sketch);Assert.True(p.IsDirty);Assert.Equal(0,p.History.Count);
         p.Add(p.Library[0]);p.UndoCommand.Execute(null);Assert.Equal(sketch,p.Model.Sketch);
         p.RedoCommand.Execute(null);Assert.Equal(sketch,p.Model.Sketch);
@@ -35,6 +35,18 @@ public sealed class SketchStorageTests
         p.UpdateSketch(sketch with {Text="recovery"});e.Session.Autosave();
         Assert.Equal("recovery",e.Repository.Load(e.Repository.RecoveryPath).Value!.Sketch.Text);
         Assert.True(e.Session.Load(e.Target));Assert.Equal(sketch,p.Model.Sketch);Assert.False(p.IsDirty);
+    }
+    [Fact]
+    public void MissingEntryPointsAreAddedWithoutRewritingExistingCode()
+    {
+        var legacy = new SketchDocument("// void loop() {}\r\nvoid setup(void) {\r\n  pinMode(13, OUTPUT);\r\n}\r\n");
+        var updated = legacy.WithEntryPoints();
+        Assert.StartsWith(legacy.Text, updated.Text);
+        Assert.EndsWith("void loop() {\r\n\r\n}\r\n", updated.Text);
+        Assert.Same(updated, updated.WithEntryPoints());
+        Assert.Equal(SketchDocument.StarterText, new SketchDocument("").WithEntryPoints().Text);
+        var unfinished = new SketchDocument("void setup() { /*");
+        Assert.Same(unfinished, unfinished.WithEntryPoints());
     }
     [Fact]
     public void ExportCreatesMatchingArduinoFolderAndRejectsInvalidName()

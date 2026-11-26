@@ -17,7 +17,7 @@
             <BeginStoryboard>
                 <Storyboard>
                     <DoubleAnimation Storyboard.TargetName="Aurora" Storyboard.TargetProperty="Phase"
-                                     From="0" To="1.18" Duration="0:0:4"/>
+                                     From="0" To="1.6225" Duration="0:0:5.5"/>
                     <DoubleAnimation Storyboard.TargetName="Seal" Storyboard.TargetProperty="Opacity"
                                      From="0" To="1" Duration="0:0:0.65"/>
                     <DoubleAnimation Storyboard.TargetName="Avatar" Storyboard.TargetProperty="Opacity"
@@ -45,11 +45,11 @@
                         </EasingDoubleKeyFrame>
                     </DoubleAnimationUsingKeyFrames>
                     <DoubleAnimation Storyboard.TargetName="Intro" Storyboard.TargetProperty="Opacity"
-                                     From="1" To="0" BeginTime="0:0:3.65" Duration="0:0:0.35">
+                                     From="1" To="0" BeginTime="0:0:5.15" Duration="0:0:0.35">
                         <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut"/></DoubleAnimation.EasingFunction>
                     </DoubleAnimation>
                     <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Intro" Storyboard.TargetProperty="Visibility">
-                        <DiscreteObjectKeyFrame KeyTime="0:0:4" Value="{x:Static Visibility.Collapsed}"/>
+                        <DiscreteObjectKeyFrame KeyTime="0:0:5.5" Value="{x:Static Visibility.Collapsed}"/>
                     </ObjectAnimationUsingKeyFrames>
                 </Storyboard>
             </BeginStoryboard>

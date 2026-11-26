@@ -24,7 +24,8 @@ public sealed class SketchRunner(ICodeTemplateRepository templates) : ISketchRun
 
         try
         {
-            var program = new SketchParser(sketch.Text, profile, cancellationToken).Parse(boards[0].Id);
+            var controller = boards[0].Id;
+            var program = new SketchParser(sketch.Text, profile, cancellationToken, session, controller).Parse(controller);
             new SketchExecution(program, session).Start();
             return null;
         }

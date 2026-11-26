@@ -1,8 +1,8 @@
 {
   "sketch": {
-    "text": "void setup() { pinMode(13, OUTPUT); }\nvoid loop() { digitalWrite(13, HIGH); delay(250); digitalWrite(13, LOW); delay(250); }",
+    "text": "void setup() {\n  pinMode(13, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(13, HIGH);\n  delay(250);\n  digitalWrite(13, LOW);\n  delay(250);\n}\n",
     "board": "Uno",
-    "name": "Example",
+    "name": "uno_blink",
     "controllerComponentId": "9814fb79-5e2e-46cf-bb8e-d2684943f198",
     "isValid": true
   },
@@ -36,7 +36,7 @@
       "definitionId": "resistor",
       "footprintId": "resistor-axial",
       "reference": "R1",
-      "value": "1 k\u03A9"
+      "value": "1 kΩ"
     },
     {
       "id": "938e75d0-e8ee-48dc-99d3-12285311216d",

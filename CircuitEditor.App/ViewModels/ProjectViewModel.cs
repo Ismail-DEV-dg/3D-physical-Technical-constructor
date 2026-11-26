@@ -211,7 +211,8 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     }
     public void ReplaceProject(CircuitProject state)
     {
-        Model.SetSketch(state.Sketch);savedSketch=state.Sketch;
+        var sketch = state.Sketch.WithEntryPoints();
+        Model.SetSketch(sketch);savedSketch=sketch;
         Model.SetSimulationSetup(state.SimulationSetup);savedSimulationSetup=state.SimulationSetup;
         inGesture = false; RestoreState(state); History.Clear(); PropertyError = "";
         OnPropertyChanged(nameof(PaletteLibrary));

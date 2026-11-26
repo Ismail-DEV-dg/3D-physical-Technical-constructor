@@ -9,13 +9,20 @@ public sealed partial class GuideBrowserViewModel(GuideLibrary library, IClipboa
 {
     private IReadOnlyList<GuideChapter> all = [];
     [ObservableProperty] private string search = "";
-    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasCode))] private GuideChapter? chapter;
+    [ObservableProperty, NotifyPropertyChangedFor(nameof(HasCode)), NotifyPropertyChangedFor(nameof(HasChapter))]
+    private GuideChapter? chapter;
     [ObservableProperty] private string feedback = "";
 
     public IReadOnlyList<GuideChapter> Chapters => all.Where(c => Search.Split(' ', StringSplitOptions.RemoveEmptyEntries)
         .All(term => (c.Id + " " + c.Title + " " + c.Instructions + " " + c.Code).Contains(term, StringComparison.OrdinalIgnoreCase))).ToArray();
 
     public bool HasCode => Chapter?.Code is not null;
+    public bool HasChapter => Chapter is not null;
+    public string CodeHeading => Chapter?.CodePurpose ?? "Скетч для Arduino IDE";
+    public string ChapterPosition => Chapter is null ? "" : $"{CurrentIndex + 1} из {Chapters.Count}";
+    private int CurrentIndex => Chapters.ToList().IndexOf(Chapter!);
+    private bool HasPrevious => CurrentIndex > 0;
+    private bool HasNext => CurrentIndex >= 0 && CurrentIndex < Chapters.Count - 1;
 
     internal void Open(string section, string? id)
     {
@@ -30,7 +37,28 @@ public sealed partial class GuideBrowserViewModel(GuideLibrary library, IClipboa
     {
         OnPropertyChanged(nameof(Chapters));
         if (Chapter is null || !Chapters.Contains(Chapter)) Chapter = Chapters.FirstOrDefault();
+        NotifyNavigation();
     }
+
+    partial void OnChapterChanged(GuideChapter? value)
+    {
+        Feedback = "";
+        OnPropertyChanged(nameof(CodeHeading));
+        NotifyNavigation();
+    }
+
+    private void NotifyNavigation()
+    {
+        OnPropertyChanged(nameof(ChapterPosition));
+        PreviousCommand.NotifyCanExecuteChanged();
+        NextCommand.NotifyCanExecuteChanged();
+    }
+
+    [RelayCommand(CanExecute = nameof(HasPrevious))]
+    private void Previous() => Chapter = Chapters[CurrentIndex - 1];
+
+    [RelayCommand(CanExecute = nameof(HasNext))]
+    private void Next() => Chapter = Chapters[CurrentIndex + 1];
 
     [RelayCommand]
     private void CopyCode()

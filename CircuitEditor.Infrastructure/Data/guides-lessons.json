@@ -1,0 +1,37 @@
+[
+  {
+    "id": "uno-blink",
+    "title": "01. Мигающий светодиод",
+    "instructions": "Откройте «Справка → Учебные примеры → Uno · мигающий светодиод». На макете контакт D13 соединён с резистором и светодиодом. Резистор ограничивает ток.\n\nПерейдите в «Код». setup() выполняется один раз. pinMode(13, OUTPUT) назначает D13 выходом. loop() повторяется. HIGH включает светодиод, LOW выключает, а delay(250) ждёт четверть секунды.\n\nНажмите «Запустить». Попробуйте заменить оба числа 250 на 500. Нажмите «Стоп» и запустите снова, чтобы увидеть более медленное мигание.",
+    "codePurpose": "Скетч для Circuit Editor",
+    "code": "void setup() {\n  pinMode(13, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(13, HIGH);\n  delay(250);\n  digitalWrite(13, LOW);\n  delay(250);\n}\n"
+  },
+  {
+    "id": "uno-button",
+    "title": "02. Кнопка управляет светодиодом",
+    "instructions": "Откройте «Справка → Учебные примеры → Uno · кнопка управляет светодиодом». Один контакт кнопки идёт к D2, второй к GND.\n\nINPUT_PULLUP включает внутреннюю подтяжку: отпущенная кнопка читается как HIGH. Нажатая кнопка соединяет вход с GND, поэтому читается как LOW. В loop() команда digitalRead проверяет вход, а if выбирает, включить или выключить светодиод.\n\nЗапустите код и нажмите SW1 на макете. Светодиод загорается при замыкании. Откройте «Код» и поменяйте в условии LOW на HIGH, затем перезапустите. Светодиод теперь горит при отпущенной кнопке.",
+    "codePurpose": "Скетч для Circuit Editor",
+    "code": "const int buttonPin = 2;\nconst int ledPin = 13;\n\nvoid setup() {\n  pinMode(buttonPin, INPUT_PULLUP);\n  pinMode(ledPin, OUTPUT);\n}\n\nvoid loop() {\n  if (digitalRead(buttonPin) == LOW) {\n    digitalWrite(ledPin, HIGH);\n  } else {\n    digitalWrite(ledPin, LOW);\n  }\n  delay(10);\n}\n"
+  },
+  {
+    "id": "uno-pwm",
+    "title": "03. Два уровня яркости",
+    "instructions": "Откройте «Справка → Учебные примеры → Uno · два уровня яркости». Светодиод подключён через резистор к D9. На Uno этот контакт поддерживает ШИМ — быстрое включение и выключение сигнала.\n\nanalogWrite принимает число от 0 (выключено) до 255 (постоянно включено). При 48 светодиод включён лишь небольшую часть времени, при 220 — почти всё время.\n\nНажмите «Запустить». Сравните две яркости. Затем замените 48 на 0, остановите и запустите снова. В первой половине цикла светодиод теперь полностью гаснет.",
+    "codePurpose": "Скетч для Circuit Editor",
+    "code": "const int ledPin = 9;\n\nvoid setup() {\n  pinMode(ledPin, OUTPUT);\n}\n\nvoid loop() {\n  analogWrite(ledPin, 48);\n  delay(250);\n  analogWrite(ledPin, 220);\n  delay(250);\n}\n"
+  },
+  {
+    "id": "uno-millis",
+    "title": "04. Мигание без delay()",
+    "instructions": "Откройте «Справка → Учебные примеры → Uno · мигание без delay()». millis() показывает время с начала запуска в миллисекундах. previous хранит время предыдущего переключения.\n\nПри каждой проверке loop() сравнивает разницу со значением 250. По истечении четверти секунды предыдущий момент записывается заново, а !ledOn меняет состояние на противоположное.\n\nЗапустите код и посмотрите на LED. Этот способ полезен, если скетч одновременно проверяет кнопку и отсчитывает время. Попробуйте поставить 1000 вместо 250 и перезапустить.",
+    "codePurpose": "Скетч для Circuit Editor",
+    "code": "const int ledPin = 13;\nunsigned long previous = 0;\nbool ledOn = false;\n\nvoid setup() {\n  pinMode(ledPin, OUTPUT);\n}\n\nvoid loop() {\n  if (millis() - previous >= 250) {\n    previous = millis();\n    ledOn = !ledOn;\n    digitalWrite(ledPin, ledOn);\n  }\n}\n"
+  },
+  {
+    "id": "uno-two-leds",
+    "title": "05. Два светодиода по очереди",
+    "instructions": "Откройте «Справка → Учебные примеры → Uno · два светодиода по очереди». У каждого светодиода свой выход и свой резистор. Оба катода подключены к GND.\n\nsetup() делает D13 и D8 выходами. loop() сначала выключает зелёный и включает красный, затем меняет их местами. Отдельные delay(200) дают время увидеть каждый цвет.\n\nЗапустите код. Для упражнения измените только первую задержку на 500 и перезапустите. Красный теперь горит дольше зелёного.",
+    "codePurpose": "Скетч для Circuit Editor",
+    "code": "const int red = 13;\nconst int green = 8;\n\nvoid setup() {\n  pinMode(red, OUTPUT);\n  pinMode(green, OUTPUT);\n}\n\nvoid loop() {\n  digitalWrite(green, LOW);\n  digitalWrite(red, HIGH);\n  delay(200);\n\n  digitalWrite(red, LOW);\n  digitalWrite(green, HIGH);\n  delay(200);\n}\n"
+  }
+]
