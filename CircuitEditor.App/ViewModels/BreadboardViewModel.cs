@@ -29,6 +29,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
         BoardInteraction=new BoardInteractionViewModel(this);
         Project = project; this.insertion = insertion;
         Project.PropertyChanged += OnProjectChanged;
+        Project.ProjectReplaced += OnProjectReplaced;
     }
     public BoardInteractionViewModel BoardInteraction {get;}
     public ProjectViewModel Project { get; }
@@ -69,6 +70,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     [RelayCommand]
     private void Input(CanvasInput input)
     {
+        input = RouteTool(input);
         if (Simulation is { } tools)
         {
             if (input.Action == CanvasAction.Cancel && tools.Instruments.CancelPick()) return;
@@ -88,6 +90,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
         if (input.Action == CanvasAction.Delete) { if (!Project.Wiring.Handle(input, new(CursorX,CursorY))) { Cancel(); Project.RemoveSelected(); } return; }
         CursorX = PhysicalSettings.ToMillimeters((input.X - OffsetX) / Zoom);
         CursorY = PhysicalSettings.ToMillimeters((input.Y - OffsetY) / Zoom);
+        if (RouteNetInspection(input) || RouteRuler(input) || RouteNote(input)) return;
         if(Project.CanEdit && BoardInteraction.Handle(input,new(CursorX,CursorY))){Revision++;return;}
         var componentDrag=input.Action==CanvasAction.Down && !Project.Wiring.IsWiring && !Project.Wiring.HasSelection && Project.Components.Any(c=>Hit(c,CursorX,CursorY));
         if (dragging is null && rotatingKnob is null && !panning && !componentDrag && Project.Wiring.Handle(input, new(CursorX, CursorY))) { Revision++; return; }
@@ -273,12 +276,24 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     }
     private void OnProjectChanged(object? sender, PropertyChangedEventArgs args)
     {
+        if (args.PropertyName == nameof(Project.SelectedCount)) OnPropertyChanged(nameof(CanFocusSelection));
         if (args.PropertyName == nameof(Project.Revision)) { Revision++; OnPropertyChanged(nameof(SelectedSpan)); }
+        if (args.PropertyName == nameof(Project.CanEdit) && !Project.CanEdit) CancelNote();
         if (args.PropertyName == nameof(Project.CanEdit)) OnPropertyChanged(nameof(CanAdjustSpan));
         if (args.PropertyName != nameof(Project.SelectedComponent)) return;
         if (selectionId == Project.SelectedComponent?.Model.Id) return;
         selectionId = Project.SelectedComponent?.Model.Id;
         OnPropertyChanged(nameof(SpanOptions)); OnPropertyChanged(nameof(SelectedSpan)); OnPropertyChanged(nameof(CanAdjustSpan));
     }
-    public void Dispose() => Project.PropertyChanged -= OnProjectChanged;
+    private void OnProjectReplaced(object? sender, EventArgs args)
+    {
+        CancelNote();
+        ClearNetInspection();
+    }
+
+    public void Dispose()
+    {
+        Project.PropertyChanged -= OnProjectChanged;
+        Project.ProjectReplaced -= OnProjectReplaced;
+    }
 }

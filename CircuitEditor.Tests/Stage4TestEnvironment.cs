@@ -32,7 +32,7 @@ internal sealed class Stage4TestEnvironment : IDialogService, IAutosaveService, 
         Directory.CreateDirectory(Folder);
         Repository = new([new ProjectMigrationV1ToV2(), new ProjectMigrationV2ToV3(), new ProjectMigrationV3ToV4()],Path.Combine(Folder,"recovery.circ"));
         Mockup=TestProjectFactory.Mockup(Project); Schematic=new(Project);
-        Navigation=new(Mockup,Schematic,new ChipViewModel(),new ThreeDViewModel(),new CodeViewModel());
+        Navigation=new(Mockup,Schematic,new ChipViewModel(),new CodeViewModel());
         Session=new(Project,Mockup,Schematic,Navigation,Repository,this,this,this,new JsonBreadboardRepository(),new Core.Services.ComponentInsertionService());
     }
     public string? OpenProject() => Target;

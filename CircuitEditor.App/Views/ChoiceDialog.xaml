@@ -2,14 +2,15 @@
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
  Icon="pack://application:,,,/CircuitEditor.App;component/Branding/logo.ico"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display"
  Title="{Binding Title}" SizeToContent="WidthAndHeight" MinWidth="440" MaxWidth="620" ResizeMode="NoResize"
  WindowStyle="None" WindowStartupLocation="CenterOwner" Background="{DynamicResource BackgroundBrush}"
  Foreground="{DynamicResource TextBrush}" FontFamily="{StaticResource UiFont}">
  <Window.InputBindings><KeyBinding Key="Escape" Command="{Binding DismissCommand}"/></Window.InputBindings>
  <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="{Binding Source={x:Static SystemParameters.WorkArea}, Path=Height}">
- <Border Style="{StaticResource Panel}" Padding="24"><StackPanel FocusManager.IsFocusScope="True" FocusManager.FocusedElement="{Binding ElementName=MessageText}">
- <StackPanel Orientation="Horizontal">
-  <Image Width="42" Height="42" Margin="0,0,12,0" Source="pack://application:,,,/CircuitEditor.App;component/Branding/logo-256.png">
+ <Border Style="{StaticResource Panel}" Padding="18"><StackPanel FocusManager.IsFocusScope="True" FocusManager.FocusedElement="{Binding ElementName=MessageText}">
+ <DockPanel>
+  <Image DockPanel.Dock="Left" Width="42" Height="42" Margin="0,0,12,0" Source="pack://application:,,,/CircuitEditor.App;component/Branding/logo-256.png">
    <Image.Style><Style TargetType="Image">
     <Setter Property="Visibility" Value="Collapsed"/>
     <Style.Triggers><DataTrigger Binding="{Binding Title}" Value="О программе">
@@ -17,17 +18,18 @@
     </DataTrigger></Style.Triggers>
    </Style></Image.Style>
   </Image>
-  <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="18" VerticalAlignment="Center"/>
- </StackPanel>
- <TextBox x:Name="MessageText" Text="{Binding Message,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" MaxWidth="520" MaxHeight="330" VerticalScrollBarVisibility="Auto" Margin="0,18" ToolTip="Можно выделить текст и скопировать Ctrl+C"/>
+  <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="17" VerticalAlignment="Center" TextWrapping="Wrap"/>
+ </DockPanel>
+ <TextBox x:Name="MessageText" Text="{Binding Message,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" MaxWidth="580" MaxHeight="330" FontFamily="{StaticResource UiFont}" FontSize="13" VerticalScrollBarVisibility="Auto" Margin="0,14" ToolTip="Можно выделить текст и скопировать Ctrl+C"/>
  <WrapPanel Margin="0,0,0,12">
   <WrapPanel.Style><Style TargetType="WrapPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding IsDiagnostic}" Value="True"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></WrapPanel.Style>
   <Button Content="Скопировать сообщение" Command="{Binding CopyCommand}" Padding="9,6" Margin="0,0,8,0"/><Button Content="Как исправить…" Command="{Binding HelpCommand}" Padding="9,6"/>
  </WrapPanel>
  <TextBlock Text="{Binding Feedback}" FontSize="10" Foreground="{DynamicResource AccentBrush}" Margin="0,0,0,6"/>
  <ItemsControl ItemsSource="{Binding Choices}"><ItemsControl.ItemsPanel><ItemsPanelTemplate><WrapPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
- <ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding}" Margin="0,0,10,8"
+ <ItemsControl.ItemTemplate><DataTemplate><Button Content="{Binding}" MaxWidth="382" Margin="0,0,8,8"
  Command="{Binding DataContext.ChooseCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}">
+  <Button.ContentTemplate><DataTemplate><TextBlock Text="{Binding}" TextWrapping="Wrap"/></DataTemplate></Button.ContentTemplate>
   <Button.Style><Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
    <Style.Triggers>
     <DataTrigger Binding="{Binding}" Value="ОК"><Setter Property="IsDefault" Value="True"/></DataTrigger>

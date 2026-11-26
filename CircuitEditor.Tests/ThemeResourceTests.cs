@@ -32,7 +32,7 @@ public sealed class ThemeResourceTests
             Assert.Same(styles, resources.MergedDictionaries[1]);
 
             Assert.True(service.SetTheme(ThemeKind.NeonDark), service.ErrorMessage);
-            Assert.Equal(Color.FromRgb(0x0A, 0x0E, 0x17), resources["BackgroundColor"]);
+            Assert.Equal(Color.FromRgb(0x11, 0x14, 0x19), resources["BackgroundColor"]);
             foreach (var type in new[] { typeof(Button), typeof(TextBox), typeof(ComboBox),
                          typeof(TabControl), typeof(System.Windows.Controls.Primitives.ScrollBar),
                          typeof(ToolTip), typeof(Menu), typeof(ListBox) })

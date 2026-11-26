@@ -26,8 +26,9 @@ public static class ShortcutCatalog
         Add("Cancel",Key.Escape,0,"Esc","Холст","Отменить жест / выйти из прокладки проводов",true);
         Add("Select",Key.V,0,"V","Холст","Вернуться к выбору и перемещению",true);
         Add("Wire",Key.W,0,"W","Холст","Включить / выключить перемычки в «Макете»",true);
-        Add("Fit",Key.F,0,"F","Вид","Вписать весь проект в активный холст",true);
-        Add("Fit",Key.Home,0,"Home","Вид","Вписать весь проект",true);
+        Add("Note",Key.T,0,"T","Холст","Добавить текст на макет",true);
+        Add("Measure",Key.M,0,"M","Холст","Включить или выключить линейку на макете",true);
+        Add("WireLabels",Key.L,0,"L","Холст","Показать или скрыть подписи контактов на макете",true);
         Add("Reset",Key.D0,0,"0","Вид","Сбросить вид и масштаб до 100%",true);
         Add("ZoomIn",Key.OemPlus,0,"=","Вид","Увеличить масштаб вокруг центра холста",true);
         Add("ZoomIn",Key.OemPlus,Shift,"+","Вид","Увеличить масштаб",true);
@@ -41,7 +42,7 @@ public static class ShortcutCatalog
         Add("Theme",Key.T,Ctrl|Shift,"Ctrl+Shift+T","Вид","Переключить тему");
         Add("NextTab",Key.Tab,Ctrl,"Ctrl+Tab","Навигация","Следующая вкладка",text:true);
         Add("PreviousTab",Key.Tab,Ctrl|Shift,"Ctrl+Shift+Tab","Навигация","Предыдущая вкладка",text:true);
-        for(var i=0;i<5;i++)Add("Tab"+i,(Key)((int)Key.D0+i),Ctrl,"Ctrl+"+i,"Навигация",new[]{"Макет","Схема","Микросхема","3D","Код"}[i],text:true);
+        for(var i=0;i<4;i++)Add("Tab"+i,(Key)((int)Key.D0+i),Ctrl,"Ctrl+"+i,"Навигация",new[]{"Макет","Схема","Код","Микросхема"}[i],text:true);
         Add("Png",Key.P,Ctrl|Alt,"Ctrl+Alt+P","Экспорт","Экспорт PNG активного вида");
         Add("Svg",Key.S,Ctrl|Alt,"Ctrl+Alt+S","Экспорт","Экспорт SVG схемы");
         Add("Bom",Key.B,Ctrl|Alt,"Ctrl+Alt+B","Экспорт","Экспорт ведомости CSV");

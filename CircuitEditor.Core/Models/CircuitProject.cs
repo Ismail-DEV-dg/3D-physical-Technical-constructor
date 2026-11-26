@@ -17,7 +17,7 @@ public sealed class CircuitProject
     public CircuitProject(Circuit? circuit = null, ViewLayout? mockupLayout = null, ViewLayout? schematicLayout = null,
         IReadOnlyList<BreadboardInstance>? breadboards = null, IReadOnlyList<FootprintDefinition>? footprints = null,
         IReadOnlyList<ContactBinding>? bindings = null, Code.SketchDocument? sketch = null, SimulationSetup? simulationSetup = null,
-        IReadOnlyList<ChipDefinition>? chips = null)
+        IReadOnlyList<ChipDefinition>? chips = null, IReadOnlyList<MockupNote>? mockupNotes = null)
     {
         Circuit = circuit ?? new Circuit();
         MockupLayout = mockupLayout ?? new ViewLayout(RepresentationKind.Mockup);
@@ -28,9 +28,16 @@ public sealed class CircuitProject
         Footprints = Array.AsReadOnly(footprints?.ToArray() ?? []);
         this.bindings = bindings?.ToList() ?? [];
         this.chips = chips?.ToList() ?? [];
+        MockupNotes = Array.AsReadOnly(mockupNotes?.ToArray() ?? []);
         SetSketch(sketch ?? new());
         SetSimulationSetup(simulationSetup ?? new());
     }
+    /// <summary>Подписи физического макета.</summary>
+    public IReadOnlyList<MockupNote> MockupNotes { get; private set; }
+
+    /// <summary>Заменяет подписи физического макета.</summary>
+    public void SetMockupNotes(IEnumerable<MockupNote> notes) => MockupNotes = Array.AsReadOnly(notes.ToArray());
+
     /// <summary>Общая электрическая модель.</summary>
     public Circuit Circuit { get; private set; }
     /// <summary>Физические размещения в мм.</summary>
@@ -99,6 +106,7 @@ public sealed class CircuitProject
     {
         Circuit = state.Circuit; MockupLayout = state.MockupLayout; SchematicLayout = state.SchematicLayout;
         Breadboards = state.Breadboards; Footprints = state.Footprints;
+        MockupNotes = state.MockupNotes;
         chips.Clear(); chips.AddRange(state.Chips);
         bindings.Clear(); bindings.AddRange(state.Bindings);
         Simulation = new();
@@ -117,7 +125,7 @@ public sealed class CircuitProject
         }
         bool Attached(Wiring.WireEndpoint e)=>e.Kind==Wiring.WireEndpointKind.BreadboardHole ? e.OwnerId==id : mounted.Contains(e.OwnerId);
         foreach(var wire in Circuit.Wires.Where(w=>Attached(w.Start)&&Attached(w.End)).ToArray())
-            Circuit.PutWire(new Wire(wire.Id,wire.Start,wire.End,wire.Color,wire.ControlPoints.Select(Transform).ToArray()));
+            Circuit.PutWire(new Wire(wire.Id,wire.Start,wire.End,wire.Color,wire.ControlPoints.Select(Transform).ToArray(), wire.IsStraight));
         Breadboards=Array.AsReadOnly(Breadboards.Select(b=>b.Id==id?next:b).ToArray());
     }
     internal void CommitInsertion(Guid id, ComponentPlacement placement, IReadOnlyList<ContactBinding> newBindings)

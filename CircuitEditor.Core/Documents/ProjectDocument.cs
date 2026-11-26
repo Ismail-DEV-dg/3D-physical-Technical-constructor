@@ -35,12 +35,17 @@ public sealed record ProjectDocument
     public IReadOnlyList<ContactBinding> Bindings { get; init; } = [];
     /// <summary>Перемычки.</summary>
     public IReadOnlyList<Wire> Wires { get; init; } = [];
+    /// <summary>Подписи на физическом макете.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public IReadOnlyList<MockupNote>? MockupNotes { get; init; }
+
     /// <summary>Активный режим и камеры.</summary>
     public ProjectViewState View { get; init; } = new();
     /// <summary>Снимает документ со ссылками на штатные компоненты и копиями пользовательских микросхем.</summary>
     public static ProjectDocument Capture(CircuitProject project, ProjectViewState? view = null) => new()
     {
         Sketch = project.Sketch,
+        MockupNotes = project.MockupNotes.Count == 0 ? null : project.MockupNotes.ToArray(),
         SimulationSetup = project.SimulationSetup,
         EmbeddedChips = project.Circuit.Components.Select(part => project.FindChip(part.Definition.Id))
             .OfType<ChipDefinition>().DistinctBy(chip => chip.ComponentId).ToArray(),

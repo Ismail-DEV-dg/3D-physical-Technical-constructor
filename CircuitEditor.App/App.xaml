@@ -4,8 +4,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Resources/Themes/NeonDark.xaml"/>
-                <ResourceDictionary Source="Resources/Styles.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml"/>
+                <ResourceDictionary Source="Resources/Styles/Controls.xaml"/>
                 <ResourceDictionary Source="Resources/Navigation.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

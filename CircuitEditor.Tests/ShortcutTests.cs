@@ -42,7 +42,7 @@ public sealed class ShortcutTests
         ShortcutCommands.Execute(vm,"Duplicate");Assert.Equal(2,e.Project.ComponentCount);Assert.Equal(count+1,e.Project.History.Count);
         ShortcutCommands.Execute(vm,"Fit");Assert.InRange(e.Mockup.Zoom,.25,3);
         ShortcutCommands.Execute(vm,"Tab1");Assert.Equal(WorkspaceKind.Schematic,vm.SelectedWorkspace.Kind);
-        ShortcutCommands.Execute(vm,"NextTab");Assert.Equal(WorkspaceKind.Chip,vm.SelectedWorkspace.Kind);
+        ShortcutCommands.Execute(vm,"NextTab");Assert.Equal(WorkspaceKind.Code,vm.SelectedWorkspace.Kind);
         ShortcutCommands.Execute(vm,"PreviousTab");Assert.Equal(WorkspaceKind.Schematic,vm.SelectedWorkspace.Kind);
         var before=e.Project.ComponentCount;e.Project.BeginGesture();ShortcutCommands.Execute(vm,"Duplicate");Assert.Equal(before,e.Project.ComponentCount);
         ShortcutCommands.Execute(vm,"Cancel");Assert.False(e.Project.InGesture);

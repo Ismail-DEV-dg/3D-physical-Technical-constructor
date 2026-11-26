@@ -13,12 +13,12 @@ public sealed class ProjectSnapshot
     public bool Matches(CircuitProject other)
     {
         if (state.Circuit.Components.Count != other.Circuit.Components.Count || state.Circuit.Wires.Count != other.Circuit.Wires.Count) return false;
-        return state.Breadboards.Select(b=>(b.Id,b.Definition.Id,b.X,b.Y,b.Rotation)).SequenceEqual(other.Breadboards.Select(b=>(b.Id,b.Definition.Id,b.X,b.Y,b.Rotation))) && state.Circuit.Components.Zip(other.Circuit.Components).All(pair => Same(pair.First, pair.Second))
+        return state.MockupNotes.SequenceEqual(other.MockupNotes) && state.Breadboards.Select(b=>(b.Id,b.Definition.Id,b.X,b.Y,b.Rotation)).SequenceEqual(other.Breadboards.Select(b=>(b.Id,b.Definition.Id,b.X,b.Y,b.Rotation))) && state.Circuit.Components.Zip(other.Circuit.Components).All(pair => Same(pair.First, pair.Second))
             && state.Circuit.Counters.OrderBy(p => p.Key).SequenceEqual(other.Circuit.Counters.OrderBy(p => p.Key))
             && state.Bindings.SequenceEqual(other.Bindings)
             && SameLayout(state.MockupLayout, other.MockupLayout) && SameLayout(state.SchematicLayout, other.SchematicLayout)
             && state.Circuit.Wires.Zip(other.Circuit.Wires).All(p => p.First.Id == p.Second.Id && p.First.Start == p.Second.Start
-                && p.First.End == p.Second.End && p.First.Color == p.Second.Color && p.First.ControlPoints.SequenceEqual(p.Second.ControlPoints));
+                && p.First.End == p.Second.End && p.First.Color == p.Second.Color && p.First.IsStraight == p.Second.IsStraight && p.First.ControlPoints.SequenceEqual(p.Second.ControlPoints));
     }
     private static bool Same(Component a, Component b) => a.Id == b.Id && a.Reference == b.Reference && a.Definition.Id == b.Definition.Id
         && a.Value == b.Value && a.Color == b.Color && a.I2cAddress == b.I2cAddress && a.CapacitorKind == b.CapacitorKind
@@ -31,5 +31,5 @@ public sealed class ProjectSnapshot
         new(c.Definition, reference ?? c.Reference, id ?? c.Id, c.Value, c.Color, c.I2cAddress, c.CapacitorKind, c.PotentiometerAngle, c.Inputs, c.Electrical);
     private static CircuitProject Clone(CircuitProject p) => new(new Circuit(p.Circuit.Components.Select(c => Copy(c)).ToArray(), p.Circuit.Wires.ToArray(), p.Circuit.Counters),
         new ViewLayout(RepresentationKind.Mockup, p.MockupLayout.Placements), new ViewLayout(RepresentationKind.Schematic, p.SchematicLayout.Placements),
-        p.Breadboards, p.Footprints, p.Bindings, chips: p.Chips);
+        p.Breadboards, p.Footprints, p.Bindings, chips: p.Chips, mockupNotes: p.MockupNotes);
 }

@@ -26,7 +26,7 @@ internal static class CodeWorkspacePresentationChecks
         var templates=new JsonCodeTemplateRepository();var api=new JsonCodeCompletionRepository();var themes=new ThemeService(new WpfThemeResources(resources));
         var worker=new CodeAnalysisService(new ArduinoCodeAnalyzer(api,templates),new Core.Netlist.NetlistBuilder(new JsonElectricalLibraryRepository()));
         using var code=new CodeViewModel(e.Project,new ArduinoCodeGenerator(templates),api,templates,themes,analysisService:worker);
-        var nav=new NavigationService(e.Environment.Mockup,e.Environment.Schematic,new ChipViewModel(),new ThreeDViewModel(),code);
+        var nav=new NavigationService(e.Environment.Mockup,e.Environment.Schematic,new ChipViewModel(),code);
         using var main=new MainViewModel(nav,themes,new TestWindowService(),e.Environment.Session);
         var window=new CircuitEditor.App.MainWindow {DataContext=main,Left=-10000,Top=-10000,ShowInTaskbar=false};
         var oldContext=SynchronizationContext.Current;

@@ -6,11 +6,11 @@ namespace CircuitEditor.Core.Models;
 public sealed class Wire
 {
     /// <summary>Создаёт физическую перемычку.</summary>
-    public Wire(WireEndpoint start, WireEndpoint end, string color = "#FF3B5C", IReadOnlyList<LayoutPoint>? controlPoints = null)
-        : this(Guid.NewGuid(), start, end, color, controlPoints) { }
+    public Wire(WireEndpoint start, WireEndpoint end, string color = "#FF3B5C", IReadOnlyList<LayoutPoint>? controlPoints = null, bool isStraight = false)
+        : this(Guid.NewGuid(), start, end, color, controlPoints, isStraight) { }
     /// <summary>Восстанавливает перемычку.</summary>
     [JsonConstructor]
-    public Wire(Guid id, WireEndpoint start, WireEndpoint end, string color = "#FF3B5C", IReadOnlyList<LayoutPoint>? controlPoints = null)
+    public Wire(Guid id, WireEndpoint start, WireEndpoint end, string color = "#FF3B5C", IReadOnlyList<LayoutPoint>? controlPoints = null, bool isStraight = false)
     {
         if (id == Guid.Empty || start is null || end is null || start == end || start.OwnerId == Guid.Empty || end.OwnerId == Guid.Empty
             || string.IsNullOrWhiteSpace(start.TerminalId) || string.IsNullOrWhiteSpace(end.TerminalId)
@@ -18,7 +18,7 @@ public sealed class Wire
             throw new ArgumentException("Некорректная перемычка или цвет.");
         var points = controlPoints?.ToArray() ?? [];
         if (points.Any(p => !double.IsFinite(p.X) || !double.IsFinite(p.Y))) throw new ArgumentException("Некорректный изгиб.");
-        Id = id; Start = start; End = end; Color = color; ControlPoints = Array.AsReadOnly(points);
+        Id = id; Start = start; End = end; Color = color; ControlPoints = Array.AsReadOnly(points); IsStraight = isStraight;
     }
     /// <summary>Совместимость старых внутренних символьных тестов; файлы используют физические ID.</summary>
     public Wire(PinReference start, PinReference end) : this(WireEndpoint.Contact(start.ComponentId, start.PinId), WireEndpoint.Contact(end.ComponentId, end.PinId)) { }
@@ -32,4 +32,7 @@ public sealed class Wire
     public string Color { get; }
     /// <summary>Управляющие узлы в мм; на электрическую связность не влияют.</summary>
     public IReadOnlyList<LayoutPoint> ControlPoints { get; }
+    /// <summary>Рисовать управляющие участки прямыми отрезками.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public bool IsStraight { get; }
 }

@@ -51,8 +51,10 @@ public static class ProjectDocumentResolver
                 throw new ArgumentException("Недопустимые поворот или шаг ножек корпуса.");
         }
         if (data.Counters.Any(p => p.Value < 0)) throw new ArgumentException("Повреждены счётчики обозначений.");
+        if (data.MockupNotes?.Any(note => note is null) == true)
+            throw new ArgumentException("Повреждены подписи макета.");
         var project = new CircuitProject(new Circuit(components, counters: data.Counters),
-            new ViewLayout(RepresentationKind.Mockup, data.Mockup), new ViewLayout(RepresentationKind.Schematic, data.Schematic), boards, footprints, chips: chips.Values.ToArray());
+            new ViewLayout(RepresentationKind.Mockup, data.Mockup), new ViewLayout(RepresentationKind.Schematic, data.Schematic), boards, footprints, chips: chips.Values.ToArray(), mockupNotes: data.MockupNotes);
         foreach (var group in data.Bindings.GroupBy(b => b.ComponentId))
         {
             var component = components.SingleOrDefault(c => c.Id == group.Key) ?? throw new ArgumentException("Привязка ссылается на неизвестный компонент.");

@@ -4,7 +4,6 @@ public enum WorkspaceKind
 {
     Mockup,
     Schematic,
-    Chip,
-    ThreeD,
-    Code
+    Code,
+    Chip
 }

@@ -2,25 +2,30 @@
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Icon="pack://application:,,,/CircuitEditor.App;component/Branding/logo.ico"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+ UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display"
  Title="Горячие клавиши" Width="850" Height="700" MinWidth="700" MinHeight="480" WindowStartupLocation="CenterOwner"
  Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextBrush}" FontFamily="{StaticResource UiFont}">
- <shell:WindowChrome.WindowChrome><shell:WindowChrome CaptionHeight="48" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></shell:WindowChrome.WindowChrome>
+ <shell:WindowChrome.WindowChrome><shell:WindowChrome CaptionHeight="39" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></shell:WindowChrome.WindowChrome>
  <Window.InputBindings><KeyBinding Key="Escape" Command="{Binding CloseCommand}"/></Window.InputBindings>
  <Window.Resources><CollectionViewSource x:Key="GroupedShortcuts" Source="{Binding Entries}">
  <CollectionViewSource.GroupDescriptions><PropertyGroupDescription PropertyName="Group"/></CollectionViewSource.GroupDescriptions>
  </CollectionViewSource></Window.Resources>
- <Border Style="{StaticResource Panel}" Padding="20"><Grid>
- <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
- <Grid Margin="0,0,0,16"><TextBlock Text="ГОРЯЧИЕ КЛАВИШИ" FontSize="18"/>
- <Button Content="×" HorizontalAlignment="Right" Style="{StaticResource CaptionButton}" Command="{Binding CloseCommand}" shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Закрыть · Esc"/></Grid>
- <TextBlock Grid.Row="1" Text="Клавиши холста работают, когда он в фокусе: сначала нажмите на него. В полях ввода обычные Ctrl+A/C/V/Z редактируют текст. Перед другой операцией завершите жест или нажмите Esc. Буквенные клавиши указаны по латинской раскладке (физические позиции)." TextWrapping="Wrap" FontSize="11" Margin="0,0,0,12"/>
+ <Border Style="{StaticResource Panel}" Padding="14,0,14,12"><Grid>
+ <Grid.RowDefinitions><RowDefinition Height="40"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+ <DockPanel Margin="4,0,0,0">
+ <Button DockPanel.Dock="Right" Content="×" AutomationProperties.Name="Закрыть" Style="{DynamicResource CloseCaptionButton}" Command="{Binding CloseCommand}" shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Закрыть · Esc"/>
+ <TextBlock Text="Горячие клавиши" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
+ </DockPanel>
+ <TextBlock Grid.Row="1" Text="Клавиши холста работают, когда он в фокусе: сначала нажмите на него. В полях ввода обычные Ctrl+A/C/V/Z редактируют текст. Перед другой операцией завершите жест или нажмите Esc. Буквенные клавиши указаны по латинской раскладке (физические позиции)." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" FontSize="12" Margin="0,0,0,12"/>
  <TextBox Grid.Row="2" x:Name="HelpSearch" Text="{Binding Search,UpdateSourceTrigger=PropertyChanged}" ToolTip="Поиск по действию, категории или сочетанию" AutomationProperties.Name="Поиск горячих клавиш"/>
  <ListBox Grid.Row="3" ItemsSource="{Binding Source={StaticResource GroupedShortcuts}}" Margin="0,12" HorizontalContentAlignment="Stretch">
- <ListBox.GroupStyle><GroupStyle><GroupStyle.HeaderTemplate><DataTemplate><TextBlock Text="{Binding Name}" Foreground="{DynamicResource AccentBrush}" Margin="0,14,0,6" FontWeight="Bold"/></DataTemplate></GroupStyle.HeaderTemplate></GroupStyle></ListBox.GroupStyle>
- <ListBox.ItemTemplate><DataTemplate><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="225"/><ColumnDefinition/></Grid.ColumnDefinitions>
- <TextBlock Text="{Binding Keys}" TextWrapping="Wrap" Foreground="{DynamicResource AccentBrush}" FontSize="11"/>
- <StackPanel Grid.Column="1"><TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="11"/><TextBlock Text="{Binding Scope}" Style="{StaticResource MutedText}" Margin="0,4,0,0"/></StackPanel>
+ <ListBox.GroupStyle><GroupStyle><GroupStyle.HeaderTemplate><DataTemplate><TextBlock Text="{Binding Name}" Foreground="{DynamicResource MutedBrush}" Margin="6,12,0,6" FontWeight="SemiBold"/></DataTemplate></GroupStyle.HeaderTemplate></GroupStyle></ListBox.GroupStyle>
+ <ListBox.ItemTemplate><DataTemplate><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+ <Border Background="{DynamicResource RaisedBrush}" BorderBrush="{DynamicResource SubtleLineBrush}" BorderThickness="1" CornerRadius="4" Padding="6,3" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0">
+  <TextBlock Text="{Binding Keys}" TextWrapping="Wrap" FontFamily="{StaticResource MonoFont}" FontSize="12"/>
+ </Border>
+ <StackPanel Grid.Column="1"><TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="13"/><TextBlock Text="{Binding Scope}" TextWrapping="Wrap" Style="{StaticResource MutedText}" Margin="0,4,0,0"/></StackPanel>
  </Grid></DataTemplate></ListBox.ItemTemplate></ListBox>
- <TextBlock Grid.Row="4" Text="F1 — открыть эту справку · W — перемычка · V / Esc — перемещение · F — вписать всё" TextWrapping="Wrap" Style="{StaticResource MutedText}"/>
+ <TextBlock Grid.Row="4" Text="F1 — открыть эту справку · W — перемычка · V / Esc — перемещение" TextWrapping="Wrap" Style="{StaticResource MutedText}"/>
  </Grid></Border>
 </Window>

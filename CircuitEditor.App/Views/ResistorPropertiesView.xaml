@@ -6,7 +6,7 @@
         <ComboBox ItemsSource="{Binding Series}" SelectedItem="{Binding SelectedSeries}" AutomationProperties.Name="Ряд номиналов"/>
         <TextBlock Text="СОПРОТИВЛЕНИЕ" Style="{StaticResource MutedText}" Margin="0,14,0,7"/>
         <ComboBox ItemsSource="{Binding Options}" DisplayMemberPath="Text" SelectedItem="{Binding SelectedOption}"
-                  MaxDropDownHeight="300" AutomationProperties.Name="Сопротивление"/>
+                  MaxDropDownHeight="212" AutomationProperties.Name="Сопротивление"/>
         <TextBlock Text="{Binding MarkingNote}" TextWrapping="Wrap" Style="{StaticResource MutedText}" Margin="0,6,0,0"/>
         <StackPanel>
             <StackPanel.Style><Style TargetType="StackPanel">

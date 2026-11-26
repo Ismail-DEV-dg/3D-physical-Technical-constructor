@@ -8,6 +8,26 @@ namespace CircuitEditor.Tests;
 public sealed class WireEditingTests
 {
     [Fact]
+    public void HoveringShortWireShowsBothBreadboardHolesInOneLabel()
+    {
+        using var environment = new Stage4TestEnvironment();
+        var project = environment.Project;
+        var board = environment.Mockup.Board!;
+        var start = WireEndpoint.Hole(board.Id, "left/C/08");
+        var end = WireEndpoint.Hole(board.Id, "left/D/08");
+        var first = WireGeometry.Resolve(project.Model, start)!.Value;
+        var last = WireGeometry.Resolve(project.Model, end)!.Value;
+        var wire = new Wire(start, end);
+        project.Model.Circuit.PutWire(wire);
+        project.Refresh();
+
+        project.Wiring.Handle(new(CanvasAction.Move), new((first.X + last.X) / 2, (first.Y + last.Y) / 2));
+        Assert.Equal("Провод на макетной плате: C8 — D8", project.Wiring.EndpointSummary);
+        project.Wiring.Handle(new(CanvasAction.Move), new(-10, -10));
+        Assert.Null(project.Wiring.EndpointSummary);
+    }
+
+    [Fact]
     public void EndpointFollowsMovingComponentAndDuplicateIsDirectionIndependent()
     {
         using var e=new Stage4TestEnvironment(); var p=e.Project; var c=p.Add(p.Library.Single(d=>d.Id=="resistor"))!;

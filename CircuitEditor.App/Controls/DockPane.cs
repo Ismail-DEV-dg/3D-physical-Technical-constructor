@@ -21,6 +21,15 @@ public sealed class DockPane : ContentControl
         get => (bool)GetValue(IsBottomProperty);
         set => SetValue(IsBottomProperty, value);
     }
+
+    public static readonly DependencyProperty BadgeProperty = DependencyProperty.Register(
+        nameof(Badge), typeof(string), typeof(DockPane));
+    public string? Badge
+    {
+        get => (string?)GetValue(BadgeProperty);
+        set => SetValue(BadgeProperty, value);
+    }
+
     protected override void OnMouseLeave(MouseEventArgs e)
     {
         base.OnMouseLeave(e);

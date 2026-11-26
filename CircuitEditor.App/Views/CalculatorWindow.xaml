@@ -2,44 +2,51 @@
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Icon="pack://application:,,,/CircuitEditor.App;component/Branding/logo.ico"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
- WindowStyle="SingleBorderWindow" Title="Калькулятор" Width="720" Height="540" MinWidth="650" MinHeight="490" WindowStartupLocation="CenterOwner"
+ UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display" WindowStyle="SingleBorderWindow" Title="Калькулятор" Width="840" Height="540" MinWidth="650" MinHeight="490" WindowStartupLocation="CenterOwner"
  Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextBrush}" FontFamily="{StaticResource UiFont}">
- <shell:WindowChrome.WindowChrome><shell:WindowChrome CaptionHeight="45" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></shell:WindowChrome.WindowChrome>
- <Grid Margin="18"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition/><RowDefinition Height="100"/></Grid.RowDefinitions>
- <Grid Margin="0,0,0,16"><TextBlock Text="КАЛЬКУЛЯТОР · единицы СИ" FontSize="18"/><Button Content="×" HorizontalAlignment="Right" Style="{StaticResource CaptionButton}" Command="{Binding CloseCommand}" shell:WindowChrome.IsHitTestVisibleInChrome="True"/></Grid>
- <TabControl Grid.Row="1">
- <TabItem Header="Закон Ома"><StackPanel Margin="14">
- <TextBlock Text="Заполните ровно два поля. Например: 5 В, 20 мА, 1 kΩ, 0.25 Вт." TextWrapping="Wrap" Margin="0,0,0,10"/>
- <UniformGrid Columns="2"><TextBlock Text="Напряжение U"/><TextBox Text="{Binding U}"/>
- <TextBlock Text="Ток I"/><TextBox Text="{Binding I}"/>
- <TextBlock Text="Сопротивление R"/><TextBox Text="{Binding R}"/>
- <TextBlock Text="Мощность P"/><TextBox Text="{Binding P}"/></UniformGrid>
+ <shell:WindowChrome.WindowChrome><shell:WindowChrome CaptionHeight="39" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></shell:WindowChrome.WindowChrome>
+ <Border Background="{DynamicResource ChromeBrush}" BorderBrush="{DynamicResource SubtleLineBrush}" BorderThickness="1">
+ <Grid Margin="14,0,14,14">
+ <Grid.RowDefinitions><RowDefinition Height="42"/><RowDefinition/></Grid.RowDefinitions>
+ <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="220"/></Grid.ColumnDefinitions>
+ <DockPanel Grid.ColumnSpan="2" Margin="6,0,0,4">
+  <Button DockPanel.Dock="Right" Content="×" Margin="0,0,-4,0" ToolTip="Закрыть" AutomationProperties.Name="Закрыть"
+          Style="{DynamicResource CloseCaptionButton}" Command="{Binding CloseCommand}" shell:WindowChrome.IsHitTestVisibleInChrome="True"/>
+  <TextBlock Text="Калькулятор цепей" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
+ </DockPanel>
+ <TabControl Grid.Row="1" Margin="0,0,10,0">
+ <TabItem Header="Закон Ома"><ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel Margin="12">
+ <TextBlock Text="Заполните ровно два поля. Например: 5 В, 20 мА, 1 кОм, 0,25 Вт." TextWrapping="Wrap" Margin="0,0,0,10"/>
+ <UniformGrid Columns="2"><TextBlock Text="Напряжение U" VerticalAlignment="Center"/><TextBox Text="{Binding U}"/>
+ <TextBlock Text="Ток I" VerticalAlignment="Center"/><TextBox Text="{Binding I}"/>
+ <TextBlock Text="Сопротивление R" VerticalAlignment="Center"/><TextBox Text="{Binding R}"/>
+ <TextBlock Text="Мощность P" VerticalAlignment="Center"/><TextBox Text="{Binding P}"/></UniformGrid>
  <Button Content="Рассчитать U / I / R / P" Command="{Binding OhmCommand}" Margin="0,12"/>
- </StackPanel></TabItem>
- <TabItem Header="Делитель"><StackPanel Margin="14">
- <TextBlock Text="Ненагруженный делитель: Uout = U × R2 / (R1 + R2)" Margin="0,0,0,10"/>
+ </StackPanel></ScrollViewer></TabItem>
+ <TabItem Header="Делитель"><ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel Margin="12">
+ <TextBlock Text="Ненагруженный делитель: Uout = U × R2 / (R1 + R2)" TextWrapping="Wrap" Margin="0,0,0,10"/>
  <UniformGrid Columns="2"><TextBlock Text="Питание"/><TextBox Text="{Binding DividerSupply}"/>
  <TextBlock Text="Верхний R1"/><TextBox Text="{Binding Upper}"/>
  <TextBlock Text="Нижний R2"/><TextBox Text="{Binding Lower}"/></UniformGrid>
  <Button Content="Рассчитать делитель" Command="{Binding DividerCommand}" Margin="0,12"/>
- </StackPanel></TabItem>
- <TabItem Header="LED"><StackPanel Margin="14">
- <TextBlock Text="Профиль цвета задаёт Vf из JSON; выбранный LED учитывает свои переопределения." TextWrapping="Wrap" Margin="0,0,0,10"/>
- <UniformGrid Columns="2"><TextBlock Text="Цвет LED"/><ComboBox ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}" DisplayMemberPath="Name"/>
+ </StackPanel></ScrollViewer></TabItem>
+ <TabItem Header="Светодиод"><ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel Margin="12">
+ <TextBlock Text="Прямое напряжение зависит от цвета или настроек выбранного светодиода." TextWrapping="Wrap" Margin="0,0,0,10"/>
+ <UniformGrid Columns="2"><TextBlock Text="Цвет светодиода"/><ComboBox ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}" DisplayMemberPath="Name"/>
  <TextBlock Text="Питание"/><TextBox Text="{Binding LedSupply}"/>
  <TextBlock Text="Желаемый ток"/><TextBox Text="{Binding LedCurrent}"/>
  <TextBlock Text="Ряд номиналов"/><ComboBox ItemsSource="{Binding SeriesOptions}" SelectedItem="{Binding Series}"/></UniformGrid>
  <Button Content="Подобрать резистор вверх" Command="{Binding LedCommand}" Margin="0,12"/>
- </StackPanel></TabItem>
- <TabItem Header="Полосы"><StackPanel Margin="14">
+ </StackPanel></ScrollViewer></TabItem>
+ <TabItem Header="Полосы"><ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"><StackPanel Margin="12">
  <UniformGrid Columns="2"><TextBlock Text="Номинал"/><TextBox Text="{Binding BandResistance}"/>
  <TextBlock Text="Количество полос"/><ComboBox ItemsSource="{Binding BandCounts}" SelectedItem="{Binding BandCount}"/></UniformGrid>
  <ItemsControl ItemsSource="{Binding VisibleBands}" Margin="0,10"><ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
- <ItemsControl.ItemTemplate><DataTemplate><Border Background="{Binding}" Width="22" Height="45" Margin="4"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
+ <ItemsControl.ItemTemplate><DataTemplate><Border Background="{Binding}" Width="18" Height="36" CornerRadius="3" Margin="3"/></DataTemplate></ItemsControl.ItemTemplate></ItemsControl>
  <TextBlock Text="Обратный расчёт: выберите цвета слева направо. Для 4 полос пятое поле игнорируется." TextWrapping="Wrap"/>
  <UniformGrid Columns="5"><UniformGrid.Resources>
  <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}"><Setter Property="ItemTemplate"><Setter.Value>
- <DataTemplate><Border Background="{Binding}" Width="35" Height="18" ToolTip="{Binding}" BorderBrush="Gray" BorderThickness="1"/></DataTemplate>
+ <DataTemplate><Border Background="{Binding}" Width="18" Height="14" CornerRadius="3" ToolTip="{Binding}" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1"/></DataTemplate>
  </Setter.Value></Setter></Style></UniformGrid.Resources>
  <ComboBox ItemsSource="{Binding Colors}" SelectedItem="{Binding Bands[0]}"/>
  <ComboBox ItemsSource="{Binding Colors}" SelectedItem="{Binding Bands[1]}"/>
@@ -49,8 +56,16 @@
  </UniformGrid>
  <WrapPanel Margin="0,12"><Button Content="Номинал → полосы" Command="{Binding EncodeBandsCommand}" Margin="0,0,10,0"/>
  <Button Content="Полосы → номинал" Command="{Binding DecodeBandsCommand}"/></WrapPanel>
- </StackPanel></TabItem>
+ </StackPanel></ScrollViewer></TabItem>
  </TabControl>
- <Border Grid.Row="2" Style="{StaticResource Panel}" Margin="0,14,0,0" Padding="14"><TextBlock Text="{Binding Result}" TextWrapping="Wrap"/></Border>
+ <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource Panel}" Background="{DynamicResource PanelBrush}" Padding="14">
+  <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+  <StackPanel>
+   <TextBlock Text="Результат" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,12"/>
+   <TextBlock Text="{Binding Result}" TextWrapping="Wrap" FontFamily="{StaticResource MonoFont}" FontSize="14"/>
+  </StackPanel>
+  </ScrollViewer>
+ </Border>
  </Grid>
+ </Border>
 </Window>

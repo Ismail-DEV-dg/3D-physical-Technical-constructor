@@ -42,7 +42,7 @@ public sealed class SelectionClipboard
         foreach (var wire in source.Circuit.Wires.Where(w => w.Start.Kind == WireEndpointKind.ComponentContact && w.End.Kind == WireEndpointKind.ComponentContact
             && map.ContainsKey(w.Start.OwnerId) && map.ContainsKey(w.End.OwnerId)))
             wires.Add(new Wire(WireEndpoint.Contact(map[wire.Start.OwnerId], wire.Start.TerminalId), WireEndpoint.Contact(map[wire.End.OwnerId], wire.End.TerminalId),
-                wire.Color, wire.ControlPoints.Select(p => new Layout.LayoutPoint(p.X + dx, p.Y + dy)).ToArray()));
+                wire.Color, wire.ControlPoints.Select(p => new Layout.LayoutPoint(p.X + dx, p.Y + dy)).ToArray(), wire.IsStraight));
         var state = new CircuitProject(new Circuit(target.Circuit.Components.Concat(copies).ToArray(), wires, target.Circuit.Counters),
             target.MockupLayout, target.SchematicLayout, target.Breadboards, target.Footprints, target.Bindings, chips: target.Chips);
         target.Restore(state); return copies.Select(c => c.Id).ToArray();

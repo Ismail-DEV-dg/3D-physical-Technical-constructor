@@ -70,7 +70,7 @@ public sealed class BreadboardSurface : FrameworkElement
             var bounds = drawing.Bounds;
             // Include lead rings and the selected reference above the body, at every rotation.
             var padding = Math.Max(MinimumCullingPaddingMm,
-                item.IsSelected ? item.Reference.Length * RealComponentDrawing.ReferenceFontSizeMm : 0);
+                item.IsSelected ? (item.Reference.Length + item.Model.Value.Length + 2) * RealComponentDrawing.ReferenceFontSizeMm : 0);
             if (!viewport.Intersects(new(bounds.X - padding, bounds.Y - padding,
                 bounds.Width + 2 * padding, bounds.Height + 2 * padding))) continue;
             dc.PushTransform(drawing.Transform);
@@ -83,12 +83,25 @@ public sealed class BreadboardSurface : FrameworkElement
         }
         WireDrawing.Draw(dc, scene, simulation: Simulation, showVoltage: ShowVoltage, showCurrent: ShowCurrent, cache: wires,
             viewport: viewport);
+        if (scene.IsNetInspectionActive)
+            NetInspectionDrawing.Draw(dc, scene, viewport, wires, TryFindResource("WarningBrush") as Brush ?? Brushes.Gold);
+        foreach (var note in scene.Project.Model.MockupNotes)
+            PhysicalDrawing.Text(dc, note.Text, note.X, note.Y, 2.3, PhysicalDrawing.Ink("#EAF3F1"));
+        if (scene.RulerStart is { } start && scene.RulerEnd is { } end)
+        {
+            var ink = PhysicalDrawing.Ink("#FFD47A");
+            dc.DrawLine(new Pen(ink, .4) { DashStyle = DashStyles.Dash }, new Point(start.X, start.Y), new Point(end.X, end.Y));
+            var dx = end.X - start.X;
+            var dy = end.Y - start.Y;
+            PhysicalDrawing.Text(dc, $"{Math.Sqrt(dx * dx + dy * dy):0.##} мм", end.X + 1.5, end.Y - 4, 2.8, ink);
+        }
         AnalysisDrawing.Draw(dc,scene.Project,true);
         VoltageDrawing.Draw(dc,scene.Project,true);
         dc.Pop(); dc.Pop();
     }
     private void RefreshHover()
     {
+        if (Scene?.Project.Wiring.HoveredId is not null) tip.IsOpen = false;
         if(IsMouseOver && Mouse.LeftButton==MouseButtonState.Released && Mouse.RightButton==MouseButtonState.Released && Mouse.MiddleButton==MouseButtonState.Released)UpdateContactHover(Mouse.GetPosition(this));
         else hover.Update(null);
     }
@@ -108,6 +121,7 @@ public sealed class BreadboardSurface : FrameworkElement
         { hover.Update(null);tip.IsOpen = false; return; }
         var point = args.GetPosition(this);
         UpdateContactHover(point);
+        if (scene.Project.Wiring.HoveredId is not null) { tip.IsOpen = false; return; }
         var x = PhysicalSettings.ToMillimeters((point.X - scene.OffsetX) / scene.Zoom);
         var y = PhysicalSettings.ToMillimeters((point.Y - scene.OffsetY) / scene.Zoom);
         var item = scene.Project.Components.LastOrDefault(item => scene.Hit(item, x, y));
@@ -131,6 +145,16 @@ public sealed class BreadboardSurface : FrameworkElement
         if (!Equals(tip.Content, text)) tip.Content = text;
         if (!tip.IsOpen) tip.IsOpen = true;
     }
-    protected override void OnMouseLeave(MouseEventArgs args) { hover.Update(null);tip.IsOpen = false; base.OnMouseLeave(args); }
+    protected override void OnMouseLeave(MouseEventArgs args)
+    {
+        hover.Update(null);
+        tip.IsOpen = false;
+        if (Scene is { } scene && scene.Project.Wiring.HoveredId is not null)
+        {
+            scene.Project.Wiring.HoveredId = null;
+            scene.Revision++;
+        }
+        base.OnMouseLeave(args);
+    }
     protected override void OnMouseDown(MouseButtonEventArgs args) { hover.Update(null);tip.IsOpen = false; base.OnMouseDown(args); }
 }

@@ -2,35 +2,42 @@
  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Icon="pack://application:,,,/CircuitEditor.App;component/Branding/logo.ico"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework" xmlns:views="clr-namespace:CircuitEditor.App.Views"
- Title="{Binding Heading}" Width="1060" Height="750" MinWidth="760" MinHeight="520" WindowStartupLocation="CenterOwner"
+ UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display" Title="{Binding Heading}" Width="1060" Height="750" MinWidth="760" MinHeight="520" WindowStartupLocation="CenterOwner"
  Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextBrush}" FontFamily="{StaticResource UiFont}">
   <Window.Resources>
   <BooleanToVisibilityConverter x:Key="VisibleIf"/>
   <Style x:Key="GuideTile" TargetType="Button" BasedOn="{StaticResource QuietAction}">
-   <Setter Property="Background" Value="{DynamicResource WorkSurfaceBrush}"/>
+   <Setter Property="Background" Value="{DynamicResource RaisedBrush}"/>
    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
    <Setter Property="Padding" Value="16,13"/>
-   <Setter Property="Margin" Value="0,0,9,9"/>
-   <Setter Property="MinHeight" Value="84"/>
+   <Setter Property="Margin" Value="0,0,0,8"/>
+   <Setter Property="MinHeight" Value="66"/>
   </Style>
  </Window.Resources>
- <shell:WindowChrome.WindowChrome><shell:WindowChrome CaptionHeight="48" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></shell:WindowChrome.WindowChrome>
+ <shell:WindowChrome.WindowChrome><shell:WindowChrome CaptionHeight="39" ResizeBorderThickness="6" GlassFrameThickness="0" UseAeroCaptionButtons="False"/></shell:WindowChrome.WindowChrome>
  <Window.InputBindings><KeyBinding Key="Escape" Command="{Binding BackCommand}"/><KeyBinding Key="F" Modifiers="Control" Command="{Binding FocusSearchCommand}"/></Window.InputBindings>
- <Border Style="{StaticResource Panel}" Padding="18"><Grid>
-  <Grid.RowDefinitions><RowDefinition Height="38"/><RowDefinition/></Grid.RowDefinitions>
+ <Border Style="{StaticResource Panel}" Padding="14,0,14,14" Background="{DynamicResource ChromeBrush}"><Grid>
+  <Grid.RowDefinitions><RowDefinition Height="42"/><RowDefinition/></Grid.RowDefinitions>
   <DockPanel>
-   <Button DockPanel.Dock="Right" Content="×" Command="{Binding CloseCommand}" Style="{StaticResource CaptionButton}" shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Закрыть"/>
+   <Button DockPanel.Dock="Right" Content="×" Command="{Binding CloseCommand}" Style="{DynamicResource CloseCaptionButton}" AutomationProperties.Name="Закрыть" shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Закрыть"/>
    <Button DockPanel.Dock="Left" Content="‹ Назад" Command="{Binding BackCommand}" Margin="0,0,12,5" Padding="10,4"
            shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Назад · Esc">
     <Button.Style><Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}"><Style.Triggers>
      <DataTrigger Binding="{Binding IsHome}" Value="True"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger>
     </Style.Triggers></Style></Button.Style>
    </Button>
-   <TextBlock Text="{Binding Heading}" FontWeight="Bold" FontSize="18" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+   <TextBlock Text="{Binding Heading}" FontWeight="SemiBold" FontSize="15" VerticalAlignment="Center" TextWrapping="Wrap"/>
   </DockPanel>
   <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Visibility="{Binding IsHome, Converter={StaticResource VisibleIf}}">
    <StackPanel Margin="0,18,5,0">
-    <UniformGrid Columns="2">
+    <DockPanel>
+     <Border DockPanel.Dock="Left" Width="235" Style="{StaticResource Panel}" Background="{DynamicResource PanelBrush}" Margin="0,0,16,0" Padding="16">
+      <StackPanel>
+       <TextBlock Text="Документация" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,10"/>
+       <TextBlock Text="Найдите инструкцию по монтажу, работе редактора или сообщению об ошибке." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" FontSize="13"/>
+      </StackPanel>
+     </Border>
+     <StackPanel>
      <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="errors">
       <StackPanel>
        <TextBlock Text="Ошибки и исправления" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
@@ -61,7 +68,7 @@
        <TextBlock Text="Подключение деталей с учётом логики 3,3 В." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
       </StackPanel>
      </Button>
-    </UniformGrid>
+    </StackPanel></DockPanel>
     <TextBlock Text="{Binding LibraryError}" Foreground="{DynamicResource RedBrush}" TextWrapping="Wrap"/>
    </StackPanel>
   </ScrollViewer>
@@ -80,21 +87,21 @@
    <Grid Grid.Row="1">
     <Grid.ColumnDefinitions><ColumnDefinition Width="255" MinWidth="170"/><ColumnDefinition Width="6"/><ColumnDefinition/></Grid.ColumnDefinitions>
     <ListBox ItemsSource="{Binding Articles}" SelectedItem="{Binding Selected}" HorizontalContentAlignment="Stretch" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-     <ListBox.ItemTemplate><DataTemplate><StackPanel><TextBlock Text="{Binding Title}" TextWrapping="Wrap" FontSize="11"/>
-      <TextBlock Text="{Binding Code}" Foreground="{DynamicResource AccentBrush}" FontSize="9" Margin="0,6,0,0"/></StackPanel></DataTemplate></ListBox.ItemTemplate>
+     <ListBox.ItemTemplate><DataTemplate><StackPanel><TextBlock Text="{Binding Title}" TextWrapping="Wrap" FontSize="13"/>
+      <TextBlock Text="{Binding Code}" Foreground="{DynamicResource MutedBrush}" FontFamily="{StaticResource MonoFont}" FontSize="11" TextWrapping="Wrap" Margin="0,6,0,0"/></StackPanel></DataTemplate></ListBox.ItemTemplate>
     </ListBox>
     <GridSplitter Grid.Column="1" Width="6" HorizontalAlignment="Stretch" ResizeDirection="Columns" ResizeBehavior="PreviousAndNext"/>
     <Grid Grid.Column="2">
      <Grid.RowDefinitions><RowDefinition/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
      <TextBox Text="{Binding ArticleText,Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"
-              HorizontalScrollBarVisibility="Disabled" FontSize="12" Padding="14" ToolTip="Выделите текст и нажмите Ctrl+C"/>
+              HorizontalScrollBarVisibility="Disabled" FontFamily="{StaticResource UiFont}" FontSize="13" Padding="14" ToolTip="Выделите текст и нажмите Ctrl+C"/>
      <WrapPanel Grid.Row="1" Margin="0,8,0,0">
-      <StackPanel Orientation="Horizontal" Margin="0,0,8,0" Visibility="{Binding HasRelatedComponent, Converter={StaticResource VisibleIf}}">
+      <WrapPanel Margin="0,0,8,0" Visibility="{Binding HasRelatedComponent, Converter={StaticResource VisibleIf}}">
        <TextBlock Text="Подключение" VerticalAlignment="Center" Margin="0,0,8,0"/>
        <Button Content="Nano" Command="{Binding OpenRelatedCommand}" CommandParameter="nano" Margin="0,0,4,0"/>
        <Button Content="Uno" Command="{Binding OpenRelatedCommand}" CommandParameter="uno" Margin="0,0,4,0"/>
        <Button Content="ESP32" Command="{Binding OpenRelatedCommand}" CommandParameter="esp32"/>
-      </StackPanel>
+      </WrapPanel>
       <Button Content="Глава руководства" Command="{Binding OpenRelatedCommand}" CommandParameter="application"
               Visibility="{Binding HasRelatedApplication, Converter={StaticResource VisibleIf}}"/>
      </WrapPanel>
@@ -102,8 +109,8 @@
    </Grid>
    <DockPanel Grid.Row="2" Margin="0,12,0,0">
     <Button DockPanel.Dock="Right" Content="Копировать статью" Command="{Binding CopyCommand}" Padding="10,7"/>
-    <StackPanel><TextBlock Text="{Binding CountSummary}" FontSize="10"/>
-     <TextBlock Text="{Binding Feedback}" Foreground="{DynamicResource AccentBrush}" FontSize="10" Margin="0,5,0,0"/></StackPanel>
+    <StackPanel><TextBlock Text="{Binding CountSummary}" FontSize="11" TextWrapping="Wrap"/>
+     <TextBlock Text="{Binding Feedback}" Foreground="{DynamicResource AccentBrush}" TextWrapping="Wrap" FontSize="11" Margin="0,5,0,0"/></StackPanel>
    </DockPanel>
   </Grid>
  </Grid></Border>

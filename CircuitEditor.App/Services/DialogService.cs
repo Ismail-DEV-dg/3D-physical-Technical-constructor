@@ -1,11 +1,13 @@
+using System.IO;
 using System.Windows;
-using Microsoft.Win32;
 using CircuitEditor.Core.Repositories;
 using CircuitEditor.App.ViewModels;
 using CircuitEditor.App.Views;
 namespace CircuitEditor.App.Services;
 public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpService? help=null,IErrorDocumentationService? documentation=null, IInstallationLicenseRepository? license = null) : IDialogService
 {
+    private string? pickerDirectory;
+
     public bool OfferCrashCopy(bool journalWritten) =>
         Choose("Произошла ошибка",
             "Операция прервана. Вы можете продолжить работу или сохранить отдельную копию и закрыть программу. " +
@@ -15,20 +17,32 @@ public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpSe
     public void ShowError(string message) => Choose("Ошибка", message, "ОК");
     public void ShowWarning(string message) => Choose("Предупреждение", message, "ОК");
     public string? OpenProject() => OpenFile("Circuit Editor (*.circ)|*.circ");
-    public string? OpenFile(string filter)
+    public string? OpenFile(string filter) => PickFile(filter, null, null);
+    public string? SaveFile(string filter, string extension, string? suggested = null) =>
+        PickFile(filter, extension, suggested ?? "Новый проект");
+
+    private string? PickFile(string filter, string? extension, string? suggested)
     {
-        var dialog = new OpenFileDialog { Filter = filter, CheckFileExists = true };
-        return dialog.ShowDialog(Application.Current.MainWindow) == true ? dialog.FileName : null;
+        string? selectedPath = null;
+        var window = new FilePickerWindow { Owner = Application.Current.MainWindow };
+        window.DataContext = new FilePickerViewModel(filter, extension, suggested, pickerDirectory,
+            path => { selectedPath = path; window.DialogResult = path is not null; },
+            path => ChooseOwned(window, "Замена файла", $"Файл «{Path.GetFileName(path)}» уже существует. Заменить его?",
+                "Заменить", "Отмена") == "Заменить");
+        if (window.ShowDialog() != true || selectedPath is null)
+            return null;
+
+        pickerDirectory = Path.GetDirectoryName(selectedPath);
+        return selectedPath;
     }
-    public string? SaveFile(string filter, string extension, string? suggested = null)
-    {
-        var dialog = new SaveFileDialog { Filter = filter, DefaultExt = extension, AddExtension = true, FileName = suggested ?? "Новый проект" };
-        return dialog.ShowDialog(Application.Current.MainWindow) == true ? dialog.FileName : null;
-    }
-    private string? Choose(string title, string message, params string[] choices)
+
+    private string? Choose(string title, string message, params string[] choices) =>
+        ChooseOwned(Application.Current.MainWindow, title, message, choices);
+
+    private string? ChooseOwned(Window? owner, string title, string message, params string[] choices)
     {
         string? result = null;
-        var window = new ChoiceDialog { Owner = Application.Current.MainWindow };
+        var window = new ChoiceDialog { Owner = owner };
         window.DataContext = new ChoiceDialogViewModel(title, message, choices, choice => { result = choice; window.DialogResult = true; },clipboard,help,documentation, () => window.DialogResult = false);
         window.ShowDialog(); return result;
     }
@@ -48,11 +62,7 @@ public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpSe
         else ShowError(result?.Error ?? "Файл LICENSE недоступен.");
     }
 
-    public double? ChooseExportScale() => ChooseExportScale(false);
-
-    public double? ChooseExportScale(bool isThreeD) => Choose("Экспорт PNG", isThreeD
-        ? "Экспортируется вид 3D с текущей камерой и видимыми слоями. Выберите масштаб PNG."
-        : "Экспортируется весь проект в активном представлении. Выберите масштаб PNG.",
+    public double? ChooseExportScale() => Choose("Экспорт PNG", "Экспортируется весь проект в активном представлении. Выберите масштаб PNG.",
         "1×", "2×", "4×", "Отмена") switch
     { "1×" => 1, "2×" => 2, "4×" => 4, _ => null };
 }

@@ -20,6 +20,17 @@ public static class WireGeometry
         return component is not null && footprint is not null && contact is not null
             ? ContactGeometry.World(footprint, contact, project.MockupLayout.Get(component.Id), PhysicalSettings.FreeGridMm) : null;
     }
+    /// <summary>Возвращает штатную роль физического вывода компонента.</summary>
+    public static PinType? PinRole(CircuitProject project, WireEndpoint endpoint)
+    {
+        if (endpoint.Kind != WireEndpointKind.ComponentContact) return null;
+        var component = project.Circuit.Components.FirstOrDefault(item => item.Id == endpoint.OwnerId);
+        if (component is null) return null;
+        var footprint = project.Footprints.FirstOrDefault(item => item.ComponentDefinitionId == component.Definition.Id);
+        var pin = footprint?.Contacts.FirstOrDefault(contact => contact.Id == endpoint.TerminalId)?.ElectricalPinId;
+        return component.Definition.Pins.FirstOrDefault(definition => definition.Id == pin)?.Type;
+    }
+
     /// <summary>Атомарная проверка существования, длины и дубликатов.</summary>
     public static string? Validate(CircuitProject project, Wire wire)
     {

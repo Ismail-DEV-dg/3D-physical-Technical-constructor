@@ -59,6 +59,34 @@ public sealed class WireBendInsertionTests
     }
 
     [Fact]
+    public void StraightSegmentsKeepTheirBendAndRouteStyleOnUndo()
+    {
+        using var environment = new Stage4TestEnvironment();
+        var project = environment.Project;
+        var editor = project.Wiring;
+        var board = environment.Mockup.Board!;
+        var wire = new Wire(
+            WireEndpoint.Hole(board.Id, board.Definition.Holes.First().Id),
+            WireEndpoint.Hole(board.Id, board.Definition.Holes.Last().Id),
+            WirePalette.Colors[0], [new(150, 80)]);
+        project.Model.Circuit.PutWire(wire);
+        project.Refresh();
+        project.History.Clear();
+        editor.SelectForInspection(wire.Id);
+        editor.IsStraight = true;
+
+        var points = editor.Points(editor.Selected!);
+        Assert.Equal(points, WireCurve.Sample(points, isStraight: true));
+        var midpoint = new LayoutPoint((points[1].X + points[2].X) / 2, (points[1].Y + points[2].Y) / 2);
+        Assert.Equal(1, WireCurve.FindInsertionIndex(points, midpoint, isStraight: true));
+        Assert.Single(editor.Selected!.ControlPoints);
+        project.UndoCommand.Execute(null);
+        Assert.False(Assert.Single(project.Model.Circuit.Wires).IsStraight);
+        project.RedoCommand.Execute(null);
+        Assert.True(Assert.Single(project.Model.Circuit.Wires).IsStraight);
+    }
+
+    [Fact]
     public void EscapeCancelsInsertedBendWithoutHistory()
     {
         using var e = new Stage4TestEnvironment();

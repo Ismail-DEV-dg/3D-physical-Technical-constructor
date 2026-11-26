@@ -11,7 +11,7 @@ public static class SceneWirePath
     /// <summary>Поднимает выборку по длине дуги и сохраняет начальную и конечную высоты.</summary>
     public static ImmutableArray<ScenePoint> Create(Wire wire, ScenePoint start, ScenePoint end, SceneWireProfile style)
     {
-        var route = WireCurve.Sample([new LayoutPoint(start.X, start.Y), .. wire.ControlPoints, new(end.X, end.Y)]);
+        var route = WireCurve.Sample([new LayoutPoint(start.X, start.Y), .. wire.ControlPoints, new(end.X, end.Y)], wire.IsStraight);
         var lengths = new double[route.Count];
         for (var i = 1; i < route.Count; i++)
         {

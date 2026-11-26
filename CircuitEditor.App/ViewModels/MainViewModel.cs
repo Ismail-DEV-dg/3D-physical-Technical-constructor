@@ -70,8 +70,7 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     public DiagnosticsViewModel Diagnostics {get;}
     private void ObserveSketch(object? sender, EventArgs e)
     {
-        if (navigation.Current.Kind != WorkspaceKind.ThreeD)
-            navigation.Navigate(WorkspaceKind.Mockup);
+        navigation.Navigate(WorkspaceKind.Mockup);
     }
 
     private void OnSimulationFrame(object? sender, Core.Simulation.SimulationState state)
@@ -101,6 +100,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         }
     }
 
+    public bool IsMockup => SelectedWorkspace.Kind == WorkspaceKind.Mockup;
+    public bool IsCanvas => SelectedWorkspace.Kind is WorkspaceKind.Mockup or WorkspaceKind.Schematic;
+
     public ThemeKind SelectedTheme
     {
         get => themes.CurrentTheme;
@@ -113,7 +115,9 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
 
     public IReadOnlyList<PaletteItemViewModel> Palette => string.IsNullOrWhiteSpace(PaletteFilter)
         ? library : library.Where(item => item.Name.Contains(PaletteFilter, StringComparison.OrdinalIgnoreCase)
-            || item.Category.Contains(PaletteFilter, StringComparison.OrdinalIgnoreCase)).ToArray();
+            || item.Category.Contains(PaletteFilter, StringComparison.OrdinalIgnoreCase)
+            || item.Definition.Id.Contains(PaletteFilter, StringComparison.OrdinalIgnoreCase)
+            || item.Definition.Name.Contains(PaletteFilter, StringComparison.OrdinalIgnoreCase)).ToArray();
     public SchematicViewModel Schematic { get; }
     public BreadboardViewModel Mockup { get; }
     public ProjectViewModel Project => Schematic.Project;
@@ -166,6 +170,24 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     }
 
     [RelayCommand]
+    private void ClearPaletteSearch() => PaletteFilter = "";
+
+    [RelayCommand]
+    private void SetZoom(string? value)
+    {
+        if (!IsCanvas || Project.InGesture || !int.TryParse(value, out var percent)) return;
+        WorkspaceViewport.SetZoom(this, percent / 100d);
+    }
+
+    [RelayCommand]
+    private void PlaceComponent(PaletteItemViewModel? item)
+    {
+        if (item is null || !Project.CanEdit) return;
+        navigation.Navigate(WorkspaceKind.Mockup);
+        Mockup.ArmPlacement(item.Definition.Id);
+    }
+
+    [RelayCommand]
     private void Navigate(WorkspaceKind kind)
     {
         if (!navigation.Navigate(kind))
@@ -214,6 +236,8 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
         if (args.PropertyName == nameof(INavigationService.Current))
         {
             OnPropertyChanged(nameof(SelectedWorkspace));
+            OnPropertyChanged(nameof(IsMockup));
+            OnPropertyChanged(nameof(IsCanvas));
             UndoActiveCommand.NotifyCanExecuteChanged();RedoActiveCommand.NotifyCanExecuteChanged();
             OnPropertyChanged(nameof(CursorX)); OnPropertyChanged(nameof(CursorY)); OnPropertyChanged(nameof(ZoomPercent));
             OnPropertyChanged(nameof(CoordinateUnit));

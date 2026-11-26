@@ -1,0 +1,88 @@
+<UserControl x:Class="CircuitEditor.App.Views.StartupView"
+ xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:controls="clr-namespace:CircuitEditor.App.Controls"
+ IsHitTestVisible="False" Focusable="False" AutomationProperties.Name="Запуск Circuit Editor">
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Source={x:Static SystemParameters.ClientAreaAnimation}}" Value="False">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
+    <UserControl.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard>
+                <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="Aurora" Storyboard.TargetProperty="Phase"
+                                     From="0" To="1.18" Duration="0:0:4"/>
+                    <DoubleAnimation Storyboard.TargetName="Seal" Storyboard.TargetProperty="Opacity"
+                                     From="0" To="1" Duration="0:0:0.65"/>
+                    <DoubleAnimation Storyboard.TargetName="Avatar" Storyboard.TargetProperty="Opacity"
+                                     From="0" To="1" Duration="0:0:0.90">
+                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation Storyboard.TargetName="AvatarScale" Storyboard.TargetProperty="ScaleX"
+                                     From=".85" To="1" Duration="0:0:0.90">
+                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation Storyboard.TargetName="AvatarScale" Storyboard.TargetProperty="ScaleY"
+                                     From=".85" To="1" Duration="0:0:0.90">
+                        <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <DoubleAnimation Storyboard.TargetName="Lettering" Storyboard.TargetProperty="Progress"
+                                     From="0" To="1" BeginTime="0:0:0.50" Duration="0:0:2.15"/>
+                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="LetteringGlow" Storyboard.TargetProperty="Opacity"
+                                                  BeginTime="0:0:2.65">
+                        <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0"/>
+                        <EasingDoubleKeyFrame KeyTime="0:0:0.27" Value=".95">
+                            <EasingDoubleKeyFrame.EasingFunction><CubicEase EasingMode="EaseOut"/></EasingDoubleKeyFrame.EasingFunction>
+                        </EasingDoubleKeyFrame>
+                        <EasingDoubleKeyFrame KeyTime="0:0:0.90" Value=".64">
+                            <EasingDoubleKeyFrame.EasingFunction><SineEase EasingMode="EaseInOut"/></EasingDoubleKeyFrame.EasingFunction>
+                        </EasingDoubleKeyFrame>
+                    </DoubleAnimationUsingKeyFrames>
+                    <DoubleAnimation Storyboard.TargetName="Intro" Storyboard.TargetProperty="Opacity"
+                                     From="1" To="0" BeginTime="0:0:3.65" Duration="0:0:0.35">
+                        <DoubleAnimation.EasingFunction><SineEase EasingMode="EaseInOut"/></DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                    <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Intro" Storyboard.TargetProperty="Visibility">
+                        <DiscreteObjectKeyFrame KeyTime="0:0:4" Value="{x:Static Visibility.Collapsed}"/>
+                    </ObjectAnimationUsingKeyFrames>
+                </Storyboard>
+            </BeginStoryboard>
+        </EventTrigger>
+    </UserControl.Triggers>
+    <Grid x:Name="Intro" Background="#121212">
+        <controls:StartupAurora x:Name="Aurora" RenderOptions.BitmapScalingMode="Linear"/>
+        <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="24"
+                 VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Grid Width="294" Height="294">
+                <Ellipse x:Name="Seal" Opacity="0" Fill="#C9121212"/>
+                <Ellipse x:Name="SealRim" Stroke="#F5FFFFFF" StrokeThickness="1.25">
+                    <Ellipse.Effect>
+                        <DropShadowEffect Color="#A2FBE8" BlurRadius="19" ShadowDepth="0" Opacity=".85"/>
+                    </Ellipse.Effect>
+                </Ellipse>
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Border x:Name="Avatar" Width="74" Height="74" CornerRadius="16" Background="#1E2524"
+                            Opacity="0" RenderTransformOrigin=".5,.5">
+                        <Border.RenderTransform><ScaleTransform x:Name="AvatarScale" ScaleX=".85" ScaleY=".85"/></Border.RenderTransform>
+                        <Image Source="pack://application:,,,/CircuitEditor.App;component/Branding/logo-256.png"
+                               Height="74" Width="74" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality">
+                            <Image.Clip><RectangleGeometry Rect="0,0,74,74" RadiusX="16" RadiusY="16"/></Image.Clip>
+                        </Image>
+                    </Border>
+                    <controls:StartupLettering x:Name="Lettering" Width="248" Height="65" Margin="0,9,0,0"
+                                               AutomationProperties.Name="Circuit Editor">
+                        <controls:StartupLettering.Effect>
+                            <DropShadowEffect x:Name="LetteringGlow" Color="#A2FBE8" BlurRadius="17" ShadowDepth="0" Opacity="0"/>
+                        </controls:StartupLettering.Effect>
+                    </controls:StartupLettering>
+                </StackPanel>
+            </Grid>
+        </Viewbox>
+    </Grid>
+</UserControl>

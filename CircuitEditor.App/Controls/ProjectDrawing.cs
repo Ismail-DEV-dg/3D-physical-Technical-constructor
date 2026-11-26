@@ -32,6 +32,8 @@ internal static class ProjectDrawing
                 dc.Pop(); dc.Pop();
             }
             WireDrawing.Draw(dc,mockup,false);
+            foreach (var note in mockup.Project.Model.MockupNotes)
+                PhysicalDrawing.Text(dc, note.Text, note.X, note.Y, 2.3, Brushes.Black);
             dc.Pop();
         }
         return drawing;

@@ -12,14 +12,13 @@ public sealed class MainViewModelTests
     {
         var project = TestProjectFactory.Create();
         return new NavigationService(TestProjectFactory.Mockup(project), new SchematicViewModel(project),
-            new ChipViewModel(), new ThreeDViewModel(), new CodeViewModel());
+            new ChipViewModel(), new CodeViewModel());
     }
 
     [Theory]
     [InlineData(WorkspaceKind.Mockup, typeof(BreadboardViewModel))]
     [InlineData(WorkspaceKind.Schematic, typeof(SchematicViewModel))]
     [InlineData(WorkspaceKind.Chip, typeof(ChipViewModel))]
-    [InlineData(WorkspaceKind.ThreeD, typeof(ThreeDViewModel))]
     [InlineData(WorkspaceKind.Code, typeof(CodeViewModel))]
     public void NavigationCommandSelectsViewModel(WorkspaceKind destination, Type expectedType)
     {

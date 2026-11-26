@@ -6,10 +6,10 @@ public static class WireCurve
     /// <summary>Число отрезков на один участок.</summary>
     public const int SegmentsPerSpan = 12;
     /// <summary>Индекс участка кривой под указателем; совпадает с позицией вставки нового управляющего узла.</summary>
-    public static int FindInsertionIndex(IReadOnlyList<LayoutPoint> points, LayoutPoint pointer)
+    public static int FindInsertionIndex(IReadOnlyList<LayoutPoint> points, LayoutPoint pointer, bool isStraight = false)
     {
         if (points.Count < 2) throw new ArgumentException("Для кривой нужны два конца.", nameof(points));
-        var sampled = Sample(points);
+        var sampled = Sample(points, isStraight);
         var nearestDistance = double.PositiveInfinity;
         var nearestSegment = 0;
         for (var i = 0; i < sampled.Count - 1; i++)
@@ -26,13 +26,13 @@ public static class WireCurve
             nearestDistance = distance;
             nearestSegment = i;
         }
-        return nearestSegment / SegmentsPerSpan;
+        return isStraight ? nearestSegment : nearestSegment / SegmentsPerSpan;
     }
 
     /// <summary>Катмулл—Ром без изменения концов и электрической связности.</summary>
-    public static IReadOnlyList<LayoutPoint> Sample(IReadOnlyList<LayoutPoint> points)
+    public static IReadOnlyList<LayoutPoint> Sample(IReadOnlyList<LayoutPoint> points, bool isStraight = false)
     {
-        if (points.Count < 2) return points;
+        if (isStraight || points.Count < 2) return points;
         var result = new List<LayoutPoint>();
         for (var i = 0; i < points.Count - 1; i++)
         {

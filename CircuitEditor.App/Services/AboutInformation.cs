@@ -18,7 +18,6 @@ internal static class AboutInformation
 
             Основные зависимости:
             AvalonEdit {Version(typeof(TextEditor))} · MIT
-            HelixToolkit.Wpf {Version(typeof(HelixToolkit.Wpf.HelixViewport3D))} · MIT
             CommunityToolkit.Mvvm {Version(typeof(CommunityToolkit.Mvvm.ComponentModel.ObservableObject))} · MIT
             Microsoft.Extensions.DependencyInjection {Version(typeof(Microsoft.Extensions.DependencyInjection.ServiceCollectionContainerBuilderExtensions))} · MIT
             JetBrains Mono · SIL Open Font License 1.1

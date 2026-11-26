@@ -6,11 +6,13 @@ namespace CircuitEditor.App.ViewModels;
 internal sealed class WirePath
 {
     private readonly LayoutPoint[] terminals;
+    private readonly bool isStraight;
 
-    public WirePath(LayoutPoint[] terminals)
+    public WirePath(LayoutPoint[] terminals, bool isStraight)
     {
         this.terminals = terminals;
-        Points = WireCurve.Sample(terminals);
+        this.isStraight = isStraight;
+        Points = WireCurve.Sample(terminals, isStraight);
         Bounds = GetBounds(Points);
     }
 
@@ -42,6 +44,6 @@ internal sealed class WirePath
         var moved = (LayoutPoint[])terminals.Clone();
         moved[0] = first;
         moved[^1] = last;
-        return new(moved);
+        return new(moved, isStraight);
     }
 }

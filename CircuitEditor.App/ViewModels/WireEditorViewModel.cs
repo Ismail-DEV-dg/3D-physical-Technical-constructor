@@ -22,10 +22,52 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
         project.InvalidatePresentation();
     }
     public void Exit(){IsWiring=false;Cancel();selectedId=null;Refresh();}
-    [ObservableProperty] private Guid? hoveredId;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(EndpointSummary))]
+    private Guid? hoveredId;
     [ObservableProperty] private LayoutPoint pointer;
     public Wire? Selected => selectedId is Guid id ? project.Model.Circuit.Wires.FirstOrDefault(w => w.Id == id) : null;
     public bool HasSelection => Selected is not null;
+    public string? EndpointSummary
+    {
+        get
+        {
+            var wire = HoveredId is { } id
+                ? project.Model.Circuit.Wires.FirstOrDefault(item => item.Id == id) ?? Selected
+                : Selected;
+            if (wire is null) return null;
+            var sameBoard = wire.Start.Kind == WireEndpointKind.BreadboardHole
+                && wire.End.Kind == WireEndpointKind.BreadboardHole && wire.Start.OwnerId == wire.End.OwnerId;
+            var label = sameBoard ? "Провод на макетной плате" : "Провод";
+            return $"{label}: {DescribeEndpoint(wire.Start, !sameBoard)} — {DescribeEndpoint(wire.End, !sameBoard)}";
+        }
+    }
+
+    private string DescribeEndpoint(WireEndpoint endpoint, bool includeBoard)
+    {
+        if (endpoint.Kind == WireEndpointKind.ComponentContact)
+        {
+            var component = project.Components.FirstOrDefault(item => item.Model.Id == endpoint.OwnerId);
+            var contact = component?.Footprint.Contacts.FirstOrDefault(item => item.Id == endpoint.TerminalId);
+            return component is null ? endpoint.TerminalId : $"{component.Reference} · {contact?.ElectricalPinId ?? endpoint.TerminalId}";
+        }
+
+        var parts = endpoint.TerminalId.Split('/');
+        var board = includeBoard ? "Макетная плата · " : "";
+        if (parts.Length == 3 && parts[0] is "left" or "right" && int.TryParse(parts[2], out var row))
+            return $"{board}{parts[1]}{row}";
+        if (parts.Length != 2 || !int.TryParse(parts[1], out var hole))
+            return board + endpoint.TerminalId;
+        var rail = parts[0] switch
+        {
+            "left-positive" => "левая +",
+            "left-negative" => "левая −",
+            "right-positive" => "правая +",
+            "right-negative" => "правая −",
+            _ => parts[0]
+        };
+        return $"Шина {rail} · {hole}";
+    }
     public LayoutPoint? DraggedStart => draggingNode == -1 ? Pointer : null;
     public LayoutPoint? DraggedEnd => draggingNode is not null && Selected is { } w && draggingNode == w.ControlPoints.Count ? Pointer : null;
     public WireEndpoint? PreviewStart => first;
@@ -40,14 +82,30 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
             color = value;
             if (Selected is { } wire && wire.Color != value)
             {
-                project.Model.Circuit.PutWire(new Wire(wire.Id, wire.Start, wire.End, value, wire.ControlPoints));
+                project.Model.Circuit.PutWire(new Wire(wire.Id, wire.Start, wire.End, value, wire.ControlPoints, wire.IsStraight));
+                project.Refresh();
+            }
+            OnPropertyChanged();
+        }
+    }
+    private bool straightForNewWires;
+    public bool IsStraight
+    {
+        get => Selected?.IsStraight ?? straightForNewWires;
+        set
+        {
+            if (!project.CanEdit) return;
+            straightForNewWires = value;
+            if (Selected is { } wire && wire.IsStraight != value)
+            {
+                project.Model.Circuit.PutWire(new Wire(wire.Id, wire.Start, wire.End, wire.Color, wire.ControlPoints, value));
                 project.Refresh();
             }
             OnPropertyChanged();
         }
     }
     public void SelectForInspection(Guid? id) { if (selectedId != id) { selectedId = id; Refresh(); } }
-    public void Refresh() { OnPropertyChanged(nameof(Selected)); OnPropertyChanged(nameof(HasSelection)); OnPropertyChanged(nameof(Color)); }
+    public void Refresh() { OnPropertyChanged(nameof(Selected)); OnPropertyChanged(nameof(HasSelection)); OnPropertyChanged(nameof(EndpointSummary)); OnPropertyChanged(nameof(Color)); OnPropertyChanged(nameof(IsStraight)); }
     public bool Handle(CanvasInput input, LayoutPoint point)
     {
         if (!project.CanEdit || input.Pan) return false;
@@ -81,7 +139,7 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
             if (end is null) { project.StatusMessage = "Выберите контакт или отверстие; Esc — отмена."; return true; }
             try
             {
-                var wire = new Wire(first, end, color);
+                var wire = new Wire(first, end, color, isStraight: straightForNewWires);
                 if (WireGeometry.Validate(project.Model, wire) is { } error) { project.StatusMessage = error; return true; }
                 project.Model.Circuit.PutWire(wire); first = null; selectedId = wire.Id;
                 project.Refresh(); Refresh(); project.StatusMessage = "Перемычка создана.";
@@ -105,9 +163,9 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
             {
                 project.BeginGesture("Изгиб перемычки"); original = hit;
                 var nodes = hit.ControlPoints.ToList();
-                draggingNode = WireCurve.FindInsertionIndex(Points(hit), point);
+                draggingNode = WireCurve.FindInsertionIndex(Points(hit), point, hit.IsStraight);
                 nodes.Insert(draggingNode.Value, point);
-                project.Model.Circuit.PutWire(new Wire(hit.Id, hit.Start, hit.End, hit.Color, nodes)); project.Refresh();
+                project.Model.Circuit.PutWire(new Wire(hit.Id, hit.Start, hit.End, hit.Color, nodes, hit.IsStraight)); project.Refresh();
             }
             return true;
         }
@@ -133,7 +191,7 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
             if (start == end) { invalidEnd = true; project.StatusMessage = "Нулевая длина перемычки."; return; }
         }
         else nodes[draggingNode!.Value] = point;
-        try { project.Model.Circuit.PutWire(new Wire(wire.Id, start, end, wire.Color, nodes)); project.Refresh(); }
+        try { project.Model.Circuit.PutWire(new Wire(wire.Id, start, end, wire.Color, nodes, wire.IsStraight)); project.Refresh(); }
         catch (ArgumentException e) { project.StatusMessage = e.Message; }
     }
     public IReadOnlyList<LayoutPoint> Points(Wire wire)
@@ -148,7 +206,7 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
         if (paths.TryGetValue(wire, out var existing)) return existing;
         var terminals = Points(wire);
         if (terminals.Count < 2) return null;
-        var path = new WirePath(terminals.ToArray());
+        var path = new WirePath(terminals.ToArray(), wire.IsStraight);
         paths.Add(wire, path);
         return path;
     }

@@ -32,6 +32,8 @@ public sealed partial class ProjectAnalysisViewModel : ObservableObject, IDispos
         {"Ошибки"=>ErcSeverity.Error,"Предупреждения"=>ErcSeverity.Warning,_=>ErcSeverity.Info})).ToArray();
     public int ErrorCount=>issues.Count(i=>i.Issue.Severity==ErcSeverity.Error);
     public int WarningCount=>issues.Count(i=>i.Issue.Severity==ErcSeverity.Warning);
+    public bool HasErrors => ErrorCount > 0;
+    public bool HasWarnings => WarningCount > 0;
     public string CountSummary=>IsPending ? "ERC: ожидание…" : $"ERC: {ErrorCount} ошибок / {WarningCount} предупреждений";
     partial void OnFilterChanged(string value)=>OnPropertyChanged(nameof(FilteredIssues));
     partial void OnSelectedIssueChanged(ErcIssueViewModel? value)
@@ -88,6 +90,7 @@ public sealed partial class ProjectAnalysisViewModel : ObservableObject, IDispos
     private void Notify()
     {
         OnPropertyChanged(nameof(FilteredIssues));OnPropertyChanged(nameof(ErrorCount));OnPropertyChanged(nameof(WarningCount));OnPropertyChanged(nameof(CountSummary));
+        OnPropertyChanged(nameof(HasErrors)); OnPropertyChanged(nameof(HasWarnings));
         project.InvalidatePresentation();
     }
     public void Dispose(){project.ModelCommitted-=Changed;debounce.Dispose();}

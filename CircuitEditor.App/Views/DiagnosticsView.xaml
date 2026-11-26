@@ -19,16 +19,23 @@
     </Setter.Value>
    </Setter>
   </Style>
+  <Style x:Key="DiagnosticSeverity" TargetType="TextBlock">
+   <Setter Property="Foreground" Value="{DynamicResource AccentHoverBrush}"/>
+   <Style.Triggers>
+    <DataTrigger Binding="{Binding Severity}" Value="Error"><Setter Property="Foreground" Value="{DynamicResource DangerBrush}"/></DataTrigger>
+    <DataTrigger Binding="{Binding Severity}" Value="Warning"><Setter Property="Foreground" Value="{DynamicResource WarningBrush}"/></DataTrigger>
+   </Style.Triggers>
+  </Style>
   <Style x:Key="IssueRow" TargetType="ListBoxItem">
    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
    <Setter Property="Template"><Setter.Value><ControlTemplate TargetType="ListBoxItem">
-    <Border x:Name="Card" Background="{DynamicResource WorkSurfaceBrush}" BorderBrush="{DynamicResource LineBrush}"
+    <Border x:Name="Card" Background="{DynamicResource RaisedBrush}" BorderBrush="{DynamicResource SubtleLineBrush}"
             BorderThickness="1" CornerRadius="10" Margin="0,0,4,7">
      <ContentPresenter HorizontalAlignment="Stretch"/>
     </Border>
     <ControlTemplate.Triggers>
      <Trigger Property="IsMouseOver" Value="True"><Setter TargetName="Card" Property="Background" Value="{DynamicResource RaisedBrush}"/></Trigger>
-     <Trigger Property="IsSelected" Value="True"><Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource PurpleBrush}"/></Trigger>
+     <Trigger Property="IsSelected" Value="True"><Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/></Trigger>
      <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="Card" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/></Trigger>
     </ControlTemplate.Triggers>
    </ControlTemplate></Setter.Value></Setter>
@@ -68,10 +75,20 @@
     <ListBox.ItemTemplate><DataTemplate>
      <Grid>
       <Grid.ColumnDefinitions><ColumnDefinition Width="3"/><ColumnDefinition/></Grid.ColumnDefinitions>
-      <Border Background="{Binding Color}" CornerRadius="1.5" Margin="0,8"/>
+      <Border CornerRadius="1.5" Margin="0,8">
+       <Border.Style>
+        <Style TargetType="Border">
+         <Setter Property="Background" Value="{DynamicResource AccentBrush}"/>
+         <Style.Triggers>
+          <DataTrigger Binding="{Binding Severity}" Value="Error"><Setter Property="Background" Value="{DynamicResource DangerBrush}"/></DataTrigger>
+          <DataTrigger Binding="{Binding Severity}" Value="Warning"><Setter Property="Background" Value="{DynamicResource WarningBrush}"/></DataTrigger>
+         </Style.Triggers>
+        </Style>
+       </Border.Style>
+      </Border>
       <Grid Grid.Column="1" Margin="11,8,9,6">
        <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
-       <TextBlock Text="{Binding Caption}" Foreground="{Binding Color}" FontSize="11" FontWeight="SemiBold" TextWrapping="Wrap"/>
+       <TextBlock Text="{Binding Caption}" Style="{StaticResource DiagnosticSeverity}" FontSize="11" FontWeight="SemiBold" TextWrapping="Wrap"/>
        <TextBox Grid.Row="1" Text="{Binding Message, Mode=OneWay}" Style="{StaticResource DiagnosticMessage}"
                 IsReadOnly="True" TextWrapping="Wrap" Margin="0,3,0,2"
                 ToolTipService.InitialShowDelay="250" ToolTipService.ShowDuration="60000">

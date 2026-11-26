@@ -3,7 +3,7 @@ using CircuitEditor.Core.Export;
 using CommunityToolkit.Mvvm.Input;
 namespace CircuitEditor.App.ViewModels;
 public sealed partial class ExportViewModel(ProjectViewModel project, INavigationService navigation, IDialogService dialogs,
-    IImageExportService images, ISvgExportService svg, IBomExportService bom, IThreeDExportService? threeD = null)
+    IImageExportService images, ISvgExportService svg, IBomExportService bom)
 {
     private void Report(string? error, string success)
     { project.StatusMessage = error ?? success; if (error is not null) dialogs.ShowError(error); }
@@ -11,22 +11,11 @@ public sealed partial class ExportViewModel(ProjectViewModel project, INavigatio
     private void Png()
     {
         var kind = navigation.Current.Kind;
-        if (kind is not (WorkspaceKind.Mockup or WorkspaceKind.Schematic or WorkspaceKind.ThreeD))
-        { Report("Для PNG выберите Макет, Схему или 3D.", ""); return; }
-        var scale = dialogs.ChooseExportScale(kind == WorkspaceKind.ThreeD); if (scale is null) return;
+        if (kind is not (WorkspaceKind.Mockup or WorkspaceKind.Schematic))
+        { Report("Для PNG выберите Макет или Схему.", ""); return; }
+        var scale = dialogs.ChooseExportScale(); if (scale is null) return;
         var file = dialogs.SaveFile("PNG (*.png)|*.png",".png"); if (file is null) return;
-        var error = kind == WorkspaceKind.ThreeD
-            ? threeD is null ? "Экспорт 3D недоступен." : threeD.ExportPng(file, scale.Value)
-            : images.ExportPng(file, kind, scale.Value);
-        Report(error, "PNG экспортирован.");
-    }
-    [RelayCommand]
-    private void Obj()
-    {
-        if (navigation.Current.Kind != WorkspaceKind.ThreeD || threeD is null)
-        { Report("Для OBJ выберите вкладку 3D.", ""); return; }
-        var file = dialogs.SaveFile("Wavefront OBJ (*.obj)|*.obj", ".obj");
-        if (file is not null) Report(threeD.ExportObj(file), "OBJ и материалы экспортированы.");
+        Report(images.ExportPng(file, kind, scale.Value), "PNG экспортирован.");
     }
     [RelayCommand]
     private void Svg()

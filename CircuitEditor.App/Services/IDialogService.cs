@@ -12,6 +12,5 @@ public interface IDialogService
     bool ConfirmDeleteChip(string name) => false;
     bool UseLocalChipVersion(string name, int embeddedRevision, int localRevision) => false;
     double? ChooseExportScale();
-    double? ChooseExportScale(bool isThreeD) => ChooseExportScale();
     void ShowAbout() { }
 }

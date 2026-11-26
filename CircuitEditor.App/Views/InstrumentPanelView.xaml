@@ -5,11 +5,11 @@
  <Border Style="{StaticResource Panel}" Width="294" Padding="8" Visibility="{Binding IsVisible, Converter={StaticResource VisibleWhen}}">
   <StackPanel>
    <DockPanel Margin="0,0,0,6">
-    <Button DockPanel.Dock="Right" Content="×" Command="{Binding CloseCommand}" ToolTip="Скрыть прибор" Padding="6,3"/>
+    <Button DockPanel.Dock="Right" Content="×" AutomationProperties.Name="Скрыть прибор" Command="{Binding CloseCommand}" ToolTip="Скрыть прибор" Padding="6,3"/>
     <Thumb Focusable="False" Cursor="SizeAll" ToolTip="Перетащите прибор" input:InstrumentDragBehavior.Command="{Binding MoveCommand}">
      <Thumb.Template><ControlTemplate TargetType="Thumb">
       <Border Background="{DynamicResource HoverBrush}" CornerRadius="4" Padding="7,5">
-       <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="{DynamicResource AccentBrush}"/>
+       <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="{DynamicResource TextBrush}" TextWrapping="Wrap"/>
       </Border>
      </ControlTemplate></Thumb.Template>
     </Thumb>
@@ -20,10 +20,10 @@
     <Button Content="Снять" Command="{Binding ClearProbeCommand}" Padding="7,4"/>
    </WrapPanel>
    <TextBlock Text="{Binding ProbeLabel}" Style="{StaticResource MutedText}" FontSize="10" TextWrapping="Wrap"/>
-   <StackPanel Visibility="{Binding IsMeter, Converter={StaticResource VisibleWhen}}" Margin="0,5,0,0" Orientation="Horizontal">
+   <WrapPanel Visibility="{Binding IsMeter, Converter={StaticResource VisibleWhen}}" Margin="0,5,0,0">
     <ComboBox ItemsSource="{Binding MeterModes}" SelectedIndex="{Binding MeterMode}" Width="130" ToolTip="Режим мультиметра"/>
-    <TextBlock Text="{Binding Reading}" FontFamily="{StaticResource MonoFont}" FontSize="16" Margin="10,0,0,0" VerticalAlignment="Center"/>
-   </StackPanel>
+    <TextBlock Text="{Binding Reading}" FontFamily="{StaticResource MonoFont}" FontSize="15" Margin="8,0,0,0" VerticalAlignment="Center"/>
+   </WrapPanel>
    <StackPanel Visibility="{Binding HasTrace, Converter={StaticResource VisibleWhen}}">
     <WrapPanel Margin="0,6,0,5">
      <ComboBox ItemsSource="{Binding TimeChoices}" SelectedItem="{Binding MillisecondsPerDivision}" Width="61" ToolTip="Время на деление"/>

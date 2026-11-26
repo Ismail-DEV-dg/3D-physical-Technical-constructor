@@ -20,7 +20,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HelixToolkit.Wpf" Version="[3.1.2]" />
     <PackageReference Include="AvalonEdit" Version="6.3.1.120" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
@@ -29,6 +28,7 @@
     <Resource Include="..\assets\branding\logo-256.png" Link="Branding\logo-256.png" />
     <Resource Include="Resources\Fonts\*.ttf" />
     <Content Include="Resources\Fonts\*.ttf" Link="Fonts\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Resource Include="Resources\Components\*.jpg" />
     <Resource Include="Resources\Code\*.xshd" />
     <Content Include="..\CircuitEditor.Infrastructure\Data\**\*.json" Link="Data\%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="..\CircuitEditor.Infrastructure\Library\**\*.json" Link="Library\%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />

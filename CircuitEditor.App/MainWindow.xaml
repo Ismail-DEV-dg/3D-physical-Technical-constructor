@@ -7,7 +7,8 @@
  xmlns:services="clr-namespace:CircuitEditor.App.Services"
  xmlns:views="clr-namespace:CircuitEditor.App.Views"
  xmlns:input="clr-namespace:CircuitEditor.App.Interaction"
- input:ProjectShortcutBehavior.Enabled="True" Title="{Binding Session.Title}" Width="1440" Height="900" MinWidth="1120" MinHeight="680"
+ input:ProjectShortcutBehavior.Enabled="True" Title="{Binding Session.Title}" Width="1440" Height="900" MinWidth="830" MinHeight="500"
+ UseLayoutRounding="True" SnapsToDevicePixels="True" TextOptions.TextFormattingMode="Display" RenderOptions.BitmapScalingMode="HighQuality"
  WindowStartupLocation="CenterScreen" WindowStyle="SingleBorderWindow" ResizeMode="CanResize"
  Background="{DynamicResource BackgroundBrush}" Foreground="{DynamicResource TextBrush}"
  FontFamily="{StaticResource UiFont}" FontSize="12">
@@ -20,27 +21,27 @@
         </Style>
     </Window.Resources>
     <shell:WindowChrome.WindowChrome>
-        <shell:WindowChrome CaptionHeight="46" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
+        <shell:WindowChrome CaptionHeight="40" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False"/>
     </shell:WindowChrome.WindowChrome>
 
 
-    <Border x:Name="WindowFrame" BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" Padding="8"
+    <Border x:Name="WindowFrame" BorderBrush="{DynamicResource SubtleLineBrush}" BorderThickness="1" Padding="0"
             Margin="{Binding Padding, RelativeSource={RelativeSource AncestorType=Window}}">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="44"/><RowDefinition Height="60"/>
-                <RowDefinition Height="*"/><RowDefinition Height="32"/>
+                <RowDefinition Height="40"/><RowDefinition Height="44"/>
+                <RowDefinition Height="*"/><RowDefinition Height="26"/>
             </Grid.RowDefinitions>
-            <Border Background="{DynamicResource ChromeBrush}" CornerRadius="8,8,0,0"
+            <Border Background="{DynamicResource ChromeBrush}"
                     BorderBrush="{DynamicResource LineBrush}" BorderThickness="0,0,0,1">
-                <Grid Margin="12,0,5,0">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,22,0">
-                        <Image Width="30" Height="30" Margin="0,0,9,0"
+                <Grid Margin="10,0,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,15,0">
+                        <Image Width="24" Height="24" Margin="0,0,9,0"
                                Source="pack://application:,,,/CircuitEditor.App;component/Branding/logo-256.png"/>
-                        <TextBlock Text="Circuit Editor" FontSize="17" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                        <TextBlock Text="Circuit Editor" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <Menu Grid.Column="1" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Menu Grid.Column="1" FontSize="12" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
                     <MenuItem Header="_Файл">
                         <MenuItem Header="Новый проект" Command="{Binding Session.NewCommand}" ToolTip="{input:ShortcutHint New}"/>
                         <MenuItem Header="Открыть…" Command="{Binding Session.OpenCommand}" ToolTip="{input:ShortcutHint Open}"/>
@@ -55,7 +56,6 @@
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Экспорт PNG…" Command="{Binding Exports.PngCommand}" ToolTip="{input:ShortcutHint Png}"/>
-                        <MenuItem Header="Экспорт 3D в OBJ…" Command="{Binding Exports.ObjCommand}"/>
                         <MenuItem Header="Экспорт SVG схемы…" Command="{Binding Exports.SvgCommand}" ToolTip="{input:ShortcutHint Svg}"/>
                         <MenuItem Header="Ведомость деталей CSV…" Command="{Binding Exports.BomCommand}" ToolTip="{input:ShortcutHint Bom}"/>
                         <Separator/><MenuItem Header="Выход" Command="{Binding CloseCommand}"/>
@@ -68,12 +68,10 @@
                         <MenuItem Header="Вставить · Ctrl+V" Command="{Binding PasteActiveCommand}" ToolTip="{input:ShortcutHint Paste}"/>
                     </MenuItem>
                     <MenuItem Header="_Вид">
-                        <MenuItem Header="Вписать проект в холст" InputGestureText="F / Home" Command="{Binding FitViewCommand}" ToolTip="{input:ShortcutHint Fit}"/>
                         <MenuItem Header="Макет · Ctrl+0" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Mockup}"/>
                         <MenuItem Header="Схема  ·  Ctrl+1" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Schematic}"/>
-                        <MenuItem Header="Микросхема  ·  Ctrl+2" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Chip}"/>
-                        <MenuItem Header="3D  ·  Ctrl+3" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.ThreeD}"/>
-                        <MenuItem Header="Код  ·  Ctrl+4" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Code}"/>
+                        <MenuItem Header="Микросхема  ·  Ctrl+3" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Chip}"/>
+                        <MenuItem Header="Код  ·  Ctrl+2" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Code}"/>
                         <Separator/>
                         <MenuItem Header="Панели">
                             <MenuItem Header="Компоненты" Command="{Binding Panels.Components.ShowCommand}"/>
@@ -90,7 +88,6 @@
                         <MenuItem Header="Калькулятор…" Command="{Binding CalculatorCommand}" ToolTip="{input:ShortcutHint Calculator}"/>
                         <MenuItem Header="Рассчитать цепь" Command="{Binding Analysis.CalculateCommand}" ToolTip="{input:ShortcutHint Calculate}"/>
                         <MenuItem Header="Проверить соединения" Command="{Binding Analysis.CheckCommand}" ToolTip="{input:ShortcutHint Check}"/>
-                        <MenuItem Header="Запустить схему без кода" Command="{Binding Simulation.StartCircuitCommand}"/>
                         <MenuItem Header="{Binding Simulation.SketchPlaybackAction}" Command="{Binding Simulation.ToggleSketchCommand}" InputGestureText="Ctrl+Shift+B"/>
                     </MenuItem>
                     <MenuItem Header="_Справка">
@@ -102,99 +99,121 @@
                         <MenuItem Header="О программе" Command="{Binding AboutCommand}"/>
                     </MenuItem>
                 </Menu>
-                    <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                    <Grid Grid.Column="2" Margin="18,0,12,0" VerticalAlignment="Center">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="Auto"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                        <Path Data="M2,1 H8 L12,5 V14 H2 Z M8,1 V5 H12" Width="11" Height="13" Stretch="Uniform"
+                              Stroke="{DynamicResource MutedBrush}" StrokeThickness="1.1" Margin="0,0,7,0"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Session.ProjectName}" ToolTip="{Binding Session.ProjectName}"
+                                   Foreground="{DynamicResource MutedBrush}" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
+                    </Grid>
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" shell:WindowChrome.IsHitTestVisibleInChrome="True">
                     <Button Style="{StaticResource CaptionButton}" Command="{Binding MinimizeCommand}" ToolTip="Свернуть" AutomationProperties.Name="Свернуть">
                         <Path Data="M 0,4 L 10,4" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.3"/>
                     </Button>
                     <Button Style="{StaticResource CaptionButton}" Command="{Binding ToggleMaximizeCommand}" ToolTip="Развернуть / восстановить" AutomationProperties.Name="Развернуть">
                         <Path Data="M 0,0 L 10,0 10,9 0,9 Z" Stroke="{DynamicResource TextBrush}" StrokeThickness="1.2"/>
                     </Button>
-                    <Button Style="{StaticResource CaptionButton}" Command="{Binding CloseCommand}" ToolTip="Закрыть" AutomationProperties.Name="Закрыть">
-                        <Path Data="M 0,0 L 10,10 M 0,10 L 10,0" Stroke="{DynamicResource RedBrush}" StrokeThickness="1.4"/>
+                    <Button Style="{DynamicResource CloseCaptionButton}" Command="{Binding CloseCommand}" ToolTip="Закрыть" AutomationProperties.Name="Закрыть">
+                        <Path Data="M 0,0 L 10,10 M 0,10 L 10,0" Stroke="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" StrokeThickness="1.4"/>
                     </Button>
                 </StackPanel>
                 </Grid>
             </Border>
-            <Border Grid.Row="1" Background="{DynamicResource TitleSurfaceBrush}" CornerRadius="10" Margin="0,3,0,7" Padding="14,0">
-              <Grid>
-                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Path Stroke="{DynamicResource PurpleBrush}" StrokeThickness="1.45" Data="M 1,1 H 9 L 14,6 V 17 H 1 Z M 9,1 V 6 H 14 M 4,9 H 11 M 4,12 H 11"
-                          Width="14" Height="17" Stretch="Uniform" Margin="0,0,9,0"/>
-                    <TextBlock Text="{Binding Session.Title}" ToolTip="{Binding Session.Title}" TextTrimming="CharacterEllipsis"
-                               MaxWidth="390" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Command="{Binding Simulation.ToggleSketchCommand}" Style="{StaticResource PrimaryAction}"
-                            ContentTemplate="{x:Null}" ToolTip="{input:ShortcutHint RunSketch}"
-                            AutomationProperties.Name="{Binding Simulation.SketchPlaybackAction}" MinWidth="146" Margin="0,0,4,0">
+            <Border Grid.Row="1" Background="{DynamicResource ChromeBrush}" BorderBrush="{DynamicResource SubtleLineBrush}" BorderThickness="0,0,0,1">
+            <Grid Margin="10,0">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                <TabControl x:Name="WorkspaceChooser" Grid.ColumnSpan="3" HorizontalAlignment="Center" VerticalAlignment="Center" ItemsSource="{Binding Workspaces}" SelectedItem="{Binding SelectedWorkspace,Mode=TwoWay}"
+                            Style="{StaticResource WorkspaceTabs}" ItemContainerStyle="{StaticResource GlassWorkspaceTab}"
+                            AutomationProperties.Name="Рабочие пространства">
+                    <TabControl.ItemTemplate><DataTemplate><TextBlock Text="{Binding Title}"/></DataTemplate></TabControl.ItemTemplate>
+                </TabControl>
+                <StackPanel x:Name="SimulationTransport" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Style="{DynamicResource RunAction}" Command="{Binding Simulation.ToggleSketchCommand}" Margin="0,0,5,0" ToolTip="{Binding Simulation.SketchPlaybackAction}">
                         <StackPanel Orientation="Horizontal">
-                            <Path Width="15" Height="15" Stretch="Uniform" Margin="0,0,6,0"
-                                  Fill="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}">
-                                <Path.Style>
-                                    <Style TargetType="Path">
-                                        <Setter Property="Data" Value="M3,1 L14,8 3,15 Z"/>
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding Simulation.IsSketchRunning}" Value="True">
-                                                <Setter Property="Data" Value="F0 M0,0 H16 V16 H0 Z M4,4 H6 V12 H4 Z M10,4 H12 V12 H10 Z"/>
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Path.Style>
-                            </Path>
-                            <TextBlock Text="{Binding Simulation.SketchPlaybackAction}" VerticalAlignment="Center"/>
+                            <TextBlock>
+                                <TextBlock.Style><Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="▶ Запустить"/>
+                                    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Simulation.IsSketchRunning}" Value="True"><Setter Property="Text" Value="Ⅱ Пауза"/></DataTrigger>
+                                    </Style.Triggers>
+                                </Style></TextBlock.Style>
+                            </TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Content="■" Command="{Binding Simulation.ResetCommand}" Style="{StaticResource QuietAction}"
-                            ToolTip="Остановить симуляцию" AutomationProperties.Name="Остановить симуляцию" Margin="0,0,10,0"/>
-                    <Button Content="Открыть" Command="{Binding Session.OpenCommand}" ToolTip="{input:ShortcutHint Open}" Style="{StaticResource QuietAction}" Margin="0,0,4,0"/>
-                    <Button Content="Сохранить" Command="{Binding Session.SaveCommand}" ToolTip="{input:ShortcutHint Save}" Style="{StaticResource PrimaryAction}" Margin="0,0,4,0"/>
-                    <Button Content="Вписать" Command="{Binding FitViewCommand}" ToolTip="{input:ShortcutHint Fit}">
-                        <Button.Style><Style TargetType="Button" BasedOn="{StaticResource QuietAction}">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding SelectedWorkspace.Kind}" Value="{x:Static vm:WorkspaceKind.Mockup}"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
-                                <DataTrigger Binding="{Binding SelectedWorkspace.Kind}" Value="{x:Static vm:WorkspaceKind.Schematic}"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
-                            </Style.Triggers>
-                        </Style></Button.Style>
-                    </Button>
-                    <Border Background="{DynamicResource LineBrush}" Width="1" Margin="10,6"/>
-                    <ComboBox Width="122" SelectedValuePath="Tag" SelectedValue="{Binding SelectedTheme, Mode=TwoWay}" AutomationProperties.Name="Тема интерфейса">
-                        <ComboBoxItem Content="Neon Dark" Tag="{x:Static services:ThemeKind.NeonDark}"/>
-                        <ComboBoxItem Content="Light Tech" Tag="{x:Static services:ThemeKind.LightTech}"/>
-                    </ComboBox>
-                    <Button Command="{Binding ToggleThemeCommand}" Margin="5,0,0,0" Style="{StaticResource QuietAction}" ToolTip="Переключить тему" AutomationProperties.Name="Переключить тему">
-                        <Path Data="M 8,0 L 8,3 M 8,13 L 8,16 M 0,8 L 3,8 M 13,8 L 16,8 M 2,2 L 4,4 M 12,12 L 14,14 M 2,14 L 4,12 M 12,4 L 14,2 M 11,8 A 3,3 0 1 1 5,8 A 3,3 0 1 1 11,8"
-                              Stroke="{DynamicResource AccentBrush}" StrokeThickness="1.2" Width="15" Height="15"/>
-                    </Button>
+                    <Button Style="{DynamicResource StopAction}" Content="■ Стоп" Command="{Binding Simulation.ResetCommand}"/>
                 </StackPanel>
             </Grid>
             </Border>
-            <views:EditorLayoutView x:Name="EditorLayout" Grid.Row="2" Margin="0"/>
-            <Grid Grid.Row="3" Margin="8,4,8,0">
-                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Ellipse Width="5" Height="5" Fill="{DynamicResource GreenBrush}" Margin="0,0,8,0"/>
-                    <TextBlock Text="{Binding StatusMessage}" FontSize="10" Foreground="{DynamicResource MutedBrush}" TextTrimming="CharacterEllipsis" MaxWidth="480" ToolTip="{Binding StatusMessage}"/>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding Code.CursorStatus}" Foreground="{DynamicResource AccentBrush}" FontSize="10" Margin="0,0,14,0">
-                        <TextBlock.Style><Style TargetType="TextBlock"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedWorkspace.Kind}" Value="{x:Static vm:WorkspaceKind.Code}"><Setter Property="Visibility" Value="Visible"/></DataTrigger>
-                        </Style.Triggers></Style></TextBlock.Style>
-                    </TextBlock>
-                    <TextBlock Text="{Binding Analysis.CountSummary}" Style="{StaticResource MutedText}" Margin="0,0,10,0"/>
-                    <StackPanel Orientation="Horizontal"><StackPanel.Style><Style TargetType="StackPanel"><Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectedWorkspace.Kind}" Value="{x:Static vm:WorkspaceKind.Code}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger>
-                    </Style.Triggers></Style></StackPanel.Style>
-                    <TextBlock Text="{Binding CursorX, StringFormat=X: {0:0.##}}" Style="{StaticResource MutedText}" Margin="0,0,14,0"/>
-                    <TextBlock Text="{Binding CursorY, StringFormat=Y: {0:0.##}}" Style="{StaticResource MutedText}" Margin="0,0,6,0"/>
-                    <TextBlock Text="{Binding CoordinateUnit}" Style="{StaticResource MutedText}" Margin="0,0,18,0"/>
-                    <TextBlock Text="{Binding ZoomPercent, StringFormat={}{0:0}%}" Foreground="{DynamicResource AccentBrush}" FontSize="10" Margin="0,0,22,0"/>
+            <views:EditorLayoutView x:Name="EditorLayout" Grid.Row="2" Margin="8,8,8,5"/>
+            <Border Grid.Row="3" Background="{DynamicResource ChromeBrush}" BorderBrush="{DynamicResource SubtleLineBrush}" BorderThickness="0,1,0,0">
+                <Grid x:Name="StatusArea" Margin="10,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <DockPanel Margin="0,0,8,0">
+                        <Ellipse DockPanel.Dock="Left" Width="7" Height="7" Fill="{DynamicResource SuccessBrush}" Margin="0,0,7,0"/>
+                        <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource MutedBrush}" FontSize="11"
+                                   TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip="{Binding StatusMessage}"/>
+                    </DockPanel>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" TextElement.FontFamily="{StaticResource ReadoutFont}">
+                        <TextBlock Text="{Binding Code.CursorStatus}" Foreground="{DynamicResource AccentHoverBrush}" FontSize="11" Margin="0,0,9,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers><DataTrigger Binding="{Binding SelectedWorkspace.Kind}" Value="{x:Static vm:WorkspaceKind.Code}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger></Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                        <Button x:Name="ErcStatus" AutomationProperties.Name="Проблемы и расчёты" Command="{Binding Panels.ToggleAnalysisCommand}"
+                                ToolTip="Показать или свернуть проблемы и расчёты" Padding="7,2" Style="{StaticResource QuietAction}">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="5" Height="5" Margin="0,0,6,0" VerticalAlignment="Center">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="{DynamicResource SuccessBrush}"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Analysis.IsPending}" Value="True"><Setter Property="Fill" Value="{DynamicResource MutedBrush}"/></DataTrigger>
+                                                <DataTrigger Binding="{Binding Analysis.HasWarnings}" Value="True"><Setter Property="Fill" Value="{DynamicResource WarningBrush}"/></DataTrigger>
+                                                <DataTrigger Binding="{Binding Analysis.HasErrors}" Value="True"><Setter Property="Fill" Value="{DynamicResource DangerBrush}"/></DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Text="{Binding Analysis.CountSummary,TargetNullValue=ERC,FallbackValue=ERC}" Style="{StaticResource MutedText}"/>
+                            </StackPanel>
+                        </Button>
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel.Style>
+                                <Style TargetType="StackPanel">
+                                    <Style.Triggers><DataTrigger Binding="{Binding IsCanvas}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger></Style.Triggers>
+                                </Style>
+                            </StackPanel.Style>
+                            <Border Width="1" Height="12" Background="{DynamicResource LineBrush}" Margin="4,0,7,0"/>
+                            <TextBlock Text="{Binding CursorX, StringFormat=X: {0:0.##}}" Style="{StaticResource MutedText}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding CursorY, StringFormat=Y: {0:0.##}}" Style="{StaticResource MutedText}" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding CoordinateUnit}" Style="{StaticResource MutedText}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                            <Border Width="1" Height="12" Background="{DynamicResource LineBrush}" Margin="2,0,3,0"/>
+                            <Menu AutomationProperties.Name="Масштаб">
+                                <MenuItem Padding="7,1" ToolTip="Масштаб холста">
+                                    <MenuItem.Header><TextBlock Text="{Binding ZoomPercent, StringFormat={}{0:0}%}" Style="{StaticResource MutedText}"
+                                                                Foreground="{DynamicResource AccentHoverBrush}"/></MenuItem.Header>
+                                    <MenuItem Header="50 %" Command="{Binding SetZoomCommand}" CommandParameter="50"/>
+                                    <MenuItem Header="75 %" Command="{Binding SetZoomCommand}" CommandParameter="75"/>
+                                    <MenuItem Header="100 %" Command="{Binding SetZoomCommand}" CommandParameter="100"/>
+                                    <MenuItem Header="150 %" Command="{Binding SetZoomCommand}" CommandParameter="150"/>
+                                    <MenuItem Header="200 %" Command="{Binding SetZoomCommand}" CommandParameter="200"/>
+                                </MenuItem>
+                            </Menu>
+                        </StackPanel>
+                        <Border Width="1" Height="12" Background="{DynamicResource LineBrush}" Margin="4,0,8,0"/>
+                        <TextBlock Text="{Binding ComponentCount, StringFormat=Компонентов: {0}}" Style="{StaticResource MutedText}" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <TextBlock Text="{Binding ComponentCount, StringFormat=Компонентов: {0}}" Style="{StaticResource MutedText}"/>
-                </StackPanel>
-            </Grid>
+                </Grid>
+            </Border>
+            <views:StartupView Grid.RowSpan="4" Panel.ZIndex="10"/>
         </Grid>
     </Border>
     <Window.Style><Style TargetType="Window"><Style.Triggers>

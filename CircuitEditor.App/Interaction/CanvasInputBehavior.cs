@@ -48,7 +48,7 @@ public static class CanvasInputBehavior
         element.Focus();
         element.CaptureMouse();
         var input = Pointer(element, args, CanvasAction.Down);
-        Send(element, input with { Pan = args.ChangedButton is MouseButton.Middle or MouseButton.Right
+        Send(element, input with { DoubleClick = args.ClickCount == 2, RightClick = args.ChangedButton == MouseButton.Right, Pan = args.ChangedButton is MouseButton.Middle or MouseButton.Right
             || Keyboard.IsKeyDown(Key.Space) });
         args.Handled = true;
     }

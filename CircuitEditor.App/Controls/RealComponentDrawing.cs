@@ -22,7 +22,7 @@ internal static class RealComponentDrawing
                 PhysicalDrawing.Lead(dc,
                     new Point(contact.X, contact.Y), new Point(body.X + body.Width / 2, body.Y + body.Height / 2));
         }
-        else if (footprint.Renderer is "led" or "button" or "placeholder")
+        else if (footprint.Renderer is "button" or "placeholder")
         {
             foreach (var contact in contacts)
                 PhysicalDrawing.Lead(dc, new Point(contact.X, contact.Y),
@@ -68,14 +68,7 @@ internal static class RealComponentDrawing
                 if (bands.Count == 0) PhysicalDrawing.Text(dc, "?", body.X + body.Width / 2, body.Y, 1.8, Brushes.DimGray);
                 break;
             case "led":
-                var color = (Color)ColorConverter.ConvertFromString(item.Model.Color ?? item.Model.Definition.DefaultColor);
-                dc.DrawEllipse(PhysicalDrawing.Ink("#9D2139"), new Pen(PhysicalDrawing.Ink("#68202D"), .2),
-                    new Point(body.X + body.Width / 2, body.Y + body.Height / 2 + .6), body.Width / 2 + .35, body.Height / 2);
-                dc.DrawEllipse(new LinearGradientBrush(Colors.MistyRose, color, 45),
-                    new Pen(PhysicalDrawing.Ink("#8B1830"), .15), new Point(body.X + body.Width / 2, body.Y + body.Height / 2),
-                    body.Width / 2, body.Height / 2);
-                dc.DrawEllipse(new SolidColorBrush(Color.FromArgb(150, 255, 255, 255)), null,
-                    new Point(body.X + body.Width * .32, body.Y + body.Height * .3), .65, .9);
+                LedDrawing.Draw(dc, item, body, contacts);
                 break;
             case "button":
                 dc.DrawRoundedRectangle(PhysicalDrawing.Metal, new Pen(Brushes.DimGray, .25), PhysicalDrawing.Rect(body), .4, .4);
@@ -108,9 +101,20 @@ internal static class RealComponentDrawing
         if (item.IsSelected || invalidPreview)
         {
             var body = ContactGeometry.Body(item.Footprint, pose, pitch);
-            var outline = PhysicalDrawing.Ink(invalidPreview ? "#FF3B5C" : "#00E5FF");
+            var outline = PhysicalDrawing.Ink(invalidPreview ? "#FF3B5C" : "#70D9EE");
             dc.DrawRoundedRectangle(null, new Pen(outline, .35), PhysicalDrawing.Rect(body), .7, .7);
-            PhysicalDrawing.Text(dc, item.Reference, body.X, body.Y - 2.5, ReferenceFontSizeMm, outline);
+            var label = item.Footprint.Renderer == "axial-resistor" ? $"{item.Reference}  {item.Model.Value}" : item.Reference;
+            PhysicalDrawing.Text(dc, label, body.X, body.Y - 2.5, ReferenceFontSizeMm, outline);
+            if (item.Footprint.IsFlexible)
+            {
+                var localPose = new ComponentPlacement(spanHoles: pose.SpanHoles);
+                var pinPen = new Pen(outline, .25);
+                foreach (var contact in item.Footprint.Contacts)
+                {
+                    var pin = ContactGeometry.Local(item.Footprint, contact, localPose, pitch);
+                    dc.DrawRectangle(null, pinPen, new Rect(pin.X - .55, pin.Y - .55, 1.1, 1.1));
+                }
+            }
         }
     }
 }

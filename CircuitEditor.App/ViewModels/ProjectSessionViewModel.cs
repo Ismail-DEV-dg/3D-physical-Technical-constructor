@@ -42,7 +42,14 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
     }
     public IReadOnlyList<ProjectSampleViewModel> Samples { get; }
     public ObservableCollection<RecentProjectViewModel> RecentFiles { get; } = [];
-    public string Title => $"{(project.IsDirty ? "* " : "")}{(path is null ? "Новый проект" : Path.GetFileName(path))} — Circuit Editor";
+    public string ProjectName => $"{(project.IsDirty ? "* " : "")}{(path is null ? "Новый проект" : Path.GetFileName(path))}";
+    public string Title => $"{ProjectName} — Circuit Editor";
+
+    private void UpdateTitle()
+    {
+        OnPropertyChanged(nameof(Title));
+        OnPropertyChanged(nameof(ProjectName));
+    }
     public ProjectDocument Capture() => ProjectDocument.Capture(project.Model, new ProjectViewState(
         navigation.Current.Kind == WorkspaceKind.Schematic ? RepresentationKind.Schematic : RepresentationKind.Mockup,
         mockup.Zoom,mockup.OffsetX,mockup.OffsetY,schematic.Zoom,schematic.OffsetX,schematic.OffsetY));
@@ -111,7 +118,7 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
         project.ReplaceProject(new Core.Models.CircuitProject(footprints: project.StandardFootprints,
             breadboards: [new Core.Breadboards.BreadboardInstance(Guid.NewGuid(),board.Value,Core.Physical.PhysicalSettings.DefaultBoardX,Core.Physical.PhysicalSettings.DefaultBoardY)]));
         mockup.ResetViewCommand.Execute(null); schematic.ResetViewCommand.Execute(null);
-        navigation.Navigate(WorkspaceKind.Mockup); path = null; repository.ClearRecovery(); OnPropertyChanged(nameof(Title));
+        navigation.Navigate(WorkspaceKind.Mockup); path = null; repository.ClearRecovery(); UpdateTitle();
     }
     [RelayCommand]
     private void Open() { if (!Guard()) return; var file = dialogs.OpenProject(); if (file is not null) OpenPath(file); }
@@ -125,13 +132,13 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
         repository.ClearRecovery();
         project.History.MarkUnsaved();
         project.StatusMessage = sample.Description;
-        OnPropertyChanged(nameof(Title));
+        UpdateTitle();
     }
 
     private void OpenPath(string file)
     {
         if (!Load(file)) return;
-        path = file; Remember(file); repository.ClearRecovery(); OnPropertyChanged(nameof(Title));
+        path = file; Remember(file); repository.ClearRecovery(); UpdateTitle();
     }
     public bool Load(string file)
     {
@@ -176,13 +183,13 @@ public sealed partial class ProjectSessionViewModel : ObservableObject, IDisposa
         var error = repository.Save(target, Capture());
         if (error is not null) { ReportError(error); return false; }
         path = target; project.MarkSaved(); Remember(target); repository.ClearRecovery();
-        project.StatusMessage = "Проект сохранён."; OnPropertyChanged(nameof(Title)); return true;
+        project.StatusMessage = "Проект сохранён."; UpdateTitle(); return true;
     }
     private void ReportError(string message)
     { project.StatusMessage = message; dialogs.ShowError(message); }
     private void Remember(string file)
     { recent.Add(file); RecentFiles.Clear(); foreach (var item in recent.Load()) RecentFiles.Add(new RecentProjectViewModel(item,OpenRecentCommand)); }
     private void OnProjectChanged(object? sender, PropertyChangedEventArgs e)
-    { if (e.PropertyName == nameof(project.IsDirty)) OnPropertyChanged(nameof(Title)); }
+    { if (e.PropertyName == nameof(project.IsDirty)) UpdateTitle(); }
     public void Dispose() { autosave.Dispose(); project.PropertyChanged -= OnProjectChanged; }
 }

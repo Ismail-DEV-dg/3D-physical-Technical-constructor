@@ -19,7 +19,7 @@ public static class ShortcutCommands
             "Theme"=>vm.ToggleThemeCommand,"Png"=>vm.Exports?.PngCommand,"Svg"=>vm.Exports?.SvgCommand,"Bom"=>vm.Exports?.BomCommand,_=>null
         };
         if(command is not null){if(command.CanExecute(null))command.Execute(null);return;}
-        if(id.StartsWith("Tab",StringComparison.Ordinal)&&int.TryParse(id.AsSpan(3),out var index))vm.SelectedWorkspace=vm.Workspaces[index];
+        if(id.StartsWith("Tab",StringComparison.Ordinal)&&int.TryParse(id.AsSpan(3),out var index)&&(uint)index<(uint)vm.Workspaces.Count)vm.SelectedWorkspace=vm.Workspaces[index];
         else if(id is "NextTab" or "PreviousTab")
         {var indexOf=vm.Workspaces.ToList().IndexOf(vm.SelectedWorkspace);vm.SelectedWorkspace=vm.Workspaces[(indexOf+(id=="NextTab"?1:vm.Workspaces.Count-1))%vm.Workspaces.Count];}
         else if(canvas)
@@ -30,7 +30,10 @@ public static class ShortcutCommands
                 case "Rotate":Input(CanvasAction.Rotate);break;
                 case "Delete":Input(CanvasAction.Delete);break;
                 case "SelectAll":Input(CanvasAction.SelectAll);break;
-                case "Wire":if(vm.SelectedWorkspace.Kind==WorkspaceKind.Mockup)vm.Project.Wiring.IsWiring=!vm.Project.Wiring.IsWiring;break;
+                case "Wire":if(vm.IsMockup)vm.Mockup.SelectToolCommand.Execute(vm.Project.Wiring.IsWiring ? "Select" : "Wire");break;
+                case "Note":if(vm.IsMockup)vm.Mockup.BeginNoteCommand.Execute(null);break;
+                case "Measure":if(vm.IsMockup)vm.Mockup.ToggleRulerCommand.Execute(null);break;
+                case "WireLabels":if(vm.IsMockup)vm.Mockup.ToggleWireLabelsCommand.Execute(null);break;
                 case "Duplicate":if(vm.Project.SelectedCount>0){vm.Project.CopyCommand.Execute(null);vm.Project.PasteCommand.Execute(null);}break;
                 case "Fit":WorkspaceViewport.Fit(vm);break;
                 case "Reset":(vm.SelectedWorkspace.Kind==WorkspaceKind.Mockup?vm.Mockup.ResetViewCommand:vm.Schematic.ResetViewCommand).Execute(null);break;

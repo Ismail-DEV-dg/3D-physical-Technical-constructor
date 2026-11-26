@@ -61,16 +61,16 @@ public sealed class PanelAndResultsViewModelTests
     public void PinHideRestoreAndResetPreserveIndependentPanelSizes()
     {
         var layout=new PanelLayoutViewModel();var pane=layout.Components;
-        pane.Size=280;pane.TogglePinCommand.Execute(null);
+        pane.Size=320;pane.TogglePinCommand.Execute(null);
         Assert.False(pane.IsPinned);Assert.False(pane.IsExpanded);
         pane.ToggleOpenCommand.Execute(null);Assert.True(pane.IsExpanded);
         pane.CollapseIfUnpinned();Assert.False(pane.IsExpanded);
         pane.ShowCommand.Execute(null);pane.TogglePinCommand.Execute(null);pane.CollapseIfUnpinned();Assert.True(pane.IsExpanded);
         pane.HideCommand.Execute(null);Assert.False(pane.IsVisible);
-        pane.ShowCommand.Execute(null);Assert.True(pane.IsExpanded);Assert.Equal(280,pane.Size);
+        pane.ShowCommand.Execute(null);Assert.True(pane.IsExpanded);Assert.Equal(320,pane.Size);
         layout.Inspector.Size=410;layout.Analysis.Size=230;layout.Analysis.HideCommand.Execute(null);
         layout.ResetCommand.Execute(null);
-        Assert.Equal(224,pane.Size);Assert.Equal(280,layout.Inspector.Size);Assert.Equal(280,layout.Analysis.Size);
-        Assert.True(layout.Analysis.IsVisible);Assert.True(layout.Analysis.IsPinned);
+        Assert.Equal(280,pane.Size);Assert.Equal(280,layout.Inspector.Size);Assert.Equal(280,layout.Analysis.Size);
+        Assert.False(layout.Analysis.IsVisible);Assert.True(layout.Analysis.IsPinned);
     }
 }

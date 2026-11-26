@@ -31,7 +31,7 @@ internal static class SimulationDrawing
                 break;
             case "led" when signal.Intensity > 0:
                 var color = (Color)ColorConverter.ConvertFromString(item.Model.Color ?? item.Model.Definition.DefaultColor);
-                Glow(dc, center, body.Width, color, signal.Intensity);
+                Glow(dc, center + new Vector(0, -2), body.Width, color, signal.Intensity);
                 break;
             case "rgb-led" when !signal.Channels.IsDefaultOrEmpty:
                 for (var i = 0; i < Math.Min(RgbColors.Length, signal.Channels.Length); i++)

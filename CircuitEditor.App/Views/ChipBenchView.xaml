@@ -3,9 +3,9 @@
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:controls="clr-namespace:CircuitEditor.App.Controls">
     <StackPanel>
-        <TextBlock Text="Испытательный стенд" FontWeight="SemiBold" Margin="0,12,0,4"/>
+        <TextBlock Text="Испытательный стенд" FontWeight="SemiBold" FontSize="14" Margin="0,0,0,8"/>
         <WrapPanel>
-            <Button Content="Запустить стенд" Command="{Binding StartCommand}" Margin="0,0,6,4"/>
+            <Button Content="Запустить стенд" Command="{Binding StartCommand}" Style="{DynamicResource RunAction}" Margin="0,0,6,4"/>
             <ComboBox ItemsSource="{Binding ClockPins}" SelectedItem="{Binding ClockPin}" DisplayMemberPath="Name"
                       MinWidth="90" ToolTip="Тактовый вход" IsEnabled="{Binding IsActive}" Margin="0,0,6,4"/>
             <Button Content="Тактовый импульс" Command="{Binding PulseCommand}" IsEnabled="{Binding IsActive}" Margin="0,0,6,4"/>
@@ -17,7 +17,7 @@
                 <DataTemplate>
                     <Button Command="{Binding Toggle}" Margin="0,0,6,4">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Label}"/><TextBlock Text="{Binding Value}" Margin="8,0,0,0"/>
+                            <TextBlock Text="{Binding Label}"/><TextBlock Text="{Binding Value}" FontFamily="{StaticResource MonoFont}" Margin="8,0,0,0"/>
                         </StackPanel>
                     </Button>
                 </DataTemplate>
@@ -29,14 +29,16 @@
                 <DataTemplate>
                     <Border BorderBrush="{DynamicResource LineBrush}" BorderThickness="1" CornerRadius="4" Padding="8,4" Margin="0,0,6,4">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding Label}"/><TextBlock Text="{Binding Value}" Margin="8,0,0,0" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding Label}"/><TextBlock Text="{Binding Value}" FontFamily="{StaticResource MonoFont}" Margin="8,0,0,0" FontWeight="SemiBold"/>
                         </StackPanel>
                     </Border>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
         <TextBlock Text="{Binding ChannelLabel}" TextWrapping="Wrap" Margin="0,3,0,3"/>
-        <controls:InstrumentTrace Kind="{Binding TraceKind}" Signal="{Binding Trace}" Time="2" Height="142"/>
+        <Border Background="{DynamicResource WorkSurfaceBrush}" BorderBrush="{DynamicResource SubtleLineBrush}" BorderThickness="1" CornerRadius="8" Padding="6">
+            <controls:InstrumentTrace Kind="{Binding TraceKind}" Signal="{Binding Trace}" Time="2" Height="142"/>
+        </Border>
         <Button Content="Следующие каналы" Command="{Binding NextTraceCommand}" HorizontalAlignment="Left" Margin="0,4,0,0"/>
         <TextBlock Text="{Binding Result}" TextWrapping="Wrap" Margin="0,4,0,0"/>
         <ItemsControl ItemsSource="{Binding Differences}">

@@ -10,10 +10,10 @@ namespace CircuitEditor.App.Interaction;
 // Presentation-only wheel adapter. Offsets are pixels, never grouped item indexes.
 public static class SmoothScrollBehavior
 {
-    internal const double PixelsPerNotch=40;
+    internal const double PixelsPerNotch=144;
     private const double WheelNotch=120;
     private const double MaximumNotchesPerEvent=3;
-    private static readonly TimeSpan Duration=TimeSpan.FromMilliseconds(140);
+    private static readonly TimeSpan Duration=TimeSpan.FromMilliseconds(75);
     private static readonly ConditionalWeakTable<ScrollViewer,ScrollMotionState> States=new();
     public static readonly DependencyProperty EnabledProperty=DependencyProperty.RegisterAttached("Enabled",typeof(bool),typeof(SmoothScrollBehavior),new PropertyMetadata(false,EnabledChanged));
     private static readonly DependencyProperty VerticalOffsetProperty=DependencyProperty.RegisterAttached("VerticalOffset",typeof(double),typeof(SmoothScrollBehavior),new PropertyMetadata(0d,(o,e)=>((ScrollViewer)o).ScrollToVerticalOffset((double)e.NewValue)));
@@ -66,7 +66,7 @@ public static class SmoothScrollBehavior
         var viewport=horizontal?viewer.ViewportWidth:viewer.ViewportHeight;
         var running=horizontal?state.HorizontalAnimating:state.VerticalAnimating;
         var previous=running ? horizontal?state.HorizontalTarget:state.VerticalTarget : current;
-        var step=Math.Min(PixelsPerNotch,Math.Max(1,viewport/4));
+        var step=Math.Min(PixelsPerNotch,Math.Max(1,viewport/2));
         var target=Math.Clamp(previous-Math.Clamp(delta/WheelNotch,-MaximumNotchesPerEvent,MaximumNotchesPerEvent)*step,0,maximum);
         var property=horizontal?HorizontalOffsetProperty:VerticalOffsetProperty;
         if(horizontal){state.HorizontalTarget=target;state.HorizontalAnimating=true;}else{state.VerticalTarget=target;state.VerticalAnimating=true;}

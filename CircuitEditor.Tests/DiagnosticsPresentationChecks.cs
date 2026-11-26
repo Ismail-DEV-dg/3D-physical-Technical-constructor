@@ -24,7 +24,7 @@ internal static class DiagnosticsPresentationChecks
         var services=new TestDiagnosticServices();var documentation=new ErrorDocumentationService(new JsonErrorHelpRepository());
         var themes=new ThemeService(new WpfThemeResources(resources));
         using var code=new CodeViewModel(e.Project,new ArduinoCodeGenerator(new JsonCodeTemplateRepository()),new JsonCodeCompletionRepository(),new JsonCodeTemplateRepository(),themes,clipboard:services);
-        var nav=new NavigationService(e.Environment.Mockup,e.Environment.Schematic,new ChipViewModel(),new ThreeDViewModel(),code);
+        var nav=new NavigationService(e.Environment.Mockup,e.Environment.Schematic,new ChipViewModel(),code);
         var electrical=new JsonElectricalLibraryRepository();
         using var analysis=new ProjectAnalysisViewModel(e.Project,new ErcService(electrical,[new LedShortRule()]),new TestDebounceService(),nav,new DcSolver(electrical));
         using var main=new MainViewModel(nav,themes,new TestWindowService(),e.Environment.Session,analysis:analysis,clipboard:services,documentation:documentation,errorHelp:services);
@@ -36,8 +36,8 @@ internal static class DiagnosticsPresentationChecks
             window.Show();window.UpdateLayout();window.Dispatcher.Invoke(()=>{},DispatcherPriority.Loaded);
             code.GenerateCommand.Execute(null);window.UpdateLayout();Assert.Equal(0,main.Panels.ToolTabIndex);
             Assert.Contains(main.Diagnostics.Items,d=>d.Code=="LED_SHORT");Assert.Contains(main.Diagnostics.Items,d=>d.Code=="CODE_AUTO_MARKERS");
-            var layout=(EditorLayoutView)window.FindName("EditorLayout");var inspector=(DockPane)layout.FindName("InspectorPane");
-            Assert.IsType<PropertiesView>(inspector.Content);Assert.Empty(Find<TabControl>(inspector));
+            var layout=(EditorLayoutView)window.FindName("EditorLayout");var inspector=Find<ContextPropertiesView>(layout).Single();
+            Assert.Equal(Visibility.Collapsed,inspector.Visibility);Assert.Empty(Find<TabControl>(inspector));
             var tools=(DockPane)layout.FindName("AnalysisPane");var tabs=Find<TabControl>(tools).Single();
             Assert.Equal(new[]{"Проблемы","Расчёт DC","Вывод","Симуляция"},tabs.Items.Cast<TabItem>().Select(t=>t.Header.ToString()));
             var list=Find<DiagnosticsView>(tools).Single();var message=Find<TextBox>(list).First(t=>t.DataContext is DiagnosticItemViewModel {Code:"CODE_AUTO_MARKERS"});

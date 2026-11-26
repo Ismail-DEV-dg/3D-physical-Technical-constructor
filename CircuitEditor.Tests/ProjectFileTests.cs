@@ -17,8 +17,9 @@ public sealed class ProjectFileTests
         var resistor=e.Project.Components.Single(c=>c.Model.Definition.Id=="resistor");
         var led=e.Project.Components.Single(c=>c.Model.Definition.Id=="led");
         var wire=new Wire(WireEndpoint.Contact(resistor.Model.Id,resistor.Footprint.Contacts[0].Id),
-            WireEndpoint.Hole(e.Mockup.Board!.Id,e.Mockup.Board.Definition.Holes[0].Id),WirePalette.Colors[2],[new LayoutPoint(20,30)]);
+            WireEndpoint.Hole(e.Mockup.Board!.Id,e.Mockup.Board.Definition.Holes[0].Id),WirePalette.Colors[2],[new LayoutPoint(20,30)], isStraight: true);
         e.Project.Model.Circuit.PutWire(wire);
+        e.Project.Model.SetMockupNotes([new MockupNote(12, 15, "Плата Arduino")]);
         var document=e.Session.Capture(); var file=Path.Combine(e.Folder,"test.circ");
         Assert.Null(e.Repository.Save(file,document));
         var json=File.ReadAllText(file); Assert.DoesNotContain("defaultColor",json); Assert.DoesNotContain("holePitch",json);
@@ -31,8 +32,37 @@ public sealed class ProjectFileTests
         var restored=ProjectDocumentResolver.Resolve(read.Value!,e.Project.Library,e.Project.Model.Footprints,e.Mockup.Board.Definition,new Core.Services.ComponentInsertionService());
         Assert.True(new ProjectSnapshot(e.Project.Model).Matches(restored));
         Assert.Equal(document.View,read.Value!.View);
+        Assert.True(Assert.Single(read.Value.Wires).IsStraight);
+        Assert.Equal("Плата Arduino", Assert.Single(restored.MockupNotes).Text);
         Assert.NotNull(led.Model.Color);
     }
+    [Fact]
+    public void CanvasNoteCanBeEditedRemovedAndRestored()
+    {
+        using var environment = new Stage4TestEnvironment();
+        var scene = environment.Mockup;
+        scene.BeginNoteCommand.Execute(null);
+        scene.InputCommand.Execute(new(CircuitEditor.App.Interaction.CanvasAction.Down, 300, 120));
+        Assert.True(scene.IsEditingNote);
+        scene.NoteText = "Плата Arduino";
+        scene.SaveNoteCommand.Execute(null);
+        Assert.False(scene.IsEditingNote);
+        Assert.Equal("Плата Arduino", Assert.Single(environment.Project.Model.MockupNotes).Text);
+
+        scene.InputCommand.Execute(new(CircuitEditor.App.Interaction.CanvasAction.Down, 300, 120, Pan: true, RightClick: true));
+        Assert.True(scene.CanDeleteNote);
+        scene.NoteText = "Контроллер Arduino";
+        scene.SaveNoteCommand.Execute(null);
+        Assert.Equal("Контроллер Arduino", Assert.Single(environment.Project.Model.MockupNotes).Text);
+        scene.InputCommand.Execute(new(CircuitEditor.App.Interaction.CanvasAction.Down, 300, 120, Pan: true, RightClick: true));
+        scene.DeleteNoteCommand.Execute(null);
+        Assert.Empty(environment.Project.Model.MockupNotes);
+        environment.Project.UndoCommand.Execute(null);
+        Assert.Single(environment.Project.Model.MockupNotes);
+        environment.Project.RedoCommand.Execute(null);
+        Assert.Empty(environment.Project.Model.MockupNotes);
+    }
+
     [Theory]
     [InlineData("{broken")]
     [InlineData("{\"schemaVersion\":99}")]
