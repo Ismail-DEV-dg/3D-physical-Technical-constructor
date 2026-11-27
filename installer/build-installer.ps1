@@ -81,8 +81,8 @@ function Confirm-Payload([string]$Path) {
     foreach ($item in $required) {
         if (-not (Test-Path -LiteralPath (Join-Path $Path $item) -PathType Leaf)) { throw "В публикации нет $item." }
     }
-    if (@(Get-ChildItem -LiteralPath (Join-Path $Path 'Samples') -Filter '*.circ' -File).Count -ne 5) {
-        throw 'Ожидалось пять учебных проектов.'
+    if (@(Get-ChildItem -LiteralPath (Join-Path $Path 'Samples') -Filter '*.circ' -File).Count -ne 9) {
+        throw 'Ожидалось девять учебных проектов.'
     }
     $config = Get-Content -LiteralPath (Join-Path $Path 'CircuitEditor.App.runtimeconfig.json') -Raw | ConvertFrom-Json
     if (@($config.runtimeOptions.frameworks | Where-Object { $_.name -eq 'Microsoft.WindowsDesktop.App' -and $_.version -match '^8\.' }).Count -ne 1) {
