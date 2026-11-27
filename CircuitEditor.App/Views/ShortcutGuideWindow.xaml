@@ -17,7 +17,7 @@
  <Button DockPanel.Dock="Right" Content="×" AutomationProperties.Name="Закрыть" Style="{DynamicResource CloseCaptionButton}" Command="{Binding CloseCommand}" shell:WindowChrome.IsHitTestVisibleInChrome="True" ToolTip="Закрыть · Esc"/>
  <TextBlock Text="Горячие клавиши" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
  </DockPanel>
- <TextBlock Grid.Row="1" Text="Выберите действие в списке, щёлкните по полю внизу и нажмите новое сочетание. Оно сохранится сразу. Под названием действия указано, где оно работает." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" FontSize="12" Margin="0,0,0,12"/>
+ <TextBlock Grid.Row="1" Text="Дважды щёлкните по текущим клавишам в списке и нажмите новое сочетание. Esc отменяет запись." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" FontSize="12" Margin="0,0,0,12"/>
  <Grid Grid.Row="2">
   <TextBox x:Name="HelpSearch" Text="{Binding Search,UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="Поиск горячих клавиш"/>
   <TextBlock Text="Введите действие или сочетание, например Ctrl+D" IsHitTestVisible="False" VerticalAlignment="Center"
@@ -33,20 +33,46 @@
  <ListBox Grid.Row="3" ItemsSource="{Binding Source={StaticResource GroupedShortcuts}}" SelectedItem="{Binding Selected}" Margin="0,12" HorizontalContentAlignment="Stretch">
  <ListBox.GroupStyle><GroupStyle><GroupStyle.HeaderTemplate><DataTemplate><TextBlock Text="{Binding Name}" Foreground="{DynamicResource MutedBrush}" Margin="6,12,0,6" FontWeight="SemiBold"/></DataTemplate></GroupStyle.HeaderTemplate></GroupStyle></ListBox.GroupStyle>
  <ListBox.ItemTemplate><DataTemplate><Grid><Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
- <Border Background="{DynamicResource RaisedBrush}" BorderBrush="{DynamicResource SubtleLineBrush}" BorderThickness="1" CornerRadius="4" Padding="6,3" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,0,8,0">
-  <TextBlock Text="{Binding Keys}" TextWrapping="Wrap" FontFamily="{StaticResource MonoFont}" FontSize="12"/>
- </Border>
+ <Button x:Name="KeyCap" HorizontalAlignment="Left" VerticalAlignment="Top" MinWidth="42" MaxWidth="158"
+         Padding="8,4" Margin="0,0,12,0" FontFamily="{StaticResource MonoFont}" FontSize="12"
+         AutomationProperties.HelpText="{Binding Description}"
+         input:ShortcutCapture.Model="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ListBox}}">
+  <Button.Style><Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+   <Setter Property="Background" Value="{DynamicResource RaisedBrush}"/>
+   <Setter Property="BorderBrush" Value="{DynamicResource SubtleLineBrush}"/>
+   <Setter Property="Cursor" Value="Hand"/>
+   <Setter Property="AutomationProperties.Name" Value="{Binding Keys}"/>
+   <Setter Property="ToolTip" Value="Двойной щелчок или Enter на этой кнопке"/>
+   <Style.Triggers>
+    <DataTrigger Binding="{Binding CanCustomize}" Value="False">
+     <Setter Property="IsEnabled" Value="False"/>
+    </DataTrigger>
+    <Trigger Property="input:ShortcutCapture.IsRecording" Value="True">
+     <Setter Property="Background" Value="{DynamicResource SelectedBrush}"/>
+     <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
+     <Setter Property="AutomationProperties.Name" Value="Нажмите клавиши"/>
+    </Trigger>
+   </Style.Triggers>
+  </Style></Button.Style>
+  <TextBlock TextWrapping="Wrap">
+   <TextBlock.Style><Style TargetType="TextBlock">
+    <Setter Property="Text" Value="{Binding Keys}"/>
+    <Style.Triggers>
+     <DataTrigger Binding="{Binding (input:ShortcutCapture.IsRecording), ElementName=KeyCap}" Value="True">
+      <Setter Property="Text" Value="Нажмите клавиши…"/>
+     </DataTrigger>
+    </Style.Triggers>
+   </Style></TextBlock.Style>
+  </TextBlock>
+ </Button>
  <StackPanel Grid.Column="1"><TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="13"/><TextBlock Text="{Binding Scope}" TextWrapping="Wrap" Style="{StaticResource MutedText}" Margin="0,4,0,0"/></StackPanel>
  </Grid></DataTemplate></ListBox.ItemTemplate></ListBox>
  <StackPanel Grid.Row="4">
-  <TextBlock Text="{Binding Selected.Description}" Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,0,0,5"/>
   <WrapPanel>
-   <TextBox Margin="0,0,8,4" Width="190" IsReadOnly="True" IsEnabled="{Binding CanChange}" Text="Введите новое сочетание"
-            AutomationProperties.Name="Новое сочетание клавиш" input:ShortcutCapture.Enabled="True"/>
    <Button Margin="0,0,8,4" Content="Сбросить выбранное" Command="{Binding ResetCommand}"/>
    <Button Margin="0,0,0,4" Content="Сбросить все" Command="{Binding ResetAllCommand}"/>
   </WrapPanel>
-  <TextBlock Text="{Binding Feedback}" TextWrapping="Wrap" Foreground="{DynamicResource AccentBrush}" MinHeight="18"/>
+  <TextBlock Text="{Binding Feedback}" TextWrapping="Wrap" Foreground="{DynamicResource AccentHoverBrush}" MinHeight="18"/>
  </StackPanel>
  </Grid></Border>
 </Window>

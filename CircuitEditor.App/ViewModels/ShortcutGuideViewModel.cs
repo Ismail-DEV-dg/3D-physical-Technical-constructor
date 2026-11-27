@@ -39,10 +39,11 @@ public sealed partial class ShortcutGuideViewModel : ObservableObject
         ResetCommand.NotifyCanExecuteChanged();
     }
 
-    internal void Assign(Key key, ModifierKeys modifiers)
+    internal bool Assign(ShortcutBinding binding, Key key, ModifierKeys modifiers)
     {
-        if (Selected is not { } binding) return;
-        Update(binding, settings.Assign(binding, key, modifiers), "Сочетание сохранено.");
+        var error = settings.Assign(binding, key, modifiers);
+        Update(binding, error, "Сочетание сохранено.");
+        return error is null;
     }
 
     [RelayCommand(CanExecute = nameof(CanChange))]

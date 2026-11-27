@@ -24,9 +24,11 @@ public sealed partial class GuideBrowserViewModel(GuideLibrary library, IClipboa
     private bool HasPrevious => CurrentIndex > 0;
     private bool HasNext => CurrentIndex >= 0 && CurrentIndex < Chapters.Count - 1;
 
-    internal void Open(string section, string? id)
+    internal void Open(string section, string? id) => Open(library.Chapters(section), id);
+
+    internal void Open(IReadOnlyList<GuideChapter> chapters, string? id = null)
     {
-        all = library.Chapters(section);
+        all = chapters;
         Search = "";
         OnPropertyChanged(nameof(Chapters));
         Chapter = all.FirstOrDefault(c => c.Id == id) ?? all.FirstOrDefault();

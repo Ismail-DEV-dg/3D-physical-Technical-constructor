@@ -35,7 +35,10 @@
    <Button Content="Uno" Command="{Binding OpenSectionCommand}" CommandParameter="uno" Margin="0,0,5,4"/>
    <Button Content="Nano" Command="{Binding OpenSectionCommand}" CommandParameter="nano" Margin="0,0,5,4"/>
    <Button Content="ESP32" Command="{Binding OpenSectionCommand}" CommandParameter="esp32" Margin="0,0,5,4"/>
-   <Button Content="Ошибки" Command="{Binding OpenSectionCommand}" CommandParameter="errors" Margin="0,0,0,4"/>
+   <Button Content="Ошибки" Command="{Binding OpenSectionCommand}" CommandParameter="errors" Margin="0,0,5,4"/>
+   <Button Content="О приложении" Command="{Binding OpenSectionCommand}" CommandParameter="about" Margin="0,0,5,4"/>
+   <Button Content="Версия и лицензии" Command="{Binding OpenSectionCommand}" CommandParameter="license" Margin="0,0,0,4"
+           Visibility="{Binding IsAbout, Converter={StaticResource VisibleIf}}"/>
   </WrapPanel>
   <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Visibility="{Binding IsHome, Converter={StaticResource VisibleIf}}">
    <StackPanel Margin="0,18,5,0">
@@ -68,7 +71,7 @@
      <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="nano">
       <StackPanel>
        <TextBlock Text="Arduino Nano" FontSize="17" FontWeight="SemiBold" TextWrapping="Wrap"/>
-       <TextBlock Text="Монтаж на breadboard и скетчи для 27 деталей." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
+       <TextBlock Text="Монтаж на макетной плате и скетчи для компонентов." Foreground="{DynamicResource MutedBrush}" TextWrapping="Wrap" Margin="0,5,0,0"/>
       </StackPanel>
      </Button>
      <Button Style="{StaticResource GuideTile}" Command="{Binding OpenSectionCommand}" CommandParameter="uno">

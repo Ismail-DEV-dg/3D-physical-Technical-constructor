@@ -222,7 +222,11 @@ public sealed partial class MainViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void ShortcutHelp()=>shortcutGuide?.Show();
     [RelayCommand]
-    private void About() => dialogs?.ShowAbout();
+    private void About()
+    {
+        if (errorHelp is not null) errorHelp.ShowSection("about");
+        else dialogs?.ShowAbout();
+    }
 
     [RelayCommand]
     private void Minimize() => window.Minimize();

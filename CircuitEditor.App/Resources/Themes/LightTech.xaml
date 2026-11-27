@@ -67,24 +67,36 @@
     <SolidColorBrush x:Key="DangerBrush" Color="{DynamicResource RedColor}"/>
     <SolidColorBrush x:Key="CanvasHintBrush" Color="#EEF7F9FC"/>
     <LinearGradientBrush x:Key="NavigationGlassShellBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#EFFFFEFF" Offset="0"/>
-        <GradientStop Color="#AD9DB9D2" Offset="0.45"/>
-        <GradientStop Color="#75D9E5F3" Offset="1"/>
+        <GradientStop Color="#F4FFFFFF" Offset="0"/>
+        <GradientStop Color="#CADAE8F8" Offset=".56"/>
+        <GradientStop Color="#CBBCD5F0" Offset="1"/>
     </LinearGradientBrush>
-    <LinearGradientBrush x:Key="NavigationGlassHoverBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="#90FFFFFF" Offset="0"/>
-        <GradientStop Color="#55A5BFD8" Offset="1"/>
+    <LinearGradientBrush x:Key="NavigationGlassHoverBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#FCFFFFFF" Offset="0"/>
+        <GradientStop Color="#E5C8DFF6" Offset=".60"/>
+        <GradientStop Color="#D0AFCDEC" Offset="1"/>
     </LinearGradientBrush>
-    <LinearGradientBrush x:Key="NavigationGlassActiveBrush" StartPoint="0,0" EndPoint="0,1">
-        <GradientStop Color="#F6FFFFFF" Offset="0"/>
-        <GradientStop Color="#E4D1E7FB" Offset="0.45"/>
-        <GradientStop Color="#C4B1CDE7" Offset="1"/>
+    <LinearGradientBrush x:Key="NavigationGlassActiveBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#FFFFFFFF" Offset="0"/>
+        <GradientStop Color="#F5B9D7F8" Offset=".58"/>
+        <GradientStop Color="#F6AFCCEE" Offset="1"/>
     </LinearGradientBrush>
-    <LinearGradientBrush x:Key="NavigationGlassGlintBrush" StartPoint="0,0" EndPoint="0.3,1">
-        <GradientStop Color="#EFFFFFFF" Offset="0"/>
-        <GradientStop Color="#00FFFFFF" Offset="1"/>
+    <LinearGradientBrush x:Key="NavigationGlassGlintBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#00FFFFFF" Offset=".08"/>
+        <GradientStop Color="#FBFFFFFF" Offset=".50"/>
+        <GradientStop Color="#00FFFFFF" Offset=".95"/>
     </LinearGradientBrush>
-    <SolidColorBrush x:Key="NavigationGlassEdgeBrush" Color="#996381A6"/>
-    <SolidColorBrush x:Key="NavigationGlassInnerEdgeBrush" Color="#B0FFFFFF"/>
-    <SolidColorBrush x:Key="NavigationGlassActiveEdgeBrush" Color="#A96384AC"/>
+    <LinearGradientBrush x:Key="NavigationGlassLowerGlintBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#004075B7" Offset=".18"/>
+        <GradientStop Color="#90538EC9" Offset=".60"/>
+        <GradientStop Color="#C3F3FAFF" Offset=".72"/>
+        <GradientStop Color="#00538EC9" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="NavigationGlassEdgeBrush" StartPoint="0,0" EndPoint=".24,1">
+        <GradientStop Color="#AF83A1C2" Offset="0"/>
+        <GradientStop Color="#95879FBD" Offset=".56"/>
+        <GradientStop Color="#AD6892C6" Offset="1"/>
+    </LinearGradientBrush>
+    <SolidColorBrush x:Key="NavigationGlassInnerEdgeBrush" Color="#ACFFFFFF"/>
+    <SolidColorBrush x:Key="NavigationGlassActiveEdgeBrush" Color="#CE5386C0"/>
 </ResourceDictionary>

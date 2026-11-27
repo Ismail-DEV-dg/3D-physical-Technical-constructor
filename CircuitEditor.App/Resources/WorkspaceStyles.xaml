@@ -32,31 +32,44 @@
   </Setter>
  </Style>
  <Style x:Key="GlassWorkspaceTab" TargetType="TabItem" BasedOn="{StaticResource WorkspaceTab}">
-  <Setter Property="MinHeight" Value="28"/>
-  <Setter Property="Padding" Value="11,5"/>
+  <Setter Property="MinHeight" Value="34"/>
+  <Setter Property="MinWidth" Value="88"/>
+  <Setter Property="Padding" Value="8,6"/>
+  <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
   <Setter Property="Template">
    <Setter.Value>
     <ControlTemplate TargetType="TabItem">
-     <Grid Margin="1,0" Background="Transparent">
-      <Border x:Name="Fill" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="14"/>
-      <Border x:Name="Highlight" Margin="2" Height="11" CornerRadius="11,11,2,2" VerticalAlignment="Top"
-              Background="{DynamicResource NavigationGlassGlintBrush}" Opacity="0" IsHitTestVisible="False"/>
+     <Grid Margin="2,0" Background="Transparent">
+      <Border x:Name="Fill" Background="{DynamicResource NavigationGlassShellBrush}" BorderThickness="1"
+              BorderBrush="{DynamicResource NavigationGlassEdgeBrush}" CornerRadius="10"/>
+      <Border Margin="2" CornerRadius="8" BorderBrush="{DynamicResource NavigationGlassInnerEdgeBrush}"
+              BorderThickness="1" IsHitTestVisible="False"/>
+      <Grid x:Name="Reflections" Opacity=".54" IsHitTestVisible="False">
+       <Border Margin="9,1,9,0" Height="6" VerticalAlignment="Top" Background="{DynamicResource NavigationGlassGlintBrush}">
+        <Border.OpacityMask><LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+         <GradientStop Color="White" Offset="0"/><GradientStop Color="Transparent" Offset="1"/>
+        </LinearGradientBrush></Border.OpacityMask>
+       </Border>
+       <Border Margin="8,0,8,1" Height="5" VerticalAlignment="Bottom" Background="{DynamicResource NavigationGlassLowerGlintBrush}">
+        <Border.OpacityMask><LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+         <GradientStop Color="White" Offset="0"/><GradientStop Color="Transparent" Offset="1"/>
+        </LinearGradientBrush></Border.OpacityMask>
+       </Border>
+      </Grid>
       <Border x:Name="FocusRing" Margin="1" BorderBrush="{DynamicResource AccentHoverBrush}" BorderThickness="1"
-              CornerRadius="13" Opacity="0" IsHitTestVisible="False"/>
+              CornerRadius="9" Opacity="0" IsHitTestVisible="False"/>
       <ContentPresenter x:Name="Label" ContentSource="Header" RecognizesAccessKey="True" Margin="{TemplateBinding Padding}"
                         VerticalAlignment="Center" HorizontalAlignment="Center"/>
      </Grid>
      <ControlTemplate.Triggers>
       <Trigger Property="IsMouseOver" Value="True">
        <Setter TargetName="Fill" Property="Background" Value="{DynamicResource NavigationGlassHoverBrush}"/>
-       <Setter TargetName="Highlight" Property="Opacity" Value=".65"/>
-       <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+       <Setter TargetName="Reflections" Property="Opacity" Value=".82"/>
       </Trigger>
       <Trigger Property="IsSelected" Value="True">
        <Setter TargetName="Fill" Property="Background" Value="{DynamicResource NavigationGlassActiveBrush}"/>
        <Setter TargetName="Fill" Property="BorderBrush" Value="{DynamicResource NavigationGlassActiveEdgeBrush}"/>
-       <Setter TargetName="Highlight" Property="Opacity" Value="1"/>
-       <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+       <Setter TargetName="Reflections" Property="Opacity" Value="1"/>
        <Setter Property="FontWeight" Value="SemiBold"/>
       </Trigger>
       <Trigger Property="IsKeyboardFocused" Value="True"><Setter TargetName="FocusRing" Property="Opacity" Value="1"/></Trigger>
@@ -69,13 +82,7 @@
   <Setter Property="Template">
    <Setter.Value>
     <ControlTemplate TargetType="TabControl">
-     <Grid>
-      <Border Background="{DynamicResource NavigationGlassShellBrush}" BorderBrush="{DynamicResource NavigationGlassEdgeBrush}"
-              BorderThickness="1" CornerRadius="18"/>
-      <Border Margin="2" CornerRadius="16" BorderBrush="{DynamicResource NavigationGlassInnerEdgeBrush}"
-              BorderThickness="1,1,1,0" IsHitTestVisible="False"/>
-      <UniformGrid Margin="4,3" Rows="1" IsItemsHost="True" KeyboardNavigation.TabNavigation="Local"/>
-     </Grid>
+     <UniformGrid Rows="1" IsItemsHost="True" KeyboardNavigation.TabNavigation="Local"/>
     </ControlTemplate>
    </Setter.Value>
   </Setter>

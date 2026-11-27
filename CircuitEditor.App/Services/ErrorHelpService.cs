@@ -6,7 +6,8 @@ using CircuitEditor.Core.Repositories;
 
 namespace CircuitEditor.App.Services;
 
-public sealed class ErrorHelpService(IErrorDocumentationService documentation, IClipboardService clipboard, IGuideRepository guides)
+public sealed class ErrorHelpService(IErrorDocumentationService documentation, IClipboardService clipboard, IGuideRepository guides,
+    IInstallationLicenseRepository? license = null)
     : IErrorHelpService
 {
     public void Show(string? code = null) => Open(code is null ? "home" : "errors", code);
@@ -15,7 +16,7 @@ public sealed class ErrorHelpService(IErrorDocumentationService documentation, I
     private void Open(string section, string? code)
     {
         var catalog = guides.Load();
-        var model = new ErrorHelpViewModel(documentation, clipboard, catalog.Value, catalog.Error);
+        var model = new ErrorHelpViewModel(documentation, clipboard, catalog.Value, catalog.Error, ReadLicense);
         if (code is not null) model.SelectCode(code);
         else model.OpenSection(section);
         var owner = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive) ?? Application.Current.MainWindow;
@@ -38,5 +39,11 @@ public sealed class ErrorHelpService(IErrorDocumentationService documentation, I
             model.FocusSearchRequested -= Focus;
             window.Loaded -= Focus;
         }
+    }
+
+    private string ReadLicense()
+    {
+        var result = license?.Read();
+        return result?.Value ?? result?.Error ?? "Файл LICENSE недоступен.";
     }
 }

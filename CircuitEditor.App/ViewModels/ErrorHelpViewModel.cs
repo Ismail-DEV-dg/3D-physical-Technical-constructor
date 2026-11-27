@@ -9,14 +9,16 @@ public sealed partial class ErrorHelpViewModel : ObservableObject
 {
     private readonly IErrorDocumentationService documentation;
     private readonly IClipboardService clipboard;
+    private readonly Func<string>? readLicense;
     private DiagnosticArticle? previousError;
     private string section = "home";
 
     public ErrorHelpViewModel(IErrorDocumentationService documentation, IClipboardService clipboard,
-        GuideLibrary? library = null, string? libraryError = null)
+        GuideLibrary? library = null, string? libraryError = null, Func<string>? readLicense = null)
     {
         this.documentation = documentation;
         this.clipboard = clipboard;
+        this.readLicense = readLicense;
         Guide = new(library ?? new(), clipboard);
         LibraryError = libraryError ?? "";
     }
@@ -32,6 +34,7 @@ public sealed partial class ErrorHelpViewModel : ObservableObject
     public bool IsHome => section == "home";
     public bool IsErrors => section == "errors";
     public bool IsGuide => !IsHome && !IsErrors;
+    public bool IsAbout => section is "about" or "license";
     public bool HasRelatedComponent => Selected?.ComponentGuideId is not null;
     public bool HasRelatedApplication => Selected?.ApplicationGuideId is not null;
     public string Heading => section switch
@@ -41,6 +44,8 @@ public sealed partial class ErrorHelpViewModel : ObservableObject
         "uno" => "Пособие по Arduino Uno",
         "esp32" => "Пособие по ESP32 DevKit",
         "application" => "Руководство по Circuit Editor",
+        "about" => "О приложении",
+        "license" => "Версия и лицензии",
         "lessons" => "Первые уроки Arduino",
         _ => "Справка Circuit Editor"
     };
@@ -82,9 +87,14 @@ public sealed partial class ErrorHelpViewModel : ObservableObject
         OnPropertyChanged(nameof(IsHome));
         OnPropertyChanged(nameof(IsErrors));
         OnPropertyChanged(nameof(IsGuide));
+        OnPropertyChanged(nameof(IsAbout));
         OnPropertyChanged(nameof(Heading));
         if (IsErrors) { Search = ""; Selected = Articles.FirstOrDefault(); }
-        if (IsGuide) Guide.Open(name, chapter);
+        if (name == "about") Guide.Open("application", "about");
+        else if (name == "license")
+            Guide.Open([new("version", "Версия и зависимости", AboutInformation.Describe()),
+                new("license", "Лицензия MIT", readLicense?.Invoke() ?? "Текст лицензии недоступен.")]);
+        else if (IsGuide) Guide.Open(name, chapter ?? (name == "application" ? "quick" : null));
     }
 
     [RelayCommand]
@@ -106,7 +116,8 @@ public sealed partial class ErrorHelpViewModel : ObservableObject
             return;
         }
 
-        if (IsHome) Close();
+        if (section == "license") OpenSection("about");
+        else if (IsHome) Close();
         else OpenSection("home");
     }
 
