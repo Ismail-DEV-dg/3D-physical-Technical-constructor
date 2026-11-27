@@ -42,7 +42,12 @@ public sealed partial class ComponentViewModel : ObservableObject
         OnPropertyChanged(nameof(ElectricalEditor));
     }
     private void NotifyMutation(){MutationVersion++;OnPropertyChanged(nameof(MutationVersion));}
-    public void UpdateLayout(){Layout = layoutCalculator.Calculate(Model);CreateElectricalEditor();}
+    public void UpdateLayout()
+    {
+        Layout = layoutCalculator.Calculate(Model);
+        CreateElectricalEditor();
+        OnPropertyChanged(nameof(I2cAddress));
+    }
     public string Reference => Model.Reference;
     public string Name => Model.Definition.Name;
     public string Description => Model.Definition.Description;
@@ -89,6 +94,7 @@ public sealed partial class ComponentViewModel : ObservableObject
         OnPropertyChanged(nameof(ResistanceValue));
     }
     public bool SupportsI2c => Model.Definition.DefaultI2cAddress is not null;
+    public string? I2cAddress => Model.I2cAddress;
     public string PinSummary => string.Join("\n", Model.Definition.Pins.Select(DescribePin));
     private static string DescribePin(Pin pin)
     {

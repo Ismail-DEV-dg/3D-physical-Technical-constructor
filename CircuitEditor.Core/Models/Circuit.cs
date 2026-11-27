@@ -39,8 +39,34 @@ public sealed class Circuit
         ArgumentNullException.ThrowIfNull(definition);
         var next = counters.GetValueOrDefault(definition.Prefix) + 1;
         var component = new Component(definition, $"{definition.Prefix}{next}");
+        AssignAvailableI2cAddress(component);
         counters[definition.Prefix] = next; components.Add(component);
         return component;
+    }
+
+    internal void AssignAvailableI2cAddress(Component component, IEnumerable<Component>? additional = null)
+    {
+        if (component.I2cAddress is not { } preferred) return;
+        const int pcf8574Base = 0x20;
+        const int pcf8574aBase = 0x38;
+        const int addressesPerVariant = 8;
+        const int alternateSsd1306 = 0x3D;
+        var used = components.Concat(additional ?? []).Select(part => part.I2cAddress)
+            .OfType<string>().ToHashSet(StringComparer.OrdinalIgnoreCase);
+        if (!used.Contains(preferred)) return;
+        // New devices are unwired, so reserve an address across the project. Existing addresses are retained.
+        IEnumerable<int> hardware = component.Definition.Id switch
+        {
+            "lcd1602-i2c" => Enumerable.Range(pcf8574Base, addressesPerVariant).Reverse()
+                .Concat(Enumerable.Range(pcf8574aBase, addressesPerVariant).Reverse()),
+            "oled-ssd1306" => [alternateSsd1306],
+            _ => []
+        };
+        var virtualRange = Enumerable.Range(ComponentProperties.MinimumI2cAddress,
+            ComponentProperties.MaximumI2cAddress - ComponentProperties.MinimumI2cAddress + 1);
+        var address = hardware.Concat(virtualRange).Select(value => $"0x{value:X2}")
+            .FirstOrDefault(value => !used.Contains(value));
+        if (address is not null) component.TryUpdateProperties(component.Value, component.Color, address, out _);
     }
     /// <summary>Удаляет экземпляр и инцидентные соединения.</summary>
     public bool RemoveComponent(Guid id)

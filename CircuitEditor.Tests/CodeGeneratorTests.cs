@@ -38,11 +38,11 @@ public sealed class CodeGeneratorTests
         var result=Generate(e);Assert.Contains(header,result.Text);Assert.Contains(address,result.Text);Assert.Contains("Wire.begin();",result.Text);
     }
     [Theory]
-    [InlineData("arduino-uno",BoardKind.Uno,"D2",false)]
+    [InlineData("arduino-uno",BoardKind.Uno,"D2",true)]
     [InlineData("arduino-nano",BoardKind.Nano,"D9",true)]
     [InlineData("esp32-devkit",BoardKind.Esp32,"GPIO18",true)]
     [InlineData("esp32-devkit",BoardKind.Esp32,"GPIO34",false)]
-    public void ServoRejectsNonPwmAndInputOnlyPins(string boardId,BoardKind kind,string pin,bool allowed)
+    public void ServoUsesTimedPulsesOnOutputPins(string boardId,BoardKind kind,string pin,bool allowed)
     {
         using var e=new ElectricalTestCircuit();var board=e.Add(boardId);var servo=e.Add("servo");e.Wire(board,pin,servo,"SIG");
         var result=Generate(e,new(Board:kind));Assert.True(result.Success);

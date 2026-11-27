@@ -31,6 +31,16 @@
     <WrapPanel VerticalAlignment="Center">
      <TextBlock Text="{Binding Project.SelectedComponent.Reference}" FontFamily="{StaticResource MonoFont}" FontWeight="SemiBold" Foreground="{DynamicResource AccentHoverBrush}" Margin="3,5,12,5"/>
      <TextBlock Text="{Binding Project.SelectedComponent.Name}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+     <TextBlock Text="{Binding Project.SelectedComponent.I2cAddress, StringFormat=I²C {0}}"
+                FontFamily="{StaticResource MonoFont}" VerticalAlignment="Center" Margin="0,0,12,0"
+                ToolTip="Используйте этот адрес в скетче. Адрес редактируется в свойствах.">
+      <TextBlock.Style><Style TargetType="TextBlock">
+       <Setter Property="Visibility" Value="Collapsed"/>
+       <Style.Triggers><DataTrigger Binding="{Binding Project.SelectedComponent.SupportsI2c}" Value="True">
+        <Setter Property="Visibility" Value="Visible"/>
+       </DataTrigger></Style.Triggers>
+      </Style></TextBlock.Style>
+     </TextBlock>
      <StackPanel Orientation="Horizontal" DataContext="{Binding Project.SelectedComponent.ResistorEditor}">
       <StackPanel.Style><Style TargetType="StackPanel"><Style.Triggers>
        <DataTrigger Binding="{Binding}" Value="{x:Null}"><Setter Property="Visibility" Value="Collapsed"/></DataTrigger>

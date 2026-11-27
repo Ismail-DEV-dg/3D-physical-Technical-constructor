@@ -9,6 +9,7 @@ internal sealed class SketchSymbols
     private readonly List<long> initialValues = [];
     private readonly HashSet<int> constantUses = [];
     private readonly HashSet<int> writes = [];
+    private readonly HashSet<int> readOnlySlots = [];
 
     public IReadOnlyList<long> InitialValues => initialValues.ToArray();
 
@@ -26,10 +27,21 @@ internal sealed class SketchSymbols
 
     public int? Slot(CppToken token) => Find(token.Text)?.Slot;
 
+    public int DeclareLocal(CppToken name, bool readOnly = false)
+    {
+        if (scopes[^1].ContainsKey(name.Text))
+            throw new SketchSyntaxException(name, $"Имя «{name.Text}» уже объявлено в этом блоке.");
+        var slot = Allocate(0);
+        scopes[^1].Add(name.Text, ("0", slot));
+        writes.Add(slot);
+        if (readOnly) readOnlySlots.Add(slot);
+        return slot;
+    }
+
     public int WritableSlot(CppToken token)
     {
         var slot = Slot(token);
-        if (slot is null || constantUses.Contains(slot.Value))
+        if (slot is null || constantUses.Contains(slot.Value) || readOnlySlots.Contains(slot.Value))
             throw new SketchSyntaxException(token, $"«{token.Text}» должно быть изменяемой числовой или логической переменной.");
         writes.Add(slot.Value);
         return slot.Value;

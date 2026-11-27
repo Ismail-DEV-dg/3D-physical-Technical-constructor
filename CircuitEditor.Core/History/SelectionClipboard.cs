@@ -33,7 +33,9 @@ public sealed class SelectionClipboard
             if (source.FindChip(original.Definition.Id) is { } chip) target.RegisterChip(chip);
             var allocated = target.AddComponent(original.Definition);
             var copy = ProjectSnapshot.Copy(original, allocated.Id, allocated.Reference);
-            target.RemoveComponent(allocated.Id); copies.Add(copy); map.Add(original.Id, copy.Id);
+            target.RemoveComponent(allocated.Id);
+            target.Circuit.AssignAvailableI2cAddress(copy, copies);
+            copies.Add(copy); map.Add(original.Id, copy.Id);
             var m = source.MockupLayout.Get(original.Id); var s = source.SchematicLayout.Get(original.Id);
             target.MockupLayout.Set(copy.Id, new(m.X + dx, m.Y + dy, m.Rotation, m.SpanHoles));
             target.SchematicLayout.Set(copy.Id, new(s.X + pasteCount * SchematicOffset, s.Y + pasteCount * SchematicOffset, s.Rotation, s.SpanHoles));

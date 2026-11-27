@@ -33,8 +33,9 @@ public sealed class UltrasonicBehavior : IComponentBehavior
             context.Now - start >= context.Parameter(c, "minimumTriggerUs") && !memory.Echo)
         {
             memory.Echo = true;
-            var width = EchoWidth(context, c);
-            context.ChangeAt(context.Now + width, () => memory.Echo = false);
+            memory.EchoStartedAt = context.Now;
+            memory.EchoEndsAt = context.Now + EchoWidth(context, c);
+            context.ChangeAt(memory.EchoEndsAt, () => memory.Echo = false);
             changed = true;
         }
         if (level != DigitalLevel.High) memory.TriggerStart = null;

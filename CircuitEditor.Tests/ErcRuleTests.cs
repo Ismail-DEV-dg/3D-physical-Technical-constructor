@@ -54,6 +54,7 @@ public sealed class ErcRuleTests
     public void I2cConflictRequiresBothSharedLines(bool sameBus)
     {
         using var e=new ElectricalTestCircuit();var a=e.Add("lcd1602-i2c");var b=e.Add("lcd1602-i2c");
+        Assert.True(b.Model.TryUpdateProperties(b.Model.Value, null, a.Model.I2cAddress, out var error), error);
         e.Wire(a,"SDA",b,"SDA");if(sameBus)e.Wire(a,"SCL",b,"SCL");
         Assert.Equal(sameBus,e.Check(new I2cAddressRule()).Count>0);
     }

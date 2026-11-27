@@ -10,7 +10,7 @@
     "servo": { "minimumVolts": 3.5, "minimumPulseUs": 1000, "maximumPulseUs": 2000, "frameUs": 20000, "degreesPerSecond": 500 },
     "lcd1602": { "minimumVolts": 4, "columns": 16, "rows": 2 },
     "lcd1602-i2c": { "minimumVolts": 4, "columns": 16, "rows": 2 },
-    "oled-ssd1306": { "minimumVolts": 2.7, "columns": 21, "rows": 4 },
+    "oled-ssd1306": { "minimumVolts": 2.7, "columns": 21, "rows": 8 },
     "dht11": { "minimumVolts": 3 },
     "dht22": { "minimumVolts": 3 },
     "pir": { "minimumVolts": 4.5, "outputVolts": 3.3, "outputOhms": 100 },

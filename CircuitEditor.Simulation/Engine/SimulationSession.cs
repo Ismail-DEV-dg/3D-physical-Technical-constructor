@@ -9,6 +9,7 @@ using CircuitEditor.Simulation.Components;
 using CircuitEditor.Simulation.Gpio;
 using CircuitEditor.Simulation.Instruments;
 using CircuitEditor.Simulation.Scenarios;
+using CircuitEditor.Simulation.Sketches;
 using CircuitEditor.Simulation.Timing;
 
 namespace CircuitEditor.Simulation.Engine;
@@ -49,6 +50,7 @@ public sealed class SimulationSession
             .Where(part => part.Behavior is not null).Select(part => (part.Part, part.Behavior!)).ToArray();
         modeled = parts.Select(p => p.Part.Id).ToHashSet();
         context = new(circuit, catalog, Schedule);
+        SketchDisplays = new(circuit, context);
         if (libraryError is not null)
             Halt(new("SIM_LIBRARY", libraryError, 0, IsError: true));
         else
@@ -63,6 +65,7 @@ public sealed class SimulationSession
     }
 
     public SimulationCircuit Circuit { get; }
+    internal SketchDisplayOutput SketchDisplays { get; }
     public SimulationState State { get; private set; }
     public long ModelTime => clock.Microseconds;
     public bool HasHalted => failure is not null;
@@ -119,13 +122,37 @@ public sealed class SimulationSession
         return Circuit.ReadDigital(pin, ModelTime);
     }
 
-    internal void WriteSketchDisplay(Guid id, string? text)
+    internal long ReadSketchAnalog(PinReference pin, bool millivolts, int? resolution)
     {
-        if (Circuit.Project.Circuit.Components.FirstOrDefault(part => part.Id == id) is not { } display) return;
-        if (text is null) { context.SetText(id, ""); return; }
-        var limit = (int)(context.Parameter(display, "columns") * context.Parameter(display, "rows"));
-        var existing = context.For(display).Text ?? "";
-        context.SetText(id, existing + text[..Math.Min(text.Length, Math.Max(0, limit - existing.Length))]);
+        if (Circuit.IsDirty) Settle();
+        var board = Circuit.Controllers[pin.ComponentId];
+        var ground = board.GroundPin is { } groundPin ? Circuit.Voltage(new(board.Id, groundPin)) : null;
+        var voltage = Circuit.Voltage(pin) - ground;
+        var value = board.ReadAdc(pin.PinId, voltage) ?? 0;
+        var fraction = value / (double)((1 << board.Profile.AdcBits) - 1);
+        if (millivolts) return (long)Math.Round(1000 * board.Profile.LogicVoltage * fraction);
+        return resolution is { } bits ? (long)Math.Round(fraction * ((1 << bits) - 1)) : value;
+    }
+
+    internal void SetSketchServo(PinReference pin, long angle)
+    {
+        const long fullAngle = 180;
+        var profile = catalog.Components["servo"];
+        var frame = (long)profile["frameUs"];
+        var lower = profile["minimumPulseUs"];
+        var width = lower + (profile["maximumPulseUs"] - lower) * Math.Clamp(angle, 0, fullAngle) / fullAngle;
+        SetPin(pin, new(GpioMode.Pwm, Duty: width / frame, PeriodMicroseconds: frame, SoftwareTimed: true));
+    }
+
+    internal long ReadSketchEcho(PinReference pin)
+    {
+        if (Circuit.IsDirty) Settle();
+        var net = Circuit.Nets.Find(pin.ComponentId, pin.PinId);
+        var sensors = parts.Where(part => part.Part.Definition.Id == "hc-sr04" && net is not null &&
+            Circuit.Nets.Find(part.Part.Id, "ECHO")?.Id == net.Id).Select(part => part.Part).Take(2).ToArray();
+        if (sensors.Length != 1) return 0;
+        var echo = context.For(sensors[0]);
+        return echo.Powered && echo.Echo && echo.EchoStartedAt == ModelTime ? echo.EchoEndsAt - echo.EchoStartedAt : 0;
     }
 
     internal void PrintSketchSensor(Guid id, ComponentInput input)

@@ -27,8 +27,8 @@ internal sealed class SketchParser
     {
         this.profile = profile;
         this.cancellation = cancellation;
-        expressions = new(Take, Expect, Next, Pin, symbols);
-        peripherals = new(session.Circuit, controller, profile.Kind, Next, Expect, Identifier, Pin, Number);
+        expressions = new(Take, Expect, Next, Pin, symbols, PeripheralExpression);
+        peripherals = new(session.Circuit, controller, profile, Next, () => Current, Take, Expect, Identifier, Pin, Number, expressions.Parse);
         if (text.Length > MaximumSourceLength)
             throw new SketchSyntaxException(new("", 0, 1, 1), "Для учебного запуска скетч должен занимать не более 131 072 символов.");
         tokens = CppTokenScanner.Scan(text, includeLiterals: true);
@@ -98,19 +98,27 @@ internal sealed class SketchParser
                 if (AtEnd || Current.Line != line) return;
             }
         }
-        throw Error(directive, "Для учебного запуска доступны Arduino.h и команды из примеров LCD I²C и DHT. Для других библиотек используйте Arduino IDE.");
+        throw Error(directive, "Для учебного запуска доступны Arduino, Wire, LiquidCrystal, LiquidCrystal_I2C, Adafruit_SSD1306, Servo и DHT.");
     }
 
-    private void Declare(bool inside = false)
+    private void Declare(List<SketchInstruction>? body = null)
     {
         var staticStorage = Take("static");
-        var constant = Take("const") || Take("constexpr");
+        var isConst = Take("const");
+        var constant = isConst || Take("constexpr");
         var type = Next();
-        if (!Types.Contains(type.Text) || inside && !constant && !staticStorage)
+        if (!Types.Contains(type.Text) || body is not null && !constant && !staticStorage)
             throw Error(type, "В блоке используйте const или static с целым или логическим значением.");
         if (type.Text == "unsigned" && Current.Text is "int" or "long" or "short") Next();
         var name = Identifier();
         Expect("=");
+        if (body is not null && isConst && !staticStorage && cursor + 1 < tokens.Count && tokens[cursor + 1].Text != ";")
+        {
+            var initial = expressions.ParseAssignment();
+            Expect(";");
+            body.Add(new(SketchOperation.Assign, Value: symbols.DeclareLocal(name, readOnly: true), Expression: initial));
+            return;
+        }
         var value = Next();
         Expect(";");
         symbols.Declare(name, value, mutable: !constant);
@@ -135,8 +143,19 @@ internal sealed class SketchParser
         if (Take(";")) return;
         if (Take("{")) { Block(body, depth + 1); return; }
         if (Take("if")) { Conditional(body, depth); return; }
+        if (Take("return")) { Expect(";"); body.Add(new(SketchOperation.Return)); return; }
 
-        if (Current.Text is "static" or "const" or "constexpr") { Declare(inside: true); return; }
+        if (Current.Text is "static" or "const" or "constexpr") { Declare(body); return; }
+        if (Types.Contains(Current.Text))
+        {
+            var type = Next();
+            if (type.Text == "unsigned" && Current.Text is "int" or "long" or "short") Next();
+            var name = Identifier();
+            var initial = Take("=") ? expressions.ParseAssignment() : new SketchExpression(SketchExpressionKind.Constant);
+            Expect(";");
+            body.Add(new(SketchOperation.Assign, Value: symbols.DeclareLocal(name), Expression: initial));
+            return;
+        }
         var command = Next();
         if (Take("."))
         {
@@ -147,7 +166,7 @@ internal sealed class SketchParser
         if (Take("="))
         {
             var slot = symbols.WritableSlot(command);
-            var assigned = expressions.Parse();
+            var assigned = expressions.ParseAssignment();
             Expect(";");
             body.Add(new(SketchOperation.Assign, Value: slot, Expression: assigned));
             return;
@@ -162,6 +181,15 @@ internal sealed class SketchParser
             body.Add(new(SketchOperation.Delay, Value: delay * unit));
             return;
         }
+        if (command.Text == "analogReadResolution")
+        {
+            Expect("(");
+            var bits = Number(Next(), 1, 16);
+            Expect(")");
+            Expect(";");
+            body.Add(new(SketchOperation.AnalogResolution, Value: bits));
+            return;
+        }
         if (command.Text is not ("pinMode" or "digitalWrite" or "analogWrite"))
             throw Error(command, $"«{command.Text}» не поддерживается при запуске. Доступны pinMode, digitalWrite, analogWrite, delay и if с digitalRead.");
 
@@ -169,7 +197,7 @@ internal sealed class SketchParser
         var pinToken = Next();
         var pin = Pin(pinToken);
         Expect(",");
-        var expression = command.Text == "digitalWrite" ? expressions.Parse() : null;
+        var expression = command.Text is "digitalWrite" or "analogWrite" ? expressions.Parse() : null;
         var operation = command.Text switch
         {
             "pinMode" => SketchOperation.PinMode,
@@ -179,12 +207,12 @@ internal sealed class SketchParser
         var value = operation switch
         {
             SketchOperation.PinMode => Mode(Next()),
-            SketchOperation.AnalogWrite => Number(Next(), 0, PwmMaximum),
             _ => 0
         };
         if (pin.IsInputOnly && (operation != SketchOperation.PinMode || value != (long)GpioMode.Input))
             throw Error(pinToken, $"Пин {pin.Id} работает только на вход.");
-        if (operation == SketchOperation.AnalogWrite && value is > 0 and < PwmMaximum && !pin.SupportsPwm)
+        if (operation == SketchOperation.AnalogWrite && !pin.SupportsPwm &&
+            expression is not { Kind: SketchExpressionKind.Constant, Value: 0 or PwmMaximum })
             throw Error(pinToken, $"Пин {pin.Id} не поддерживает ШИМ.");
         Expect(")");
         Expect(";");
@@ -216,6 +244,8 @@ internal sealed class SketchParser
         return CodePinResolver.Resolve(value, profile, NoAliases) is { IsExposed: true } pin
             ? pin : throw Error(token, $"Пин «{token.Text}» отсутствует на плате {profile.Kind}.");
     }
+
+    private SketchExpression PeripheralExpression(CppToken name) => peripherals.ParseExpression(name);
 
     private long Mode(CppToken token) => symbols.Resolve(token, constantUse: true) switch
     {

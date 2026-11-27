@@ -10,6 +10,7 @@ public sealed class GpioController(Component board, SimulationBoardProfile profi
     public Guid Id => board.Id;
     public string Reference => board.Reference;
     public SimulationBoardProfile Profile => profile;
+    internal string? GroundPin => board.Definition.Pins.FirstOrDefault(pin => pin.Type == PinType.Ground)?.Id;
     public IReadOnlyList<Pin> Pins { get; } = board.Definition.Pins.Where(IsGpio).ToArray();
     public GpioState Get(string pinId) => states.GetValueOrDefault(pinId) ?? DefaultState;
     public bool IsInputOnly(string pinId) => board.Definition.Pins.Any(p => p.Id == pinId && p.IsInputOnly);
@@ -21,7 +22,7 @@ public sealed class GpioController(Component board, SimulationBoardProfile profi
             || state.AnalogOverride is double analog && (!double.IsFinite(analog) || analog is < 0 or > 1)
             || state.PeriodMicroseconds is < 1 or > 1_000_000
             || state.Mode != GpioMode.Input && pin.IsInputOnly
-            || state.Mode == GpioMode.Pwm && pin.Type != PinType.PWM && !pin.Capabilities.Contains(PinType.PWM))
+            || state.Mode == GpioMode.Pwm && !state.SoftwareTimed && pin.Type != PinType.PWM && !pin.Capabilities.Contains(PinType.PWM))
             return false;
         states[pinId] = state;
         return true;
