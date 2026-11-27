@@ -1,28 +1,51 @@
 classDiagram
     direction LR
-    class T01["ThemeResourceTests"]
-    T01 : +RealDictionariesHaveMatchingKeysAndSwitchWithoutReplacingStyles()
-    class T02["ThemeServiceTests"]
-    T02 : +DefaultThemeIsNeonDark()
-    T02 : +InvalidThemeDoesNotChangeStateOrResources()
-    T02 : +ResourceFailureKeepsCurrentThemeAndAllowsRetry()
-    T02 : +SettingCurrentThemeDoesNotReloadResources()
-    T02 : +SwitchingBothDirectionsAppliesResourcesAndNotifies()
-    class T03["UnoAndHoverPresentationChecks"]
-    class T04["WireBendInsertionTests"]
-    T04 : +EscapeCancelsInsertedBendWithoutHistory()
-    T04 : +InsertionUsesClickedCurvedSpanInEitherDirection()
-    T04 : +NewBendStaysOnClickedSpanAndWholeDragIsOneUndoStep()
-    class T05["WireEditingTests"]
-    T05 : +CreationPreviewEscAndInvalidEndDragHaveNoPartialHistory()
-    T05 : +EndpointFollowsMovingComponentAndDuplicateIsDirectionIndependent()
-    T05 : +InsertionAndOccupiedHoleStateUndoTogether()
-    T05 : +MovingInsertedComponentKeepsContactEndpointWhileChangingHole()
-    T05 : +ReattachingEndpointAndRecoloringAreIndependentUndoSteps()
-    T05 : +ZeroPhysicalLengthIsRejectedEvenWithDifferentEndpointKinds()
-    class T06["WirePathCacheTests"]
-    T06 : +StaticCurveAndFrozenGeometryAreReusedUntilAnEndpointMoves()
-    class T07["WiringAndBoardInteractionTests"]
-    T07 : +BoardDragIsOneGestureAndEscRestoresIt()
-    T07 : +BoardTransformKeepsBindingsWiresHistoryAndFileRoundTrip()
-    T07 : +SwitchingOffAndEscClearPreviewAndAllowDragging()
+    class T01["TestProjectFactory"]
+    T01 : +Create()
+    T01 : +Mockup()
+    T01 : +Schematic()
+    class T02["TestShortcutSettingsRepository"]
+    T02 : +Load()
+    T02 : +Save()
+    class T03["TestSimulationPulse"]
+    T03 : +Start()
+    T03 : +Stop()
+    T03 : +Tick
+    T03 : +TickOnce()
+    class T04["TestTextMeasurer"]
+    T04 : +Measure()
+    class T05["TestThemeResources"]
+    T05 : +Applied
+    T05 : +Apply()
+    T05 : +FailOnApply
+    class T06["TestWindowService"]
+    T06 : +Close()
+    T06 : +Minimize()
+    T06 : +ToggleMaximize()
+    class T07["ThemeResourceTests"]
+    T07 : +RealDictionariesHaveMatchingKeysAndSwitchWithoutReplacingStyles()
+    class T08["ThemeServiceTests"]
+    T08 : +DefaultThemeIsNeonDark()
+    T08 : +InvalidThemeDoesNotChangeStateOrResources()
+    T08 : +ResourceFailureKeepsCurrentThemeAndAllowsRetry()
+    T08 : +SettingCurrentThemeDoesNotReloadResources()
+    T08 : +SwitchingBothDirectionsAppliesResourcesAndNotifies()
+    class T09["UnoAndHoverPresentationChecks"]
+    class T10["WireBendInsertionTests"]
+    T10 : +EscapeCancelsInsertedBendWithoutHistory()
+    T10 : +InsertionUsesClickedCurvedSpanInEitherDirection()
+    T10 : +NewBendStaysOnClickedSpanAndWholeDragIsOneUndoStep()
+    T10 : +StraightSegmentsKeepTheirBendAndRouteStyleOnUndo()
+    class T11["WireEditingTests"]
+    T11 : +CreationPreviewEscAndInvalidEndDragHaveNoPartialHistory()
+    T11 : +EndpointFollowsMovingComponentAndDuplicateIsDirectionIndependent()
+    T11 : +HoveringShortWireShowsBothBreadboardHolesInOneLabel()
+    T11 : +InsertionAndOccupiedHoleStateUndoTogether()
+    T11 : +MovingInsertedComponentKeepsContactEndpointWhileChangingHole()
+    T11 : +ReattachingEndpointAndRecoloringAreIndependentUndoSteps()
+    class T12["WirePathCacheTests"]
+    T12 : +StaticCurveAndFrozenGeometryAreReusedUntilAnEndpointMoves()
+    class T13["WiringAndBoardInteractionTests"]
+    T13 : +BoardDragIsOneGestureAndEscRestoresIt()
+    T13 : +BoardTransformKeepsBindingsWiresHistoryAndFileRoundTrip()
+    T13 : +SwitchingOffAndEscClearPreviewAndAllowDragging()

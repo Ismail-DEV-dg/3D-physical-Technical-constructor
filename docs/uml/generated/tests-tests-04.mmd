@@ -1,81 +1,87 @@
 classDiagram
     direction LR
-    class T01["SceneBuilderTests"]
-    T01 : +CustomDipUsesProjectFootprintAndBindsAcrossChannel()
-    T01 : +EspAndI2cModuleKeepFootprintDimensionsAndContacts()
-    T01 : +EveryBuiltInFootprintHasAProfileAndCancellationIsHonored()
-    T01 : +UnoLedResistorAndWireFollowMockupAndBreadboardBindings()
-    class T02["SceneCacheTests"]
-    T02 : +MoveReusesMeshAndLeavesOtherNodesIntactButBandChangeInvalidates()
-    class T03["SceneExportTests"]
-    T03 : +ObjReferencesMaterialsAndWritesTextureThroughRepository()
-    T03 : +RenderedPanelShowsOnlyItsCroppedPartOfTheDrawing()
-    T03 : +ViewportPngScalesAndIncludesGeometry()
-    class T04["SceneInteractionTests"]
-    T04 : +DragThatReturnsToMouseDownPointDoesNotSelect()
-    T04 : +HiddenWorkspaceDoesNotRequestBuildsOrCaptureTheProject()
-    T04 : +LayerFilterLeavesOrdinaryComponentsVisible()
-    T04 : +PickingUsesVisualIdentityAndCanForgetDetachedObjects()
-    class T05["SceneMeshFactoryTests"]
-    T05 : +AllLibraryModelsAndBreadboardCrossThreadsAsFrozenMeshes()
-    T05 : +CylinderBodyKeepsTheSpecifiedMillimetreDiameter()
-    class T06["SceneReactionsTests"]
-    T06 : +IntensityIsQuantizedToSixteenLevels()
-    T06 : +RepeatedIntensityBandAndDisplayTextReuseSameFrozenModels()
-    class T07["SchematicViewModelTests"]
-    T07 : +DragMovesGroupOnGridEscapeRestoresAndDeleteRemovesSelection()
-    T07 : +DropConvertsViewportPositionSnapsAndSelectsNewComponent()
-    T07 : +MarqueeSelectsIntersectingComponentsAndCtrlAddsToSelection()
-    T07 : +PropertyValidationDoesNotCommitInvalidDraft()
-    T07 : +ZoomKeepsWorldPointUnderCursorAndPanDoesNotMoveComponents()
-    class T08["SessionLifecycleTests"]
-    T08 : +AutosaveSkipsActiveGestureAndRestoresWithoutMarkingClean()
-    T08 : +CancelNewOrOpenAndFailedSavePreserveCurrentDocument()
-    T08 : +OpeningRestoresBothCamerasAndClearsHistory()
-    class T09["ShortcutTests"]
-    T09 : +BindingsAreUniqueAndAllHaveHelpText()
-    T09 : +CommandsToggleModeDuplicateFitAndPreserveGesture()
-    T09 : +ContextAndExactModifiersPreventTypingConflicts()
-    T09 : +GuideSearchFindsActionsAndMouseGestures()
-    class T10["SimulationClockTests"]
-    T10 : +SameTimeEventsPreserveInsertionOrderAcrossTwoRuns()
-    T10 : +SameTimeFeedbackHaltsAndResetDiscardsPendingEvents()
-    class T11["SimulationCompositionTests"]
-    T11 : +CompositionCreatesIndependentClocksAndAllRegisteredDeviceModels()
-    class T12["SimulationDeviceTests"]
-    T12 : +BuiltinLedBlinksOnD13WithoutExternalWiring()
-    T12 : +I2cScreenUsesPoweredTextBufferAndWrapsCharacterRows()
-    T12 : +NpnSaturatesWithBaseDriveAndCutsOffWithLowInput()
-    T12 : +SevenSegmentTurnsOnOnlyWiredSegments()
-    T12 : +UltrasonicEchoUsesDistanceAndVirtualTriggerDuration()
-    class T13["SimulationGpioTests"]
-    T13 : +Esp32InputOnlyAndAdcResolutionFollowBoardProfile()
-    T13 : +PwmAveragesCurrentAndReusesDcAcrossEdges()
-    class T14["SimulationInstrumentTests"]
-    T14 : +ConflictingGpioAndOverloadAreAddressableAndDoNotRepeat()
-    T14 : +InputOnlyReportsDiagnosticAndSerialDoesNotDropRepeatedText()
-    T14 : +MeterRespectsDirectionAndDifferentFloatingReferences()
-    T14 : +ScopeAndLogicKeepBoundedHistoryAndObservePwmWithoutMoreDcSolves()
-    class T15["SimulationLifecycleTests"]
-    T15 : +SimulationUpdateLeavesHistoryCleanAndProjectChangesInvalidateSnapshot()
-    class T16["SimulationPresentationChecks"]
-    class T17["SimulationScenarioTests"]
-    T17 : +BlinkUsesModelPeriodAndProducesIdenticalRuns()
-    T17 : +ButtonPullupChangesLedWithoutEditingProject()
-    T17 : +PotentiometerDrivesPwmBrightness()
-    T17 : +PwmPulseWidthDrivesServoAngle()
-    T17 : +RelayChangesTopologyAndFeedbackStopsOnIterationLimit()
-    T17 : +RemovedBoardOrPinPreventsInvalidScenario()
-    class T18["SimulationStorageTests"]
-    T18 : +ConfigurationRoundTripsButHistoryAndRunningSignalsDoNot()
-    T18 : +RunningSessionGuardsEditsWithoutChangingDirtyFlagAndFileOpenStopsIt()
-    T18 : +VersionTwoFileMigratesWithSketchAndGeometryIntact()
-    class T19["SketchExecutionTests"]
-    T19 : +InvalidSketchStopsWithAnEditorPosition()
-    T19 : +LoopReadsTheSimulatedButtonAndKeepsSetupPinMode()
-    T19 : +MultipleBoardsRequireAnInstanceAndSelectedBoardGetsTheOutput()
-    T19 : +RunsExistingGeneratedBlinkWithMillisAndPersistentVariables()
-    T19 : +SketchDrivesBuiltInLedExternalLedAndScopeAtModelTimes()
-    class T20["SketchLaunchTests"]
-    T20 : +GlobalShortcutOpensMockupAndCircuitStartUsesSeparateSession()
-    T20 : +TogglePausesAndContinuesTheSameSketchWithoutRestarting()
+    class T01["ResistanceTests"]
+    T01 : +CustomInputAcceptsUnitsAndBothDecimalSeparators()
+    T01 : +FormatUsesAppropriateUnit()
+    T01 : +InvalidInputIsRejected()
+    T01 : +SeriesContainAllDecadesWithoutDuplicates()
+    T01 : +ThreeSignificantDigitsUseExactFiveBands()
+    class T02["ResistorEditorTests"]
+    T02 : +CustomPrecisionIsPreservedInsteadOfSilentlyRoundingBands()
+    T02 : +CustomValueSurvivesSeriesChangesAndInvalidInputDoesNotChangeModel()
+    T02 : +SelectingNominalUpdatesSharedModelAndInvalidatesDrawingImmediately()
+    class T03["ResistorPresentationChecks"]
+    T03 : +Run()
+    class T04["SceneBuilderTests"]
+    T04 : +CustomDipUsesProjectFootprintAndBindsAcrossChannel()
+    T04 : +EspAndI2cModuleKeepFootprintDimensionsAndContacts()
+    T04 : +EveryBuiltInFootprintHasAProfileAndCancellationIsHonored()
+    T04 : +UnoLedResistorAndWireFollowMockupAndBreadboardBindings()
+    class T05["SceneCacheTests"]
+    T05 : +MoveReusesMeshAndLeavesOtherNodesIntactButBandChangeInvalidates()
+    class T06["SceneExportTests"]
+    T06 : +ObjReferencesMaterialsAndWritesTextureThroughRepository()
+    T06 : +RenderedPanelShowsOnlyItsCroppedPartOfTheDrawing()
+    T06 : +RevisedSceneRendersMountedLedFromSavedMockup()
+    T06 : +ViewportPngScalesAndIncludesGeometry()
+    class T07["SceneInteractionTests"]
+    T07 : +DragThatReturnsToMouseDownPointDoesNotSelect()
+    T07 : +HiddenWorkspaceDoesNotRequestBuildsOrCaptureTheProject()
+    T07 : +LayerFilterLeavesOrdinaryComponentsVisible()
+    T07 : +PickingUsesVisualIdentityAndCanForgetDetachedObjects()
+    class T08["SceneMeshFactoryTests"]
+    T08 : +AllLibraryModelsAndBreadboardCrossThreadsAsFrozenMeshes()
+    T08 : +BatteryTerminalFaceBelongsToTheMetalCap()
+    T08 : +BreadboardShellOwnsAllFourOutsideWalls()
+    T08 : +ControllerPortSideWallsDoNotOverlapTheBacking()
+    T08 : +CylinderBodyKeepsTheSpecifiedMillimetreDiameter()
+    T08 : +LedBodyIsCenteredAndLegsRemainOnTheirContactAxes()
+    class T09["SceneReactionsTests"]
+    T09 : +IntensityIsQuantizedToSixteenLevels()
+    T09 : +RepeatedIntensityBandAndDisplayTextReuseSameFrozenModels()
+    class T10["SchematicViewModelTests"]
+    T10 : +DragMovesGroupOnGridEscapeRestoresAndDeleteRemovesSelection()
+    T10 : +DropConvertsViewportPositionSnapsAndSelectsNewComponent()
+    T10 : +MarqueeSelectsIntersectingComponentsAndCtrlAddsToSelection()
+    T10 : +PropertyValidationDoesNotCommitInvalidDraft()
+    T10 : +ZoomKeepsWorldPointUnderCursorAndPanDoesNotMoveComponents()
+    class T11["SessionLifecycleTests"]
+    T11 : +AutosaveSkipsActiveGestureAndRestoresWithoutMarkingClean()
+    T11 : +CancelNewOrOpenAndFailedSavePreserveCurrentDocument()
+    T11 : +OpeningRestoresBothCamerasAndClearsHistory()
+    class T12["ShortcutTests"]
+    T12 : +BindingsAreUniqueAndAllHaveHelpText()
+    T12 : +CommandsToggleModeDuplicateFitAndPreserveGesture()
+    T12 : +ContextAndExactModifiersPreventTypingConflicts()
+    T12 : +GuideSearchFindsActionsAndMouseGestures()
+    T12 : +IdenticalKeysForCanvasAndCodeHaveSeparateMeaning()
+    T12 : +SavedShortcutsCanReuseAKeyVacatedByALaterAction()
+    class T13["SimulationClockTests"]
+    T13 : +SameTimeEventsPreserveInsertionOrderAcrossTwoRuns()
+    T13 : +SameTimeFeedbackHaltsAndResetDiscardsPendingEvents()
+    class T14["SimulationCompositionTests"]
+    T14 : +CompositionCreatesIndependentClocksAndAllRegisteredDeviceModels()
+    class T15["SimulationDeviceTests"]
+    T15 : +BuiltinLedBlinksOnD13WithoutExternalWiring()
+    T15 : +I2cScreenUsesPoweredTextBufferAndWrapsCharacterRows()
+    T15 : +NpnSaturatesWithBaseDriveAndCutsOffWithLowInput()
+    T15 : +SevenSegmentTurnsOnOnlyWiredSegments()
+    T15 : +UltrasonicEchoUsesDistanceAndVirtualTriggerDuration()
+    class T16["SimulationGpioTests"]
+    T16 : +Esp32InputOnlyAndAdcResolutionFollowBoardProfile()
+    T16 : +PwmAveragesCurrentAndReusesDcAcrossEdges()
+    class T17["SimulationInstrumentTests"]
+    T17 : +ConflictingGpioAndOverloadAreAddressableAndDoNotRepeat()
+    T17 : +InputOnlyReportsDiagnosticAndSerialDoesNotDropRepeatedText()
+    T17 : +MeterRespectsDirectionAndDifferentFloatingReferences()
+    T17 : +ScopeAndLogicKeepBoundedHistoryAndObservePwmWithoutMoreDcSolves()
+    class T18["SimulationLifecycleTests"]
+    T18 : +SimulationUpdateLeavesHistoryCleanAndProjectChangesInvalidateSnapshot()
+    class T19["SimulationPresentationChecks"]
+    class T20["SimulationScenarioTests"]
+    T20 : +BlinkUsesModelPeriodAndProducesIdenticalRuns()
+    T20 : +ButtonPullupChangesLedWithoutEditingProject()
+    T20 : +PotentiometerDrivesPwmBrightness()
+    T20 : +PwmPulseWidthDrivesServoAngle()
+    T20 : +RelayChangesTopologyAndFeedbackStopsOnIterationLimit()
+    T20 : +RemovedBoardOrPinPreventsInvalidScenario()

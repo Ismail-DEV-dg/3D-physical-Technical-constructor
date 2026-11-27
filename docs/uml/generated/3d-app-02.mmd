@@ -14,41 +14,51 @@ classDiagram
     T02 : +DiscFace()
     class T03["SceneObj"]
     T03 : +Write()
-    class T04["ScenePng"]
-    T04 : +Capture()
-    class T05["ScenePreparation"]
-    T05 : +Build()
-    class T06["SceneReaction"]
-    T06 : +Model
-    T06 : +Node
-    T06 : +Role
-    T06 : +Transform
-    class T07["SceneReactionBuilder"]
-    T07 : +Build()
-    class T08["SceneRotationMeasurement"]
-    T08 : +Measure()
-    class T09["SceneSurfaceTexture"]
-    T09 : +ForRegion()
-    class T10["SceneViewport"]
-    class T11["SceneViewportSimulation"]
-    T11 : +BeginInteraction()
-    T11 : +ClearFrames()
-    T11 : +IsInteracting
-    T11 : +MoveKnob()
-    T11 : +QueueFrame()
-    T11 : +ReleaseInteraction()
-    class T12["SceneVisualNode"]
-    T12 : +Body
-    T12 : +Labels
-    T12 : +Node
-    T12 : +Outline
-    T12 : +React()
-    T12 : +SelectWire()
-    class T13["Stage10Benchmark"]
-    T13 : +CreateWindow()
-    T02 ..> T09
+    class T04["ScenePicking"]
+    T04 : +Add()
+    T04 : +Find()
+    T04 : +Remove()
+    class T05["ScenePng"]
+    T05 : +Capture()
+    class T06["ScenePreparation"]
+    T06 : +Build()
+    class T07["SceneReaction"]
+    T07 : +Model
+    T07 : +Node
+    T07 : +Role
+    T07 : +Transform
+    class T08["SceneReactionBuilder"]
+    T08 : +Build()
+    class T09["SceneRotationMeasurement"]
+    T09 : +Measure()
+    class T10["SceneShadow"]
+    class T11["SceneSurfaceTexture"]
+    T11 : +ForRegion()
+    class T12["SceneTextureRasterizer"]
+    T12 : +Create()
+    class T13["SceneViewport"]
+    T13 : +OnApplyTemplate()
+    class T14["SceneViewportSimulation"]
+    T14 : +BeginInteraction()
+    T14 : +ClearFrames()
+    T14 : +IsInteracting
+    T14 : +MoveKnob()
+    T14 : +QueueFrame()
+    T14 : +ReleaseInteraction()
+    class T15["SceneVisualNode"]
+    T15 : +Body
+    T15 : +Labels
+    T15 : +Node
+    T15 : +Outline
+    T15 : +React()
+    T15 : +SelectWire()
+    class T16["SplitterMeshes"]
+    class T17["Stage10Benchmark"]
+    T17 : +CreateWindow()
+    T02 ..> T11
     T02 ..> T01
-    T07 ..> T06
-    T08 ..> T10
-    T11 ..> T10
-    T12 ..> T06
+    T04 ..> T15
+    T08 ..> T07
+    T09 ..> T13
+    T14 ..> T13
+    T15 ..> T07

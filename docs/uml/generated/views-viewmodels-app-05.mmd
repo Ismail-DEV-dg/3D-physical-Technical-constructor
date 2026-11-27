@@ -1,116 +1,117 @@
 classDiagram
     direction LR
-    class T01["ChipPinEdit"]
-    T01 : +Description
-    T01 : +EnableIndex
-    T01 : +EnablePin
-    T01 : +Name
-    T01 : +Number
-    T01 : +ToPin()
-    class T02["ChipTruthEditorViewModel"]
-    T02 : +Rows
-    T02 : +Sections
-    class T03["ChipTruthRowEdit"]
-    T03 : +Inputs
-    T03 : +Outputs
-    class T04["ChipViewModel"]
-    T04 : +Bench
-    T04 : +Definition
-    T04 : +Documentation
-    T04 : +Families
-    T04 : +Graph
-    T04 : +IsGraph
-    class T05["ChoiceDialogViewModel"]
-    T05 : +Choices
-    T05 : +ChooseCommand
-    T05 : +CopyCommand
-    T05 : +DismissCommand
-    T05 : +HelpCommand
-    T05 : +IsDiagnostic
-    class T06["CodeProblemViewModel"]
-    T06 : +Problem
-    T06 : +Text
-    class T07["CodeProblemsViewModel"]
-    T07 : +Clear()
-    T07 : +Items
-    T07 : +NavigateRequested
-    T07 : +SetAnalysis()
-    T07 : +SetGeneration()
-    T07 : +Summary
-    class T08["CodeViewModel"]
-    T08 : +AnalysisTask
-    T08 : +Board
-    T08 : +Boards
-    T08 : +Completions
-    T08 : +ControllerHint
-    T08 : +ControllerId
-    class T09["ComponentInputViewModel"]
-    T09 : +Choices
-    T09 : +Definition
-    T09 : +DisplayValue
-    T09 : +IsChoice
-    T09 : +Value
-    class T10["ComponentInputsViewModel"]
-    T10 : +Parameters
-    class T11["ComponentViewModel"]
-    T11 : +AppearanceVersion
-    T11 : +Description
-    T11 : +ElectricalEditor
-    T11 : +Footprint
-    T11 : +HasImmediateProperties
-    T11 : +HasListedNominal
-    class T12["DiagnosticItemViewModel"]
-    T12 : +Article
-    T12 : +Caption
-    T12 : +Code
-    T12 : +Color
-    T12 : +CopyCommand
-    T12 : +FullText
-    class T13["DiagnosticsViewModel"]
-    T13 : +Dispose()
-    T13 : +IsEmpty
-    T13 : +Items
-    T13 : +Severities
-    T13 : +Sources
-    T13 : +Summary
-    class T14["DockPaneViewModel"]
-    T14 : +CollapseIfUnpinned()
-    T14 : +IsExpanded
-    T14 : +Reset()
-    T14 : +Title
-    class T15["ElectricalParameterViewModel"]
-    T15 : +Key
-    T15 : +Label
-    T15 : +Quantity
-    T15 : +TryValue()
-    class T16["ElectricalPropertiesViewModel"]
-    T16 : +Fields
-    class T17["ErcIssueViewModel"]
-    T17 : +Color
-    T17 : +Icon
-    T17 : +Issue
-    T17 : +Text
-    class T18["ErrorHelpViewModel"]
-    T18 : +ArticleText
-    T18 : +Articles
-    T18 : +CloseRequested
-    T18 : +CountSummary
-    T18 : +FocusSearchRequested
-    T18 : +Guide
-    class T19["ExportViewModel"]
-    class T20["GuideBrowserViewModel"]
-    T20 : +Chapters
-    T20 : +HasCode
-    T02 ..> T04
-    T02 ..> T03
-    T04 ..> T02
-    T04 ..> T01
-    T07 ..> T06
-    T08 ..> T07
-    T10 ..> T09
-    T11 ..> T16
-    T11 ..> T10
-    T13 ..> T08
-    T13 ..> T12
-    T16 ..> T15
-    T18 ..> T20
+    class T01["ShortcutHintExtension"]
+    T01 : +ProvideValue()
+    class T02["SmoothScrollBehavior"]
+    T02 : +EnabledProperty
+    T02 : +GetEnabled()
+    T02 : +SetEnabled()
+    class T03["BoardInteractionViewModel"]
+    T03 : +Handle()
+    T03 : +Selected
+    class T04["BreadboardViewModel"]
+    T04 : +Board
+    T04 : +BoardInteraction
+    T04 : +CanAdjustSpan
+    T04 : +CanFocusSelection
+    T04 : +Dispose()
+    T04 : +Hit()
+    class T05["CalculationResultsViewModel"]
+    T05 : +EmptyMessage
+    T05 : +Entries
+    T05 : +HasEntries
+    T05 : +Invalidate()
+    T05 : +IsStale
+    T05 : +Result
+    class T06["CalculationRowViewModel"]
+    T06 : +Category
+    T06 : +Detail
+    T06 : +Title
+    T06 : +Value
+    class T07["CalculatorViewModel"]
+    T07 : +BandCounts
+    T07 : +Bands
+    T07 : +CloseRequested
+    T07 : +Colors
+    T07 : +LoadSelectedLed()
+    T07 : +Profiles
+    class T08["ChipBenchPinViewModel"]
+    T08 : +Label
+    T08 : +Number
+    T08 : +Toggle
+    T08 : +Value
+    class T09["ChipBenchViewModel"]
+    T09 : +ChannelLabel
+    T09 : +ClockPins
+    T09 : +Inputs
+    T09 : +IsActive
+    T09 : +Outputs
+    T09 : +PageCount
+    class T10["ChipDocumentationViewModel"]
+    class T11["ChipDraftHistory"]
+    T11 : +CanRedo
+    T11 : +CanUndo
+    T11 : +Clear()
+    T11 : +Rebase()
+    T11 : +Record()
+    T11 : +Redo()
+    class T12["ChipEditorDefaults"]
+    T12 : +Create()
+    T12 : +Unused()
+    class T13["ChipEditorText"]
+    T13 : +Numbers()
+    T13 : +ParseNumber()
+    T13 : +ParseSignal()
+    T13 : +Signal()
+    class T14["ChipGraphEditorViewModel"]
+    T14 : +GateKinds
+    T14 : +Gates
+    T14 : +Graph
+    T14 : +Links
+    T14 : +PortGuide
+    class T15["ChipLibraryViewModel"]
+    T15 : +Saved
+    T15 : +Templates
+    class T16["ChipPinEdit"]
+    T16 : +Description
+    T16 : +EnableIndex
+    T16 : +EnablePin
+    T16 : +Name
+    T16 : +Number
+    T16 : +ToPin()
+    class T17["ChipTruthEditorViewModel"]
+    T17 : +Rows
+    T17 : +Sections
+    class T18["ChipTruthRowEdit"]
+    T18 : +Inputs
+    T18 : +Outputs
+    class T19["ChipViewModel"]
+    T19 : +Bench
+    T19 : +Definition
+    T19 : +Documentation
+    T19 : +Families
+    T19 : +Graph
+    T19 : +IsGraph
+    class T20["ChoiceDialogViewModel"]
+    T20 : +Choices
+    T20 : +ChooseCommand
+    T20 : +CopyCommand
+    T20 : +DismissCommand
+    T20 : +HelpCommand
+    T20 : +IsDiagnostic
+    T03 ..> T04
+    T04 ..> T03
+    T05 ..> T06
+    T09 ..> T19
+    T09 ..> T08
+    T10 ..> T19
+    T14 ..> T19
+    T15 ..> T19
+    T17 ..> T19
+    T17 ..> T18
+    T19 ..> T17
+    T19 ..> T14
+    T19 ..> T09
+    T19 ..> T15
+    T19 ..> T10
+    T19 ..> T16

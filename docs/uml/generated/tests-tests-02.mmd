@@ -20,11 +20,11 @@ classDiagram
     T04 : +I2cUsesActualConnectedPinsAndAddress()
     T04 : +LedThroughResistorAndButtonHavePinsModesAndPreserveManualCode()
     T04 : +RelayUsesAnExplicitNpnDriverAndWifiIsOnlyIncludedForActualEsp32Code()
-    T04 : +ServoRejectsNonPwmAndInputOnlyPins()
+    T04 : +ServoUsesTimedPulsesOnOutputPins()
     T04 : +SupportedModulesProduceExpectedFragments()
     class T05["CodeWorkspacePresentationChecks"]
     class T06["CodeWorkspaceTests"]
-    T06 : +CircuitChangesOnlyMarkCodeStaleAndEditorHistoryDoesNotEnterCircuitHistory()
+    T06 : +CircuitChangesPreserveCodeAndEditorHistoryDoesNotEnterCircuitHistory()
     T06 : +DebounceDropsOutdatedAnalysisEvenIfWorkerIgnoresCancellation()
     T06 : +OutputIsBoundedAndClearable()
     T06 : +RealAnalysisUsesSnapshotAndTextOnlyChangesDoNotInvalidateDc()
@@ -98,6 +98,6 @@ classDiagram
     T19 : +ExportFailuresHaveErrorDialogs()
     T19 : +ExportPng()
     T19 : +ExportSchematic()
-    class T20["FootprintRepositoryTests"]
-    T20 : +All27FootprintsHaveMatchingElectricalContactsAndRoundTrip()
-    T20 : +InvalidFootprintsProduceDiagnostics()
+    class T20["FilePickerViewModelTests"]
+    T20 : +OpenFiltersFilesAndAcceptsTypedPath()
+    T20 : +SaveAppendsExtensionAndAsksBeforeReplacing()

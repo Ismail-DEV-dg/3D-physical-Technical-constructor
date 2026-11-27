@@ -47,83 +47,86 @@ classDiagram
     T09 : +IsI2cAddress()
     T09 : +MaximumI2cAddress
     T09 : +MinimumI2cAddress
-    class T10["Pin"]
-    T10 : +Capabilities
-    T10 : +Id
-    T10 : +IsExposed
-    T10 : +IsInputOnly
-    T10 : +IsNoConnect
-    T10 : +Name
-    class T11["PinReference"]
-    T11 : +ComponentId
-    T11 : +PinId
-    class T12["PinRole"]
-    <<enumeration>> T12
-    T12 : +Input
-    T12 : +Output
-    T12 : +Unknown
-    class T13["PinType"]
+    class T10["MockupNote"]
+    T10 : +MaximumLength
+    T10 : +Text
+    T10 : +X
+    T10 : +Y
+    class T11["Pin"]
+    T11 : +Capabilities
+    T11 : +Id
+    T11 : +IsExposed
+    T11 : +IsInputOnly
+    T11 : +IsNoConnect
+    T11 : +Name
+    class T12["PinReference"]
+    T12 : +ComponentId
+    T12 : +PinId
+    class T13["PinRole"]
     <<enumeration>> T13
-    T13 : +AnalogIn
-    T13 : +DigitalIO
-    T13 : +Ground
-    T13 : +I2C_SCL
-    T13 : +I2C_SDA
-    T13 : +PWM
-    class T14["Wire"]
-    T14 : +Color
-    T14 : +ControlPoints
-    T14 : +End
-    T14 : +Id
-    T14 : +Start
-    class T15["ContactDefinition"]
-    T15 : +ElectricalPinId
+    T13 : +Input
+    T13 : +Output
+    T13 : +Unknown
+    class T14["PinType"]
+    <<enumeration>> T14
+    T14 : +AnalogIn
+    T14 : +DigitalIO
+    T14 : +Ground
+    T14 : +I2C_SCL
+    T14 : +I2C_SDA
+    T14 : +PWM
+    class T15["Wire"]
+    T15 : +Color
+    T15 : +ControlPoints
+    T15 : +End
     T15 : +Id
-    T15 : +Position
-    T15 : +X
-    T15 : +Y
-    class T16["ContactGeometry"]
-    T16 : +Body()
-    T16 : +Bounds()
-    T16 : +Local()
-    T16 : +World()
-    class T17["FootprintDefinition"]
-    T17 : +AllowedRotations
-    T17 : +Body
-    T17 : +ComponentDefinitionId
-    T17 : +Contacts
-    T17 : +DefaultSpan
-    T17 : +Id
-    class T18["PhysicalSettings"]
-    T18 : +DefaultBoardX
-    T18 : +DefaultBoardY
-    T18 : +FreeGridMm
-    T18 : +HoleCaptureRadiusMm
-    T18 : +HoleSnapToleranceMm
-    T18 : +PixelsPerMillimeter
-    class T19["PotentiometerPosition"]
-    T19 : +FromPercent()
-    T19 : +FromPointer()
-    T19 : +MaximumAngle
-    T19 : +MinimumAngle
-    T19 : +ToPercent()
-    class T20["ResistorMarking"]
-    T20 : +Colors
-    T20 : +Decode()
-    T20 : +GetBands()
-    T01 ..> T10
+    T15 : +IsStraight
+    T15 : +Start
+    class T16["ContactDefinition"]
+    T16 : +ElectricalPinId
+    T16 : +Id
+    T16 : +Position
+    T16 : +X
+    T16 : +Y
+    class T17["ContactGeometry"]
+    T17 : +Body()
+    T17 : +Bounds()
+    T17 : +Local()
+    T17 : +World()
+    class T18["FootprintDefinition"]
+    T18 : +AllowedRotations
+    T18 : +Body
+    T18 : +ComponentDefinitionId
+    T18 : +Contacts
+    T18 : +DefaultSpan
+    T18 : +Id
+    class T19["PhysicalSettings"]
+    T19 : +DefaultBoardX
+    T19 : +DefaultBoardY
+    T19 : +FreeGridMm
+    T19 : +HoleCaptureRadiusMm
+    T19 : +HoleSnapToleranceMm
+    T19 : +PixelsPerMillimeter
+    class T20["PotentiometerPosition"]
+    T20 : +FromPercent()
+    T20 : +FromPointer()
+    T20 : +MaximumAngle
+    T20 : +MinimumAngle
+    T20 : +ToPercent()
+    T01 ..> T11
     T05 ..> T07
-    T05 ..> T14
+    T05 ..> T15
     T05 ..> T08
     T06 ..> T05
-    T06 ..> T17
+    T06 ..> T18
+    T06 ..> T10
     T06 ..> T07
     T06 ..> T08
     T07 ..> T08
     T07 ..> T04
-    T08 ..> T10
-    T10 ..> T13
-    T14 ..> T11
-    T16 ..> T17
-    T16 ..> T15
-    T17 ..> T15
+    T08 ..> T11
+    T11 ..> T14
+    T15 ..> T12
+    T17 ..> T18
+    T17 ..> T16
+    T18 ..> T16

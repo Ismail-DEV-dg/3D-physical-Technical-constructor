@@ -18,87 +18,93 @@ classDiagram
     T05 : +HoleId
     T05 : +Id
     T05 : +Position
-    class T06["SceneGeometryKey"]
-    T06 : +Of()
-    class T07["SceneLayer"]
-    <<enumeration>> T07
-    T07 : +Board
-    T07 : +Breadboard
-    T07 : +Component
-    T07 : +Label
-    T07 : +Wire
-    class T08["SceneLayerVisibility"]
-    T08 : +Boards
+    class T06["SceneContactDepth"]
+    T06 : +BreadboardBore
+    T06 : +HeaderPost
+    T06 : +Insertion
+    T06 : +UnoSocketBore
+    T06 : +UnoSocketHeight
+    class T07["SceneGeometryKey"]
+    T07 : +Of()
+    class T08["SceneLayer"]
+    <<enumeration>> T08
+    T08 : +Board
     T08 : +Breadboard
-    T08 : +Labels
-    T08 : +Shows()
-    T08 : +Wires
-    class T09["SceneModel"]
-    T09 : +Bounds
-    T09 : +Empty
-    T09 : +Nodes
-    class T10["SceneNode"]
-    T10 : +Angle
-    T10 : +Body
+    T08 : +Component
+    T08 : +Label
+    T08 : +Wire
+    class T09["SceneLayerVisibility"]
+    T09 : +Boards
+    T09 : +Breadboard
+    T09 : +Labels
+    T09 : +Shows()
+    T09 : +Wires
+    class T10["SceneModel"]
     T10 : +Bounds
-    T10 : +Breadboard
-    T10 : +Color
-    T10 : +Contacts
-    class T11["ScenePickIndex"]
-    T11 : +Find()
-    T11 : +Remove()
-    T11 : +Set()
-    class T12["ScenePoint"]
-    T12 : +X
-    T12 : +Y
-    T12 : +Z
-    class T13["ScenePose"]
-    T13 : +Local()
-    T13 : +Origin
-    T13 : +Rotation
-    T13 : +World()
-    class T14["SceneProfile"]
-    T14 : +Clearance
-    T14 : +DetailHeight
-    T14 : +Height
-    T14 : +Material
-    T14 : +Shape
-    class T15["SceneShape"]
-    <<enumeration>> T15
-    T15 : +Axial
-    T15 : +Board
-    T15 : +Box
-    T15 : +Cylinder
-    T15 : +Dome
-    T15 : +Tube
-    class T16["SceneSignalStyle"]
-    T16 : +Brightness()
-    T16 : +BrightnessLevels
-    T16 : +VoltageColor()
-    class T17["SceneWirePath"]
-    T17 : +Create()
-    class T18["SceneWireProfile"]
-    T18 : +MaximumRise
-    T18 : +MinimumRise
-    T18 : +Radius
-    T18 : +RisePerMillimeter
-    T02 ..> T12
+    T10 : +Empty
+    T10 : +Nodes
+    class T11["SceneNode"]
+    T11 : +Angle
+    T11 : +Body
+    T11 : +Bounds
+    T11 : +Breadboard
+    T11 : +Color
+    T11 : +Contacts
+    class T12["ScenePickIndex"]
+    T12 : +Find()
+    T12 : +Remove()
+    T12 : +Set()
+    class T13["ScenePoint"]
+    T13 : +X
+    T13 : +Y
+    T13 : +Z
+    class T14["ScenePose"]
+    T14 : +Local()
+    T14 : +Origin
+    T14 : +Rotation
+    T14 : +World()
+    class T15["SceneProfile"]
+    T15 : +Clearance
+    T15 : +DetailHeight
+    T15 : +Height
+    T15 : +Material
+    T15 : +Shape
+    class T16["SceneShape"]
+    <<enumeration>> T16
+    T16 : +Axial
+    T16 : +Board
+    T16 : +Box
+    T16 : +Cylinder
+    T16 : +Dome
+    T16 : +Tube
+    class T17["SceneSignalStyle"]
+    T17 : +Brightness()
+    T17 : +BrightnessLevels
+    T17 : +VoltageColor()
+    class T18["SceneWirePath"]
+    T18 : +Create()
+    class T19["SceneWireProfile"]
+    T19 : +MaximumRise
+    T19 : +MinimumRise
+    T19 : +Radius
+    T19 : +RisePerMillimeter
+    T02 ..> T13
     T03 ..|> T01
-    T03 ..> T09
-    T04 ..> T14
-    T04 ..> T18
-    T05 ..> T12
-    T06 ..> T10
-    T08 ..> T07
-    T09 ..> T10
-    T09 ..> T02
-    T10 ..> T07
-    T10 ..> T14
-    T10 ..> T13
+    T03 ..> T10
+    T04 ..> T15
+    T04 ..> T19
+    T05 ..> T13
+    T07 ..> T11
+    T09 ..> T08
+    T10 ..> T11
     T10 ..> T02
-    T10 ..> T05
-    T10 ..> T12
-    T13 ..> T12
-    T14 ..> T15
-    T17 ..> T12
-    T17 ..> T18
+    T11 ..> T08
+    T11 ..> T15
+    T11 ..> T14
+    T11 ..> T02
+    T11 ..> T05
+    T11 ..> T13
+    T14 ..> T13
+    T15 ..> T16
+    T18 ..> T13
+    T18 ..> T19

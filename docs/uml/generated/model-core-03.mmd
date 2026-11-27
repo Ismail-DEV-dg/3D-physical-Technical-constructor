@@ -1,48 +1,60 @@
 classDiagram
     direction LR
-    class T01["RotaryControlDefinition"]
-    T01 : +Radius
-    T01 : +X
-    T01 : +Y
-    class T02["ComponentPlacement"]
-    T02 : +Copy()
-    T02 : +FullRotation
-    T02 : +MoveTo()
-    T02 : +Rotate()
-    T02 : +Rotation
-    T02 : +RotationStep
-    class T03["RepresentationKind"]
-    <<enumeration>> T03
-    T03 : +Mockup
-    T03 : +Schematic
-    class T04["ViewLayout"]
-    T04 : +Get()
-    T04 : +Kind
-    T04 : +Placements
-    T04 : +Remove()
-    T04 : +Set()
-    class T05["WireCurve"]
-    T05 : +FindInsertionIndex()
-    T05 : +Sample()
-    T05 : +SegmentsPerSpan
-    class T06["WireEndpoint"]
-    T06 : +ComponentId
-    T06 : +Contact()
-    T06 : +Hole()
+    class T01["ResistorMarking"]
+    T01 : +Colors
+    T01 : +Decode()
+    T01 : +GetBands()
+    class T02["RotaryControlDefinition"]
+    T02 : +Radius
+    T02 : +X
+    T02 : +Y
+    class T03["SplitterGeometry"]
+    T03 : +Apply()
+    T03 : +ComponentId
+    T03 : +DefaultOutputs
+    T03 : +MaximumOutputs
+    T03 : +MinimumOutputs
+    T03 : +SocketDepth
+    class T04["ComponentPlacement"]
+    T04 : +Copy()
+    T04 : +FullRotation
+    T04 : +MoveTo()
+    T04 : +Rotate()
+    T04 : +Rotation
+    T04 : +RotationStep
+    class T05["RepresentationKind"]
+    <<enumeration>> T05
+    T05 : +Mockup
+    T05 : +Schematic
+    class T06["ViewLayout"]
+    T06 : +Get()
     T06 : +Kind
-    T06 : +OwnerId
-    T06 : +TerminalId
-    class T07["WireEndpointKind"]
-    <<enumeration>> T07
-    T07 : +BreadboardHole
-    T07 : +ComponentContact
-    class T08["WireGeometry"]
-    T08 : +Nearest()
-    T08 : +Resolve()
-    T08 : +Validate()
-    class T09["WirePalette"]
-    T09 : +Colors
-    T04 ..> T03
-    T04 ..> T02
-    T06 ..> T07
-    T08 ..> T06
+    T06 : +Placements
+    T06 : +Remove()
+    T06 : +Set()
+    class T07["WireCurve"]
+    T07 : +FindInsertionIndex()
+    T07 : +Sample()
+    T07 : +SegmentsPerSpan
+    class T08["WireEndpoint"]
+    T08 : +ComponentId
+    T08 : +Contact()
+    T08 : +Hole()
+    T08 : +Kind
+    T08 : +OwnerId
+    T08 : +TerminalId
+    class T09["WireEndpointKind"]
+    <<enumeration>> T09
+    T09 : +BreadboardHole
+    T09 : +ComponentContact
+    class T10["WireGeometry"]
+    T10 : +Nearest()
+    T10 : +PinRole()
+    T10 : +Resolve()
+    T10 : +Validate()
+    class T11["WirePalette"]
+    T11 : +Colors
+    T06 ..> T05
+    T06 ..> T04
+    T08 ..> T09
+    T10 ..> T08

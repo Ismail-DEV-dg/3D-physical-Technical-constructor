@@ -1,70 +1,79 @@
 classDiagram
     direction LR
-    class T01["SketchExpression"]
-    T01 : +Kind
-    T01 : +Left
-    T01 : +Otherwise
-    T01 : +Pin
-    T01 : +Right
-    T01 : +Value
-    class T02["SketchExpressionKind"]
-    <<enumeration>> T02
-    T02 : +AtLeast
-    T02 : +Choose
-    T02 : +Constant
-    T02 : +DigitalRead
-    T02 : +Equal
-    T02 : +Millis
-    class T03["SketchExpressionParser"]
-    T03 : +Parse()
-    class T04["SketchInstruction"]
-    T04 : +Expression
-    T04 : +Operation
-    T04 : +Pin
-    T04 : +Target
-    T04 : +Value
-    class T05["SketchOperation"]
-    <<enumeration>> T05
-    T05 : +AnalogWrite
-    T05 : +Assign
-    T05 : +Branch
-    T05 : +Delay
-    T05 : +DigitalWrite
-    T05 : +Jump
-    class T06["SketchParser"]
-    T06 : +Parse()
-    class T07["SketchProgram"]
-    T07 : +Controller
-    T07 : +Loop
-    T07 : +Setup
-    T07 : +Variables
-    class T08["SketchRunner"]
-    T08 : +Start()
-    class T09["SketchSymbols"]
-    T09 : +Declare()
-    T09 : +Enter()
-    T09 : +InitialValues
-    T09 : +Leave()
-    T09 : +Resolve()
-    T09 : +Scalar()
-    class T10["SketchSyntaxException"]
-    T10 : +Problem
-    class T11["ISimulationClock"]
-    <<interface>> T11
-    class T12["SimulationClock"]
-    T12 : +AdvanceTo()
-    T12 : +Microseconds
-    T12 : +Reset()
-    class T13["SimulationEventQueue"]
-    T13 : +Add()
-    T13 : +Clear()
-    T13 : +Take()
-    T13 : +TryPeek()
-    T01 ..> T02
-    T03 ..> T09
-    T03 ..> T01
-    T04 ..> T05
-    T04 ..> T01
+    class T01["SketchDisplayParser"]
+    class T02["SketchExecution"]
+    T02 : +Start()
+    class T03["SketchExpression"]
+    T03 : +Arguments
+    T03 : +Kind
+    T03 : +Left
+    T03 : +Otherwise
+    T03 : +Pin
+    T03 : +Right
+    class T04["SketchExpressionKind"]
+    <<enumeration>> T04
+    T04 : +Add
+    T04 : +AnalogRead
+    T04 : +AtLeast
+    T04 : +AtMost
+    T04 : +Choose
+    T04 : +Constant
+    class T05["SketchExpressionParser"]
+    T05 : +Parse()
+    T05 : +ParseAssignment()
+    class T06["SketchInstruction"]
+    T06 : +Device
+    T06 : +Expression
+    T06 : +Operation
+    T06 : +Pin
+    T06 : +Target
+    T06 : +Text
+    class T07["SketchOperation"]
+    <<enumeration>> T07
+    T07 : +AnalogResolution
+    T07 : +AnalogWrite
+    T07 : +Assign
+    T07 : +Branch
+    T07 : +Delay
+    T07 : +DigitalWrite
+    class T08["SketchParser"]
+    T08 : +Parse()
+    class T09["SketchPeripheralParser"]
+    class T10["SketchProgram"]
+    T10 : +Controller
+    T10 : +Loop
+    T10 : +Setup
+    T10 : +Variables
+    class T11["SketchRunner"]
+    T11 : +Start()
+    class T12["SketchSymbols"]
+    T12 : +Declare()
+    T12 : +DeclareLocal()
+    T12 : +Enter()
+    T12 : +InitialValues
+    T12 : +Leave()
+    T12 : +Resolve()
+    class T13["SketchSyntaxException"]
+    T13 : +Problem
+    class T14["ISimulationClock"]
+    <<interface>> T14
+    class T15["SimulationClock"]
+    T15 : +AdvanceTo()
+    T15 : +Microseconds
+    T15 : +Reset()
+    class T16["SimulationEventQueue"]
+    T16 : +Add()
+    T16 : +Clear()
+    T16 : +Take()
+    T16 : +TryPeek()
+    T01 ..> T03
+    T02 ..> T10
+    T03 ..> T04
+    T05 ..> T12
+    T05 ..> T03
     T06 ..> T07
-    T07 ..> T04
-    T12 ..|> T11
+    T06 ..> T03
+    T08 ..> T10
+    T09 ..> T03
+    T10 ..> T06
+    T15 ..|> T14

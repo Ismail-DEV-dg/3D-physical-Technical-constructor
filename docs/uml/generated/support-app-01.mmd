@@ -7,50 +7,50 @@ classDiagram
     class T03["PaneSizeConverter"]
     T03 : +Convert()
     T03 : +ConvertBack()
-    class T04["MainWindow"]
-    class T05["Program"]
-    T05 : +Main()
-    class T06["AboutInformation"]
-    T06 : +Describe()
-    class T07["ApplicationErrorService"]
-    T07 : +Report()
-    T07 : +SetRecoveryAction()
-    class T08["AutosaveService"]
-    T08 : +Dispose()
-    T08 : +Start()
-    class T09["CalculatorService"]
-    T09 : +Show()
-    class T10["ChipPinoutRenderer"]
-    T10 : +Render()
-    class T11["ClipboardService"]
-    T11 : +TryCopy()
-    class T12["CodeAnalysisService"]
-    T12 : +AnalyzeAsync()
-    class T13["DebounceService"]
-    T13 : +Dispose()
-    T13 : +Schedule()
-    class T14["DialogService"]
-    T14 : +ChooseExportScale()
-    T14 : +ConfirmDeleteChip()
-    T14 : +ConfirmRecovery()
-    T14 : +ConfirmUnsaved()
-    T14 : +OfferCrashCopy()
-    T14 : +OpenFile()
-    class T15["ErrorDocumentationService"]
-    T15 : +Articles
-    T15 : +Resolve()
-    class T16["ErrorHelpService"]
-    T16 : +Show()
-    T16 : +ShowSection()
-    class T17["IApplicationErrorService"]
-    <<interface>> T17
-    class T18["IAutosaveService"]
+    class T04["ToolbarLabelVisibilityConverter"]
+    T04 : +Convert()
+    T04 : +ConvertBack()
+    class T05["MainWindow"]
+    class T06["Program"]
+    T06 : +Main()
+    class T07["AboutInformation"]
+    T07 : +Describe()
+    class T08["ApplicationErrorService"]
+    T08 : +Report()
+    T08 : +SetRecoveryAction()
+    class T09["AutosaveService"]
+    T09 : +Dispose()
+    T09 : +Start()
+    class T10["CalculatorService"]
+    T10 : +Show()
+    class T11["ChipPinoutRenderer"]
+    T11 : +Render()
+    class T12["ClipboardService"]
+    T12 : +TryCopy()
+    class T13["CodeAnalysisService"]
+    T13 : +AnalyzeAsync()
+    class T14["DebounceService"]
+    T14 : +Dispose()
+    T14 : +Schedule()
+    class T15["DialogService"]
+    T15 : +ChooseExportScale()
+    T15 : +ConfirmDeleteChip()
+    T15 : +ConfirmRecovery()
+    T15 : +ConfirmUnsaved()
+    T15 : +OfferCrashCopy()
+    T15 : +OpenFile()
+    class T16["ErrorDocumentationService"]
+    T16 : +Articles
+    T16 : +Resolve()
+    class T17["ErrorHelpService"]
+    T17 : +Show()
+    T17 : +ShowSection()
+    class T18["IApplicationErrorService"]
     <<interface>> T18
-    class T19["ICalculatorService"]
+    class T19["IAutosaveService"]
     <<interface>> T19
-    class T20["IChipPinoutRenderer"]
+    class T20["ICalculatorService"]
     <<interface>> T20
-    T07 ..|> T17
     T08 ..|> T18
     T09 ..|> T19
     T10 ..|> T20

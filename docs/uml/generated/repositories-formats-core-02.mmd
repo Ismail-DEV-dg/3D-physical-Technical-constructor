@@ -18,16 +18,18 @@ classDiagram
     <<interface>> T08
     class T09["ISceneCatalogRepository"]
     <<interface>> T09
-    class T10["ISimulationModelRepository"]
+    class T10["IShortcutSettingsRepository"]
     <<interface>> T10
-    class T11["ISketchRepository"]
+    class T11["ISimulationModelRepository"]
     <<interface>> T11
-    class T12["LibraryLoadResult"]
-    T12 : +Components
-    T12 : +Error
-    T12 : +Success
-    class T13["RepositoryResult"]
+    class T12["ISketchRepository"]
+    <<interface>> T12
+    class T13["LibraryLoadResult"]
+    T13 : +Components
     T13 : +Error
     T13 : +Success
-    T13 : +Value
-    T13 : +Warning
+    class T14["RepositoryResult"]
+    T14 : +Error
+    T14 : +Success
+    T14 : +Value
+    T14 : +Warning

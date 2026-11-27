@@ -1,73 +1,61 @@
 classDiagram
     direction LR
-    class T01["VoltageDrawing"]
-    class T02["WireDrawing"]
-    class T03["WireDrawingCache"]
-    T03 : +Build()
-    T03 : +Get()
-    class T04["CanvasAction"]
-    <<enumeration>> T04
-    T04 : +Cancel
-    T04 : +Delete
-    T04 : +Down
-    T04 : +Drop
-    T04 : +Move
-    T04 : +Resize
-    class T05["CanvasInput"]
-    T05 : +Action
-    T05 : +Control
-    T05 : +DefinitionId
-    T05 : +Delta
-    T05 : +Pan
-    T05 : +X
-    class T06["CanvasInputBehavior"]
-    T06 : +CommandProperty
-    T06 : +DragFormat
-    T06 : +GetCommand()
-    T06 : +SetCommand()
-    class T07["CodeEditorBehavior"]
-    T07 : +GetModel()
-    T07 : +ModelProperty
-    T07 : +SetModel()
-    class T08["CodeEditorSession"]
-    T08 : +Dispose()
-    class T09["EditorCompletionController"]
-    T09 : +Dispose()
-    class T10["EditorCompletionData"]
-    T10 : +Complete()
-    T10 : +Content
-    T10 : +Description
-    T10 : +Image
-    T10 : +Priority
-    T10 : +Text
-    class T11["EditorDocumentState"]
-    class T12["EditorFoldingController"]
-    T12 : +Dispose()
-    class T13["EditorHighlighting"]
-    class T14["EditorSearchController"]
-    class T15["EditorTypingController"]
-    T15 : +Dispose()
-    class T16["InstrumentDragBehavior"]
-    T16 : +CommandProperty
-    T16 : +GetCommand()
-    T16 : +SetCommand()
-    class T17["OutputScrollBehavior"]
-    T17 : +GetModel()
-    T17 : +ModelProperty
-    T17 : +SetModel()
-    class T18["PaletteDragBehavior"]
-    T18 : +EnabledProperty
-    T18 : +GetEnabled()
-    T18 : +SetEnabled()
-    class T19["ProjectShortcutBehavior"]
-    T19 : +EnabledProperty
-    T19 : +GetEnabled()
-    T19 : +SetEnabled()
-    class T20["PropertyGestureBehavior"]
-    T20 : +EnabledProperty
-    T20 : +GetEnabled()
-    T20 : +GetProject()
-    T20 : +ProjectProperty
-    T20 : +SetEnabled()
-    T20 : +SetProject()
-    T05 ..> T04
+    class T01["ServoDrawing"]
+    T01 : +Draw()
+    class T02["SevenSegmentDrawing"]
+    T02 : +Draw()
+    class T03["SimulationDrawing"]
+    class T04["SplitterDrawing"]
+    class T05["StartupAurora"]
+    T05 : +Phase
+    T05 : +PhaseProperty
+    class T06["StartupLettering"]
+    T06 : +Progress
+    T06 : +ProgressProperty
+    class T07["StartupStarCloud"]
+    class T08["StartupStars"]
+    T08 : +Draw()
+    class T09["SymbolDrawing"]
+    T09 : +Draw()
+    class T10["VoltageDrawing"]
+    class T11["WireDrawing"]
+    class T12["WireDrawingCache"]
+    T12 : +Build()
+    T12 : +Get()
+    class T13["CanvasAction"]
+    <<enumeration>> T13
+    T13 : +Cancel
+    T13 : +Delete
+    T13 : +Down
+    T13 : +Drop
+    T13 : +DropLeave
+    T13 : +DropPreview
+    class T14["CanvasInput"]
+    T14 : +Action
+    T14 : +Control
+    T14 : +DefinitionId
+    T14 : +Delta
+    T14 : +DoubleClick
+    T14 : +Pan
+    class T15["CanvasInputBehavior"]
+    T15 : +CommandProperty
+    T15 : +DragFormat
+    T15 : +GetCommand()
+    T15 : +SetCommand()
+    class T16["CodeEditorBehavior"]
+    T16 : +GetModel()
+    T16 : +ModelProperty
+    T16 : +SetModel()
+    class T17["CodeEditorSession"]
+    T17 : +Dispose()
+    class T18["EditorCompletionController"]
+    T18 : +Dispose()
+    class T19["EditorCompletionData"]
+    T19 : +Complete()
+    T19 : +Content
+    T19 : +Description
+    T19 : +Image
+    T19 : +Priority
+    T19 : +Text
+    class T20["EditorDocumentState"]
+    T14 ..> T13

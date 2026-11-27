@@ -1,75 +1,80 @@
 classDiagram
     direction LR
-    class T01["GuidePresentationChecks"]
-    class T02["GuideTests"]
-    T02 : +ChipGuideIsSearchableAndDiagnosticsOpenTheRelevantChapter()
-    T02 : +ErrorOpensRelatedBoardChapterAndBackReturnsToTheSameError()
-    T02 : +EveryBoardIncludesExactlyOneChapterPerLibraryComponentAndStandaloneSketches()
-    class T03["LayoutAssertions"]
-    T03 : +Validate()
-    class T04["MainViewModelTests"]
-    T04 : +DisposeUnsubscribesFromServices()
-    T04 : +InvalidNavigationKeepsSelectionAndReportsError()
-    T04 : +NavigationCommandSelectsViewModel()
-    T04 : +ResistorIsFirstAndRemainsAvailableAfterClearingSearch()
-    T04 : +TabSelectionAndExternalNavigationNotifyBindingsAndReuseInstances()
-    T04 : +ThemeChangePreservesWorkspaceAndPaletteSelection()
-    class T05["MockupInvalidationTests"]
-    T05 : +DragPanAndZoomStillInvalidateAndKeepGesturesWorking()
-    T05 : +HoverUpdatesCoordinatesWithoutInvalidatingDrawing()
-    T05 : +StatusDoesNotInvalidateButModelChangeDoes()
-    class T06["MockupPresentationChecks"]
-    T06 : +Run()
-    class T07["MockupViewModelTests"]
-    T07 : +BothViewsShareSelectionButMovingSymbolKeepsPhysicalInsertion()
-    T07 : +ChangingSpanUpdatesBothPhysicalLeadsAndOccupiedHolesOrRollsBack()
-    T07 : +ResistorBodyBandsFollowNominal()
-    class T08["NetlistTests"]
-    T08 : +BreadboardGroupsChannelRailsAndWireAreRespected()
-    T08 : +ButtonAndRelayStaticStatesSelectOnlyTheIntendedContacts()
-    T08 : +FourButtonContactsMapToTwoPinsAndGroundsStayLocalToBoard()
-    T08 : +LedForwardVoltagesComeFromData()
-    T08 : +MovingInsertedPartChangesMembershipAndStableBuildKeepsIds()
-    class T09["PanelAndResultsViewModelTests"]
-    T09 : +CalculationAndManualCheckRestoreToolsWithoutOpeningInspector()
-    T09 : +EmptyBreadboardGroupsAreExcludedButWiredHolesAreUsed()
-    T09 : +PinHideRestoreAndResetPreserveIndependentPanelSizes()
-    T09 : +UsedResultsExcludeFreeBoardPinsAndDisconnectedParts()
-    class T10["PanelPresentationChecks"]
-    class T11["PassiveNominalTests"]
-    T11 : +E12RangeIsOrderedUniqueAndRoundTrips()
-    T11 : +ParsesRussianAndSiUnits()
-    T11 : +RejectsInvalidValueWithoutOverflow()
-    class T12["ProjectChipStorageTests"]
-    T12 : +ActualV3ShapeMigratesWithoutChangingSketchConnectionsAndSimulationSetup()
-    T12 : +ConflictAllowsEmbeddedOrCompatibleUpgradeAndKeepsProjectOnIncompatibleVersion()
-    T12 : +EmbeddedDefinitionsDeduplicateAndOpenWithoutLocalLibrary()
-    T12 : +MissingEmbeddedDefinitionDoesNotReplaceOpenProject()
-    class T13["ProjectFileTests"]
-    T13 : +DamagedAndFutureFilesNeverReplaceCurrentProject()
-    T13 : +MigrationFrameworkUsesOnlyAnArtificialOldVersion()
-    T13 : +MissingLibraryIdIsReportedBeforeSwappingProject()
-    T13 : +RoundTripUsesLibraryReferencesAndPreservesAllInstanceData()
-    T13 : +SaveCheckpointAndUnsavedGuardRespectCancelAndFailedSave()
-    class T14["ProjectSampleTests"]
-    T14 : +OpeningExampleMarksCopyDirtyAndProtectsOriginal()
-    T14 : +SampleOpensPassesErcAndShowsItsBehavior()
-    class T15["ProjectSerializationTests"]
-    T15 : +PositionsAndBindingsAreIndependentAndFullCoreProjectRoundTripsThroughJson()
-    class T16["PropertyHistoryTests"]
-    T16 : +AllPropertyEditorsParticipateInHistory()
-    T16 : +EachTypeHasOnlyRelevantEditableFieldsAndColorOnlyOnLed()
-    class T17["RenderingCacheChecks"]
-    T17 : +Run()
-    class T18["ResistanceTests"]
-    T18 : +CustomInputAcceptsUnitsAndBothDecimalSeparators()
-    T18 : +FormatUsesAppropriateUnit()
-    T18 : +InvalidInputIsRejected()
-    T18 : +SeriesContainAllDecadesWithoutDuplicates()
-    T18 : +ThreeSignificantDigitsUseExactFiveBands()
-    class T19["ResistorEditorTests"]
-    T19 : +CustomPrecisionIsPreservedInsteadOfSilentlyRoundingBands()
-    T19 : +CustomValueSurvivesSeriesChangesAndInvalidInputDoesNotChangeModel()
-    T19 : +SelectingNominalUpdatesSharedModelAndInvalidatesDrawingImmediately()
-    class T20["ResistorPresentationChecks"]
+    class T01["FootprintRepositoryTests"]
+    T01 : +All28FootprintsHaveMatchingElectricalContactsAndRoundTrip()
+    T01 : +InvalidFootprintsProduceDiagnostics()
+    class T02["GuidePresentationChecks"]
+    class T03["GuideTests"]
+    T03 : +AboutOpensTheApplicationOverviewAndLinksToVersionAndLicense()
+    T03 : +ChipGuideIsSearchableAndDiagnosticsOpenTheRelevantChapter()
+    T03 : +ErrorOpensRelatedBoardChapterAndBackReturnsToTheSameError()
+    T03 : +EveryBoardIncludesExactlyOneChapterPerLibraryComponentAndStandaloneSketches()
+    class T04["LayoutAssertions"]
+    T04 : +Validate()
+    class T05["MainViewModelTests"]
+    T05 : +DisposeUnsubscribesFromServices()
+    T05 : +InvalidNavigationKeepsSelectionAndReportsError()
+    T05 : +NavigationCommandSelectsViewModel()
+    T05 : +ResistorIsFirstAndRemainsAvailableAfterClearingSearch()
+    T05 : +TabSelectionAndExternalNavigationNotifyBindingsAndReuseInstances()
+    T05 : +ThemeChangePreservesWorkspaceAndPaletteSelection()
+    class T06["MockupInspectionTests"]
+    T06 : +FocusCentersTheSelectedFootprintWithoutEditingIt()
+    T06 : +NetInspectionFollowsTheWireAndBreadboardGroupWithoutEditingTheProject()
+    class T07["MockupInvalidationTests"]
+    T07 : +DragPanAndZoomStillInvalidateAndKeepGesturesWorking()
+    T07 : +HoverUpdatesCoordinatesWithoutInvalidatingDrawing()
+    T07 : +StatusDoesNotInvalidateButModelChangeDoes()
+    class T08["MockupPresentationChecks"]
+    T08 : +Run()
+    class T09["MockupViewModelTests"]
+    T09 : +BothViewsShareSelectionButMovingSymbolKeepsPhysicalInsertion()
+    T09 : +ChangingSpanUpdatesBothPhysicalLeadsAndOccupiedHolesOrRollsBack()
+    T09 : +ResistorBodyBandsFollowNominal()
+    class T10["NetlistTests"]
+    T10 : +BreadboardGroupsChannelRailsAndWireAreRespected()
+    T10 : +ButtonAndRelayStaticStatesSelectOnlyTheIntendedContacts()
+    T10 : +FourButtonContactsMapToTwoPinsAndGroundsStayLocalToBoard()
+    T10 : +LedForwardVoltagesComeFromData()
+    T10 : +MovingInsertedPartChangesMembershipAndStableBuildKeepsIds()
+    class T11["PalettePlacementTests"]
+    T11 : +ArmedPlacementCanRotateBeforeTheFirstClick()
+    T11 : +DragFromLibraryPreviewsAllHolesAndCommitsExactlyThatPlacement()
+    T11 : +DragRotationStartsAtTheAngleShownByAutomaticPreview()
+    T11 : +DroppingWhereThePinsCannotFitDoesNotCreateAComponent()
+    T11 : +ExplicitRotationUsesTheSameHolesForNewAndExistingPotentiometer()
+    T11 : +HeldResistorCanRotateBeforePlacementAndHighlightsItsHoles()
+    class T12["PanelAndResultsViewModelTests"]
+    T12 : +CalculationAndManualCheckRestoreToolsWithoutOpeningInspector()
+    T12 : +EmptyBreadboardGroupsAreExcludedButWiredHolesAreUsed()
+    T12 : +PinHideRestoreAndResetPreserveIndependentPanelSizes()
+    T12 : +UsedResultsExcludeFreeBoardPinsAndDisconnectedParts()
+    class T13["PanelPresentationChecks"]
+    class T14["PassiveNominalTests"]
+    T14 : +E12RangeIsOrderedUniqueAndRoundTrips()
+    T14 : +ParsesRussianAndSiUnits()
+    T14 : +RejectsInvalidValueWithoutOverflow()
+    class T15["ProjectChipStorageTests"]
+    T15 : +ActualV3ShapeMigratesWithoutChangingSketchConnectionsAndSimulationSetup()
+    T15 : +ConflictAllowsEmbeddedOrCompatibleUpgradeAndKeepsProjectOnIncompatibleVersion()
+    T15 : +EmbeddedDefinitionsDeduplicateAndOpenWithoutLocalLibrary()
+    T15 : +MissingEmbeddedDefinitionDoesNotReplaceOpenProject()
+    class T16["ProjectFileTests"]
+    T16 : +CanvasNoteCanBeEditedRemovedAndRestored()
+    T16 : +DamagedAndFutureFilesNeverReplaceCurrentProject()
+    T16 : +MigrationFrameworkUsesOnlyAnArtificialOldVersion()
+    T16 : +MissingLibraryIdIsReportedBeforeSwappingProject()
+    T16 : +RoundTripUsesLibraryReferencesAndPreservesAllInstanceData()
+    T16 : +SaveCheckpointAndUnsavedGuardRespectCancelAndFailedSave()
+    class T17["ProjectSampleTests"]
+    T17 : +EverySampleRunsItsSavedSketch()
+    T17 : +OpeningExampleMarksCopyDirtyAndProtectsOriginal()
+    T17 : +SampleOpensPassesErcAndShowsItsBehavior()
+    T17 : +SketchExamples()
+    class T18["ProjectSerializationTests"]
+    T18 : +PositionsAndBindingsAreIndependentAndFullCoreProjectRoundTripsThroughJson()
+    class T19["PropertyHistoryTests"]
+    T19 : +AllPropertyEditorsParticipateInHistory()
+    T19 : +EachTypeHasOnlyRelevantEditableFieldsAndColorOnlyOnLed()
+    class T20["RenderingCacheChecks"]
     T20 : +Run()

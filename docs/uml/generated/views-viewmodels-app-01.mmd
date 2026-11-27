@@ -47,24 +47,27 @@ classDiagram
     T13 : +X
     class T14["ComponentGeometryCache"]
     T14 : +Get()
-    class T15["DockPane"]
-    T15 : +IsBottom
-    T15 : +IsBottomProperty
-    T15 : +Pane
-    T15 : +PaneProperty
-    class T16["EnvironmentPassiveDrawing"]
-    T16 : +Draw()
-    class T17["Esp32Drawing"]
+    class T15["DisplayDrawingCache"]
+    T15 : +Clear()
+    T15 : +Draw()
+    class T16["DockPane"]
+    T16 : +Badge
+    T16 : +BadgeProperty
+    T16 : +IsBottom
+    T16 : +IsBottomProperty
+    T16 : +Pane
+    T16 : +PaneProperty
+    class T17["EnvironmentPassiveDrawing"]
     T17 : +Draw()
-    class T18["HumiditySensorDrawing"]
+    class T18["Esp32Drawing"]
     T18 : +Draw()
-    class T19["InstrumentTrace"]
-    T19 : +Kind
-    T19 : +KindProperty
-    T19 : +Signal
-    T19 : +SignalProperty
-    T19 : +Time
-    T19 : +TimeProperty
-    class T20["Lcd1602Drawing"]
-    T20 : +Draw()
+    class T19["HumiditySensorDrawing"]
+    T19 : +Draw()
+    class T20["InstrumentTrace"]
+    T20 : +Kind
+    T20 : +KindProperty
+    T20 : +Signal
+    T20 : +SignalProperty
+    T20 : +Time
+    T20 : +TimeProperty
     T14 ..> T13

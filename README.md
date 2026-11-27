@@ -5,26 +5,32 @@
 
 # Circuit Editor
 
-Десктопный редактор электрических схем для Arduino Uno, Nano и ESP32 с учебной симуляцией.
+Десктопный редактор электрических схем для Arduino Uno, Nano и ESP32 с учебной симуляцией. Версия **1.0.0**.
 
 [![Лицензия MIT](docs/images/mit-badge.svg)](LICENSE)
 
 | Макет Uno с внешним светодиодом | Условная схема того же проекта |
 | --- | --- |
-| [![Arduino Uno, резистор и светодиод в макете](docs/images/uno-mockup-redesign.png)](docs/images/uno-mockup-redesign.png) | [![Условные обозначения Uno, резистора и светодиода](docs/images/uno-schematic.jpg)](docs/images/uno-schematic.jpg) |
+| [![Arduino Uno, резистор и светодиод в макете](docs/images/uno-mockup.jpg)](docs/images/uno-mockup.jpg) | [![Условные обозначения Uno, резистора и светодиода](docs/images/uno-schematic.jpg)](docs/images/uno-schematic.jpg) |
 
-[Редактор Arduino с подсветкой скетча Blink](docs/images/uno-code.jpg)
+| 3D-вид макета | Конструктор 7400 |
+| --- | --- |
+| [![Uno, корпуса и перемычки в 3D](docs/images/uno-3d.jpg)](docs/images/uno-3d.jpg) | [![Распиновка и корпус 7400](docs/images/chip-7400.jpg)](docs/images/chip-7400.jpg) |
+
+[Редактор Arduino с подсветкой скетча Blink](docs/images/uno-code.jpg) · [Симуляция Blink](docs/images/uno-running.png) · [Учебные примеры](docs/images/samples-menu.png)
+
+[Два дисплея в одном скетче](docs/images/dual-lcd.png) · [Разветвитель](docs/images/splitter-outputs.png) · [Редактирование горячих клавиш](docs/images/shortcut-edit.png) · [Встроенное руководство](docs/images/about-guide.png) · [Заставка](docs/images/startup-aurora.png)
 
 ## Что умеет
 
-- Монтаж с breadboard, перемычками и 27 компонентами, включая Uno, Nano и ESP32.
+- Монтаж с макетной платой, прямыми или плавными перемычками и 28 штатными компонентами. В фотопалитре есть поиск, а при установке подсвечиваются отверстия под выводы. Разветвитель соединяет 2–8 выходов общей шиной.
 - Условная схема с общей электрической моделью и независимым размещением символов.
 - ERC, статический DC-расчёт и калькулятор номиналов.
 - AvalonEdit с подсветкой Arduino, автодополнением, поиском, дублированием и перемещением строк. Горячие клавиши можно переназначать.
-- Учебное выполнение GPIO-скетчей, встроенные сценарии и ручное управление выводами.
+- Учебное выполнение скетчей, встроенные сценарии и ручное управление выводами. Скетч может обращаться к нескольким поддерживаемым дисплеям и другим устройствам по их адресу или контактам.
 - Мультиметр, осциллограф, логический анализатор и виртуальный Serial.
 - Редактор цифровых DIP-микросхем с 12 шаблонами, таблицами, графами и испытательным стендом.
-- Фотопалитра с поиском и прокладка проводов прямыми сегментами или плавной линией.
+- Подписи и линейка на макете, подсветка электрического узла, справка с уроками и девять готовых проектов.
 - Просмотр макета в 3D с вращением камеры, слоями, объёмными гнёздами и выводами компонентов.
 - Проекты `.circ`, Undo/Redo, автовосстановление и экспорт PNG, OBJ (3D), SVG, CSV и `.ino`.
 
@@ -110,12 +116,12 @@ C# 12, .NET 8, WPF, CommunityToolkit.Mvvm, Microsoft.Extensions.DependencyInject
 | [CircuitEditor.Infrastructure](CircuitEditor.Infrastructure/CircuitEditor.Infrastructure.csproj) | Каталоги, репозитории и миграции |
 | [CircuitEditor.Simulation](CircuitEditor.Simulation/CircuitEditor.Simulation.csproj) | События, GPIO, сценарии, поведения и приборы |
 | [CircuitEditor.Tests](CircuitEditor.Tests/CircuitEditor.Tests.csproj) | Автоматические проверки |
-| [Samples](Samples/index.json) | Пять учебных проектов |
+| [Samples](Samples/index.json) | Девять учебных проектов |
 | [tools/UmlGenerator](tools/UmlGenerator/UmlGenerator.csproj) | Отдельный генератор Mermaid по исходникам |
 
 ## Тесты
 
-Последний Release-прогон — **533 из 533 тестов**, сборка без ошибок и предупреждений.
+Последняя Release-проверка — **588 из 588 тестов** в каждом из трёх прогонов. Сборка завершилась без ошибок и предупреждений.
 
 ```powershell
 dotnet test CircuitEditor.sln -c Release

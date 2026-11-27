@@ -1,76 +1,83 @@
 classDiagram
     direction LR
-    class T01["SketchStorageTests"]
-    T01 : +ArduinoNamesFollowFolderAndPrimaryFileRules()
-    T01 : +ExportCreatesMatchingArduinoFolderAndRejectsInvalidName()
-    T01 : +SketchRoundTripAutosaveAndCircuitUndoHaveIndependentHistories()
-    T01 : +VersionOneFileMigratesToEmptySketchWithoutChangingCircuit()
-    class T02["SmoothScrollPresentationChecks"]
-    class T03["StaRunner"]
-    T03 : +Run()
-    class T04["Stage4HistoryTests"]
-    T04 : +CopyPastesOnlyInternalWiresWithFreshIdsAndNoBoardBindings()
-    T04 : +EveryEditRestoresExactlyOnUndoAndRedo()
-    T04 : +HistoryIsBoundedAndBranchingInvalidatesSavedCheckpoint()
-    T04 : +OneGestureIncludesManySliderChangesAndEscRecordsNothing()
-    class T05["Stage4PresentationChecks"]
-    class T06["Stage4TestEnvironment"]
-    T06 : +Add()
-    T06 : +ChipVersionQuestions
-    T06 : +ChooseExportScale()
-    T06 : +ConfirmRecovery()
-    T06 : +ConfirmUnsaved()
-    T06 : +Decision
-    class T07["Stage5PresentationChecks"]
-    class T08["StorageFailureTests"]
-    T08 : +CrashCopyDoesNotReplaceActiveDocument()
-    T08 : +InvalidChipAndMissingLibraryFolderAreHandled()
-    T08 : +JournalRotatesAndExcludesInputAndPaths()
-    T08 : +LockedOrBrokenFileLeavesOpenProjectAndOriginalBytes()
-    T08 : +WindowsIoFailuresUsePlainMessages()
-    class T09["TestChipMigration"]
-    T09 : +FromVersion
-    T09 : +Migrate()
-    T09 : +ToVersion
-    class T10["TestCodeAnalysisService"]
-    T10 : +AnalyzeAsync()
-    T10 : +Requests
-    class T11["TestComboBox"]
-    T11 : +FinishSelection()
-    class T12["TestDebounceService"]
-    T12 : +Dispose()
-    T12 : +Flush()
-    T12 : +Pending
-    T12 : +Schedule()
-    class T13["TestDiagnosticServices"]
-    T13 : +Busy
-    T13 : +Copied
-    T13 : +OpenedCode
-    T13 : +Show()
-    T13 : +TryCopy()
-    class T14["TestOldProjectMigration"]
+    class T01["SimulationStorageTests"]
+    T01 : +ConfigurationRoundTripsButHistoryAndRunningSignalsDoNot()
+    T01 : +RunningSessionGuardsEditsWithoutChangingDirtyFlagAndFileOpenStopsIt()
+    T01 : +VersionTwoFileMigratesWithSketchAndGeometryIntact()
+    class T02["SketchExecutionTests"]
+    T02 : +InvalidSketchStopsWithAnEditorPosition()
+    T02 : +LoopReadsTheSimulatedButtonAndKeepsSetupPinMode()
+    T02 : +MultipleBoardsRequireAnInstanceAndSelectedBoardGetsTheOutput()
+    T02 : +ReusedLcdAddressExplainsWhyTheSecondDisplayCannotBeAddressed()
+    T02 : +RunsExistingGeneratedBlinkWithMillisAndPersistentVariables()
+    T02 : +SketchDrivesBuiltInLedExternalLedAndScopeAtModelTimes()
+    class T03["SketchLaunchTests"]
+    T03 : +GlobalShortcutOpensMockupAndCircuitStartUsesSeparateSession()
+    T03 : +TogglePausesAndContinuesTheSameSketchWithoutRestarting()
+    class T04["SketchMultiplePeripheralsTests"]
+    T04 : +TenDhtSensorsResolveByTheirSeparateDataPins()
+    T04 : +TenLcdAndTenOledDisplaysKeepSeparateAddressesAndTextOnOneBus()
+    T04 : +TenParallelLcdsShareDataLinesWithIndependentEnablePins()
+    T04 : +TenServosFollowTenSeparateAdcInputsOnEsp32()
+    T04 : +TenUltrasonicSensorsReportTheirOwnEchoDurations()
+    class T05["SketchStorageTests"]
+    T05 : +ArduinoNamesFollowFolderAndPrimaryFileRules()
+    T05 : +ExportCreatesMatchingArduinoFolderAndRejectsInvalidName()
+    T05 : +MissingEntryPointsAreAddedWithoutRewritingExistingCode()
+    T05 : +SketchRoundTripAutosaveAndCircuitUndoHaveIndependentHistories()
+    T05 : +VersionOneFileMigratesToEmptySketchWithoutChangingCircuit()
+    class T06["SmoothScrollPresentationChecks"]
+    class T07["SplitterTests"]
+    T07 : +HoveringIndividualSocketsShowsTheCalculatedBusVoltage()
+    T07 : +LoadsShareVoltageAndDrawDifferentCurrents()
+    T07 : +ToolbarResizesAndStoresTheExactSocketsWithoutDisconnectingWires()
+    class T08["StaRunner"]
+    T08 : +Run()
+    class T09["Stage4HistoryTests"]
+    T09 : +CopyPastesOnlyInternalWiresWithFreshIdsAndNoBoardBindings()
+    T09 : +EveryEditRestoresExactlyOnUndoAndRedo()
+    T09 : +HistoryIsBoundedAndBranchingInvalidatesSavedCheckpoint()
+    T09 : +OneGestureIncludesManySliderChangesAndEscRecordsNothing()
+    class T10["Stage4PresentationChecks"]
+    class T11["Stage4TestEnvironment"]
+    T11 : +Add()
+    T11 : +ChipVersionQuestions
+    T11 : +ChooseExportScale()
+    T11 : +ConfirmRecovery()
+    T11 : +ConfirmUnsaved()
+    T11 : +Decision
+    class T12["Stage5PresentationChecks"]
+    class T13["StorageFailureTests"]
+    T13 : +CrashCopyDoesNotReplaceActiveDocument()
+    T13 : +InvalidChipAndMissingLibraryFolderAreHandled()
+    T13 : +JournalRotatesAndExcludesInputAndPaths()
+    T13 : +LockedOrBrokenFileLeavesOpenProjectAndOriginalBytes()
+    T13 : +WindowsIoFailuresUsePlainMessages()
+    class T14["TestChipMigration"]
     T14 : +FromVersion
     T14 : +Migrate()
     T14 : +ToVersion
-    class T15["TestProjectAutosave"]
-    T15 : +Dispose()
-    T15 : +Start()
-    class T16["TestProjectFactory"]
-    T16 : +Create()
-    T16 : +Mockup()
-    T16 : +Schematic()
-    class T17["TestSimulationPulse"]
-    T17 : +Start()
-    T17 : +Stop()
-    T17 : +Tick
-    T17 : +TickOnce()
-    class T18["TestTextMeasurer"]
-    T18 : +Measure()
-    class T19["TestThemeResources"]
-    T19 : +Applied
-    T19 : +Apply()
-    T19 : +FailOnApply
-    class T20["TestWindowService"]
-    T20 : +Close()
-    T20 : +Minimize()
-    T20 : +ToggleMaximize()
+    class T15["TestCodeAnalysisService"]
+    T15 : +AnalyzeAsync()
+    T15 : +HasPendingRequests
+    T15 : +NextRequestAsync()
+    class T16["TestComboBox"]
+    T16 : +FinishSelection()
+    class T17["TestDebounceService"]
+    T17 : +Dispose()
+    T17 : +Flush()
+    T17 : +Pending
+    T17 : +Schedule()
+    class T18["TestDiagnosticServices"]
+    T18 : +Busy
+    T18 : +Copied
+    T18 : +OpenedCode
+    T18 : +Show()
+    T18 : +TryCopy()
+    class T19["TestOldProjectMigration"]
+    T19 : +FromVersion
+    T19 : +Migrate()
+    T19 : +ToVersion
+    class T20["TestProjectAutosave"]
+    T20 : +Dispose()
+    T20 : +Start()

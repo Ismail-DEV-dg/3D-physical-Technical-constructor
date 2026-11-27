@@ -1,94 +1,115 @@
 classDiagram
     direction LR
-    class T01["SceneCameraView"]
-    <<enumeration>> T01
-    T01 : +Fit
-    T01 : +Front
-    T01 : +Initial
-    T01 : +Isometric
-    T01 : +Top
-    class T02["SchematicViewModel"]
-    T02 : +AddComponent()
+    class T01["InstrumentViewModel"]
+    T01 : +Channels
+    T01 : +HasTrace
+    T01 : +IsMeter
+    T01 : +IsScope
+    T01 : +Kind
+    T01 : +LayoutChanged
+    class T02["MainViewModel"]
+    T02 : +Analysis
+    T02 : +Code
     T02 : +ComponentCount
-    T02 : +Components
-    T02 : +Dispose()
-    T02 : +Library
-    T02 : +MaximumZoom
-    class T03["ShortcutGuideViewModel"]
-    T03 : +CloseRequested
-    T03 : +Entries
-    class T04["SimulationControllerViewModel"]
-    T04 : +CanApply
-    T04 : +HasSession
-    T04 : +Modes
-    class T05["SimulationInstrumentsViewModel"]
-    T05 : +CancelPick()
-    T05 : +Dispose()
-    T05 : +Logic
-    T05 : +Meter
-    T05 : +Panels
-    T05 : +Scope
-    class T06["SimulationNumberViewModel"]
-    T06 : +Label
-    T06 : +Name
-    class T07["SimulationPinOption"]
-    T07 : +Name
-    T07 : +Reference
-    class T08["SimulationScenarioViewModel"]
-    T08 : +Dispose()
-    T08 : +ShowsTarget
-    T08 : +ShowsText
-    class T09["SimulationTargetOption"]
-    T09 : +Id
-    T09 : +Name
-    class T10["SimulationViewModel"]
-    T10 : +CanConfigure
-    T10 : +CanStart
-    T10 : +CanStartCircuit
-    T10 : +CanStep
-    T10 : +CanToggleSketch
-    T10 : +ConfigurationRequested
-    class T11["ThreeDViewModel"]
-    T11 : +Build()
-    T11 : +CameraRequested
-    T11 : +Capture()
-    T11 : +Layers
-    T11 : +Pick()
-    T11 : +SceneInvalidated
-    class T12["WireEditorViewModel"]
-    T12 : +Cancel()
-    T12 : +Color
-    T12 : +Colors
-    T12 : +DraggedEnd
-    T12 : +DraggedStart
-    T12 : +Exit()
-    class T13["WirePath"]
-    T13 : +Bounds
-    T13 : +Points
-    T13 : +Terminals
-    T13 : +WithEnds()
-    class T14["WorkspaceKind"]
-    <<enumeration>> T14
-    T14 : +Chip
-    T14 : +Code
-    T14 : +Mockup
-    T14 : +Schematic
-    T14 : +ThreeD
-    class T15["WorkspaceViewModel"]
-    T15 : +Description
-    T15 : +Heading
-    T15 : +Index
-    T15 : +Kind
-    T15 : +Title
-    class T16["WorkspaceViewport"]
-    class T17["AnalysisView"]
-    class T18["BreadboardView"]
-    class T19["CalculationResultsView"]
-    class T20["CalculatorWindow"]
-    T02 --|> T15
-    T10 ..> T08
-    T10 ..> T04
-    T10 ..> T05
-    T11 --|> T15
-    T11 ..> T10
-    T15 ..> T14
+    T02 : +CoordinateUnit
+    T02 : +CursorX
+    T02 : +CursorY
+    class T03["MockupSimulationInput"]
+    class T04["OutputViewModel"]
+    T04 : +Append()
+    T04 : +Lines
+    T04 : +ReceiveSerial()
+    class T05["PaletteItemViewModel"]
+    T05 : +Category
+    T05 : +Definition
+    T05 : +Description
+    T05 : +Name
+    T05 : +Symbol
+    T05 : +Thumbnail
+    class T06["PalettePlacementPreview"]
+    T06 : +Footprint
+    T06 : +Insertion
+    T06 : +Pose
+    class T07["PanelLayoutViewModel"]
+    T07 : +Analysis
+    T07 : +Components
+    T07 : +Inspector
+    class T08["PassiveNominalEditorViewModel"]
+    T08 : +Caption
+    T08 : +Hint
+    T08 : +Options
+    T08 : +Quantity
+    class T09["PassiveNominalOption"]
+    T09 : +Quantity
+    T09 : +Text
+    T09 : +ToString()
+    T09 : +Value
+    class T10["PotentiometerEditorViewModel"]
+    T10 : +Angle
+    T10 : +Percent
+    T10 : +SetAngle()
+    class T11["ProjectAnalysisViewModel"]
+    T11 : +AllIssues
+    T11 : +CountSummary
+    T11 : +Dispose()
+    T11 : +ErrorCount
+    T11 : +FilteredIssues
+    T11 : +Filters
+    class T12["ProjectConnectivityViewModel"]
+    T12 : +BuildCount
+    T12 : +Netlist
+    T12 : +Rebuild()
+    class T13["ProjectSampleViewModel"]
+    T13 : +Description
+    T13 : +OpenCommand
+    T13 : +Sample
+    T13 : +Title
+    class T14["ProjectSessionViewModel"]
+    T14 : +Autosave()
+    T14 : +Capture()
+    T14 : +Dispose()
+    T14 : +Initialize()
+    T14 : +Load()
+    T14 : +ProjectName
+    class T15["ProjectViewModel"]
+    T15 : +Add()
+    T15 : +Analysis
+    T15 : +BeginGesture()
+    T15 : +CanEdit
+    T15 : +CanRedo
+    T15 : +CanUndo
+    class T16["RecentProjectViewModel"]
+    T16 : +Name
+    T16 : +OpenCommand
+    T16 : +Path
+    class T17["ResistanceOption"]
+    T17 : +Ohms
+    T17 : +Text
+    T17 : +ToString()
+    class T18["ResistorEditorViewModel"]
+    T18 : +Options
+    T18 : +Series
+    class T19["ScenarioPinViewModel"]
+    T19 : +Name
+    T19 : +Options
+    class T20["SceneCameraView"]
+    <<enumeration>> T20
+    T20 : +Fit
+    T20 : +Front
+    T20 : +Initial
+    T20 : +Isometric
+    T20 : +Top
+    T02 ..> T14
+    T02 ..> T11
+    T02 ..> T07
+    T02 ..> T05
+    T02 ..> T15
+    T08 ..> T09
+    T11 ..> T15
+    T12 ..> T15
+    T14 ..> T15
+    T14 ..> T13
+    T14 ..> T16
+    T15 ..> T11
+    T15 ..> T12
+    T18 ..> T17

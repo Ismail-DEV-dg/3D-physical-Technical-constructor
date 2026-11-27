@@ -13,6 +13,7 @@ classDiagram
     class T03["GuideChapter"]
     T03 : +BoardNotes
     T03 : +Code
+    T03 : +CodePurpose
     T03 : +Id
     T03 : +Instructions
     T03 : +Title
@@ -21,6 +22,7 @@ classDiagram
     T04 : +Boards
     T04 : +Chapters()
     T04 : +Components
+    T04 : +Lessons
     class T05["BomExportService"]
     T05 : +Create()
     T05 : +Export()
@@ -79,6 +81,7 @@ classDiagram
     class T17["ComponentInsertionService"]
     T17 : +Insert()
     T17 : +Preview()
+    T17 : +PreviewNew()
     class T18["IComponentInsertionService"]
     <<interface>> T18
     class T19["InsertionResult"]

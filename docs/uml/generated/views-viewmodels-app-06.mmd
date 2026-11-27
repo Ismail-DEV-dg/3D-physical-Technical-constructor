@@ -1,112 +1,114 @@
 classDiagram
     direction LR
-    class T01["InputChoiceViewModel"]
+    class T01["CodeProblemViewModel"]
+    T01 : +Problem
     T01 : +Text
-    T01 : +ToString()
-    T01 : +Value
-    class T02["InstrumentMove"]
-    T02 : +DeltaX
-    T02 : +DeltaY
-    T02 : +MaximumX
-    T02 : +MaximumY
-    class T03["InstrumentViewModel"]
-    T03 : +Channels
-    T03 : +HasTrace
-    T03 : +IsMeter
-    T03 : +IsScope
-    T03 : +Kind
-    T03 : +LayoutChanged
-    class T04["MainViewModel"]
-    T04 : +Analysis
-    T04 : +Code
-    T04 : +ComponentCount
-    T04 : +CoordinateUnit
-    T04 : +CursorX
-    T04 : +CursorY
-    class T05["MockupSimulationInput"]
-    class T06["OutputViewModel"]
-    T06 : +Append()
-    T06 : +Lines
-    T06 : +ReceiveSerial()
-    class T07["PaletteItemViewModel"]
-    T07 : +Category
-    T07 : +Definition
-    T07 : +Description
-    T07 : +Name
-    T07 : +Symbol
-    class T08["PanelLayoutViewModel"]
-    T08 : +Analysis
-    T08 : +Components
-    T08 : +Inspector
-    class T09["PassiveNominalEditorViewModel"]
-    T09 : +Caption
-    T09 : +Hint
-    T09 : +Options
-    T09 : +Quantity
-    class T10["PassiveNominalOption"]
+    class T02["CodeProblemsViewModel"]
+    T02 : +Clear()
+    T02 : +Items
+    T02 : +NavigateRequested
+    T02 : +SetAnalysis()
+    T02 : +Summary
+    class T03["CodeViewModel"]
+    T03 : +AnalysisTask
+    T03 : +Board
+    T03 : +Boards
+    T03 : +Completions
+    T03 : +ControllerHint
+    T03 : +ControllerId
+    class T04["ComponentInputViewModel"]
+    T04 : +Choices
+    T04 : +Definition
+    T04 : +DisplayValue
+    T04 : +IsChoice
+    T04 : +Value
+    class T05["ComponentInputsViewModel"]
+    T05 : +Parameters
+    class T06["ComponentViewModel"]
+    T06 : +AppearanceVersion
+    T06 : +Description
+    T06 : +ElectricalEditor
+    T06 : +Footprint
+    T06 : +HasImmediateProperties
+    T06 : +HasListedNominal
+    class T07["DiagnosticItemViewModel"]
+    T07 : +Article
+    T07 : +Caption
+    T07 : +Code
+    T07 : +Color
+    T07 : +CopyCommand
+    T07 : +FullText
+    class T08["DiagnosticsViewModel"]
+    T08 : +Dispose()
+    T08 : +IsEmpty
+    T08 : +Items
+    T08 : +Severities
+    T08 : +Sources
+    T08 : +Summary
+    class T09["DockPaneViewModel"]
+    T09 : +CollapseIfUnpinned()
+    T09 : +IsExpanded
+    T09 : +Reset()
+    T09 : +Title
+    class T10["ElectricalParameterViewModel"]
+    T10 : +Key
+    T10 : +Label
     T10 : +Quantity
-    T10 : +Text
-    T10 : +ToString()
-    T10 : +Value
-    class T11["PotentiometerEditorViewModel"]
-    T11 : +Angle
-    T11 : +Percent
-    T11 : +SetAngle()
-    class T12["ProjectAnalysisViewModel"]
-    T12 : +AllIssues
-    T12 : +CountSummary
-    T12 : +Dispose()
-    T12 : +ErrorCount
-    T12 : +FilteredIssues
-    T12 : +Filters
-    class T13["ProjectConnectivityViewModel"]
-    T13 : +BuildCount
-    T13 : +Netlist
-    T13 : +Rebuild()
-    class T14["ProjectSampleViewModel"]
-    T14 : +Description
-    T14 : +OpenCommand
-    T14 : +Sample
-    T14 : +Title
-    class T15["ProjectSessionViewModel"]
-    T15 : +Autosave()
-    T15 : +Capture()
-    T15 : +Dispose()
-    T15 : +Initialize()
-    T15 : +Load()
-    T15 : +RecentFiles
-    class T16["ProjectViewModel"]
-    T16 : +Add()
-    T16 : +Analysis
-    T16 : +BeginGesture()
-    T16 : +CanEdit
-    T16 : +CanRedo
-    T16 : +CanUndo
-    class T17["RecentProjectViewModel"]
-    T17 : +Name
-    T17 : +OpenCommand
-    T17 : +Path
-    class T18["ResistanceOption"]
-    T18 : +Ohms
-    T18 : +Text
-    T18 : +ToString()
-    class T19["ResistorEditorViewModel"]
-    T19 : +Options
-    T19 : +Series
-    class T20["ScenarioPinViewModel"]
-    T20 : +Name
-    T20 : +Options
-    T04 ..> T15
-    T04 ..> T12
-    T04 ..> T08
-    T04 ..> T07
-    T04 ..> T16
-    T09 ..> T10
-    T12 ..> T16
-    T13 ..> T16
-    T15 ..> T16
-    T15 ..> T14
-    T15 ..> T17
-    T16 ..> T12
-    T16 ..> T13
-    T19 ..> T18
+    T10 : +TryValue()
+    class T11["ElectricalPropertiesViewModel"]
+    T11 : +Fields
+    class T12["ErcIssueViewModel"]
+    T12 : +Color
+    T12 : +Icon
+    T12 : +Issue
+    T12 : +Text
+    class T13["ErrorHelpViewModel"]
+    T13 : +ArticleText
+    T13 : +Articles
+    T13 : +CloseRequested
+    T13 : +CountSummary
+    T13 : +FocusSearchRequested
+    T13 : +Guide
+    class T14["ExportViewModel"]
+    class T15["FilePickerEntry"]
+    T15 : +FullPath
+    T15 : +IsDirectory
+    T15 : +Name
+    class T16["FilePickerFilter"]
+    T16 : +Includes()
+    T16 : +Label
+    T16 : +Parse()
+    T16 : +Patterns
+    class T17["FilePickerViewModel"]
+    T17 : +ActionLabel
+    T17 : +Filters
+    T17 : +IsSaving
+    T17 : +Locations
+    T17 : +Title
+    class T18["GuideBrowserViewModel"]
+    T18 : +ChapterPosition
+    T18 : +Chapters
+    T18 : +CodeHeading
+    T18 : +HasChapter
+    T18 : +HasCode
+    class T19["InputChoiceViewModel"]
+    T19 : +Text
+    T19 : +ToString()
+    T19 : +Value
+    class T20["InstrumentMove"]
+    T20 : +DeltaX
+    T20 : +DeltaY
+    T20 : +MaximumX
+    T20 : +MaximumY
+    T02 ..> T01
+    T03 ..> T02
+    T04 ..> T19
+    T05 ..> T04
+    T06 ..> T11
+    T06 ..> T05
+    T08 ..> T03
+    T08 ..> T07
+    T11 ..> T10
+    T13 ..> T18
+    T17 ..> T16
+    T17 ..> T15

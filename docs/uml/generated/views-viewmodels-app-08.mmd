@@ -1,22 +1,89 @@
 classDiagram
     direction LR
-    class T01["ChipBenchView"]
-    class T02["ChipGraphView"]
-    class T03["ChipLibraryView"]
-    class T04["ChipTruthView"]
-    class T05["ChipView"]
-    class T06["ChoiceDialog"]
-    class T07["CodeView"]
-    class T08["ComponentInputsView"]
-    class T09["DiagnosticsView"]
-    class T10["EditorLayoutView"]
-    class T11["ElectricalPropertiesView"]
-    class T12["ErrorHelpWindow"]
-    class T13["GuideBrowserView"]
-    class T14["InstrumentDeckView"]
-    class T15["InstrumentPanelView"]
-    class T16["OutputView"]
-    class T17["PassiveNominalView"]
-    class T18["PotentiometerPropertiesView"]
-    class T19["PropertiesView"]
-    class T20["ResistorPropertiesView"]
+    class T01["SchematicViewModel"]
+    T01 : +AddComponent()
+    T01 : +ComponentCount
+    T01 : +Components
+    T01 : +Dispose()
+    T01 : +Library
+    T01 : +MaximumZoom
+    class T02["ShortcutGuideViewModel"]
+    T02 : +CanChange
+    T02 : +CloseRequested
+    T02 : +Entries
+    class T03["SimulationControllerViewModel"]
+    T03 : +CanApply
+    T03 : +HasSession
+    T03 : +Modes
+    class T04["SimulationInstrumentsViewModel"]
+    T04 : +CancelPick()
+    T04 : +Dispose()
+    T04 : +Logic
+    T04 : +Meter
+    T04 : +Panels
+    T04 : +Scope
+    class T05["SimulationNumberViewModel"]
+    T05 : +Label
+    T05 : +Name
+    class T06["SimulationPinOption"]
+    T06 : +Name
+    T06 : +Reference
+    class T07["SimulationScenarioViewModel"]
+    T07 : +Dispose()
+    T07 : +ShowsTarget
+    T07 : +ShowsText
+    class T08["SimulationTargetOption"]
+    T08 : +Id
+    T08 : +Name
+    class T09["SimulationViewModel"]
+    T09 : +CanConfigure
+    T09 : +CanStart
+    T09 : +CanStartCircuit
+    T09 : +CanStep
+    T09 : +CanToggleSketch
+    T09 : +ConfigurationRequested
+    class T10["ThreeDViewModel"]
+    T10 : +Build()
+    T10 : +CameraRequested
+    T10 : +Capture()
+    T10 : +Layers
+    T10 : +Pick()
+    T10 : +SceneInvalidated
+    class T11["WireEditorViewModel"]
+    T11 : +Cancel()
+    T11 : +Color
+    T11 : +Colors
+    T11 : +DraggedEnd
+    T11 : +DraggedStart
+    T11 : +EndpointSummary
+    class T12["WirePath"]
+    T12 : +Bounds
+    T12 : +Points
+    T12 : +Terminals
+    T12 : +WithEnds()
+    class T13["WorkspaceKind"]
+    <<enumeration>> T13
+    T13 : +Chip
+    T13 : +Code
+    T13 : +Mockup
+    T13 : +Schematic
+    T13 : +ThreeD
+    class T14["WorkspaceViewModel"]
+    T14 : +Description
+    T14 : +Heading
+    T14 : +Index
+    T14 : +Kind
+    T14 : +Title
+    class T15["WorkspaceViewport"]
+    class T16["AnalysisView"]
+    class T17["BreadboardView"]
+    class T18["CalculationResultsView"]
+    class T19["CalculatorWindow"]
+    class T20["ChipBenchView"]
+    T01 --|> T14
+    T09 ..> T07
+    T09 ..> T03
+    T09 ..> T04
+    T10 --|> T14
+    T10 ..> T09
+    T14 ..> T13

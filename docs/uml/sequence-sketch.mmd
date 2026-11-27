@@ -1,15 +1,16 @@
 sequenceDiagram
     actor User as Пользователь
     participant V as CodeViewModel
-    participant G as ArduinoCodeGenerator
-    participant T as ICodeTemplateRepository
-    User->>V: Сгенерировать или обновить
-    V->>G: Проект, Netlist, плата и текущий текст
-    G->>T: Загрузить шаблоны
-    T-->>G: JSON-шаблоны
-    G->>G: Разрешить GPIO и проверить секции auto
-    alt Секции корректны
-        G-->>V: Обновлённые секции и диагностика
-    else Секции отсутствуют или повреждены
-        G-->>V: Диагностика, текущий текст сохранён
-    end
+    participant P as ProjectViewModel
+    participant A as ICodeAnalysisService
+    participant D as CodeProblemsViewModel
+    User->>V: Открыть вкладку «Код» и изменить скетч
+    V->>V: Дополнить недостающие setup и loop при открытии
+    V->>P: Сохранить новый текст в проекте
+    P-->>V: Событие SketchChanged
+    V->>V: Отменить предыдущий анализ и дождаться 350 мс
+    V->>A: Снимок проекта и актуальный текст
+    A-->>V: Диагностика скетча
+    V->>D: Показать диагностику актуального анализа
+    User->>D: Выбрать сообщение
+    D-->>V: Открыть строку и столбец в редакторе
