@@ -7,6 +7,7 @@ namespace CircuitEditor.App.Controls.ThreeD;
 
 internal sealed class SceneSurfaceTexture
 {
+    private const double PixelsPerMillimeter = 14;
     private readonly DrawingGroup drawing = new();
 
     public SceneSurfaceTexture(LayoutRect bounds, Action<DrawingContext> paint)
@@ -22,18 +23,6 @@ internal sealed class SceneSurfaceTexture
         drawing.Freeze();
     }
 
-    public Material ForRegion(LayoutRect region)
-    {
-        // WPF maps TileBrush bounds to each mesh. Sampling the crop in the brush keeps the face UVs normalized.
-        var brush = new DrawingBrush(drawing)
-        {
-            Viewbox = PhysicalDrawing.Rect(region), ViewboxUnits = BrushMappingMode.Absolute, Stretch = Stretch.Fill
-        };
-        RenderOptions.SetCachingHint(brush, CachingHint.Cache);
-        RenderOptions.SetCacheInvalidationThresholdMinimum(brush, .5);
-        RenderOptions.SetCacheInvalidationThresholdMaximum(brush, 2);
-        var material = new DiffuseMaterial(brush);
-        material.Freeze();
-        return material;
-    }
+    public Material ForRegion(LayoutRect region) =>
+        SceneTextureRasterizer.Create(drawing, PhysicalDrawing.Rect(region), PixelsPerMillimeter);
 }

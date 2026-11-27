@@ -17,6 +17,7 @@ public sealed class BreadboardSurface : FrameworkElement
     internal string? HoveredContact=>hover.ActiveKey;
     private const double MinimumCullingPaddingMm = 6;
     private readonly ComponentDrawingCache components = new();
+    private readonly DisplayDrawingCache displays = new();
     private readonly ComponentGeometryCache geometry = new();
     private readonly BreadboardDrawingCache breadboard = new();
     private readonly WireDrawingCache wires = new();
@@ -30,8 +31,9 @@ public sealed class BreadboardSurface : FrameworkElement
     public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register(nameof(Background),
         typeof(Brush), typeof(BreadboardSurface), new FrameworkPropertyMetadata(Brushes.Transparent, FrameworkPropertyMetadataOptions.AffectsRender));
     public static readonly DependencyProperty SimulationProperty = DependencyProperty.Register(nameof(Simulation),
-        typeof(SimulationState), typeof(BreadboardSurface), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender,
-            (owner, _) => ((BreadboardSurface)owner).RefreshSplitterToolTip()));
+        typeof(SimulationState), typeof(BreadboardSurface), new FrameworkPropertyMetadata(null,
+            (owner, change) => ((BreadboardSurface)owner).RefreshSimulation(
+                (SimulationState?)change.OldValue, (SimulationState?)change.NewValue)));
     public static readonly DependencyProperty ShowVoltageProperty = DependencyProperty.Register(nameof(ShowVoltage),
         typeof(bool), typeof(BreadboardSurface), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
     public static readonly DependencyProperty ShowCurrentProperty = DependencyProperty.Register(nameof(ShowCurrent),
@@ -43,7 +45,7 @@ public sealed class BreadboardSurface : FrameworkElement
     public int Revision { get => (int)GetValue(RevisionProperty); set => SetValue(RevisionProperty, value); }
     public Brush Background { get => (Brush)GetValue(BackgroundProperty); set => SetValue(BackgroundProperty, value); }
     public BreadboardSurface() {AddVisualChild(hover);Unloaded += (_, _) => { tip.IsOpen = false; hover.Update(null);ClearDrawings(); };}
-    private void ClearDrawings() { hover.Update(null);components.Clear(); breadboard.Clear(); }
+    private void ClearDrawings() { hover.Update(null); components.Clear(); displays.Clear(); breadboard.Clear(); }
     public string? GetPinToolTip(Point point) => GetPinToolTip(point, out _);
 
     private string? GetPinToolTip(Point point, out bool splitter)
@@ -65,6 +67,12 @@ public sealed class BreadboardSurface : FrameworkElement
         }
         splitterHover = null;
         tip.IsOpen = false;
+    }
+
+    private void RefreshSimulation(SimulationState? before, SimulationState? after)
+    {
+        RefreshSplitterToolTip();
+        if (SimulationDrawing.HasVisualChanges(before, after, ShowVoltage, ShowCurrent)) InvalidateVisual();
     }
     protected override void OnRender(DrawingContext dc)
     {
@@ -93,7 +101,7 @@ public sealed class BreadboardSurface : FrameworkElement
             dc.PushTransform(drawing.Transform);
             dc.DrawDrawing(components.Get(item, pose, pitch));
             var signal = Simulation?.Components.GetValueOrDefault(item.Model.Id);
-            SimulationDrawing.Component(dc, item, signal);
+            SimulationDrawing.Component(dc, item, signal, displays);
             RealComponentDrawing.DrawSelection(dc, item, pose, pitch,
                 scene.Preview is { Success: false } && item.IsSelected, signal?.Angle);
             dc.Pop();

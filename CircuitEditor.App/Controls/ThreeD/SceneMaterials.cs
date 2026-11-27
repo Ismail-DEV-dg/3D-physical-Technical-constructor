@@ -10,6 +10,7 @@ internal static class SceneMaterials
 {
     private const double FontSize = 24;
     private const double Margin = 3;
+    private const double LabelTextureScale = 3;
     private static readonly ConcurrentDictionary<string, Material> Solids = new(StringComparer.OrdinalIgnoreCase);
 
     private static readonly ConcurrentDictionary<(string Color, SceneFinish Finish), Material> Finishes = new();
@@ -75,10 +76,7 @@ internal static class SceneMaterials
                 context.DrawText(text, new((bounds.Width - text.Width) / 2, (bounds.Height - text.Height) / 2));
             }
         }
-        DrawingBrush brush = new(drawing) { Stretch = Stretch.Fill };
-        DiffuseMaterial material = new(brush);
-        material.Freeze();
-        return material;
+        return SceneTextureRasterizer.Create(drawing, bounds, LabelTextureScale);
     }
 
     public static SolidColorBrush Brush(string value)

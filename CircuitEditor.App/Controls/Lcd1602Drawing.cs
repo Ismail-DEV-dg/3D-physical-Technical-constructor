@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using CircuitEditor.Core.Physical;
 
 namespace CircuitEditor.App.Controls;
@@ -10,6 +11,13 @@ internal static class Lcd1602Drawing
     private const int Rows = 2;
     private const int GlyphColumns = 5;
     private const int GlyphRows = 8;
+    private const double CharacterWidth = 2.95;
+    private const double CharacterHeight = 5.55;
+    private const double CharacterPitchX = 3.55;
+    private const double CharacterPitchY = 5.95;
+    private const double MatrixWidth = (Columns - 1) * CharacterPitchX + CharacterWidth;
+    private const double MatrixHeight = (Rows - 1) * CharacterPitchY + CharacterHeight;
+    private static readonly BitmapSource CharacterCells = CreateCharacterCells();
 
     public static void Draw(DrawingContext dc, FootprintDefinition footprint)
     {
@@ -54,31 +62,37 @@ internal static class Lcd1602Drawing
 
     private static void DrawCharacterCells(DrawingContext dc, Rect screen)
     {
-        const double characterWidth = 2.95;
-        const double characterHeight = 5.55;
-        const double characterPitchX = 3.55;
-        const double characterPitchY = 5.95;
-        var startX = screen.Left + (screen.Width - ((Columns - 1) * characterPitchX + characterWidth)) / 2;
-        var startY = screen.Top + (screen.Height - ((Rows - 1) * characterPitchY + characterHeight)) / 2;
-        var dot = PhysicalDrawing.Ink("#334DAB");
-        var matrix = new StreamGeometry { FillRule = FillRule.Nonzero };
-        using (var path = matrix.Open())
+        dc.DrawImage(CharacterCells, new Rect(screen.Left + (screen.Width - MatrixWidth) / 2,
+            screen.Top + (screen.Height - MatrixHeight) / 2, MatrixWidth, MatrixHeight));
+    }
+
+    private static BitmapSource CreateCharacterCells()
+    {
+        const int pixelsPerMillimeter = 20;
+        var width = (int)Math.Ceiling(MatrixWidth * pixelsPerMillimeter);
+        var height = (int)Math.Ceiling(MatrixHeight * pixelsPerMillimeter);
+        var pixels = new int[width * height];
+        const int dot = unchecked((int)0xFF334DAB);
+        var columns = DotMask(width, MatrixWidth, CharacterPitchX, CharacterWidth, GlyphColumns);
+        var rows = DotMask(height, MatrixHeight, CharacterPitchY, CharacterHeight, GlyphRows);
+        for (var y = 0; y < height; y++)
+            if (rows[y])
+                for (var x = 0; x < width; x++)
+                    if (columns[x]) pixels[y * width + x] = dot;
+        return PhysicalDrawing.Frozen(BitmapSource.Create(width, height, 96, 96, PixelFormats.Pbgra32,
+            null, pixels, width * sizeof(int)));
+    }
+
+    private static bool[] DotMask(int pixels, double length, double characterPitch, double characterSize, int dots)
+    {
+        const double dotFill = .85;
+        var mask = new bool[pixels];
+        for (var i = 0; i < pixels; i++)
         {
-            for (var row = 0; row < Rows; row++)
-                for (var column = 0; column < Columns; column++)
-                    for (var y = 0; y < GlyphRows; y++)
-                        for (var x = 0; x < GlyphColumns; x++)
-                        {
-                            var rect = new Rect(startX + column * characterPitchX + x * characterWidth / GlyphColumns,
-                                startY + row * characterPitchY + y * characterHeight / GlyphRows,
-                                characterWidth / GlyphColumns * .85, characterHeight / GlyphRows * .85);
-                            path.BeginFigure(rect.TopLeft, true, true);
-                            path.LineTo(rect.TopRight, true, false);
-                            path.LineTo(rect.BottomRight, true, false);
-                            path.LineTo(rect.BottomLeft, true, false);
-                        }
+            var withinCharacter = (i + .5) / pixels * length % characterPitch;
+            var dot = withinCharacter / characterSize * dots;
+            mask[i] = dot < dots && dot % 1 < dotFill;
         }
-        matrix.Freeze();
-        dc.DrawGeometry(dot, null, matrix);
+        return mask;
     }
 }

@@ -24,7 +24,8 @@ internal static class RenderingCacheChecks
         var lcd = project.Add(project.Library.Single(item => item.Id == "lcd1602"))!;
         var original = cache.Get(lcd, lcd.MockupPlacement, 2.54);
         Assert.True(original.IsFrozen);
-        Assert.DoesNotContain(Flatten(original), drawing => drawing is ImageDrawing);
+        var matrix = Assert.Single(Flatten(original).OfType<ImageDrawing>());
+        Assert.True(Assert.IsAssignableFrom<BitmapSource>(matrix.ImageSource).IsFrozen);
         Assert.True(Flatten(original).OfType<GeometryDrawing>().Count() < 100, "Матрица LCD снова разбита на сотни Drawing-объектов.");
         lcd.MockupPlacement.MoveTo(100, 100); lcd.MockupPlacement.Rotate(); lcd.IsSelected = false;
         Assert.Same(original, cache.Get(lcd, lcd.MockupPlacement, 2.54));

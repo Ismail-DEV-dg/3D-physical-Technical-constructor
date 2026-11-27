@@ -15,7 +15,26 @@ internal static class SimulationDrawing
     private const double MinimumDisplayCurrentAmps = .0001;
     internal const int MaximumParticles = 120;
 
-    internal static void Component(DrawingContext dc, ComponentViewModel item, ComponentSignal? signal)
+    internal static bool HasVisualChanges(SimulationState? before, SimulationState? after, bool voltage, bool current)
+    {
+        if (before is null || after is null) return before != after;
+        if (!ReferenceEquals(before.Components, after.Components) &&
+            (before.Components.Count != after.Components.Count || after.Components.Any(pair =>
+                !before.Components.TryGetValue(pair.Key, out var old) || !SameAppearance(old, pair.Value)))) return true;
+        if (current && before.Microseconds != after.Microseconds &&
+            after.Wires.Values.Any(signal => Math.Abs(signal.Current ?? 0) >= MinimumDisplayCurrentAmps)) return true;
+        return (voltage || current) && !ReferenceEquals(before.Wires, after.Wires) &&
+            (before.Wires.Count != after.Wires.Count || after.Wires.Any(pair =>
+                !before.Wires.TryGetValue(pair.Key, out var old) || voltage && old.Voltage != pair.Value.Voltage ||
+                current && old.Current != pair.Value.Current));
+    }
+
+    private static bool SameAppearance(ComponentSignal old, ComponentSignal updated) =>
+        old.Intensity == updated.Intensity && old.Angle == updated.Angle && old.Text == updated.Text &&
+        old.Active == updated.Active && old.Segments == updated.Segments && old.Channels.AsSpan().SequenceEqual(updated.Channels.AsSpan()) &&
+        old.Measurements?.GetValueOrDefault("SwitchPosition") == updated.Measurements?.GetValueOrDefault("SwitchPosition");
+
+    internal static void Component(DrawingContext dc, ComponentViewModel item, ComponentSignal? signal, DisplayDrawingCache displays)
     {
         if (signal is null) return;
         var footprint = item.Footprint;
@@ -40,7 +59,7 @@ internal static class SimulationDrawing
             case "lcd1602":
             case "lcd1602-i2c":
             case "oled-ssd1306":
-                if (signal.Active) Display(dc, body, signal.Text ?? "", footprint.Renderer == "oled-ssd1306");
+                displays.Draw(dc, item.Model.Id, footprint, signal);
                 break;
             case "seven-segment":
                 SevenSegmentDrawing.DrawActive(dc, footprint, signal.Segments);
@@ -96,17 +115,17 @@ internal static class SimulationDrawing
             position, radius, radius);
     }
 
-    private static void Display(DrawingContext dc, Rect body, string text, bool oled)
+    internal static void Display(DrawingContext dc, Rect body, string text, bool oled)
     {
         var screen = oled ? new Rect(body.Left + 1.5, body.Top + 7.5, body.Width - 3, 16)
             : new Rect(body.Left + 7.2, body.Top + 11.9, body.Width - 14.4, 15.6);
         dc.DrawRectangle(PhysicalDrawing.Ink(oled ? "#071721" : "#264FC7"), null, screen);
         dc.PushClip(new RectangleGeometry(screen));
-        var step = oled ? 3.3 : 6.1;
+        var step = oled ? 1.7 : 6.1;
         var y = screen.Top + (oled ? 1.5 : 1.2);
         foreach (var line in text.Split('\n'))
         {
-            PhysicalDrawing.Text(dc, line, screen.Left + 1, y, oled ? 1.8 : 4.1, oled ? Brushes.LightCyan : Brushes.WhiteSmoke);
+            PhysicalDrawing.Text(dc, line, screen.Left + 1, y, oled ? 1.4 : 4.1, oled ? Brushes.LightCyan : Brushes.WhiteSmoke);
             y += step;
         }
         dc.Pop();
