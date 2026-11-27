@@ -12,31 +12,33 @@ internal sealed class SceneHover
     private readonly FrameworkElement target;
     private readonly ToolTip tip;
     private readonly DispatcherTimer timer;
-    private Guid? id;
+    private readonly Func<Point, SceneNode?> find;
+    private Point? pending;
 
-    public SceneHover(FrameworkElement target)
+    public SceneHover(FrameworkElement target, Func<Point, SceneNode?> find)
     {
         this.target = target;
+        this.find = find;
         tip = new ToolTip { PlacementTarget = target, Placement = PlacementMode.Mouse, IsHitTestVisible = false };
         timer = new DispatcherTimer(DispatcherPriority.Background, target.Dispatcher) { Interval = Delay };
         timer.Tick += OnDelay;
     }
 
-    public void Observe(SceneNode? node)
+    public void Observe(Point? point)
     {
-        if (id == node?.Id) return;
-        id = node?.Id;
+        if (pending == point) return;
+        pending = point;
         timer.Stop();
         tip.IsOpen = false;
-        if (node is null) return;
-        tip.Content = string.Join(" · ", new[] { node.Label, node.Name, node.Value, node.Color }
-            .Where(value => !string.IsNullOrWhiteSpace(value)));
-        timer.Start();
+        if (point.HasValue) timer.Start();
     }
 
     private void OnDelay(object? sender, EventArgs args)
     {
         timer.Stop();
-        if (id is not null && target.IsMouseOver) tip.IsOpen = true;
+        if (pending is not { } point || !target.IsMouseOver || find(point) is not { } node) return;
+        tip.Content = string.Join(" · ", new[] { node.Label, node.Name, node.Value, node.Color }
+            .Where(value => !string.IsNullOrWhiteSpace(value)));
+        tip.IsOpen = true;
     }
 }

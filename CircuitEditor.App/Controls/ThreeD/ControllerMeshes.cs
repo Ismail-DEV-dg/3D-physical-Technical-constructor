@@ -121,14 +121,16 @@ internal static class ControllerMeshes
         const double wall = .42;
         const double back = .65;
         var color = power ? SocketColor : SceneMeshes.Metal;
+        var openingZ = z + wall;
+        var openingHeight = height - 2 * wall;
         m.Box(box, z, wall, color);
         m.BeveledBox(box, z + height - wall, wall, color, corner: .22, bevel: .09,
             finish: power ? SceneFinish.Matte : SceneFinish.Metal);
         if (leftFacing)
         {
-            m.Box(new(box.X, box.Y, box.Width, wall), z, height - wall, color);
-            m.Box(new(box.X, box.Bottom - wall, box.Width, wall), z, height - wall, color);
-            m.Box(new(box.Right - back, box.Y, back, box.Height), z, height - wall, "#202831");
+            m.Box(new(box.X, box.Y, box.Width, wall), openingZ, openingHeight, color);
+            m.Box(new(box.X, box.Bottom - wall, box.Width, wall), openingZ, openingHeight, color);
+            m.Box(new(box.Right - back, box.Y + wall, back, box.Height - 2 * wall), openingZ, openingHeight, "#202831");
             if (power)
                 m.Rod(new(box.Right - back, box.Y + box.Height / 2, z + height / 2),
                     new(box.X + 1.2, box.Y + box.Height / 2, z + height / 2), 1.26, SceneMeshes.Metal);
@@ -137,9 +139,10 @@ internal static class ControllerMeshes
         }
         else
         {
-            m.Box(new(box.X, box.Y, wall, box.Height), z, height - wall, color);
-            m.Box(new(box.Right - wall, box.Y, wall, box.Height), z, height - wall, color);
-            m.Box(new(box.X, reverse ? box.Y : box.Bottom - back, box.Width, back), z, height - wall, "#202831");
+            m.Box(new(box.X, box.Y, wall, box.Height), openingZ, openingHeight, color);
+            m.Box(new(box.Right - wall, box.Y, wall, box.Height), openingZ, openingHeight, color);
+            m.Box(new(box.X + wall, reverse ? box.Y : box.Bottom - back, box.Width - 2 * wall, back),
+                openingZ, openingHeight, "#202831");
             m.Box(SceneMeshes.Inset(box, 1.0, 1.1), z + height * .36, .44, "#2A323B");
         }
     }

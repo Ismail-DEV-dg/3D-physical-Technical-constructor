@@ -16,13 +16,29 @@ internal sealed class SceneVisualNode
         Outline = new() { Transform = source.Transform, Content = source.Outline };
         if (SceneShadow.Create(source.Node) is { } shadow)
             Shadow = new ModelVisual3D { Content = shadow, Transform = source.Transform };
-        foreach (var label in source.Labels) Labels.Children.Add(new ModelVisual3D { Content = label.Model });
+        var body = new Model3DGroup();
         foreach (var part in source.Parts)
         {
+            if (part.Role is "" or SceneMeshes.Label or SceneMeshes.SurfaceRole)
+            {
+                body.Children.Add(part.Model);
+                continue;
+            }
             var visual = new ModelVisual3D { Content = part.Model };
-            if (part.Role != "" && part.Role != SceneMeshes.Label && part.Role != "mark")
-                animated.Add(part.Role, visual);
+            animated.Add(part.Role, visual);
             Body.Children.Add(visual);
+        }
+        if (body.Children.Count > 0)
+        {
+            body.Freeze();
+            Body.Content = body;
+        }
+        if (!source.Labels.IsEmpty)
+        {
+            var labels = new Model3DGroup();
+            foreach (var label in source.Labels) labels.Children.Add(label.Model);
+            labels.Freeze();
+            Labels.Content = labels;
         }
         if (source.Node.Layer == SceneLayer.Wire) wireModel = source.Parts[0].Model;
     }

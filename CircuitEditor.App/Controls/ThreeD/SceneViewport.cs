@@ -10,7 +10,7 @@ namespace CircuitEditor.App.Controls.ThreeD;
 
 public sealed class SceneViewport : HelixViewport3D
 {
-    private readonly ScenePickIndex<Visual3D> picks = new();
+    private readonly ScenePicking picking;
     private readonly Dictionary<Guid, SceneVisualNode> nodes = [];
     private readonly ModelVisual3D sceneRoot = new();
     private readonly ModelVisual3D shadowRoot = new();
@@ -33,8 +33,9 @@ public sealed class SceneViewport : HelixViewport3D
 
     public SceneViewport()
     {
+        picking = new(sceneRoot, nodes);
         playback = new(this);
-        hover = new(this);
+        hover = new(this, Find);
         RotateGesture = new MouseGesture(MouseAction.RightClick);
         PanGesture = new MouseGesture(MouseAction.MiddleClick);
         RotateGesture2 = new MouseGesture(MouseAction.None);
@@ -44,6 +45,7 @@ public sealed class SceneViewport : HelixViewport3D
         IsHeadLightEnabled = false;
         ShowCoordinateSystem = false;
         ShowViewCube = false;
+        ClipToBounds = true;
         ModelUpDirection = new(0, 0, 1);
         Children.Add(shadowRoot);
         Children.Add(sceneRoot);
@@ -51,9 +53,18 @@ public sealed class SceneViewport : HelixViewport3D
         Unloaded += (_, _) => Disconnect();
         IsVisibleChanged += (_, _) => { if (IsVisible) Connect(); else Disconnect(); };
         DataContextChanged += (_, _) => { Disconnect(); Connect(); };
-        CameraChanged += (_, _) => EnsureLabelScale();
+        CameraChanged += (_, _) => { hover.Observe(null); EnsureLabelScale(); };
         SizeChanged += (_, _) => EnsureLabelScale();
         ContextMenuOpening += (_, args) => args.Handled = true;
+    }
+
+    public override void OnApplyTemplate()
+    {
+        base.OnApplyTemplate();
+        if (Viewport is not { } viewport) return;
+        // The host clips the image. Only deliberate picks should test the 3D triangles.
+        viewport.ClipToBounds = false;
+        viewport.IsHitTestVisible = false;
     }
 
     private void Connect()
@@ -98,7 +109,7 @@ public sealed class SceneViewport : HelixViewport3D
         exportTarget = null;
         workspace = null;
         click.Cancel();
-        SetHover(null);
+        hover.Observe(null);
     }
 
     private void Rebuild(object? sender, EventArgs args)
@@ -147,7 +158,7 @@ public sealed class SceneViewport : HelixViewport3D
             }
             SceneVisualNode visual = new(item);
             nodes.Add(item.Node.Id, visual);
-            foreach (var part in visual.Body.Children) picks.Set(part, item.Node.Id);
+            picking.Add(visual);
         }
         UpdateLayers();
         playback.QueueFrame(this, workspace?.Simulation?.State ?? new());
@@ -165,7 +176,7 @@ public sealed class SceneViewport : HelixViewport3D
         Attach(old.Labels, false);
         Attach(old.Outline, false);
         if (old.Shadow is { } shadow) Attach(shadow, false, shadowRoot);
-        foreach (var part in old.Body.Children) picks.Remove(part);
+        picking.Remove(old);
     }
 
     private void MoveCamera(object? sender, SceneCameraView view)
@@ -191,7 +202,7 @@ public sealed class SceneViewport : HelixViewport3D
             if (visual.Shadow is { } shadow)
                 Attach(shadow, show, shadowRoot);
             Attach(visual.Body, show);
-            Attach(visual.Labels, show && labelsReadable && vm.Layers.Labels && visual.Labels.Children.Count != 0);
+            Attach(visual.Labels, show && labelsReadable && vm.Layers.Labels && visual.Labels.Content is not null);
             Attach(visual.Outline, show && selection == visual.Node.Id && visual.Node.Layer != SceneLayer.Wire);
             if (visual.Node.Layer == SceneLayer.Wire)
                 visual.SelectWire(selection == visual.Node.Id);
@@ -261,8 +272,8 @@ public sealed class SceneViewport : HelixViewport3D
             click.Move(at.X, at.Y);
             if (args.LeftButton == MouseButtonState.Pressed) playback.MoveKnob(at);
             if (args.LeftButton == MouseButtonState.Released && args.RightButton == MouseButtonState.Released &&
-                args.MiddleButton == MouseButtonState.Released) SetHover(Find(at));
-            else SetHover(null);
+                args.MiddleButton == MouseButtonState.Released) hover.Observe(at);
+            else hover.Observe(null);
         }
         base.OnPreviewMouseMove(args);
     }
@@ -270,7 +281,7 @@ public sealed class SceneViewport : HelixViewport3D
     protected override void OnMouseLeave(MouseEventArgs args)
     {
         if (!playback.IsInteracting) click.Cancel();
-        SetHover(null);
+        hover.Observe(null);
         base.OnMouseLeave(args);
     }
 
@@ -280,14 +291,5 @@ public sealed class SceneViewport : HelixViewport3D
         base.OnLostMouseCapture(args);
     }
 
-    internal SceneNode? Find(Point at)
-    {
-        if (Viewport is null) return null;
-        foreach (var hit in Viewport3DHelper.FindHits(Viewport, at))
-            if (hit.Visual is { } visual && picks.Find(visual) is { } id &&
-                nodes.TryGetValue(id, out var found)) return found.Node;
-        return null;
-    }
-
-    private void SetHover(SceneNode? node) => hover.Observe(node);
+    internal SceneNode? Find(Point at) => Viewport is { } viewport ? picking.Find(viewport, at) : null;
 }

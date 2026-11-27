@@ -16,6 +16,7 @@ internal static class BoardMeshes
         const double baseHeight = .78;
         m.BeveledBox(b, 0, baseHeight, "#C0C2BC", corner: .9, bevel: .14);
         m.Box(b, baseHeight, floor - baseHeight - .10, "#DBDAD2");
+        // The shell owns the outside walls; the strips only fill the top between cavities.
         m.SideWalls(b, floor - .10, height, "#DBDAD2");
         if (node.Breadboard is not { } board) return;
 
@@ -40,22 +41,22 @@ internal static class BoardMeshes
                     var slot = SceneMeshes.Inset(strip, .27, 2.1);
                     m.Recess(strip, slot, height, trenchDepth, node.Profile.Material, "#C4C5BA", "#B3B7AE", chamfer: .12);
                 }
-                else m.Box(strip, floor - .1, height - floor + .1, node.Profile.Material);
+                else m.TopFace(strip, height, node.Profile.Material);
             }
             var edge = b.Y;
             foreach (var pin in column.OrderBy(pin => pin.Position.Y))
             {
                 var y = pin.Position.Y;
                 var low = y - pitch / 2;
-                if (low - edge > .0001) m.Box(new(start, edge, pitch, low - edge), floor - .1, height - floor + .1, node.Profile.Material);
+                if (low - edge > .0001) m.TopFace(new(start, edge, pitch, low - edge), height, node.Profile.Material);
                 m.Recess(new(start, low, pitch, pitch), new(x - opening / 2, y - opening / 2, opening, opening),
                     height, SceneContactDepth.BreadboardBore, node.Profile.Material, "#AEB6B3", "#333A40");
                 edge = y + pitch / 2;
             }
-            if (edge < b.Bottom) m.Box(new(start, edge, pitch, b.Bottom - edge), floor - .1, height - floor + .1, node.Profile.Material);
+            if (edge < b.Bottom) m.TopFace(new(start, edge, pitch, b.Bottom - edge), height, node.Profile.Material);
             left = start + pitch;
         }
-        if (left < b.Right) m.Box(new(left, b.Y, b.Right - left, b.Height), floor - .1, height - floor + .1, node.Profile.Material);
+        if (left < b.Right) m.TopFace(new(left, b.Y, b.Right - left, b.Height), height, node.Profile.Material);
         m.Face(b, height, new(b, dc => BreadboardDrawing.DrawBase(dc, board, false, markingsOnly: true)));
     }
 

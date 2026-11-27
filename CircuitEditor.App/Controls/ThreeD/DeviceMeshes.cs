@@ -95,8 +95,10 @@ internal static class DeviceMeshes
                 break;
             case "battery":
                 var cell = n.Parts.GetValueOrDefault("cell", b);
-                m.BevelWithArtwork(cell, z, h, "#27313B", dc =>
-                    MiscComponentDrawing.BatteryFace(dc, PhysicalDrawing.Rect(cell), n.Value));
+                const double capProjection = .30;
+                m.BeveledBox(cell with { Width = cell.Width - capProjection }, z, h, "#27313B");
+                m.Face(cell, top, new(cell, dc =>
+                    MiscComponentDrawing.BatteryFace(dc, PhysicalDrawing.Rect(cell), n.Value)));
                 var cap = new LayoutRect(cell.Right - 2.8, cell.Y + .25, 2.8, cell.Height - .5);
                 m.BeveledBox(cap, z + .12, h - .16, SceneMeshes.Metal, corner: .37, bevel: .12);
                 foreach (var fraction in new[] { .33, .68 })

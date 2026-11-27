@@ -33,6 +33,13 @@ internal sealed class SceneMeshes
             (float)r.Width, (float)r.Height, (float)h);
     }
 
+    public void TopFace(LayoutRect r, double z, string color)
+    {
+        if (r.Width <= 0 || r.Height <= 0) return;
+        Mesh(color, "", default).AddQuad(Vector(r.X, r.Y, z), Vector(r.X, r.Bottom, z),
+            Vector(r.Right, r.Bottom, z), Vector(r.Right, r.Y, z));
+    }
+
     public void BeveledBox(LayoutRect body, double z, double height, string color, double corner = .7, double bevel = .28,
         string role = "", Point3D pivot = default, SceneFinish finish = SceneFinish.Matte)
     {
