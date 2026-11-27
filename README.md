@@ -9,6 +9,12 @@
 
 [![Лицензия MIT](docs/images/mit-badge.svg)](LICENSE)
 
+## Галерея
+
+| Заставка при запуске | Два LCD в одном скетче |
+| --- | --- |
+| [![Северное сияние, звёзды и логотип Circuit Editor](docs/images/startup-aurora.png)](docs/images/startup-aurora.png) | [![Два дисплея с разным текстом и адресами I²C](docs/images/dual-lcd.png)](docs/images/dual-lcd.png) |
+
 | Макет Uno с внешним светодиодом | Условная схема того же проекта |
 | --- | --- |
 | [![Arduino Uno, резистор и светодиод в макете](docs/images/uno-mockup.jpg)](docs/images/uno-mockup.jpg) | [![Условные обозначения Uno, резистора и светодиода](docs/images/uno-schematic.jpg)](docs/images/uno-schematic.jpg) |
@@ -19,7 +25,7 @@
 
 [Редактор Arduino с подсветкой скетча Blink](docs/images/uno-code.jpg) · [Симуляция Blink](docs/images/uno-running.png) · [Учебные примеры](docs/images/samples-menu.png)
 
-[Два дисплея в одном скетче](docs/images/dual-lcd.png) · [Разветвитель](docs/images/splitter-outputs.png) · [Редактирование горячих клавиш](docs/images/shortcut-edit.png) · [Встроенное руководство](docs/images/about-guide.png) · [Заставка](docs/images/startup-aurora.png)
+[Разветвитель](docs/images/splitter-outputs.png) · [Редактирование горячих клавиш](docs/images/shortcut-edit.png) · [Встроенное руководство](docs/images/about-guide.png)
 
 ## Что умеет
 
