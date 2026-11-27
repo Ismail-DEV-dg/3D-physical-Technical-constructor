@@ -12,6 +12,7 @@ internal static class SymbolDrawing
         var path = symbol switch
         {
             "resistor" => "M 0,18 L 10,18 15,7 23,29 31,7 39,29 47,7 53,18 64,18",
+            "splitter" => "M 1,18 H 61 M 21,18 V 30 M 34,18 V 30 M 47,18 V 30 M 18,30 H 24 M 31,30 H 37 M 44,30 H 50",
             "capacitor" => "M 0,18 L 26,18 M 26,4 L 26,32 M 38,4 L 38,32 M 38,18 L 64,18",
             "inductor" => "M 0,18 L 8,18 C 8,-4 20,-4 20,18 C 20,-4 32,-4 32,18 C 32,-4 44,-4 44,18 C 44,-4 56,-4 56,18 L 64,18",
             "potentiometer" => "M 0,18 L 14,18 14,7 50,7 50,29 14,29 14,18 M 50,18 L 64,18 M 32,0 L 32,16 M 27,11 L 32,16 37,11",

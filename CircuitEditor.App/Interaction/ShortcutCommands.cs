@@ -7,7 +7,8 @@ public static class ShortcutCommands
     {
         var canvas=vm.SelectedWorkspace.Kind is WorkspaceKind.Mockup or WorkspaceKind.Schematic;
         void Input(CanvasAction action)=> (vm.SelectedWorkspace.Kind==WorkspaceKind.Mockup ? vm.Mockup.InputCommand:vm.Schematic.InputCommand).Execute(new CanvasInput(action));
-        if(vm.Project.InGesture && id is not ("Cancel" or "Select" or "Help"))
+        var rotateHeldItem = id == "Rotate" && vm.IsMockup && vm.Mockup.CanRotateDuringDrag;
+        if(vm.Project.InGesture && id is not ("Cancel" or "Select" or "Help") && !rotateHeldItem)
         {vm.StatusMessage="Завершите жест или нажмите Esc перед другой командой.";return;}
         IRelayCommand? command=id switch
         {

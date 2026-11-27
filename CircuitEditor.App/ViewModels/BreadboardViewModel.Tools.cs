@@ -1,6 +1,7 @@
 using CircuitEditor.App.Interaction;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CircuitEditor.Core.Placement;
 
 namespace CircuitEditor.App.ViewModels;
 
@@ -13,6 +14,8 @@ public sealed partial class BreadboardViewModel
     partial void OnShowNetColorsChanged(bool value) => Revision++;
 
     private string? pendingComponent;
+    private int? pendingRotation;
+    internal bool IsPlacementArmed => pendingComponent is not null;
 
     [RelayCommand]
     private void CloseSimulationSettings() => IsSimulationSettingsOpen = false;
@@ -25,7 +28,13 @@ public sealed partial class BreadboardViewModel
         if (!Project.CanEdit || Project.InGesture) return;
         SelectTool("Select");
         pendingComponent = definitionId;
-        Project.StatusMessage = "Щёлкните по макету для размещения детали. Esc — отмена.";
+        Project.StatusMessage = "Щёлкните по макету для размещения детали. R — поворот, Esc — отмена.";
+    }
+
+    [RelayCommand]
+    private void ArmQuickPlacement(string? definitionId)
+    {
+        if (FindPaletteDefinition(definitionId) is { } definition) ArmPlacement(definition.Id);
     }
 
     [RelayCommand]
@@ -33,6 +42,8 @@ public sealed partial class BreadboardViewModel
     {
         if (Project.InGesture) return;
         pendingComponent = null;
+        pendingRotation = null;
+        ClearPalettePreview();
         CancelNote();
         ClearRuler();
         ClearNetInspection();
@@ -45,15 +56,31 @@ public sealed partial class BreadboardViewModel
         if (input.Action == CanvasAction.Cancel || Project.Wiring.IsWiring)
         {
             pendingComponent = null;
+            pendingRotation = null;
+            ClearPalettePreview();
             CancelNote();
             ClearRuler();
             ClearNetInspection();
         }
         if (input.Action == CanvasAction.Drop) ClearNetInspection();
-        if (input.Action != CanvasAction.Down || input.Pan || !Project.CanEdit || pendingComponent is not { } id)
+        if (input.Pan || !Project.CanEdit || pendingComponent is not { } id)
             return input;
+        if (input.Action == CanvasAction.Move)
+            return input with { Action = CanvasAction.DropPreview, DefinitionId = id, PlacementRotation = pendingRotation };
+        if (input.Action != CanvasAction.Down) return input;
 
+        var rotation = pendingRotation;
         pendingComponent = null;
-        return input with { Action = CanvasAction.Drop, DefinitionId = id };
+        pendingRotation = null;
+        return input with { Action = CanvasAction.Drop, DefinitionId = id, PlacementRotation = rotation };
+    }
+
+    private bool RotatePendingPlacement()
+    {
+        if (pendingComponent is not { } id) return false;
+        pendingRotation = ((pendingRotation ?? PalettePreview?.Pose.Rotation ?? 0) + ComponentPlacement.RotationStep) %
+            ComponentPlacement.FullRotation;
+        if (PalettePreview is not null) PreviewPalette(new(CanvasAction.DropPreview, DefinitionId: id, PlacementRotation: pendingRotation));
+        return true;
     }
 }

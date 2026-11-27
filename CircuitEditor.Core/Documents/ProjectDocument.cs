@@ -54,7 +54,7 @@ public sealed record ProjectDocument
             c.Definition.Id == "led" ? c.Color : null, c.I2cAddress,
             c.Definition.Id == "capacitor" ? c.CapacitorKind : null,
             c.Definition.Id == "potentiometer" ? c.PotentiometerAngle : null, c.Inputs.Values.Count > 0 ? c.Inputs : null, c.Electrical.Parameters.Count>0 || c.Electrical.PinRoles.Count>0 ? c.Electrical : null,
-            project.FindChip(c.Definition.Id)?.Id, project.FindChip(c.Definition.Id)?.DefinitionVersion)).ToArray(),
+            project.FindChip(c.Definition.Id)?.Id, project.FindChip(c.Definition.Id)?.DefinitionVersion, c.SplitterOutputs)).ToArray(),
         Counters = project.Circuit.Counters.ToDictionary(), Mockup = project.MockupLayout.Placements.ToDictionary(p => p.Key, p => p.Value.Copy()),
         Schematic = project.SchematicLayout.Placements.ToDictionary(p => p.Key, p => p.Value.Copy()),
         Breadboards = project.Breadboards.Select(b => new BreadboardData(b.Id, b.Definition.Id, b.X, b.Y, b.Rotation)).ToArray(),

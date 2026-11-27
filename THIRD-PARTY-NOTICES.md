@@ -9,6 +9,10 @@
 | [CommunityToolkit.Diagnostics](https://www.nuget.org/packages/CommunityToolkit.Diagnostics/8.3.2) | 8.3.2 | App, Tests | MIT |
 | [CommunityToolkit.Mvvm](https://www.nuget.org/packages/CommunityToolkit.Mvvm/8.4.2) | 8.4.2 | App, Tests | MIT |
 | [coverlet.collector](https://www.nuget.org/packages/coverlet.collector/6.0.4) | 6.0.4 | Tests | MIT |
+| [HelixToolkit.Geometry](https://www.nuget.org/packages/HelixToolkit.Geometry/3.1.2) | 3.1.2 | App, Tests | MIT |
+| [HelixToolkit.Maths](https://www.nuget.org/packages/HelixToolkit.Maths/3.1.2) | 3.1.2 | App, Tests | MIT |
+| [HelixToolkit.Wpf](https://www.nuget.org/packages/HelixToolkit.Wpf/3.1.2) | 3.1.2 | App, Tests | MIT |
+| [HelixToolkit](https://www.nuget.org/packages/HelixToolkit/3.1.2) | 3.1.2 | App, Tests | MIT |
 | [Microsoft.CodeCoverage](https://www.nuget.org/packages/Microsoft.CodeCoverage/17.14.1) | 17.14.1 | Tests | MIT |
 | [Microsoft.Extensions.DependencyInjection.Abstractions](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection.Abstractions/8.0.2) | 8.0.2 | App, Tests | MIT |
 | [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection/8.0.1) | 8.0.1 | App, Tests | MIT |

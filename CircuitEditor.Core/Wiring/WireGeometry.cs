@@ -15,7 +15,7 @@ public static class WireGeometry
             return board is not null && hole is not null ? Breadboards.BreadboardGeometry.World(board,hole.Position) : null;
         }
         var component = project.Circuit.Components.FirstOrDefault(c => c.Id == endpoint.OwnerId);
-        var footprint = project.Footprints.FirstOrDefault(f => f.ComponentDefinitionId == component?.Definition.Id);
+        var footprint = component is null ? null : project.FootprintFor(component);
         var contact = footprint?.Contacts.FirstOrDefault(c => c.Id == endpoint.TerminalId);
         return component is not null && footprint is not null && contact is not null
             ? ContactGeometry.World(footprint, contact, project.MockupLayout.Get(component.Id), PhysicalSettings.FreeGridMm) : null;
@@ -26,7 +26,7 @@ public static class WireGeometry
         if (endpoint.Kind != WireEndpointKind.ComponentContact) return null;
         var component = project.Circuit.Components.FirstOrDefault(item => item.Id == endpoint.OwnerId);
         if (component is null) return null;
-        var footprint = project.Footprints.FirstOrDefault(item => item.ComponentDefinitionId == component.Definition.Id);
+        var footprint = project.FootprintFor(component);
         var pin = footprint?.Contacts.FirstOrDefault(contact => contact.Id == endpoint.TerminalId)?.ElectricalPinId;
         return component.Definition.Pins.FirstOrDefault(definition => definition.Id == pin)?.Type;
     }
@@ -45,8 +45,8 @@ public static class WireGeometry
     /// <summary>Ближайшая допустимая точка в общем допуске привязки.</summary>
     public static WireEndpoint? Nearest(CircuitProject project, LayoutPoint point)
     {
-        var candidates = project.Circuit.Components.SelectMany(c => project.Footprints.Where(f => f.ComponentDefinitionId == c.Definition.Id)
-            .SelectMany(f => f.Contacts.Select(p => WireEndpoint.Contact(c.Id, p.Id))))
+        var candidates = project.Circuit.Components.SelectMany(c =>
+                project.FootprintFor(c)?.Contacts.Select(p => WireEndpoint.Contact(c.Id, p.Id)) ?? [])
             .Concat(project.Breadboards.SelectMany(b => b.Definition.Holes.Select(h => WireEndpoint.Hole(b.Id, h.Id))));
         WireEndpoint? nearest = null; var distance = PhysicalSettings.HoleCaptureRadiusMm * PhysicalSettings.HoleCaptureRadiusMm;
         foreach (var endpoint in candidates)

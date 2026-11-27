@@ -18,7 +18,7 @@ public sealed class ComponentLibraryTests
         string[] expected = ["arduino-uno", "arduino-nano", "esp32-devkit", "resistor", "capacitor",
             "inductor", "potentiometer", "led", "rgb-led", "lcd1602", "lcd1602-i2c", "oled-ssd1306",
             "seven-segment", "buzzer", "button", "switch", "battery", "photoresistor", "thermistor",
-            "dht11", "dht22", "hc-sr04", "pir", "servo", "relay", "npn", "diode"];
+            "dht11", "dht22", "hc-sr04", "pir", "servo", "relay", "npn", "diode", "splitter"];
         Assert.Equal(expected.Order(), result.Components.Select(item => item.Id).Order());
         foreach (var component in result.Components)
         {

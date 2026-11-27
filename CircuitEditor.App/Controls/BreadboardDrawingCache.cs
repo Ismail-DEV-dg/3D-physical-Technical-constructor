@@ -11,7 +11,6 @@ internal sealed class BreadboardDrawingCache
     private readonly Dictionary<bool, DrawingGroup> bases = [];
     private Dictionary<string, BreadboardHole> holes = [];
     private static readonly Pen Occupied = FrozenPen("#FF3B5C");
-    private static readonly Pen Preview = FrozenPen("#00A662");
 
     public void Draw(DrawingContext dc, BreadboardInstance board, BreadboardViewModel scene)
     {
@@ -30,12 +29,10 @@ internal sealed class BreadboardDrawingCache
         dc.PushTransform(new TranslateTransform(board.X, board.Y));
         dc.PushTransform(new RotateTransform(board.Rotation));
         dc.DrawDrawing(drawing);
-        if(scene.BoardInteraction.Selected)dc.DrawRoundedRectangle(null,new Pen(Brushes.DarkCyan,.5),new Rect(0,0,board.Definition.Width,board.Definition.Height),1.4,1.4);
+        if (scene.BoardInteraction.IsDragging) PalettePreviewDrawing.DrawMovingBoard(dc, board);
+        else if(scene.BoardInteraction.Selected)dc.DrawRoundedRectangle(null,new Pen(Brushes.DarkCyan,.5),new Rect(0,0,board.Definition.Width,board.Definition.Height),1.4,1.4);
         foreach (var binding in scene.Project.Model.Bindings)
             if (binding.BoardId == board.Id) DrawRing(dc, binding.HoleId, Occupied);
-        if (scene.Preview is { } preview)
-            foreach (var binding in preview.Bindings)
-                if (binding.BoardId == board.Id) DrawRing(dc, binding.HoleId, Preview);
         dc.Pop(); dc.Pop();
     }
 

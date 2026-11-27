@@ -46,11 +46,11 @@ public sealed class ComponentLayoutTests
         var model = TestProjectFactory.Schematic();
         var original = model.AddComponent(model.Library.First(), 100, 100);
         model.ShowAllComponentsCommand.Execute(null);
-        Assert.Equal(28, model.ComponentCount);
+        Assert.Equal(29, model.ComponentCount);
         Assert.Equal(100, original.SchematicPlacement.X);
         Assert.Equal(100, original.SchematicPlacement.Y);
         var gallery = model.Components.Skip(1).ToArray();
-        Assert.Equal(27, gallery.Select(item => item.Model.Definition.Id).Distinct().Count());
+        Assert.Equal(28, gallery.Select(item => item.Model.Definition.Id).Distinct().Count());
         var rectangles = model.Components.Select(item =>
             new LayoutRect(item.SchematicPlacement.X, item.SchematicPlacement.Y, item.Layout.Width, item.Layout.Height)).ToArray();
         for (var first = 0; first < rectangles.Length; first++)

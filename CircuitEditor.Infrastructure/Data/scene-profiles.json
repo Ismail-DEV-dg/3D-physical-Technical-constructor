@@ -1,5 +1,5 @@
 {
-  "breadboard": {"shape":"Box","height":8.5,"clearance":0,"material":"#E5E8EA","detailHeight":0.12},
+  "breadboard": {"shape":"Box","height":7.2,"clearance":0,"material":"#E7E6DF","detailHeight":0.12},
   "fallback": {"shape":"Box","height":5,"clearance":0,"material":"#727D8A","detailHeight":0.1},
   "wire": {"radius":0.425,"minimumRise":3,"maximumRise":18,"risePerMillimeter":0.16},
   "profiles": {
@@ -10,7 +10,7 @@
     "capacitor": {"shape":"Cylinder","height":6,"clearance":1,"material":"#263F61","detailHeight":5},
     "inductor": {"shape":"Axial","height":4,"clearance":1,"material":"#875033","detailHeight":0.5},
     "potentiometer": {"shape":"Cylinder","height":6,"clearance":1,"material":"#323440","detailHeight":6},
-    "led": {"shape":"Dome","height":7,"clearance":1,"material":"#FF3B5C","detailHeight":0},
+    "led": {"shape":"Dome","height":6.5,"clearance":1.6,"material":"#FF3B5C","detailHeight":0},
     "rgb-led": {"shape":"Dome","height":8,"clearance":1,"material":"#D2E1F0","detailHeight":0},
     "lcd1602": {"shape":"Board","height":1.6,"clearance":1,"material":"#234937","detailHeight":8},
     "lcd1602-i2c": {"shape":"Board","height":1.6,"clearance":1,"material":"#30533D","detailHeight":8},
@@ -30,6 +30,7 @@
     "relay": {"shape":"Box","height":15,"clearance":1,"material":"#1E58A0","detailHeight":0.5},
     "npn": {"shape":"Cylinder","height":5,"clearance":1,"material":"#30313A","detailHeight":0},
     "diode": {"shape":"Axial","height":3,"clearance":1,"material":"#292A31","detailHeight":0},
+    "splitter": {"shape":"Box","height":5.2,"clearance":0,"material":"#236C62","detailHeight":0.3},
     "dip-chip": {"shape":"Box","height":3.8,"clearance":1.4,"material":"#252933","detailHeight":0.5}
   }
 }

@@ -56,6 +56,7 @@
                         </MenuItem>
                         <Separator/>
                         <MenuItem Header="Экспорт PNG…" Command="{Binding Exports.PngCommand}" ToolTip="{input:ShortcutHint Png}"/>
+                        <MenuItem Header="Экспорт OBJ сцены 3D…" Command="{Binding Exports.ObjCommand}"/>
                         <MenuItem Header="Экспорт SVG схемы…" Command="{Binding Exports.SvgCommand}" ToolTip="{input:ShortcutHint Svg}"/>
                         <MenuItem Header="Ведомость деталей CSV…" Command="{Binding Exports.BomCommand}" ToolTip="{input:ShortcutHint Bom}"/>
                         <Separator/><MenuItem Header="Выход" Command="{Binding CloseCommand}"/>
@@ -71,6 +72,7 @@
                         <MenuItem Header="Макет" ToolTip="{input:ShortcutHint Tab0}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Mockup}"/>
                         <MenuItem Header="Схема" ToolTip="{input:ShortcutHint Tab1}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Schematic}"/>
                         <MenuItem Header="Микросхема" ToolTip="{input:ShortcutHint Tab3}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Chip}"/>
+                        <MenuItem Header="3D" ToolTip="{input:ShortcutHint Tab4}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.ThreeD}"/>
                         <MenuItem Header="Код" ToolTip="{input:ShortcutHint Tab2}" Command="{Binding NavigateCommand}" CommandParameter="{x:Static vm:WorkspaceKind.Code}"/>
                         <Separator/>
                         <MenuItem Header="Панели">

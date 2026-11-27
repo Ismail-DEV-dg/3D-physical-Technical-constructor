@@ -12,6 +12,7 @@ public sealed partial class ProjectAnalysisViewModel : ObservableObject, IDispos
     private readonly IDebounceService debounce;
     private readonly INavigationService navigation;
     private readonly Core.Electronics.IDcSolver? solver;
+    private Core.Electronics.DcResult? hoverDc;
     public CalculationResultsViewModel Results {get;}
     public event EventHandler? InspectRequested;
     public void ShowResults(){InspectorTabIndex=2;InspectRequested?.Invoke(this,EventArgs.Empty);}
@@ -67,7 +68,16 @@ public sealed partial class ProjectAnalysisViewModel : ObservableObject, IDispos
     }
     private void Changed(object? sender,EventArgs e)
     {
+        hoverDc = null;
         Results.Invalidate();issues=[];SelectedIssue=null;IsPending=true;Notify();debounce.Schedule(Recheck);
+    }
+    internal double? ReadStaticVoltage(PinReference pin)
+    {
+        if (solver is null || project.InGesture || project.Connectivity.Netlist.Find(pin.ComponentId, pin.PinId) is not { } net)
+            return null;
+        var result = !Results.IsStale && Results.Result is { } current
+            ? current : hoverDc ??= solver.Solve(project.Model, project.Connectivity.Netlist);
+        return result.Voltages.GetValueOrDefault(net.Id);
     }
     [RelayCommand]
     private void Calculate()

@@ -19,13 +19,13 @@ public static class CanvasInputBehavior
         {
             element.SizeChanged -= SizeChanged; element.MouseDown -= Down; element.MouseMove -= Move; element.MouseUp -= Up;
             element.MouseWheel -= Wheel; element.KeyDown -= KeyDown;
-            element.Drop -= Drop; element.DragOver -= DragOver; element.LostMouseCapture -= LostCapture;
+            element.Drop -= Drop; element.DragOver -= DragOver; element.DragLeave -= DragLeave; element.LostMouseCapture -= LostCapture;
         }
         if (args.NewValue is null) return;
         element.Focusable = true;
         element.SizeChanged += SizeChanged; element.MouseDown += Down; element.MouseMove += Move; element.MouseUp += Up;
         element.MouseWheel += Wheel; element.KeyDown += KeyDown;
-        element.Drop += Drop; element.DragOver += DragOver; element.LostMouseCapture += LostCapture;
+        element.Drop += Drop; element.DragOver += DragOver; element.DragLeave += DragLeave; element.LostMouseCapture += LostCapture;
     }
 
     private static void SizeChanged(object sender,SizeChangedEventArgs e)=>Send((FrameworkElement)sender,new(CanvasAction.Resize,e.NewSize.Width,e.NewSize.Height));
@@ -93,17 +93,40 @@ public static class CanvasInputBehavior
 
     private static void DragOver(object sender, DragEventArgs args)
     {
-        args.Effects = sender is UIElement { AllowDrop: true } && args.Data.GetDataPresent(DragFormat) ? DragDropEffects.Copy : DragDropEffects.None;
+        var element = (FrameworkElement)sender;
+        args.Effects = DragDropEffects.None;
+        if (element.AllowDrop && Payload(args) is { } payload)
+        {
+            var point = args.GetPosition(element);
+            payload.CurrentRotation = () => (element as Controls.BreadboardSurface)?.Scene?.PalettePreview?.Pose.Rotation;
+            payload.RefreshTarget = ended => Send(element, new CanvasInput(ended ? CanvasAction.DropLeave : CanvasAction.DropPreview,
+                point.X, point.Y, DefinitionId: payload.DefinitionId, PlacementRotation: payload.Rotation));
+            payload.RefreshTarget(false);
+            args.Effects = DragDropEffects.Copy;
+        }
         args.Handled = true;
+    }
+
+    private static void DragLeave(object sender, DragEventArgs args)
+    {
+        if (Payload(args) is not { } payload) return;
+        payload.RefreshTarget = null;
+        payload.CurrentRotation = null;
+        Send((FrameworkElement)sender, new CanvasInput(CanvasAction.DropLeave));
     }
 
     private static void Drop(object sender, DragEventArgs args)
     {
         var element = (FrameworkElement)sender;
-        if (!element.AllowDrop || args.Data.GetData(DragFormat) is not string id) return;
+        if (!element.AllowDrop || Payload(args) is not { } payload) return;
         var point = args.GetPosition(element);
-        Send(element, new CanvasInput(CanvasAction.Drop, point.X, point.Y, DefinitionId: id));
+        Send(element, new CanvasInput(CanvasAction.Drop, point.X, point.Y, DefinitionId: payload.DefinitionId,
+            PlacementRotation: payload.Rotation));
         element.Focus();
         args.Handled = true;
     }
+
+    private static PaletteDragPayload? Payload(DragEventArgs args) =>
+        PaletteDragBehavior.ActiveDrag is { } payload && args.Data.GetData(DragFormat) is string id && id == payload.DefinitionId
+            ? payload : null;
 }

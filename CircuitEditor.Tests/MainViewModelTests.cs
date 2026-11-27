@@ -20,6 +20,7 @@ public sealed class MainViewModelTests
     [InlineData(WorkspaceKind.Schematic, typeof(SchematicViewModel))]
     [InlineData(WorkspaceKind.Chip, typeof(ChipViewModel))]
     [InlineData(WorkspaceKind.Code, typeof(CodeViewModel))]
+    [InlineData(WorkspaceKind.ThreeD, typeof(ThreeDViewModel))]
     public void NavigationCommandSelectsViewModel(WorkspaceKind destination, Type expectedType)
     {
         var navigation = CreateNavigation();
@@ -111,14 +112,14 @@ public sealed class MainViewModelTests
         using var model = new MainViewModel(CreateNavigation(),
             new ThemeService(new TestThemeResources()), new TestWindowService());
         Assert.Equal("resistor", model.Palette[0].Definition.Id);
-        Assert.Equal(27, model.Palette.Count);
+        Assert.Equal(28, model.Palette.Count);
         model.PaletteFilter = "Резистор";
         Assert.Contains(model.Palette, item => item.Definition.Id == "resistor");
         model.PaletteFilter = "Arduino";
         Assert.DoesNotContain(model.Palette, item => item.Definition.Id == "resistor");
         model.PaletteFilter = "";
         Assert.Equal("resistor", model.Palette[0].Definition.Id);
-        Assert.Equal(27, model.Palette.Count);
+        Assert.Equal(28, model.Palette.Count);
     }
 
     [Fact]

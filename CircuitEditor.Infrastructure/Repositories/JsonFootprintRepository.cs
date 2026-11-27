@@ -28,7 +28,7 @@ public sealed class JsonFootprintRepository : IFootprintRepository
                     || footprint.Renderer is not ("arduino-uno" or "axial-resistor" or "led" or "button" or "placeholder"
                         or "arduino-nano" or "esp32-devkit" or "lcd1602" or "lcd1602-i2c" or "oled-ssd1306" or "seven-segment"
                         or "buzzer" or "servo" or "relay" or "capacitor" or "inductor" or "potentiometer" or "npn" or "diode"
-                        or "dht11" or "dht22" or "hc-sr04" or "pir" or "photoresistor" or "thermistor" or "rgb-led" or "switch" or "battery")
+                        or "dht11" or "dht22" or "hc-sr04" or "pir" or "photoresistor" or "thermistor" or "rgb-led" or "switch" or "battery" or SplitterGeometry.ComponentId)
                     || footprint.Mounting is not ("free" or "breadboard") || !double.IsFinite(footprint.Body.Width)
                     || !double.IsFinite(footprint.Body.Height) || footprint.Body.Width <= 0 || footprint.Body.Height <= 0
                     || footprint.AllowedRotations.Count == 0 || footprint.AllowedRotations.Any(angle => angle is not (0 or 90 or 180 or 270))
@@ -39,6 +39,11 @@ public sealed class JsonFootprintRepository : IFootprintRepository
                 foreach (var contact in footprint.Contacts)
                     if (contact is null || string.IsNullOrWhiteSpace(contact.Id) || string.IsNullOrWhiteSpace(contact.ElectricalPinId)
                         || !double.IsFinite(contact.X) || !double.IsFinite(contact.Y)) throw new ArgumentException("Неверный контакт.");
+                if (footprint.Renderer == SplitterGeometry.ComponentId &&
+                    (footprint.Contacts.Count != SplitterGeometry.MaximumOutputs + 1 ||
+                     footprint.Contacts.Select(c => c.Id).Where((id, index) => id != (index == 0 ? "IN" : $"OUT{index}")).Any() ||
+                     footprint.Contacts.Select(c => c.ElectricalPinId).Distinct().Count() != 1))
+                    throw new ArgumentException("Неверные гнёзда разветвителя.");
                 if (footprint.Parts is { } parts && parts.Any(pair => string.IsNullOrWhiteSpace(pair.Key)
                     || !double.IsFinite(pair.Value.X) || !double.IsFinite(pair.Value.Y)
                     || !double.IsFinite(pair.Value.Width) || !double.IsFinite(pair.Value.Height)

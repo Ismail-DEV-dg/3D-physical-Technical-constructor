@@ -44,7 +44,7 @@ public sealed class ChipLibraryTests
         Assert.Equal(1, project.Model.Chips.Single().DefinitionVersion);
         Assert.Null(storage.Delete(first.Id, 2));
         Assert.Null(library.Refresh());
-        Assert.Equal(27, project.PaletteLibrary.Count);
+        Assert.Equal(28, project.PaletteLibrary.Count);
         Assert.Single(project.Model.Chips);
     }
 

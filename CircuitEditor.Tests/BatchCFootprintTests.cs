@@ -46,11 +46,11 @@ public sealed class BatchCFootprintTests
         Assert.Equal(before, JsonSerializer.Serialize(project));
     }
     [Fact]
-    public void LibraryHasAll27RealModelsAndDhtNcIsPhysicallyExposedButNotConnected()
+    public void LibraryHasAll28RealModelsAndDhtNcIsPhysicallyExposedButNotConnected()
     {
         var library = new JsonComponentLibraryRepository().Load().Components;
         var footprints = new JsonFootprintRepository().Load(); Assert.True(footprints.Success, footprints.Error);
-        Assert.Equal(27, footprints.Value!.Count); Assert.DoesNotContain(footprints.Value, item => item.Renderer == "placeholder");
+        Assert.Equal(28, footprints.Value!.Count); Assert.DoesNotContain(footprints.Value, item => item.Renderer == "placeholder");
         foreach (var id in new[] { "dht11", "dht22" })
         {
             var nc = library.Single(item => item.Id == id).Pins.Single(pin => pin.Id == "NC");

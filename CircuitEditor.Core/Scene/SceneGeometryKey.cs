@@ -24,6 +24,7 @@ public static class SceneGeometryKey
         {
             Text(c.Id);
             Point(c.Position);
+            key.Append(c.HoleId is null ? '0' : '1');
         }
         if (node.Footprint is { } footprint)
         {

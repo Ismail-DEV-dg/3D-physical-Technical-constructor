@@ -7,6 +7,7 @@ public sealed class BoardInteractionViewModel(BreadboardViewModel scene)
 {
     private bool dragging;
     private double grabX,grabY;
+    internal bool IsDragging => dragging;
     public bool Selected {get;private set;}
     public bool Handle(CanvasInput input,LayoutPoint point)
     {
@@ -14,7 +15,15 @@ public sealed class BoardInteractionViewModel(BreadboardViewModel scene)
         if(input.Action==CanvasAction.Cancel){if(dragging)project.CancelGesture();dragging=false;return false;}
         if(input.Action==CanvasAction.Rotate && Selected)
         {
-            project.BeginGesture("Поворот breadboard");
+            if (dragging)
+            {
+                (grabX, grabY) = (-grabY, grabX);
+                project.Model.TransformBoard(board.Id, point.X - grabX, point.Y - grabY, (board.Rotation + 90) % 360);
+                project.Wiring.InvalidatePaths();
+                project.Refresh();
+                return true;
+            }
+            if (!project.BeginGesture("Поворот breadboard")) return false;
             var center=new LayoutPoint(board.Definition.Width/2,board.Definition.Height/2);
             var world=BreadboardGeometry.World(board,center);var next=board with {X=0,Y=0,Rotation=(board.Rotation+90)%360};
             var offset=BreadboardGeometry.World(next,center);

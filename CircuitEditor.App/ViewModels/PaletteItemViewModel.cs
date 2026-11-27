@@ -25,7 +25,7 @@ public sealed class PaletteItemViewModel(ComponentDefinition definition)
         "lcd1602", "lcd1602-i2c", "oled-ssd1306", "seven-segment", "resistor", "capacitor",
         "inductor", "potentiometer", "photoresistor", "thermistor", "led", "rgb-led",
         "npn", "diode", "dht11", "dht22", "hc-sr04", "pir",
-        "button", "switch", "battery",
+        "button", "switch", "battery", "splitter",
     ];
     public string Category => Definition.Category;
     public string Symbol => Definition.Prefix;

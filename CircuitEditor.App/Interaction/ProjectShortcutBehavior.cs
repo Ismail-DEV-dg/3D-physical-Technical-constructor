@@ -33,7 +33,8 @@ public static class ProjectShortcutBehavior
         var key = e.Key == Key.System ? e.SystemKey : e.Key;
         if (key == Key.ImeProcessed || key == Key.DeadCharProcessed) return;
         var binding = vm.Shortcuts.Bindings.FirstOrDefault(b => b.Key == key && b.Modifiers == Keyboard.Modifiers &&
-            b.MatchesContext(editing, canvas, codeFocus, editorFocus));
+            b.MatchesContext(editing, canvas || vm.IsMockup && vm.Mockup.IsPlacementArmed && b.Id is ("Rotate" or "Cancel"),
+                codeFocus, editorFocus));
         if(binding is null)return;
         if(binding.Id=="Search" && vm.Project.InGesture){vm.StatusMessage="Завершите жест или нажмите Esc перед поиском.";e.Handled=true;return;}
         if(binding.Id=="Search")

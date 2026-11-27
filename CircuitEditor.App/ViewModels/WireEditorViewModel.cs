@@ -49,7 +49,8 @@ public sealed partial class WireEditorViewModel(ProjectViewModel project) : Obse
         {
             var component = project.Components.FirstOrDefault(item => item.Model.Id == endpoint.OwnerId);
             var contact = component?.Footprint.Contacts.FirstOrDefault(item => item.Id == endpoint.TerminalId);
-            return component is null ? endpoint.TerminalId : $"{component.Reference} · {contact?.ElectricalPinId ?? endpoint.TerminalId}";
+            return component is null ? endpoint.TerminalId : $"{component.Reference} · " +
+                (component.Model.SplitterOutputs is not null ? endpoint.TerminalId : contact?.ElectricalPinId ?? endpoint.TerminalId);
         }
 
         var parts = endpoint.TerminalId.Split('/');

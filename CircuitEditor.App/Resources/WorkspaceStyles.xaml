@@ -74,7 +74,7 @@
               BorderThickness="1" CornerRadius="18"/>
       <Border Margin="2" CornerRadius="16" BorderBrush="{DynamicResource NavigationGlassInnerEdgeBrush}"
               BorderThickness="1,1,1,0" IsHitTestVisible="False"/>
-      <UniformGrid Margin="4,3" Rows="1" Columns="4" IsItemsHost="True" KeyboardNavigation.TabNavigation="Local"/>
+      <UniformGrid Margin="4,3" Rows="1" IsItemsHost="True" KeyboardNavigation.TabNavigation="Local"/>
      </Grid>
     </ControlTemplate>
    </Setter.Value>

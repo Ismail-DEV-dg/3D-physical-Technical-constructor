@@ -6,4 +6,5 @@
     <DataTemplate DataType="{x:Type vm:SchematicViewModel}"><views:SchematicView/></DataTemplate>
     <DataTemplate DataType="{x:Type vm:ChipViewModel}"><views:ChipView/></DataTemplate>
     <DataTemplate DataType="{x:Type vm:CodeViewModel}"><views:CodeView/></DataTemplate>
+    <DataTemplate DataType="{x:Type vm:ThreeDViewModel}"><views:ThreeDView/></DataTemplate>
 </ResourceDictionary>

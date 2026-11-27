@@ -24,7 +24,7 @@ public sealed class SelectionClipboard
                 && !Chips.ChipContent.Matches(copied, placed))
                 throw new ArgumentException("В проекте уже есть отличающаяся копия этой ревизии микросхемы.");
         var minY = originals.Min(c => source.MockupLayout.Get(c.Id).Y);
-        var maxX = originals.Max(c => { var p = source.MockupLayout.Get(c.Id); var f = source.Footprints.Single(f => f.ComponentDefinitionId == c.Definition.Id);
+        var maxX = originals.Max(c => { var p = source.MockupLayout.Get(c.Id); var f = source.FootprintFor(c)!;
             return p.X + Physical.ContactGeometry.Bounds(f,p,Physical.PhysicalSettings.FreeGridMm).Right; });
         var right = target.Breadboards.Min(b => b.X) - Physical.PhysicalSettings.FreeGridMm * 2 - pasteCount * PasteOffsetMm;
         var dx = right - maxX; var dy = PasteOffsetMm * pasteCount - minY;

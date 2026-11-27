@@ -50,8 +50,8 @@ internal static class PanelPresentationChecks
             Assert.Equal(Stretch.Uniform, image.Stretch);
             Assert.Null(image.Clip);
         });
-        Assert.Equal(27, vm.Palette.Count);
-        Assert.Equal(27, vm.Palette.Select(item => item.Thumbnail).Distinct().Count());
+        Assert.Equal(28, vm.Palette.Count);
+        Assert.Equal(28, vm.Palette.Select(item => item.Thumbnail).Distinct().Count());
         foreach (var item in vm.Palette)
         {
             Assert.NotNull(item.Thumbnail);

@@ -16,7 +16,8 @@ public sealed class Component
     /// <summary>Восстанавливает все электрические данные и устойчивый ID из JSON.</summary>
     [JsonConstructor]
     public Component(ComponentDefinition definition, string reference, Guid id, string value, string? color, string? i2cAddress,
-        CapacitorKind capacitorKind = CapacitorKind.Ceramic, double potentiometerAngle = 0, ComponentInputs? inputs = null, Electronics.ComponentElectricalState? electrical = null)
+        CapacitorKind capacitorKind = CapacitorKind.Ceramic, double potentiometerAngle = 0, ComponentInputs? inputs = null,
+        Electronics.ComponentElectricalState? electrical = null, int? splitterOutputs = null)
     {
         ArgumentNullException.ThrowIfNull(definition);
         ArgumentException.ThrowIfNullOrWhiteSpace(reference);
@@ -30,6 +31,13 @@ public sealed class Component
             || definition.Id != "potentiometer" && potentiometerAngle != 0)
             throw new ArgumentException("Некорректное исполнение или положение ручки.");
         CapacitorKind = capacitorKind; PotentiometerAngle = potentiometerAngle;
+        if (definition.Id == SplitterGeometry.ComponentId)
+        {
+            SplitterOutputs = splitterOutputs ?? SplitterGeometry.DefaultOutputs;
+            if (SplitterOutputs is < SplitterGeometry.MinimumOutputs or > SplitterGeometry.MaximumOutputs)
+                throw new ArgumentException("Недопустимое число выходов разветвителя.");
+        }
+        else if (splitterOutputs is not null) throw new ArgumentException("Число выходов относится только к разветвителю.");
         Electrical=electrical ?? new Electronics.ComponentElectricalState();
         if(!Electrical.IsValid(definition))throw new ArgumentException("Электрические параметры не относятся к компоненту или вне диапазона.");
         Inputs = inputs ?? ComponentInputDefinitions.Defaults(definition.Id);
@@ -57,6 +65,9 @@ public sealed class Component
     public CapacitorKind CapacitorKind { get; private set; }
     /// <summary>Угол ручки потенциометра в градусах, сохраняемый в JSON.</summary>
     public double PotentiometerAngle { get; private set; }
+    /// <summary>Число выходных гнёзд или null для других компонентов.</summary>
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? SplitterOutputs { get; internal set; }
     /// <summary>Пользовательские условия для будущей симуляции; сейчас без влияния на электрику.</summary>
     public ComponentInputs Inputs { get; private set; }
     /// <summary>Атомарно меняет один применимый параметр после проверки.</summary>

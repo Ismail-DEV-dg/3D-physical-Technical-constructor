@@ -62,7 +62,11 @@ public sealed class DialogService(IClipboardService? clipboard=null,IErrorHelpSe
         else ShowError(result?.Error ?? "Файл LICENSE недоступен.");
     }
 
-    public double? ChooseExportScale() => Choose("Экспорт PNG", "Экспортируется весь проект в активном представлении. Выберите масштаб PNG.",
+    public double? ChooseExportScale() => ChooseExportScale(false);
+
+    public double? ChooseExportScale(bool isThreeD) => Choose("Экспорт PNG", isThreeD
+        ? "Экспортируется вид 3D с текущей камерой и видимыми слоями. Выберите масштаб PNG."
+        : "Экспортируется весь проект в активном представлении. Выберите масштаб PNG.",
         "1×", "2×", "4×", "Отмена") switch
     { "1×" => 1, "2×" => 2, "4×" => 4, _ => null };
 }

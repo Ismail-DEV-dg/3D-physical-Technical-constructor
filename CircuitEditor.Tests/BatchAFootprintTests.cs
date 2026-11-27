@@ -85,7 +85,7 @@ public sealed class BatchAFootprintTests
         Assert.Equal(new[] { "8", "3" }, segment.Contacts.Where(contact => contact.ElectricalPinId == "COM").Select(contact => contact.Id));
         Assert.Equal("DP", segment.Contacts.Single(contact => contact.Id == "5").ElectricalPinId);
         Assert.Equal("A", segment.Contacts.Single(contact => contact.Id == "7").ElectricalPinId);
-        Assert.Equal(27, footprints.Count(item => item.Renderer != "placeholder"));
+        Assert.Equal(28, footprints.Count(item => item.Renderer != "placeholder"));
         Assert.DoesNotContain(footprints, item => item.Renderer == "placeholder");
     }
 }

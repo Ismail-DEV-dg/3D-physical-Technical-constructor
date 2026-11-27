@@ -7,11 +7,12 @@ namespace CircuitEditor.App.Controls;
 
 public sealed class StartupAurora : FrameworkElement
 {
-    private const int FrameWidth = 512;
-    private const int FrameHeight = 192;
+    private const int FrameWidth = 384;
+    private const int FrameHeight = 144;
     private const int Stride = FrameWidth * 4;
     private const int GradientSamples = 256;
     private const double FieldTop = .28;
+    private const double MinimumPhaseStep = .295 / 30;
 
     private static readonly Brush Halo = CreateHalo();
     private static readonly Vector4[] Violet = CreateGradient("#B596FA", "#483191", .53f);
@@ -21,6 +22,7 @@ public sealed class StartupAurora : FrameworkElement
     private readonly WriteableBitmap image = new(FrameWidth, FrameHeight, 96, 96, PixelFormats.Pbgra32, null);
     private readonly Vector4[] light = new Vector4[FrameWidth * FrameHeight];
     private readonly byte[] pixels = new byte[FrameHeight * Stride];
+    private readonly StartupStars stars = new();
     private double lastPhase = double.NaN;
 
     public static readonly DependencyProperty PhaseProperty = DependencyProperty.Register(
@@ -39,7 +41,7 @@ public sealed class StartupAurora : FrameworkElement
         if (ActualWidth <= 0 || ActualHeight <= 0) return;
 
         var phase = Phase;
-        if (phase != lastPhase)
+        if (double.IsNaN(lastPhase) || phase < lastPhase || phase - lastPhase >= MinimumPhaseStep)
         {
             Array.Clear(light);
             AddRibbon(Violet, .72, .058, .28, phase + .25);
@@ -50,6 +52,8 @@ public sealed class StartupAurora : FrameworkElement
         }
 
         context.DrawRectangle(Halo, null, new Rect(RenderSize));
+        StartupStarCloud.Draw(context, RenderSize);
+        stars.Draw(context, RenderSize, phase);
         context.DrawImage(image, new Rect(0, ActualHeight * FieldTop, ActualWidth, ActualHeight * (1 - FieldTop)));
     }
 

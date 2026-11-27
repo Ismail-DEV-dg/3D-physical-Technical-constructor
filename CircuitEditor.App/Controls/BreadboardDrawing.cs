@@ -6,14 +6,14 @@ namespace CircuitEditor.App.Controls;
 
 internal static class BreadboardDrawing
 {
-    public static void DrawBase(DrawingContext dc, BreadboardDefinition data, bool showAvailable)
+    public static void DrawBase(DrawingContext dc, BreadboardDefinition data, bool showAvailable, bool markingsOnly = false)
     {
-        dc.DrawRoundedRectangle(new LinearGradientBrush(Colors.WhiteSmoke, Color.FromRgb(220, 225, 231), 0),
+        if (!markingsOnly) dc.DrawRoundedRectangle(new LinearGradientBrush(Colors.WhiteSmoke, Color.FromRgb(220, 225, 231), 0),
             new Pen(PhysicalDrawing.Ink("#9AA5B5"), .2), new Rect(0, 0, data.Width, data.Height), 1.4, 1.4);
         var rows = data.Groups.Where(group => group.Id.Contains("/row/", StringComparison.Ordinal)).ToArray();
         var columns = data.Holes.Where(hole => hole.GroupId.Contains("/row/", StringComparison.Ordinal))
             .GroupBy(hole => hole.Id.Split('/')[1]).Select(group => group.First()).OrderBy(hole => hole.Position.X).ToArray();
-        if (columns.Length > 1)
+        if (!markingsOnly && columns.Length > 1)
         {
             var gap = columns.Zip(columns.Skip(1), (a, b) => (a, b)).MaxBy(pair => pair.b.Position.X - pair.a.Position.X);
             var left = gap.a.Position.X + data.HolePitch / 2;
@@ -38,6 +38,7 @@ internal static class BreadboardDrawing
                 new Point(x, holes.Max(hole => hole.Position.Y) + 2));
             PhysicalDrawing.Text(dc, positive ? "+" : "−", x - .5, 3.2, 1.7, brush);
         }
+        if (markingsOnly) return;
         var ring = showAvailable ? "#75B68D" : "#A2ABB6";
         var ringPen = new Pen(PhysicalDrawing.Ink(ring), .17);
         var surround = PhysicalDrawing.Ink("#CBD0D6");

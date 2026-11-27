@@ -13,13 +13,14 @@ public sealed partial class ComponentViewModel : ObservableObject
 {
     private readonly IComponentLayoutCalculator layoutCalculator;
     private readonly CircuitProject project;
+    private readonly FootprintDefinition footprint;
     private readonly Core.Electronics.ElectricalCatalog? electricalCatalog;
     public ComponentViewModel(Component model, CircuitProject project, FootprintDefinition footprint,
         IComponentLayoutCalculator layoutCalculator, Core.Electronics.ElectricalCatalog? electricalCatalog=null)
     {
         this.electricalCatalog=electricalCatalog;
         this.layoutCalculator = layoutCalculator; this.project = project;
-        Model = model; Footprint = footprint; Layout = layoutCalculator.Calculate(model);
+        Model = model; this.footprint = footprint; Layout = layoutCalculator.Calculate(model);
         CreateElectricalEditor();
         editValue = model.Value; editColor = model.Color ?? ""; editI2cAddress = model.I2cAddress ?? "";
         if (IsResistor) ResistorEditor = new ResistorEditorViewModel(model.Value, ApplyResistance);
@@ -30,7 +31,7 @@ public sealed partial class ComponentViewModel : ObservableObject
         if (ComponentInputDefinitions.For(model.Definition.Id).Count > 0) InputsEditor = new(model, InputChanged);
     }
     public Component Model { get; }
-    public FootprintDefinition Footprint { get; }
+    public FootprintDefinition Footprint => SplitterGeometry.Apply(footprint, Model.SplitterOutputs)!;
     public ComponentPlacement SchematicPlacement => project.SchematicLayout.Get(Model.Id);
     public ComponentPlacement MockupPlacement => project.MockupLayout.Get(Model.Id);
     public ComponentLayout Layout { get; private set; }

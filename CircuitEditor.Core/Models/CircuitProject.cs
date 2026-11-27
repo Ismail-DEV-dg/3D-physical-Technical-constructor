@@ -49,6 +49,30 @@ public sealed class CircuitProject
     /// <summary>Физические определения, пригодные для сериализации проекта.</summary>
     public IReadOnlyList<FootprintDefinition> Footprints { get; private set; }
 
+    /// <summary>Разрешает физический корпус конкретного экземпляра с учётом его конфигурации.</summary>
+    public FootprintDefinition? FootprintFor(Component component) =>
+        SplitterGeometry.Apply(Footprints.FirstOrDefault(footprint => footprint.ComponentDefinitionId == component.Definition.Id),
+            component.SplitterOutputs);
+
+    /// <summary>Изменяет число выходов разветвителя, сохраняя все подключённые провода.</summary>
+    public string? ResizeSplitter(Guid id, int outputs)
+    {
+        var component = Circuit.Components.FirstOrDefault(part => part.Id == id);
+        if (component?.SplitterOutputs is not int current || outputs is < SplitterGeometry.MinimumOutputs or > SplitterGeometry.MaximumOutputs ||
+            FootprintFor(component) is not { } footprint)
+            return "Выберите допустимое число выходов разветвителя.";
+        if (outputs < current)
+        {
+            var removed = footprint.Contacts.Skip(outputs + 1).Select(port => port.Id).ToHashSet();
+            bool Occupied(Wiring.WireEndpoint endpoint) => endpoint.Kind == Wiring.WireEndpointKind.ComponentContact &&
+                endpoint.OwnerId == id && removed.Contains(endpoint.TerminalId);
+            if (Circuit.Wires.Any(wire => Occupied(wire.Start) || Occupied(wire.End)))
+                return "Сначала отсоедините провода от гнёзд, которые хотите убрать.";
+        }
+        component.SplitterOutputs = outputs;
+        return null;
+    }
+
     /// <summary>Версии пользовательских микросхем, которыми владеет проект.</summary>
     public IReadOnlyList<ChipDefinition> Chips => chips.AsReadOnly();
 

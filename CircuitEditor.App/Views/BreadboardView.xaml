@@ -152,6 +152,22 @@
                               AutomationProperties.Name="Сетка холста" Style="{StaticResource ToolRailToggle}">
                     <Path Style="{StaticResource ToolRailSymbol}" Data="M2,2 H16 V16 H2 Z M2,7 H16 M2,11 H16 M7,2 V16 M11,2 V16"/>
                 </ToggleButton>
+                <Border Height="1" Margin="6,5" Background="{DynamicResource SubtleLineBrush}"/>
+                <Button Style="{StaticResource ToolRailButton}" Command="{Binding ArmQuickPlacementCommand}" CommandParameter="splitter"
+                        input:PaletteDragBehavior.QuickItem="splitter" IsEnabled="{Binding Project.CanEdit}"
+                        ToolTip="Разветвитель" AutomationProperties.Name="Разветвитель">
+                    <Path Style="{StaticResource ToolRailSymbol}" Data="M2,10 H8 M8,4 V16 M8,4 H17 M8,10 H17 M8,16 H17"/>
+                </Button>
+                <Button Style="{StaticResource ToolRailButton}" Command="{Binding ArmQuickPlacementCommand}" CommandParameter="resistor"
+                        input:PaletteDragBehavior.QuickItem="resistor" IsEnabled="{Binding Project.CanEdit}"
+                        ToolTip="Резистор" AutomationProperties.Name="Резистор" Margin="0,3,0,0">
+                    <Path Style="{StaticResource ToolRailSymbol}" Data="M1,10 H4 L6,6 9,14 12,6 15,14 17,10 H19"/>
+                </Button>
+                <Button Style="{StaticResource ToolRailButton}" Command="{Binding ArmQuickPlacementCommand}" CommandParameter="arduino-uno"
+                        input:PaletteDragBehavior.QuickItem="arduino-uno" IsEnabled="{Binding Project.CanEdit}"
+                        ToolTip="Arduino Uno" AutomationProperties.Name="Arduino Uno" Margin="0,3,0,0">
+                    <Path Style="{StaticResource ToolRailSymbol}" Data="M3,3 H15 L18,6 V16 H3 Z M1,7 H5 V11 H1 Z M8,7 H14 V12 H8 Z M7,5 H15 M7,14 H15"/>
+                </Button>
             </StackPanel>
         </Border>
 
@@ -227,13 +243,13 @@
                                     Command="{Binding ResetViewCommand}" ToolTip="{input:ShortcutHint Reset}"/>
                             <StackPanel Orientation="Horizontal">
                                 <Border Style="{StaticResource ToolbarSeparator}"/>
-                                <TextBlock Text="Шаг ножек" Foreground="{DynamicResource MutedBrush}"
+                                <TextBlock Text="{Binding SpanLabel}" Foreground="{DynamicResource MutedBrush}"
                                            VerticalAlignment="Center" Margin="0,0,5,0"/>
                                 <Grid Margin="0,2,3,2">
                                     <ComboBox ItemsSource="{Binding SpanOptions}" SelectedItem="{Binding SelectedSpan, Mode=TwoWay}"
                                               input:SelectionRefreshBehavior.Enabled="True" IsEnabled="{Binding CanAdjustSpan}"
                                               MinWidth="58" Height="28" FontFamily="{StaticResource ReadoutFont}"
-                                              AutomationProperties.Name="Шаг ножек">
+                                              AutomationProperties.Name="{Binding SpanLabel}">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
                                                 <TextBlock Text="{Binding}" FontFamily="{StaticResource ReadoutFont}"/>
@@ -252,7 +268,7 @@
                                         </TextBlock.Style>
                                     </TextBlock>
                                 </Grid>
-                                <TextBlock Text="отв." Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding SpanUnit}" Foreground="{DynamicResource MutedBrush}" VerticalAlignment="Center"/>
                             </StackPanel>
                         </WrapPanel>
                     </DockPanel>

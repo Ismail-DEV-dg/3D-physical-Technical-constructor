@@ -21,6 +21,7 @@ public sealed class SceneBuilder(ISceneCatalogRepository repository) : ISceneBui
         cancellationToken.ThrowIfCancellationRequested();
         var nodes = ImmutableArray.CreateBuilder<SceneNode>();
         Dictionary<WireEndpoint, ScenePoint> anchors = [];
+        HashSet<WireEndpoint> sockets = [];
         var bindings = project.Bindings.ToDictionary(item => (item.ComponentId, item.ContactId));
         var footprints = project.Footprints.ToDictionary(item => item.ComponentDefinitionId);
         foreach (var board in project.Breadboards)
@@ -29,25 +30,33 @@ public sealed class SceneBuilder(ISceneCatalogRepository repository) : ISceneBui
             var node = Board(board);
             nodes.Add(node);
             foreach (var hole in node.Contacts)
-                anchors.Add(WireEndpoint.Hole(board.Id, hole.Id), node.Pose.World(hole.Position));
+            {
+                var endpoint = WireEndpoint.Hole(board.Id, hole.Id);
+                anchors.Add(endpoint, node.Pose.World(hole.Position));
+                sockets.Add(endpoint);
+            }
         }
 
         foreach (var component in project.Circuit.Components)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var footprint = footprints.GetValueOrDefault(component.Definition.Id);
+            var footprint = SplitterGeometry.Apply(footprints.GetValueOrDefault(component.Definition.Id), component.SplitterOutputs);
             var placement = project.MockupLayout.Get(component.Id);
             var node = Part(component, footprint, placement, bindings, anchors);
             nodes.Add(node);
             foreach (var contact in node.Contacts)
-                anchors.Add(WireEndpoint.Contact(node.Id, contact.Id), node.Pose.World(contact.Position));
+            {
+                var endpoint = WireEndpoint.Contact(node.Id, contact.Id);
+                anchors.Add(endpoint, node.Pose.World(contact.Position));
+                if (node.Family is "arduino-uno" or SplitterGeometry.ComponentId || contact.HoleId is not null) sockets.Add(endpoint);
+            }
         }
 
         foreach (var wire in project.Circuit.Wires)
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (!anchors.TryGetValue(wire.Start, out var start) || !anchors.TryGetValue(wire.End, out var end)) continue;
-            var path = SceneWirePath.Create(wire, start, end, catalog.Wire);
+            var path = SceneWirePath.Create(wire, start, end, catalog.Wire, sockets.Contains(wire.Start), sockets.Contains(wire.End));
             if (path.IsEmpty) continue;
             var bounds = SceneBounds.From(path);
             var radius = catalog.Wire.Radius;
@@ -67,7 +76,7 @@ public sealed class SceneBuilder(ISceneCatalogRepository repository) : ISceneBui
         var pose = new ScenePose(new(board.X, board.Y, 0), board.Rotation);
         LayoutRect body = new(0, 0, board.Definition.Width, board.Definition.Height);
         var holes = board.Definition.Holes.Select(hole => new SceneContact(hole.Id,
-            new(hole.Position.X, hole.Position.Y, Surface(profile)))).ToImmutableArray();
+            new(hole.Position.X, hole.Position.Y, Surface(profile) - SceneContactDepth.Insertion))).ToImmutableArray();
         return new(board.Id, SceneLayer.Breadboard, "breadboard", profile, pose, body,
             Bounds(pose, body, profile, holes), holes, [], ImmutableDictionary<string, LayoutRect>.Empty,
             Name: "Макетная плата", Breadboard: board.Definition);
@@ -83,7 +92,7 @@ public sealed class SceneBuilder(ISceneCatalogRepository repository) : ISceneBui
         ScenePoint? Hole(ContactDefinition contact) =>
             bindings.TryGetValue((component.Id, contact.Id), out var inserted) &&
             anchors.TryGetValue(WireEndpoint.Hole(inserted.BoardId, inserted.HoleId), out var position) ? position : null;
-        var support = contacts.Select(Hole).OfType<ScenePoint>().Select(p => p.Z).DefaultIfEmpty(0).Max();
+        var support = contacts.Select(Hole).OfType<ScenePoint>().Select(p => p.Z + SceneContactDepth.Insertion).DefaultIfEmpty(0).Max();
         var pose = new ScenePose(new(at.X, at.Y, support), at.Rotation);
         var body = footprint is null ? DefaultBody : ContactGeometry.Body(footprint, at, PhysicalSettings.FreeGridMm);
         var tips = contacts.Select(contact =>
@@ -95,8 +104,22 @@ public sealed class SceneBuilder(ISceneCatalogRepository repository) : ISceneBui
             }
             var local = ContactGeometry.Local(footprint!, contact, new ComponentPlacement(spanHoles: at.SpanHoles),
                 PhysicalSettings.FreeGridMm);
-            return new SceneContact(contact.Id, new(local.X, local.Y, profile.Shape == SceneShape.Board ? Surface(profile) : 0));
+            var elevation = family switch
+            {
+                "arduino-uno" => Surface(profile) + SceneContactDepth.UnoSocketHeight - SceneContactDepth.Insertion,
+                SplitterGeometry.ComponentId => Surface(profile) - SceneContactDepth.Insertion,
+                "arduino-nano" or "esp32-devkit" => Surface(profile) + SceneContactDepth.HeaderPost,
+                _ => profile.Shape == SceneShape.Board ? Surface(profile) : 0
+            };
+            return new SceneContact(contact.Id, new(local.X, local.Y, elevation));
         }).ToImmutableArray();
+        if (family == "led" && !tips.IsEmpty)
+        {
+            // The 2D footprint includes the drawing of the formed leads. The 3D body sits above the contacts.
+            var diameter = Math.Min(body.Width, body.Height);
+            body = new(tips.Average(tip => tip.Position.X) - diameter / 2,
+                tips.Average(tip => tip.Position.Y) - diameter / 2, diameter, diameter);
+        }
         return new(component.Id, layer, family, profile, pose, body, Bounds(pose, body, profile, tips),
             tips, [], footprint?.Parts?.ToImmutableDictionary() ?? ImmutableDictionary<string, LayoutRect>.Empty,
             component.Reference, component.Definition.Name, component.Value, component.Color,

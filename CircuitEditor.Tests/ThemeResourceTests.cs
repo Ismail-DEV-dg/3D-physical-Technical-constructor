@@ -81,7 +81,7 @@ public sealed class ThemeResourceTests
             LayoutAssertions.Validate(item.Model, item.Layout);
             VerifyInkBounds(item.Layout);
         }
-        Assert.Equal(27, scene.ComponentCount);
+        Assert.Equal(28, scene.ComponentCount);
         var surface = new SchematicSurface { Scene = scene, Resources = resources,
             Background = (Brush)resources["BackgroundBrush"] };
         surface.Measure(new Size(800, 600));

@@ -40,17 +40,38 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     public double ZoomPercent => Zoom * 100;
     public ComponentPlacement PlacementOf(ComponentViewModel item) =>
         item == dragging && draft is not null ? draft : item.MockupPlacement;
-    public IReadOnlyList<int> SpanOptions => Project.SelectedComponent?.Footprint is { IsFlexible: true } footprint
+    internal bool CanRotateDuringDrag => dragging is not null && draft is not null || BoardInteraction.IsDragging;
+    internal PalettePlacementPreview? HeldPlacementPreview => dragging is { } item && draft is { } pose && Preview is { } preview
+        ? new(item.Footprint, pose, preview) : null;
+    public string SpanLabel => Project.SelectedComponent?.Model.SplitterOutputs is not null ? "Выходы" : "Шаг ножек";
+    public string SpanUnit => Project.SelectedComponent?.Model.SplitterOutputs is not null ? "" : "отв.";
+    public IReadOnlyList<int> SpanOptions => Project.SelectedComponent?.Model.SplitterOutputs is not null
+        ? Enumerable.Range(SplitterGeometry.MinimumOutputs, SplitterGeometry.MaximumOutputs - SplitterGeometry.MinimumOutputs + 1).ToArray()
+        : Project.SelectedComponent?.Footprint is { IsFlexible: true } footprint
         ? Enumerable.Range(footprint.MinSpan!.Value, footprint.MaxSpan!.Value - footprint.MinSpan.Value + 1).ToArray() : [];
-    public bool CanAdjustSpan => Project.CanEdit && Project.SelectedComponent?.Footprint.IsFlexible == true;
+    public bool CanAdjustSpan => Project.CanEdit && (Project.SelectedComponent?.Footprint.IsFlexible == true ||
+        Project.SelectedComponent?.Model.SplitterOutputs is not null);
     public int SelectedSpan
     {
         get => Project.SelectedComponent is { } item
-            ? (item.MockupPlacement.SpanHoles == 0 ? item.Footprint.DefaultSpan : item.MockupPlacement.SpanHoles) : 0;
+            ? item.Model.SplitterOutputs ?? (item.MockupPlacement.SpanHoles == 0 ? item.Footprint.DefaultSpan : item.MockupPlacement.SpanHoles) : 0;
         set
         {
             if (!CanAdjustSpan || !SpanOptions.Contains(value) || value == SelectedSpan) return;
             var item = Project.SelectedComponent!;
+            if (item.Model.SplitterOutputs is not null)
+            {
+                if (!Project.BeginGesture("Число выходов разветвителя")) return;
+                if (Project.Model.ResizeSplitter(item.Model.Id, value) is { } error) Project.StatusMessage = error;
+                else
+                {
+                    Project.StatusMessage = $"{item.Reference}: выходов {value}.";
+                    Project.Refresh();
+                }
+                Project.EndGesture();
+                OnPropertyChanged();
+                return;
+            }
             var current = item.MockupPlacement;
             Project.BeginGesture("Шаг ножек");
             TryPlace(item, new(current.X, current.Y, current.Rotation, value));
@@ -85,16 +106,19 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
             if (simulationInput.Handle(input, new(CursorX, CursorY), simulation)) return;
         }
         if(input.Action==CanvasAction.Resize){ViewportWidth=input.X;ViewportHeight=input.Y;return;}
-        if (input.Action == CanvasAction.Cancel) { BoardInteraction.Handle(input,new(CursorX,CursorY)); Project.Wiring.Exit(); Cancel(); return; }
+        if (input.Action == CanvasAction.DropLeave) { ClearPalettePreview(); return; }
+        if (input.Action == CanvasAction.Cancel) { BoardInteraction.Handle(input,new(CursorX,CursorY)); Project.Wiring.Exit(); Cancel(); Revision++; return; }
         if (input.Action == CanvasAction.Rotate) { RotateSelected(); return; }
         if (input.Action == CanvasAction.Delete) { if (!Project.Wiring.Handle(input, new(CursorX,CursorY))) { Cancel(); Project.RemoveSelected(); } return; }
         CursorX = PhysicalSettings.ToMillimeters((input.X - OffsetX) / Zoom);
         CursorY = PhysicalSettings.ToMillimeters((input.Y - OffsetY) / Zoom);
+        if (input.Action == CanvasAction.DropPreview) { PreviewPalette(input); return; }
+        if (input.Action == CanvasAction.Drop) { DropFromPalette(input); return; }
         if (RouteNetInspection(input) || RouteRuler(input) || RouteNote(input)) return;
         if(Project.CanEdit && BoardInteraction.Handle(input,new(CursorX,CursorY))){Revision++;return;}
         var componentDrag=input.Action==CanvasAction.Down && !Project.Wiring.IsWiring && !Project.Wiring.HasSelection && Project.Components.Any(c=>Hit(c,CursorX,CursorY));
         if (dragging is null && rotatingKnob is null && !panning && !componentDrag && Project.Wiring.Handle(input, new(CursorX, CursorY))) { Revision++; return; }
-        if (input.Action is CanvasAction.Down or CanvasAction.Drop && !input.Pan) Project.BeginGesture("Макет: размещение / ручка");
+        if (input.Action == CanvasAction.Down && !input.Pan) Project.BeginGesture("Макет: размещение / ручка");
         switch (input.Action)
         {
             case CanvasAction.Down:
@@ -132,21 +156,6 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
                 if (dragging is not null && draft is not null) TryPlace(dragging, draft);
                 dragging = null; rotatingKnob = null; draft = null; Preview = null; panning = false;
                 break;
-            case CanvasAction.Drop:
-                var definition = Project.PaletteLibrary.FirstOrDefault(item => item.Id == input.DefinitionId);
-                if (definition is null) break;
-                var added = Project.Add(definition);
-                if (added is null) break;
-                var origin = added.Footprint.Mounting == "breadboard"
-                    ? new ComponentPlacement(CursorX, CursorY)
-                    : new ComponentPlacement(CursorX - added.Footprint.Body.Width / 2, CursorY - added.Footprint.Body.Height / 2);
-                if (!TryPlace(added, origin))
-                {
-                    var error = Project.StatusMessage;
-                    Project.CancelGesture();
-                    Project.StatusMessage = error;
-                }
-                break;
             case CanvasAction.Wheel:
                 if (dragging is not null || rotatingKnob is not null || panning) break;
                 var next = Math.Clamp(Zoom * Math.Pow(1.12, input.Delta / 120d), 0.25, 3);
@@ -158,7 +167,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
                 foreach (var item in Project.Components) item.IsSelected = true;
                 break;
         }
-        if (input.Action is CanvasAction.Up or CanvasAction.Drop) Project.EndGesture();
+        if (input.Action == CanvasAction.Up) Project.EndGesture();
         Revision++;
     }
 
@@ -242,8 +251,18 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     private void RotateSelected()
     {
         if (!Project.CanEdit) return;
+        if (RotatePendingPlacement()) return;
+        if (dragging is not null && draft is { } held)
+        {
+            (grabX, grabY) = (-grabY, grabX);
+            UpdateDraft(new(CursorX - grabX, CursorY - grabY, (held.Rotation + ComponentPlacement.RotationStep) %
+                ComponentPlacement.FullRotation, held.SpanHoles));
+            Revision++;
+            return;
+        }
+        if (BoardInteraction.Handle(new(CanvasAction.Rotate), new(CursorX, CursorY))) { Revision++; return; }
+        if (Project.InGesture) return;
         Cancel();
-        if(BoardInteraction.Handle(new(CanvasAction.Rotate),new(CursorX,CursorY)))return;
         if (Project.SelectedComponent is not { } item) return;
         Project.BeginGesture("Поворот компонента");
         var pose = item.MockupPlacement.Copy(); pose.Rotate();
@@ -255,6 +274,7 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     private void ResetView() { Cancel(); Zoom = 1; OffsetX = 16; OffsetY = 12; OnPropertyChanged(nameof(ZoomPercent)); Revision++; }
     private void Cancel()
     {
+        ClearPalettePreview();
         if (dragging is null && rotatingKnob is null && draft is null && Preview is null && !panning) { Project.CancelGesture(); return; }
         rotatingKnob?.PotentiometerEditor?.SetAngle(originalKnobAngle);
         if (panning) { OffsetX = oldOffsetX; OffsetY = oldOffsetY; }
@@ -278,15 +298,17 @@ public sealed partial class BreadboardViewModel : WorkspaceViewModel, IDisposabl
     {
         if (args.PropertyName == nameof(Project.SelectedCount)) OnPropertyChanged(nameof(CanFocusSelection));
         if (args.PropertyName == nameof(Project.Revision)) { Revision++; OnPropertyChanged(nameof(SelectedSpan)); }
-        if (args.PropertyName == nameof(Project.CanEdit) && !Project.CanEdit) CancelNote();
+        if (args.PropertyName == nameof(Project.CanEdit) && !Project.CanEdit) { CancelNote(); ClearPalettePreview(); }
         if (args.PropertyName == nameof(Project.CanEdit)) OnPropertyChanged(nameof(CanAdjustSpan));
         if (args.PropertyName != nameof(Project.SelectedComponent)) return;
         if (selectionId == Project.SelectedComponent?.Model.Id) return;
         selectionId = Project.SelectedComponent?.Model.Id;
         OnPropertyChanged(nameof(SpanOptions)); OnPropertyChanged(nameof(SelectedSpan)); OnPropertyChanged(nameof(CanAdjustSpan));
+        OnPropertyChanged(nameof(SpanLabel)); OnPropertyChanged(nameof(SpanUnit));
     }
     private void OnProjectReplaced(object? sender, EventArgs args)
     {
+        ClearPalettePreview();
         CancelNote();
         ClearNetInspection();
     }

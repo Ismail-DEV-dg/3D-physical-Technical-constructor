@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "components": [
+    {"componentId":"splitter","model":"bus","links":[],"sources":[]},
     {"componentId": "buzzer", "model": "unsupported", "links": [], "sources": [], "requiresPower": true},
     {"componentId": "servo", "model": "unsupported", "links": [], "sources": [], "requiresPower": true},
     {"componentId": "relay", "model": "unsupported", "links": [{"pins": ["COM", "NC"], "input": "RelayEnergized", "value": 0}, {"pins": ["COM", "NO"], "input": "RelayEnergized", "value": 1}], "sources": [], "requiresPower": true},

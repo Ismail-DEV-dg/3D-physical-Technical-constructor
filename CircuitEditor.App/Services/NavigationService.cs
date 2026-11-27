@@ -8,9 +8,9 @@ public sealed class NavigationService : ObservableObject, INavigationService
     private WorkspaceViewModel current;
 
     public NavigationService(BreadboardViewModel mockup, SchematicViewModel schematic, ChipViewModel chip,
-        CodeViewModel code)
+        CodeViewModel code, ThreeDViewModel? threeD = null)
     {
-        Workspaces = Array.AsReadOnly<WorkspaceViewModel>([mockup, schematic, code, chip]);
+        Workspaces = Array.AsReadOnly<WorkspaceViewModel>([mockup, schematic, code, chip, threeD ?? new ThreeDViewModel(mockup.Project)]);
         current = mockup;
     }
 

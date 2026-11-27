@@ -25,7 +25,7 @@ public sealed class NetlistBuilder(IElectricalLibraryRepository repository) : IN
         foreach(var component in project.Circuit.Components)
         {
             foreach(var pin in component.Definition.Pins.Where(p=>p.IsExposed && !p.IsNoConnect)) Add("p",component.Id,pin.Id);
-            var footprint=project.Footprints.FirstOrDefault(f=>f.ComponentDefinitionId==component.Definition.Id);
+            var footprint=project.FootprintFor(component);
             if(footprint is not null)
                 foreach(var contact in footprint.Contacts)
                 {

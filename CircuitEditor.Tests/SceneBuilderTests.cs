@@ -44,6 +44,8 @@ public sealed class SceneBuilderTests
         var end = holder.Pose.World(holder.Contacts.Single(hole => hole.Id == "left/E/07").Position);
         Assert.Equal(start, wireNode.Path[0]);
         Assert.Equal(end, wireNode.Path[^1]);
+        Assert.Equal(start with { Z = start.Z + SceneContactDepth.Insertion }, wireNode.Path[1]);
+        Assert.Equal(end with { Z = end.Z + SceneContactDepth.Insertion }, wireNode.Path[^2]);
         Assert.Equal(wire.Color, wireNode.Color);
         Assert.Contains(wireNode.Path, pt => pt.Z > end.Z + wireNode.WireRadius);
         Assert.Contains(wireNode.Path, pt => pt.X == wire.ControlPoints[0].X && pt.Y == wire.ControlPoints[0].Y);
@@ -54,6 +56,9 @@ public sealed class SceneBuilderTests
         Assert.Equal(end.X, tip.X, 8);
         Assert.Equal(end.Y, tip.Y, 8);
         Assert.Equal(end.Z, tip.Z, 8);
+        var mountedLed = scene.Nodes.Single(node => node.Id == led.Id);
+        Assert.All(mountedLed.Contacts, pin => Assert.Equal(-SceneContactDepth.Insertion, pin.Position.Z, 8));
+        Assert.Equal(holder.Profile.Height, mountedLed.Pose.Origin.Z, 8);
         Assert.True(scene.Bounds.Max.Z >= wireNode.Path.Max(pt => pt.Z));
     }
 

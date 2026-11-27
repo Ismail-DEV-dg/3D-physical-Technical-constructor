@@ -95,5 +95,6 @@
   "defaultValue": "10 kΩ @ 25°C",
   "defaultColor": "#00E5FF",
   "defaultI2cAddress": null
-}
+},
+{"id":"splitter","name":"Разветвитель","prefix":"J","category":"ПАССИВНЫЕ","symbol":"splitter","description":"Пассивная общая шина с одним входом и 2–8 выходами. Подходит для распределения питания или земли. Все гнёзда электрически соединены.","voltage":5,"pins":[{"id":"BUS","name":"Общая шина","type":"Passive"}],"defaultValue":"Общая шина","defaultColor":"#00E5FF","defaultI2cAddress":null}
 ]

@@ -55,6 +55,7 @@ internal static class RealComponentDrawing
             case "rgb-led": RgbLedDrawing.Draw(dc, item); break;
             case "switch": MiscComponentDrawing.Switch(dc, item); break;
             case "battery": MiscComponentDrawing.Battery(dc, item); break;
+            case SplitterGeometry.ComponentId: SplitterDrawing.Draw(dc, footprint); break;
             case "axial-resistor":
                 dc.DrawRoundedRectangle(new LinearGradientBrush(Color.FromRgb(236, 215, 175), Color.FromRgb(189, 156, 106), 90),
                     new Pen(PhysicalDrawing.Ink("#87663F"), .15), PhysicalDrawing.Rect(body), 1, 1);

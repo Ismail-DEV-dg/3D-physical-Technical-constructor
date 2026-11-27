@@ -14,7 +14,7 @@ public sealed class GuideTests
         Assert.True(catalog.Success, catalog.Error);
         var library = catalog.Value!;
         var ids = components.Load().Components.Select(c => c.Id).Order().ToArray();
-        Assert.Equal(27, ids.Length);
+        Assert.Equal(28, ids.Length);
 
         foreach (var board in new[] { "uno", "nano", "esp32" })
         {

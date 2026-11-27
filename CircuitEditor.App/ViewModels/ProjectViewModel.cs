@@ -52,6 +52,8 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
 
     private ComponentDefinition PreferOwnedChip(ComponentDefinition definition) =>
         Model.FindChip(definition.Id) is { } owned && chipLibrary?.ComponentFor(owned) is { } original ? original : definition;
+    internal Core.Chips.ChipDefinition? ChipForPlacement(string id) =>
+        Model.FindChip(id) ?? chipLibrary?.Definitions.FirstOrDefault(chip => chip.ComponentId == id);
     private void OnChipLibraryChanged(object? sender, EventArgs args) => OnPropertyChanged(nameof(PaletteLibrary));
     public ObservableCollection<ComponentViewModel> Components { get; } = [];
     public ComponentViewModel? SelectedComponent => Components.LastOrDefault(item => item.IsSelected);
@@ -69,7 +71,7 @@ public sealed partial class ProjectViewModel : ObservableObject, IDisposable
     {
         if (!CanEdit) return null;
         var footprint = Model.Footprints.FirstOrDefault(item => item.ComponentDefinitionId == definition.Id);
-        var chip = footprint is null ? chipLibrary?.Definitions.FirstOrDefault(item => item.ComponentId == definition.Id) : null;
+        var chip = footprint is null ? ChipForPlacement(definition.Id) : null;
         if (footprint is null && chip is null) { StatusMessage = "Описание корпуса недоступно. Проверьте библиотеку."; return null; }
         var trayY = Components.Count == 0 ? 15 : Components.Max(existing => existing.MockupPlacement.Y +
             ContactGeometry.Bounds(existing.Footprint, existing.MockupPlacement,

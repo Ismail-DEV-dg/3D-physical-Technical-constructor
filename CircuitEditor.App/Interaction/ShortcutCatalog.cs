@@ -50,7 +50,8 @@ public static class ShortcutCatalog
         Add("Theme",Key.T,Ctrl|Shift,"Ctrl+Shift+T","Вид","Переключить тему");
         Add("NextTab",Key.Tab,Ctrl,"Ctrl+Tab","Навигация","Следующая вкладка",text:true);
         Add("PreviousTab",Key.Tab,Ctrl|Shift,"Ctrl+Shift+Tab","Навигация","Предыдущая вкладка",text:true);
-        for(var i=0;i<4;i++)Add("Tab"+i,(Key)((int)Key.D0+i),Ctrl,"Ctrl+"+i,"Навигация",new[]{"Макет","Схема","Код","Микросхема"}[i],text:true);
+        var tabs = new[] { "Макет", "Схема", "Код", "Микросхема", "3D" };
+        for(var i=0;i<tabs.Length;i++)Add("Tab"+i,(Key)((int)Key.D0+i),Ctrl,"Ctrl+"+i,"Навигация",tabs[i],text:true);
         Add("Png",Key.P,Ctrl|Alt,"Ctrl+Alt+P","Экспорт","Экспорт PNG активного вида");
         Add("Svg",Key.S,Ctrl|Alt,"Ctrl+Alt+S","Экспорт","Экспорт SVG схемы");
         Add("Bom",Key.B,Ctrl|Alt,"Ctrl+Alt+B","Экспорт","Экспорт ведомости CSV");

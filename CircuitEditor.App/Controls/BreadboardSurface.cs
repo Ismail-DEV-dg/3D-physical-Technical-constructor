@@ -21,6 +21,7 @@ public sealed class BreadboardSurface : FrameworkElement
     private readonly BreadboardDrawingCache breadboard = new();
     private readonly WireDrawingCache wires = new();
     private readonly ToolTip tip = new() { Placement = PlacementMode.MousePoint, IsHitTestVisible = false, Focusable = false };
+    private Point? splitterHover;
     public static readonly DependencyProperty SceneProperty = DependencyProperty.Register(nameof(Scene),
         typeof(BreadboardViewModel), typeof(BreadboardSurface), new FrameworkPropertyMetadata(null,
             FrameworkPropertyMetadataOptions.AffectsRender, (owner, _) => ((BreadboardSurface)owner).ClearDrawings()));
@@ -29,7 +30,8 @@ public sealed class BreadboardSurface : FrameworkElement
     public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register(nameof(Background),
         typeof(Brush), typeof(BreadboardSurface), new FrameworkPropertyMetadata(Brushes.Transparent, FrameworkPropertyMetadataOptions.AffectsRender));
     public static readonly DependencyProperty SimulationProperty = DependencyProperty.Register(nameof(Simulation),
-        typeof(SimulationState), typeof(BreadboardSurface), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender));
+        typeof(SimulationState), typeof(BreadboardSurface), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsRender,
+            (owner, _) => ((BreadboardSurface)owner).RefreshSplitterToolTip()));
     public static readonly DependencyProperty ShowVoltageProperty = DependencyProperty.Register(nameof(ShowVoltage),
         typeof(bool), typeof(BreadboardSurface), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.AffectsRender));
     public static readonly DependencyProperty ShowCurrentProperty = DependencyProperty.Register(nameof(ShowCurrent),
@@ -42,12 +44,27 @@ public sealed class BreadboardSurface : FrameworkElement
     public Brush Background { get => (Brush)GetValue(BackgroundProperty); set => SetValue(BackgroundProperty, value); }
     public BreadboardSurface() {AddVisualChild(hover);Unloaded += (_, _) => { tip.IsOpen = false; hover.Update(null);ClearDrawings(); };}
     private void ClearDrawings() { hover.Update(null);components.Clear(); breadboard.Clear(); }
-    public string? GetPinToolTip(Point point)
+    public string? GetPinToolTip(Point point) => GetPinToolTip(point, out _);
+
+    private string? GetPinToolTip(Point point, out bool splitter)
     {
+        splitter = false;
         if (Scene is not { } scene) return null;
         var x = PhysicalSettings.ToMillimeters((point.X - scene.OffsetX) / scene.Zoom);
         var y = PhysicalSettings.ToMillimeters((point.Y - scene.OffsetY) / scene.Zoom);
-        return PhysicalPinToolTips.Find(scene, x, y);
+        return PhysicalPinToolTips.Find(scene, x, y, out splitter);
+    }
+
+    private void RefreshSplitterToolTip()
+    {
+        if (!tip.IsOpen || splitterHover is not { } point) return;
+        if (GetPinToolTip(point, out var isSplitter) is { } description && isSplitter)
+        {
+            if (!Equals(description, tip.Content)) tip.Content = description;
+            return;
+        }
+        splitterHover = null;
+        tip.IsOpen = false;
     }
     protected override void OnRender(DrawingContext dc)
     {
@@ -83,6 +100,10 @@ public sealed class BreadboardSurface : FrameworkElement
         }
         WireDrawing.Draw(dc, scene, simulation: Simulation, showVoltage: ShowVoltage, showCurrent: ShowCurrent, cache: wires,
             viewport: viewport);
+        if (scene.PalettePreview is { } preview)
+            PalettePreviewDrawing.Draw(dc, preview, scene.Board, pitch);
+        else if (scene.HeldPlacementPreview is { } held)
+            PalettePreviewDrawing.Draw(dc, held, scene.Board, pitch);
         if (scene.IsNetInspectionActive)
             NetInspectionDrawing.Draw(dc, scene, viewport, wires, TryFindResource("WarningBrush") as Brush ?? Brushes.Gold);
         foreach (var note in scene.Project.Model.MockupNotes)
@@ -101,7 +122,8 @@ public sealed class BreadboardSurface : FrameworkElement
     }
     private void RefreshHover()
     {
-        if (Scene?.Project.Wiring.HoveredId is not null) tip.IsOpen = false;
+        if (splitterHover is not null) RefreshSplitterToolTip();
+        else if (Scene?.Project.Wiring.HoveredId is not null) tip.IsOpen = false;
         if(IsMouseOver && Mouse.LeftButton==MouseButtonState.Released && Mouse.RightButton==MouseButtonState.Released && Mouse.MiddleButton==MouseButtonState.Released)UpdateContactHover(Mouse.GetPosition(this));
         else hover.Update(null);
     }
@@ -118,14 +140,16 @@ public sealed class BreadboardSurface : FrameworkElement
         base.OnMouseMove(args);
         if (Scene is not { } scene || args.LeftButton != MouseButtonState.Released
             || args.RightButton != MouseButtonState.Released || args.MiddleButton != MouseButtonState.Released)
-        { hover.Update(null);tip.IsOpen = false; return; }
+        { splitterHover = null; hover.Update(null);tip.IsOpen = false; return; }
         var point = args.GetPosition(this);
         UpdateContactHover(point);
-        if (scene.Project.Wiring.HoveredId is not null) { tip.IsOpen = false; return; }
+        var pinText = GetPinToolTip(point, out var isSplitter);
+        splitterHover = isSplitter ? point : null;
+        if (scene.Project.Wiring.HoveredId is not null && !isSplitter) { tip.IsOpen = false; return; }
         var x = PhysicalSettings.ToMillimeters((point.X - scene.OffsetX) / scene.Zoom);
         var y = PhysicalSettings.ToMillimeters((point.Y - scene.OffsetY) / scene.Zoom);
         var item = scene.Project.Components.LastOrDefault(item => scene.Hit(item, x, y));
-        string? text = GetPinToolTip(point) ?? (item is null ? null : $"{item.Reference} · {item.Name}\n{item.Model.Value}" +
+        string? text = pinText ?? (item is null ? null : $"{item.Reference} · {item.Name}\n{item.Model.Value}" +
             (item.Footprint.Renderer == "placeholder" ? "\nВременная заглушка корпуса." : ""));
         if (text is null && scene.Board is { } board)
         {
@@ -139,7 +163,7 @@ public sealed class BreadboardSurface : FrameworkElement
             }
         }
         if (text is null) { tip.IsOpen = false; return; }
-        text+=item is not null ? "\nR — поворот · Del — удалить · Ctrl+D — копия\nW — перемычки · V / Esc — перемещение · F1 — справка"
+        if (!isSplitter) text+=item is not null ? "\nR — поворот · Del — удалить · Ctrl+D — копия\nW — перемычки · V / Esc — перемещение · F1 — справка"
             : "\nW — перемычки · край платы: перетащить, R — повернуть · F1 — справка";
         tip.PlacementTarget = this;
         if (!Equals(tip.Content, text)) tip.Content = text;
@@ -147,6 +171,7 @@ public sealed class BreadboardSurface : FrameworkElement
     }
     protected override void OnMouseLeave(MouseEventArgs args)
     {
+        splitterHover = null;
         hover.Update(null);
         tip.IsOpen = false;
         if (Scene is { } scene && scene.Project.Wiring.HoveredId is not null)
@@ -156,5 +181,5 @@ public sealed class BreadboardSurface : FrameworkElement
         }
         base.OnMouseLeave(args);
     }
-    protected override void OnMouseDown(MouseButtonEventArgs args) { hover.Update(null);tip.IsOpen = false; base.OnMouseDown(args); }
+    protected override void OnMouseDown(MouseButtonEventArgs args) { splitterHover = null; hover.Update(null);tip.IsOpen = false; base.OnMouseDown(args); }
 }

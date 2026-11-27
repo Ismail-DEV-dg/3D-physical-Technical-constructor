@@ -27,7 +27,7 @@ internal static class GuidePresentationChecks
             view.UpdateLayout();
             var browser = Assert.IsType<GuideBrowserView>(view.FindName("GuideBrowser"));
             Assert.True(browser.IsVisible);
-            Assert.Equal(28, Controls<ListBox>(browser).Single().Items.Count);
+            Assert.Equal(29, Controls<ListBox>(browser).Single().Items.Count);
             Assert.Contains(Controls<TextBox>(browser), field => field.IsVisible && field.Text.Contains("void setup()"));
 
             var lessons = Controls<Button>(view).First(button => Equals(button.Content, "Уроки с кодом"));

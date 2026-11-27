@@ -15,6 +15,7 @@ public static class Program
     public static void Main(string[] args)
     {
         var app = new App();
+        Controls.StartupStarCloud.Prefetch();
         app.InitializeComponent();
         // Composition root only: views and WPF lifetime stay outside ViewModels.
         var registrations = new ServiceCollection();
@@ -25,6 +26,14 @@ public static class Program
         registrations.AddSingleton<IComponentLibraryRepository, JsonComponentLibraryRepository>();
         registrations.AddSingleton<IBreadboardRepository, JsonBreadboardRepository>();
         registrations.AddSingleton<IFootprintRepository, JsonFootprintRepository>();
+        registrations.AddSingleton<ISceneCatalogRepository, JsonSceneCatalogRepository>();
+        registrations.AddSingleton<CircuitEditor.Core.Scene.ISceneBuilder, CircuitEditor.Core.Scene.SceneBuilder>();
+        registrations.AddSingleton<Controls.ThreeD.ISceneMeshFactory, Controls.ThreeD.SceneMeshFactory>();
+        registrations.AddSingleton<Controls.ThreeD.SceneExportAdapter>();
+        registrations.AddSingleton<IThreeDExportService>(provider => provider.GetRequiredService<Controls.ThreeD.SceneExportAdapter>());
+        registrations.AddSingleton<Controls.ThreeD.ISceneViewportRegistration>(provider => provider.GetRequiredService<Controls.ThreeD.SceneExportAdapter>());
+        registrations.AddSingleton<ISceneBenchmark, Controls.ThreeD.SceneBenchmark>();
+        registrations.AddSingleton<IStage10Benchmark, Controls.ThreeD.Stage10Benchmark>();
         registrations.AddSingleton<ILogicFamilyRepository, JsonLogicFamilyRepository>();
         registrations.AddSingleton<IChipCsvRepository, FileChipCsvRepository>();
         registrations.AddSingleton<IChipRepository, JsonChipRepository>();
@@ -90,6 +99,7 @@ public static class Program
         registrations.AddSingleton<BreadboardViewModel>();
         registrations.AddSingleton<SchematicViewModel>();
         registrations.AddSingleton<ChipViewModel>();
+        registrations.AddSingleton<ThreeDViewModel>();
         registrations.AddSingleton<CodeViewModel>();
         registrations.AddSingleton<MainViewModel>();
         registrations.AddSingleton(provider => new MainWindow
@@ -119,7 +129,7 @@ public static class Program
         }
         TaskScheduler.UnobservedTaskException += Unobserved;
         AppDomain.CurrentDomain.UnhandledException += Fatal;
-        try { Run(app, services); }
+        try { Run(app, services, args); }
         finally
         {
             TaskScheduler.UnobservedTaskException -= Unobserved;
@@ -127,8 +137,21 @@ public static class Program
         }
     }
 
-    private static void Run(App app, IServiceProvider services)
+    private static void Run(App app, IServiceProvider services, string[] args)
     {
+        app.Resources[typeof(Controls.ThreeD.ISceneMeshFactory)] = services.GetRequiredService<Controls.ThreeD.ISceneMeshFactory>();
+        app.Resources[typeof(Controls.ThreeD.ISceneViewportRegistration)] =
+            services.GetRequiredService<Controls.ThreeD.ISceneViewportRegistration>();
+        if (args is ["--benchmark-stage10", var benchmark])
+        {
+            app.Run(services.GetRequiredService<IStage10Benchmark>().CreateWindow(benchmark));
+            return;
+        }
+        if (args is ["--benchmark-3d", var report])
+        {
+            app.Run(services.GetRequiredService<ISceneBenchmark>().CreateWindow(report));
+            return;
+        }
         var main = services.GetRequiredService<MainWindow>();
         var workArea = SystemParameters.WorkArea;
         main.Width = Math.Max(main.MinWidth, Math.Min(main.Width, workArea.Width));
