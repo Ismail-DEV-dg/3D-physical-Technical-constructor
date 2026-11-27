@@ -69,24 +69,84 @@ public sealed class SceneMeshFactoryTests
         });
     }
 
-    private static bool ContainsAtHeight(MeshGeometry3D[] meshes, double x, double y, double height)
+    [Fact]
+    public void BreadboardShellOwnsAllFourOutsideWalls()
+    {
+        StaRunner.Run(() =>
+        {
+            var project = BreadboardTestData.Create();
+            var node = new SceneBuilder(new JsonSceneCatalogRepository()).Build(project).Nodes.Single();
+            var parts = new SceneMeshFactory().Build(node, default);
+            var body = node.Body;
+            var sideHeight = node.Profile.Height - .5;
+            var nearEnd = body.Width * .15;
+            Point3D[] walls =
+            [
+                new(body.X, -(body.Y + body.Height / 2), sideHeight),
+                new(body.Right, -(body.Y + body.Height / 2), sideHeight),
+                new(body.X + nearEnd, -body.Y, sideHeight),
+                new(body.X + nearEnd, -body.Bottom, sideHeight)
+            ];
+            Assert.All(walls, point =>
+                Assert.Equal("#DBDAD2", Assert.Single(parts, part => ContainsPoint((MeshGeometry3D)part.Model.Geometry, point)).MaterialKey));
+        });
+    }
+
+    [Fact]
+    public void BatteryTerminalFaceBelongsToTheMetalCap()
+    {
+        StaRunner.Run(() =>
+        {
+            var project = BreadboardTestData.Create();
+            var battery = BreadboardTestData.Add(project, "battery");
+            var node = new SceneBuilder(new JsonSceneCatalogRepository()).Build(project).Nodes.Single(item => item.Id == battery.Id);
+            var cell = node.Parts["cell"];
+            var terminalFace = new Point3D(cell.Right, -(cell.Y + cell.Height / 2), node.Profile.Clearance + node.Profile.Height / 2);
+            var parts = new SceneMeshFactory().Build(node, default);
+            Assert.Equal(SceneMeshes.Metal, Assert.Single(parts,
+                part => ContainsPoint((MeshGeometry3D)part.Model.Geometry, terminalFace)).MaterialKey);
+        });
+    }
+
+    [Theory]
+    [InlineData("arduino-uno", 10.75, -26, 5.5, SceneMeshes.Metal)]
+    [InlineData("arduino-uno", 11.28, -44, 5.5, "#19222B")]
+    [InlineData("arduino-nano", 11.42, 1.9, 3.8, SceneMeshes.Metal)]
+    [InlineData("esp32-devkit", 16.70, -38.15, 4, SceneMeshes.Metal)]
+    public void ControllerPortSideWallsDoNotOverlapTheBacking(string id, double x, double y, double z, string material)
+    {
+        StaRunner.Run(() =>
+        {
+            var project = BreadboardTestData.Create();
+            var controller = BreadboardTestData.Add(project, id);
+            var node = new SceneBuilder(new JsonSceneCatalogRepository()).Build(project).Nodes.Single(item => item.Id == controller.Id);
+            var parts = new SceneMeshFactory().Build(node, default);
+            Assert.Equal(material, Assert.Single(parts,
+                part => ContainsPoint((MeshGeometry3D)part.Model.Geometry, new(x, y, z))).MaterialKey);
+        });
+    }
+
+    private static bool ContainsAtHeight(MeshGeometry3D[] meshes, double x, double y, double height) =>
+        meshes.Any(mesh => ContainsPoint(mesh, new(x, y, height)));
+
+    private static bool ContainsPoint(MeshGeometry3D mesh, Point3D point)
     {
         const double tolerance = 1e-4;
-        double Side(Point3D a, Point3D b) => (b.X - a.X) * (y - a.Y) - (b.Y - a.Y) * (x - a.X);
-        foreach (var mesh in meshes)
+        var indices = mesh.TriangleIndices;
+        var vertices = mesh.Positions;
+        for (var i = 0; i < indices.Count; i += 3)
         {
-            var indices = mesh.TriangleIndices;
-            var vertices = mesh.Positions;
-            for (var i = 0; i < indices.Count; i += 3)
-            {
-                var a = vertices[indices[i]];
-                var b = vertices[indices[i + 1]];
-                var c = vertices[indices[i + 2]];
-                if (Math.Abs(a.Z - height) > tolerance || Math.Abs(b.Z - height) > tolerance ||
-                    Math.Abs(c.Z - height) > tolerance) continue;
-                var sides = new[] { Side(a, b), Side(b, c), Side(c, a) };
-                if (sides.All(v => v >= -tolerance) || sides.All(v => v <= tolerance)) return true;
-            }
+            var a = vertices[indices[i]];
+            var b = vertices[indices[i + 1]];
+            var c = vertices[indices[i + 2]];
+            var normal = Vector3D.CrossProduct(b - a, c - a);
+            if (normal.LengthSquared < tolerance * tolerance) continue;
+            normal.Normalize();
+            if (Math.Abs(Vector3D.DotProduct(point - a, normal)) > tolerance) continue;
+            if (Inside(a, b) && Inside(b, c) && Inside(c, a)) return true;
+
+            bool Inside(Point3D start, Point3D end) =>
+                Vector3D.DotProduct(Vector3D.CrossProduct(end - start, point - start), normal) >= -tolerance;
         }
         return false;
     }

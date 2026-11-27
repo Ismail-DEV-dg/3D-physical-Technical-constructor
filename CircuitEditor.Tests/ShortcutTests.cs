@@ -52,6 +52,24 @@ public sealed class ShortcutTests
     }
 
     [Fact]
+    public void ShortcutGuideAssignsTheClickedKeycapEvenWhenAnotherRowIsSelected()
+    {
+        var repository = new TestShortcutSettingsRepository();
+        var settings = new ShortcutSettings(repository);
+        var guide = new ShortcutGuideViewModel(settings);
+        var focus = settings.Bindings.Single(binding => binding.Id == "FocusSelection");
+        var reset = settings.Bindings.Single(binding => binding.Id == "Reset");
+        guide.Selected = reset;
+        Assert.False(guide.Assign(focus, reset.Key, reset.Modifiers));
+        Assert.Contains("уже назначено", guide.Feedback);
+        Assert.True(guide.Assign(focus, Key.F10, ModifierKeys.Control));
+        Assert.Equal(Key.F10, guide.Selected?.Key);
+        Assert.Equal(focus.Id, guide.Selected?.Id);
+        Assert.Equal(Key.F10, new ShortcutSettings(repository).Bindings.Single(binding => binding.Id == focus.Id).Key);
+        Assert.Contains(reset, settings.Bindings);
+    }
+
+    [Fact]
     public void IdenticalKeysForCanvasAndCodeHaveSeparateMeaning()
     {
         var bindings = new ShortcutSettings().Bindings;

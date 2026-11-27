@@ -68,6 +68,26 @@ public sealed class GuideTests
         }
     }
 
+    [Fact]
+    public void AboutOpensTheApplicationOverviewAndLinksToVersionAndLicense()
+    {
+        var catalog = new JsonGuideRepository(new JsonComponentLibraryRepository()).Load().Value!;
+        var help = new ErrorHelpViewModel(new ErrorDocumentationService(new JsonErrorHelpRepository()),
+            new TestDiagnosticServices(), catalog, readLicense: () => "MIT License");
+        help.OpenSection("about");
+        Assert.True(help.IsAbout);
+        Assert.Equal("about", help.Guide.Chapter?.Id);
+        Assert.Contains("3D", help.Guide.Chapter?.Instructions);
+        Assert.Contains(help.Guide.Chapters, chapter => chapter.Id == "peripherals");
+        help.OpenSection("license");
+        Assert.Contains("HelixToolkit", help.Guide.Chapter?.Instructions);
+        help.Guide.NextCommand.Execute(null);
+        Assert.Equal("MIT License", help.Guide.Chapter?.Instructions);
+        help.BackCommand.Execute(null);
+        Assert.Equal("about", help.Guide.Chapter?.Id);
+        help.OpenSection("application");
+        Assert.Equal("quick", help.Guide.Chapter?.Id);
+    }
 
     [Fact]
     public void ErrorOpensRelatedBoardChapterAndBackReturnsToTheSameError()

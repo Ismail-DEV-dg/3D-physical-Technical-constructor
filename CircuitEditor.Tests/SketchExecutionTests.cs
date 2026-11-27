@@ -137,4 +137,89 @@ public sealed class SketchExecutionTests
         Assert.Equal(0, chosen.State.Components[first.Model.Id].Intensity);
         Assert.Equal(1, chosen.State.Components[second.Model.Id].Intensity);
     }
+
+    [Fact]
+    public void TwoLcdObjectsShareTheBusAndKeepIndependentTextAndCursors()
+    {
+        using var design = new ElectricalTestCircuit();
+        var uno = design.Add("arduino-uno");
+        var first = design.Add("lcd1602-i2c");
+        var second = design.Add("lcd1602-i2c");
+        Assert.Equal("0x27", first.Model.I2cAddress);
+        Assert.Equal("0x26", second.Model.I2cAddress);
+        ConnectLcd(design, uno, first);
+        ConnectLcd(design, uno, second);
+
+        var session = SimulationScenarioTests.Create(design, sketch: new("""
+            #include <Wire.h>
+            #include <LiquidCrystal_I2C.h>
+            LiquidCrystal_I2C lcd1(0x27, 16, 2);
+            LiquidCrystal_I2C lcd2(0x26, 16, 2);
+
+            void setup() {
+                Wire.begin();
+                lcd1.init();
+                lcd2.init();
+                lcd1.backlight();
+                lcd2.backlight();
+                lcd1.print("First screen");
+                lcd2.print("Second screen");
+                lcd1.setCursor(0, 1);
+                lcd2.setCursor(2, 1);
+                lcd1.print("Line one");
+                lcd2.print("Line two");
+            }
+
+            void loop() {
+                delay(3);
+                lcd2.clear();
+                lcd2.print("Updated");
+                delay(10);
+            }
+            """));
+
+        Assert.False(session.State.IsHalted, session.State.Failure);
+        Assert.Equal("First screen".PadRight(16) + "\nLine one", session.State.Components[first.Model.Id].Text);
+        Assert.Equal("Second screen".PadRight(16) + "\n  Line two", session.State.Components[second.Model.Id].Text);
+        session.Step();
+        session.Step();
+        var next = session.Step();
+        Assert.Equal("First screen".PadRight(16) + "\nLine one", next.Components[first.Model.Id].Text);
+        Assert.Equal("Updated", next.Components[second.Model.Id].Text);
+    }
+
+    [Theory]
+    [InlineData(false, "обращаются к одному LCD")]
+    [InlineData(true, "укажите разные I²C-адреса")]
+    public void ReusedLcdAddressExplainsWhyTheSecondDisplayCannotBeAddressed(bool samePhysicalAddress, string message)
+    {
+        using var design = new ElectricalTestCircuit();
+        var uno = design.Add("arduino-uno");
+        var first = design.Add("lcd1602-i2c");
+        var second = design.Add("lcd1602-i2c");
+        ConnectLcd(design, uno, first);
+        ConnectLcd(design, uno, second);
+        if (samePhysicalAddress)
+            Assert.True(second.Model.TryUpdateProperties(second.Model.Value, null, first.Model.I2cAddress, out var error), error);
+        var session = SimulationScenarioTests.Create(design, sketch: new("""
+            LiquidCrystal_I2C lcd1(0x27, 16, 2);
+            LiquidCrystal_I2C lcd2(0x27, 16, 2);
+            void setup() {}
+            void loop() {}
+            """));
+
+        Assert.True(session.State.IsHalted);
+        var diagnostic = Assert.Single(session.State.Diagnostics.Where(item => item.Code == "CODE_RUN"));
+        Assert.Contains(message, diagnostic.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("0x27", diagnostic.Message);
+    }
+
+    private static void ConnectLcd(ElectricalTestCircuit design, CircuitEditor.App.ViewModels.ComponentViewModel uno,
+        CircuitEditor.App.ViewModels.ComponentViewModel lcd)
+    {
+        design.Wire(uno, "5V", lcd, "VCC");
+        design.Wire(uno, "GND", lcd, "GND");
+        design.Wire(uno, "SDA", lcd, "SDA");
+        design.Wire(uno, "SCL", lcd, "SCL");
+    }
 }
